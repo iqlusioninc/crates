@@ -1,0 +1,13 @@
+[package]
+authors = ["sopium <sopium@mysterious.site>"]
+description = "TAI64(N) timestamp support for Rust"
+license = "UNLICENSE"
+name = "tai64"
+version = "0.1.0"
+
+[dependencies]
+byteorder = "1.0"
+
+[dev-dependencies]
+chrono = "0.3"
+quickcheck = "0.4"
