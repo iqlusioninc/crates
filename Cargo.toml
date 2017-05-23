@@ -1,0 +1,18 @@
+[package]
+name = "gumdrop"
+version = "0.1.0"
+authors = ["Murarth <murarth@gmail.com>"]
+
+description = "Option parser with custom derive support"
+
+documentation = "https://docs.rs/gumdrop/"
+homepage = "https://github.com/murarth/gumdrop"
+repository = "https://github.com/murarth/gumdrop"
+
+keywords = ["command-line", "flag", "getopts", "option"]
+license = "MIT/Apache-2.0"
+readme = "README.md"
+
+[dev-dependencies]
+assert_matches = "1.1"
+gumdrop_derive = { version = "0.1", path = "gumdrop_derive" }

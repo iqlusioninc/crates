@@ -1,0 +1,21 @@
+[package]
+name = "gumdrop_derive"
+version = "0.1.0"
+authors = ["Murarth <murarth@gmail.com>"]
+
+description = "custom derive support for gumdrop"
+
+documentation = "https://docs.rs/gumdrop_derive/"
+homepage = "https://github.com/murarth/gumdrop_derive"
+repository = "https://github.com/murarth/gumdrop_derive"
+
+keywords = ["args", "flags", "getopts", "options"]
+license = "MIT/Apache-2.0"
+
+[lib]
+name = "gumdrop_derive"
+proc-macro = true
+
+[dependencies]
+quote = "0.3"
+syn = "0.11"
