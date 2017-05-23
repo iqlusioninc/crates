@@ -208,6 +208,8 @@ fn test_usage() {
         charlie: bool,
         #[options(help = "delta help", meta = "X")]
         delta: i32,
+        #[options(help = "echo help", meta = "Y")]
+        echo: Vec<String>,
         #[options(no_short, help = "long option help")]
         very_very_long_option_with_very_very_long_name: bool,
     }
@@ -217,6 +219,7 @@ fn test_usage() {
   --bravo BRAVO  bravo help
   -c             charlie help
   -d, --delta X  delta help
+  -e, --echo Y   echo help
   --very-very-long-option-with-very-very-long-name
                  long option help");
 }
