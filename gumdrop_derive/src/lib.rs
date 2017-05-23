@@ -436,7 +436,7 @@ fn make_action_arg(ident: &Ident, action: Action) -> Tokens {
 
     match action {
         Append => quote!{
-            match arg.parse() {
+            match ::std::str::FromStr::from_str(arg) {
                 ::std::result::Result::Ok(v) => _result.#ident.push(v),
                 ::std::result::Result::Err(ref e) =>
                     return ::std::result::Result::Err(
@@ -445,7 +445,7 @@ fn make_action_arg(ident: &Ident, action: Action) -> Tokens {
             }
         },
         ParseArg => quote!{
-            match arg.parse() {
+            match ::std::str::FromStr::from_str(arg) {
                 ::std::result::Result::Ok(v) => _result.#ident = v,
                 ::std::result::Result::Err(ref e) =>
                     return ::std::result::Result::Err(
@@ -454,7 +454,7 @@ fn make_action_arg(ident: &Ident, action: Action) -> Tokens {
             }
         },
         ParseArgOption => quote!{
-            match arg.parse() {
+            match ::std::str::FromStr::from_str(arg) {
                 ::std::result::Result::Ok(v) =>
                     _result.#ident = ::std::option::Option::Some(v),
                 ::std::result::Result::Err(ref e) =>
