@@ -9,6 +9,7 @@ fn test_hygiene() {
     // is using absolute paths, i.e. `::std::result::Result`
     #[allow(dead_code)] type AsRef = ();
     #[allow(dead_code)] type Default = ();
+    #[allow(dead_code)] type FromStr = ();
     #[allow(dead_code)] type Option = ();
     #[allow(dead_code)] type Some = ();
     #[allow(dead_code)] type None = ();
@@ -194,6 +195,18 @@ fn test_opt_no_free() {
     let empty: &[&str] = &[];
     assert!(Opts::parse_args_default(empty).is_ok());
     assert!(Opts::parse_args_default(&["a"]).is_err());
+}
+
+#[test]
+fn test_typed_free() {
+    #[derive(Default, Options)]
+    struct Opts {
+        #[options(free)]
+        free: Vec<i32>,
+    }
+
+    let opts = Opts::parse_args_default(&["1", "2", "3"]).unwrap();
+    assert_eq!(opts.free, [1, 2, 3]);
 }
 
 #[test]

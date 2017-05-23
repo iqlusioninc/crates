@@ -303,7 +303,7 @@ impl<'a> Opt<'a> {
             Opt::Short(ch) => format!("-{}", ch),
             Opt::Long(s) => format!("--{}", s),
             Opt::LongWithArg(opt, _) => format!("--{}", opt),
-            Opt::Free(s) => s.to_owned()
+            Opt::Free(_) => "free".to_owned()
         }
     }
 }

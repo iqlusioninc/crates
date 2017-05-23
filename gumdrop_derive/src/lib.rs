@@ -170,7 +170,13 @@ pub fn derive_options(input: TokenStream) -> TokenStream {
 
     let handle_free = if let Some(free) = free {
         quote!{
-            _result.#free.push(::std::string::String::from(free));
+            match ::std::str::FromStr::from_str(free) {
+                ::std::result::Result::Ok(v) => _result.#free.push(v),
+                ::std::result::Result::Err(ref e) =>
+                    return ::std::result::Result::Err(
+                        ::gumdrop::Error::failed_parse(opt,
+                            ::std::string::ToString::to_string(e)))
+            }
         }
     } else {
         quote!{
