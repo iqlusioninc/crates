@@ -9,7 +9,7 @@ documentation = "https://docs.rs/gumdrop_derive/"
 homepage = "https://github.com/murarth/gumdrop_derive"
 repository = "https://github.com/murarth/gumdrop_derive"
 
-keywords = ["args", "flags", "getopts", "options"]
+keywords = ["args", "command-line", "flag", "getopts", "option"]
 license = "MIT/Apache-2.0"
 
 [lib]

@@ -1,5 +1,7 @@
 # `gumdrop`
 
+Option parser with custom derive support
+
 [Documentation](https://docs.rs/gumdrop/)
 
 ## Building

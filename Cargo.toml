@@ -9,7 +9,7 @@ documentation = "https://docs.rs/gumdrop/"
 homepage = "https://github.com/murarth/gumdrop"
 repository = "https://github.com/murarth/gumdrop"
 
-keywords = ["command-line", "flag", "getopts", "option"]
+keywords = ["args", "command-line", "flag", "getopts", "option"]
 license = "MIT/Apache-2.0"
 readme = "README.md"
 
