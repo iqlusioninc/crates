@@ -1,6 +1,6 @@
 //! Option parser with custom derive support
 //!
-//! # Example
+//! # Examples
 //!
 //! ```no_run
 //! extern crate gumdrop;
@@ -79,6 +79,130 @@
 //!     }
 //! }
 //! ```
+//!
+//! `derive(Options)` can also be used on `enum`s to produce a subcommand
+//! option parser.
+//!
+//! ```no_run
+//! extern crate gumdrop;
+//! #[macro_use] extern crate gumdrop_derive;
+//! 
+//! use std::env::args;
+//! use gumdrop::Options;
+//! 
+//! // Define options for the program.
+//! #[derive(Debug, Default, Options)]
+//! struct MyOptions {
+//!     // Options here can be accepted with any command (or none at all),
+//!     // but they must come before the command name.
+//!     #[options(help = "print help message")]
+//!     help: bool,
+//!     #[options(help = "be verbose")]
+//!     verbose: bool,
+//! 
+//!     // The `command` option will delegate option parsing to the command type,
+//!     // starting at the first free argument.
+//!     #[options(command)]
+//!     command: Option<Command>,
+//! }
+//! 
+//! // The set of commands and the options each one accepts.
+//! //
+//! // Each variant of a command enum should be a unary tuple variant with only
+//! // one field. This field must implement `Options` and is used to parse arguments
+//! // that are given after the command name.
+//! #[derive(Debug, Options)]
+//! enum Command {
+//!     // Command names are generated from variant names.
+//!     // By default, a CamelCase name will be converted into a lowercase,
+//!     // hyphen-separated name; e.g. `FooBar` becomes `foo-bar`.
+//!     //
+//!     // Names can be explicitly specified using `#[options(name = "...")]`
+//!     #[options(help = "show help for a command")]
+//!     Help(HelpOpts),
+//!     #[options(help = "make stuff")]
+//!     Make(MakeOpts),
+//!     #[options(help = "install stuff")]
+//!     Install(InstallOpts),
+//! }
+//! 
+//! // Options accepted for the `help` command
+//! #[derive(Debug, Default, Options)]
+//! struct HelpOpts {
+//!     #[options(free)]
+//!     free: Vec<String>,
+//! }
+//! 
+//! // Options accepted for the `make` command
+//! #[derive(Debug, Default, Options)]
+//! struct MakeOpts {
+//!     #[options(free)]
+//!     free: Vec<String>,
+//!     #[options(help = "number of jobs", meta = "N")]
+//!     jobs: Option<u32>,
+//! }
+//! 
+//! // Options accepted for the `install` command
+//! #[derive(Debug, Default, Options)]
+//! struct InstallOpts {
+//!     #[options(help = "target directory")]
+//!     dir: Option<String>,
+//! }
+//! 
+//! fn main() {
+//!     let args: Vec<String> = args().collect();
+//! 
+//!     // Remember to skip the first argument. That's the program name.
+//!     let opts = match MyOptions::parse_args_default(&args[1..]) {
+//!         Ok(opts) => opts,
+//!         Err(e) => {
+//!             println!("{}: {}", args[0], e);
+//!             return;
+//!         }
+//!     };
+//! 
+//!     if opts.help {
+//!         // Main options are printed in the usual way.
+//!         // This does not include any mention of commands because that
+//!         // information is held by the Command type itself.
+//!         println!("Usage: {} [OPTIONS] [COMMAND] [ARGUMENTS]", args[0]);
+//!         println!();
+//!         println!("{}", MyOptions::usage());
+//!         println!();
+//! 
+//!         // Help text for commands comes can be found in the `usage` method
+//!         // of our Command enum.
+//!         println!("Available commands:");
+//!         println!();
+//!         println!("{}", Command::usage());
+//!     } else if let Some(Command::Help(ref opts)) = opts.command {
+//!         let cmd = match opts.free.get(0) {
+//!             Some(cmd) => cmd,
+//!             None => {
+//!                 println!("{}: help: missing command", args[0]);
+//!                 return;
+//!             }
+//!         };
+//! 
+//!         // The Command enum will also give us a list of a command's options
+//!         // if we ask for it by name. These are the same strings you'd get
+//!         // from the `usage` method on each option struct.
+//!         if let Some(help) = Command::command_usage(cmd) {
+//!             if help.is_empty() {
+//!                 println!("command `{}` has no options", cmd);
+//!             } else {
+//!                 println!("command `{}` accepts the following options:", cmd);
+//!                 println!();
+//!                 println!("{}", help);
+//!             }
+//!         } else {
+//!             println!("{}: unrecognized command: {}", args[0], cmd);
+//!         }
+//!     } else {
+//!         println!("{:#?}", opts);
+//!     }
+//! }
+//! ```
 
 #![deny(missing_docs)]
 
@@ -93,14 +217,14 @@ use std::str::Chars;
 ///
 /// The first argument (the program name) should be omitted.
 pub fn parse_args<T: Options>(args: &[String], style: ParsingStyle) -> Result<T, Error> {
-    T::parse_args(args, style)
+    T::parse(&mut Parser::new(args, style))
 }
 
 /// Parses arguments from the command line using the default parsing style.
 ///
 /// The first argument (the program name) should be omitted.
 pub fn parse_args_default<T: Options>(args: &[String]) -> Result<T, Error> {
-    T::parse_args_default(args)
+    T::parse(&mut Parser::new(args, ParsingStyle::default()))
 }
 
 /// Represents an error encountered during argument parsing
@@ -126,10 +250,20 @@ impl Error {
         Error{inner: InnerError::MissingArgument(opt.to_string())}
     }
 
+    /// Returns an error for a missing command name.
+    pub fn missing_command() -> Error {
+        Error{inner: InnerError::MissingCommand}
+    }
+
     /// Returns an error when a free argument was encountered, but the options
     /// type does not support free arguments.
     pub fn unexpected_free(arg: &str) -> Error {
         Error{inner: InnerError::UnexpectedFree(arg.to_owned())}
+    }
+
+    /// Returns an error for an unrecognized command.
+    pub fn unrecognized_command(name: &str) -> Error {
+        Error{inner: InnerError::UnrecognizedCommand(name.to_owned())}
     }
 
     /// Returns an error for an unrecognized option.
@@ -160,8 +294,10 @@ impl fmt::Display for Error {
         match self.inner {
             FailedParse(ref opt, ref arg) => write!(f, "invalid argument to option `{}`: {}", opt, arg),
             MissingArgument(ref opt) => write!(f, "missing argument to option `{}`", opt),
+            MissingCommand => f.write_str("missing command name"),
             UnexpectedArgument(ref opt) => write!(f, "option `{}` does not accept an argument", opt),
             UnexpectedFree(ref arg) => write!(f, "unexpected free argument `{}`", arg),
+            UnrecognizedCommand(ref cmd) => write!(f, "unrecognized command `{}`", cmd),
             UnrecognizedLongOption(ref opt) => write!(f, "unrecognized option `--{}`", opt),
             UnrecognizedShortOption(opt) => write!(f, "unrecognized option `-{}`", opt),
         }
@@ -178,8 +314,10 @@ impl StdError for Error {
 enum InnerError {
     FailedParse(String, String),
     MissingArgument(String),
+    MissingCommand,
     UnexpectedArgument(String),
     UnexpectedFree(String),
+    UnrecognizedCommand(String),
     UnrecognizedLongOption(String),
     UnrecognizedShortOption(char),
 }
@@ -314,21 +452,41 @@ impl<'a> Opt<'a> {
 /// from the crate `gumdrop_derive`. Such a derived implementation requires that
 /// the type implement the trait `Default`.
 pub trait Options: Sized {
+    /// Parses arguments until the given parser is exhausted or until
+    /// an error is encountered.
+    fn parse<S: AsRef<str>>(parser: &mut Parser<S>) -> Result<Self, Error>;
+
     /// Parses arguments received from the command line.
     ///
     /// The first argument (the program name) should be omitted.
-    fn parse_args<S: AsRef<str>>(args: &[S], style: ParsingStyle) -> Result<Self, Error>;
-
-    /// Parses arguments with the default `ParsingStyle`.
-    fn parse_args_default<S: AsRef<str>>(args: &[S]) -> Result<Self, Error> {
-        Self::parse_args(args, ParsingStyle::default())
+    fn parse_args<S: AsRef<str>>(args: &[S], style: ParsingStyle) -> Result<Self, Error> {
+        Self::parse(&mut Parser::new(args, style))
     }
+
+    /// Parses arguments received from the command line,
+    /// using the default parsing style.
+    ///
+    /// The first argument (the program name) should be omitted.
+    fn parse_args_default<S: AsRef<str>>(args: &[S]) -> Result<Self, Error> {
+        Self::parse(&mut Parser::new(args, ParsingStyle::default()))
+    }
+
+    /// Parses options for the named command.
+    fn parse_command<S: AsRef<str>>(name: &str, parser: &mut Parser<S>) -> Result<Self, Error>;
 
     /// Returns a string showing usage and help for each supported option.
     ///
     /// Option descriptions are separated by newlines. The returned string
     /// should **not** end with a newline.
     fn usage() -> &'static str;
+
+    /// Returns a usage string for the named command.
+    ///
+    /// If the named command does not exist, `None` is returned.
+    ///
+    /// Command descriptions are separated by newlines. The returned string
+    /// should **not** end with a newline.
+    fn command_usage(command: &str) -> Option<&'static str>;
 }
 
 /// Controls behavior of free arguments in `Parser`

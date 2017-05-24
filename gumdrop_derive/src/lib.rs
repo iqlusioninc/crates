@@ -27,7 +27,7 @@
 //! * `meta = "..."` sets the meta variable displayed in usage for options
 //!   which accept an argument
 
-#![recursion_limit = "128"]
+#![recursion_limit = "256"]
 
 extern crate proc_macro;
 #[macro_use] extern crate quote;
@@ -40,8 +40,8 @@ use proc_macro::TokenStream;
 
 use quote::{Tokens, ToTokens};
 use syn::{
-    Attribute, AttrStyle, Body, Ident, Lit,
-    MetaItem, NestedMetaItem, Ty, VariantData,
+    Attribute, AttrStyle, Body, DeriveInput, Field, Ident, Lit,
+    MetaItem, NestedMetaItem, Ty, Variant, VariantData,
 };
 
 #[proc_macro_derive(Options, attributes(options))]
@@ -49,20 +49,114 @@ pub fn derive_options(input: TokenStream) -> TokenStream {
     let ast = syn::parse_derive_input(&input.to_string())
         .expect("parse_derive_input");
 
-    let fields = match ast.body {
-        Body::Enum(_) => panic!("cannot derive Options for enum types"),
+    match ast.body {
+        Body::Enum(ref variants) =>
+            derive_options_enum(&ast, variants),
         Body::Struct(VariantData::Unit) =>
             panic!("cannot derive Options for unit struct types"),
         Body::Struct(VariantData::Tuple(_)) =>
             panic!("cannot derive Options for tuple struct types"),
-        Body::Struct(VariantData::Struct(fields)) => fields
+        Body::Struct(VariantData::Struct(ref fields)) =>
+            derive_options_struct(&ast, fields)
+    }
+}
+
+fn derive_options_enum(ast: &DeriveInput, variants: &[Variant]) -> TokenStream {
+    let name = &ast.ident;
+    let mut commands = Vec::new();
+    let mut var_ty = Vec::new();
+
+    for var in variants {
+        let ty = match var.data {
+            VariantData::Unit | VariantData::Struct(_) =>
+                panic!("command variants must be unary tuple variants"),
+            VariantData::Tuple(ref fields) if fields.len() != 1 =>
+                panic!("command variants must be unary tuple variants"),
+            VariantData::Tuple(ref fields) => &fields[0].ty,
+        };
+
+        let opts = parse_cmd_attrs(&var.attrs);
+
+        let var_name = &var.ident;
+
+        var_ty.push(ty);
+
+        commands.push(Cmd{
+            name: opts.name.unwrap_or_else(
+                || make_command_name(var_name.as_ref())),
+            help: opts.help,
+            variant_name: var_name,
+            ty: ty,
+        });
+    }
+
+    let mut command = Vec::new();
+    let mut handle_cmd = Vec::new();
+    let usage = make_cmd_usage(&commands);
+
+    for cmd in commands {
+        command.push(Lit::from(cmd.name));
+
+        let var_name = &cmd.variant_name;
+        let ty = &cmd.ty;
+
+        handle_cmd.push(quote!{
+            #name::#var_name(<#ty as ::gumdrop::Options>::parse(parser)?)
+        });
+    }
+
+    // Borrow re-used items
+    let command = &command;
+
+    let (impl_generics, ty_generics, where_clause) = ast.generics.split_for_impl();
+
+    let expr = quote!{
+        impl #impl_generics ::gumdrop::Options for #name #ty_generics #where_clause {
+            fn parse<__S: ::std::convert::AsRef<str>>(
+                    parser: &mut ::gumdrop::Parser<__S>)
+                    -> ::std::result::Result<Self, ::gumdrop::Error> {
+                let arg = parser.next_arg()
+                    .ok_or_else(|| ::gumdrop::Error::missing_command())?;
+
+                Self::parse_command(arg, parser)
+            }
+
+            fn parse_command<__S: ::std::convert::AsRef<str>>(name: &str,
+                    parser: &mut ::gumdrop::Parser<__S>)
+                    -> ::std::result::Result<Self, ::gumdrop::Error> {
+                let cmd = match name {
+                    #( #command => { #handle_cmd } )*
+                    _ => return ::std::result::Result::Err(
+                        ::gumdrop::Error::unrecognized_command(name))
+                };
+
+                ::std::result::Result::Ok(cmd)
+            }
+
+            fn usage() -> &'static str {
+                #usage
+            }
+
+            fn command_usage(name: &str) -> ::std::option::Option<&'static str> {
+                match name {
+                    #( #command => ::std::option::Option::Some(
+                        <#var_ty as ::gumdrop::Options>::usage()), )*
+                    _ => None
+                }
+            }
+        }
     };
 
+    expr.to_string().parse().expect("parse quote!")
+}
+
+fn derive_options_struct(ast: &DeriveInput, fields: &[Field]) -> TokenStream {
     let mut pattern = Vec::new();
     let mut handle_opt = Vec::new();
     let mut short_names = Vec::new();
     let mut long_names = Vec::new();
     let mut free = None;
+    let mut command = None;
     let mut options = Vec::new();
 
     for field in fields {
@@ -70,12 +164,27 @@ pub fn derive_options(input: TokenStream) -> TokenStream {
 
         let ident = field.ident.as_ref().unwrap();
 
+        if opts.command {
+            if command.is_some() {
+                panic!("duplicate declaration of `command` field");
+            }
+            if free.is_some() {
+                panic!("`command` and `free` options are mutually exclusive");
+            }
+
+            command = Some(ident);
+            continue;
+        }
+
         if opts.free {
+            if command.is_some() {
+                panic!("`command` and `free` options are mutually exclusive");
+            }
             if free.is_some() {
                 panic!("duplicate declaration of `free` field");
             }
 
-            free = Some(ident.clone());
+            free = Some(ident);
             continue;
         }
 
@@ -108,7 +217,7 @@ pub fn derive_options(input: TokenStream) -> TokenStream {
         }
 
         options.push(Opt{
-            field: ident.clone(),
+            field: ident,
             action: action,
             long: opts.long.take(),
             short: opts.short,
@@ -166,6 +275,7 @@ pub fn derive_options(input: TokenStream) -> TokenStream {
         }
     }
 
+    let name = &ast.ident;
     let usage = Lit::from(make_usage(&options));
 
     let handle_free = if let Some(free) = free {
@@ -178,6 +288,12 @@ pub fn derive_options(input: TokenStream) -> TokenStream {
                             ::std::string::ToString::to_string(e)))
             }
         }
+    } else if let Some(ident) = command {
+        quote!{
+            _result.#ident = ::std::option::Option::Some(
+                ::gumdrop::Options::parse_command(free, parser)?);
+            break;
+        }
     } else {
         quote!{
             return ::std::result::Result::Err(
@@ -185,17 +301,14 @@ pub fn derive_options(input: TokenStream) -> TokenStream {
         }
     };
 
-    let name = ast.ident;
-
     let (impl_generics, ty_generics, where_clause) = ast.generics.split_for_impl();
 
     let expr = quote!{
         impl #impl_generics ::gumdrop::Options for #name #ty_generics #where_clause {
-            fn parse_args<__S: ::std::convert::AsRef<str>>(args: &[__S],
-                    style: ::gumdrop::ParsingStyle)
+            fn parse<__S: ::std::convert::AsRef<str>>(
+                    parser: &mut ::gumdrop::Parser<__S>)
                     -> ::std::result::Result<Self, ::gumdrop::Error> {
                 let mut _result = <Self as ::std::default::Default>::default();
-                let mut parser = ::gumdrop::Parser::new(args, style);
 
                 while let ::std::option::Option::Some(opt) = parser.next_opt() {
                     match opt {
@@ -213,8 +326,18 @@ pub fn derive_options(input: TokenStream) -> TokenStream {
                 Ok(_result)
             }
 
+            fn parse_command<__S: ::std::convert::AsRef<str>>(name: &str,
+                    _parser: &mut ::gumdrop::Parser<__S>)
+                    -> ::std::result::Result<Self, ::gumdrop::Error> {
+                Err(::gumdrop::Error::unrecognized_command(name))
+            }
+
             fn usage() -> &'static str {
                 #usage
+            }
+
+            fn command_usage(_name: &str) -> ::std::option::Option<&'static str> {
+                None
             }
         }
     };
@@ -271,11 +394,25 @@ struct AttrOpts {
     no_long: bool,
     help: Option<String>,
     meta: Option<String>,
+
+    command: bool,
 }
 
 impl AttrOpts {
     fn check(&self) {
+        if self.command {
+            if self.free { panic!("`command` and `free` are mutually exclusive"); }
+            if self.long.is_some() { panic!("`command` and `long` are mutually exclusive"); }
+            if self.short.is_some() { panic!("`command` and `short` are mutually exclusive"); }
+            if self.count { panic!("`command` and `count` are mutually exclusive"); }
+            if self.no_short { panic!("`command` and `no_short` are mutually exclusive"); }
+            if self.no_long { panic!("`command` and `no_long` are mutually exclusive"); }
+            if self.help.is_some() { panic!("`command` and `help` are mutually exclusive"); }
+            if self.meta.is_some() { panic!("`command` and `meta` are mutually exclusive"); }
+        }
+
         if self.free {
+            if self.command { panic!("`free` and `command` are mutually exclusive"); }
             if self.long.is_some() { panic!("`free` and `long` are mutually exclusive"); }
             if self.short.is_some() { panic!("`free` and `short` are mutually exclusive"); }
             if self.count { panic!("`free` and `count` are mutually exclusive"); }
@@ -296,8 +433,8 @@ impl AttrOpts {
 }
 
 #[derive(Debug)]
-struct Opt {
-    field: Ident,
+struct Opt<'a> {
+    field: &'a Ident,
     action: Action,
     long: Option<String>,
     short: Option<char>,
@@ -309,7 +446,7 @@ struct Opt {
 const MIN_WIDTH: usize = 8;
 const MAX_WIDTH: usize = 30;
 
-impl Opt {
+impl<'a> Opt<'a> {
     fn width(&self) -> usize {
         let short = self.short.map_or(0, |_| 1 + 1); // '-' + char
         let long = self.long.as_ref().map_or(0, |s| s.len() + 2); // "--" + str
@@ -339,6 +476,7 @@ fn parse_attrs(attrs: &[Attribute]) -> AttrOpts {
                                 match *item {
                                     MetaItem::Word(ref w) => match w.as_ref() {
                                         "free" => opts.free = true,
+                                        "command" => opts.command = true,
                                         "count" => opts.count = true,
                                         "no_short" => opts.no_short = true,
                                         "no_long" => opts.no_long = true,
@@ -364,6 +502,58 @@ fn parse_attrs(attrs: &[Attribute]) -> AttrOpts {
     }
 
     opts.check();
+
+    opts
+}
+
+#[derive(Debug)]
+struct Cmd<'a> {
+    name: String,
+    help: Option<String>,
+    variant_name: &'a Ident,
+    ty: &'a Ty,
+}
+
+#[derive(Default)]
+struct CmdOpts {
+    name: Option<String>,
+    help: Option<String>,
+}
+
+fn parse_cmd_attrs(attrs: &[Attribute]) -> CmdOpts {
+    let mut opts = CmdOpts::default();
+
+    for attr in attrs {
+        if attr.style == AttrStyle::Outer && attr.value.name() == "options" {
+            match attr.value {
+                MetaItem::Word(_) =>
+                    panic!("#[options] is not a valid attribute"),
+                MetaItem::NameValue(..) =>
+                    panic!("#[options = ...] is not a valid attribute"),
+                MetaItem::List(_, ref items) => {
+                    for item in items {
+                        match *item {
+                            NestedMetaItem::Literal(_) =>
+                                panic!("unexpected meta item `{}`", tokens_str(item)),
+                            NestedMetaItem::MetaItem(ref item) => {
+                                match *item {
+                                    MetaItem::Word(_) | MetaItem::List(..) =>
+                                        panic!("unexpected meta item `{}`", tokens_str(item)),
+                                    MetaItem::NameValue(ref name, ref value) => {
+                                        match name.as_ref() {
+                                            "name" => opts.name = Some(lit_str(value)),
+                                            "help" => opts.help = Some(lit_str(value)),
+                                            _ => panic!("unexpected meta item `{}`", tokens_str(item))
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     opts
 }
@@ -473,6 +663,24 @@ fn make_action_arg(ident: &Ident, action: Action) -> Tokens {
     }
 }
 
+fn make_command_name(name: &str) -> String {
+    let mut res = String::with_capacity(name.len());
+
+    for ch in name.chars() {
+        if ch.is_lowercase() {
+            res.push(ch);
+        } else {
+            if !res.is_empty() {
+                res.push('-');
+            }
+
+            res.extend(ch.to_lowercase());
+        }
+    }
+
+    res
+}
+
 fn make_long_name(name: &str) -> String {
     name.replace('_', "-")
 }
@@ -576,6 +784,47 @@ fn make_usage(opts: &[Opt]) -> String {
     }
 
     // Pop the last newline so the user may println!() the result.
+    res.pop();
+
+    res
+}
+
+fn make_cmd_usage(cmds: &[Cmd]) -> String {
+    let mut res = String::new();
+
+    let width = max(MIN_WIDTH, min(MAX_WIDTH,
+        cmds.iter().filter_map(|cmd| {
+            let w = cmd.name.len() + 4; // Two spaces each, before and after
+
+            if w > MAX_WIDTH {
+                None
+            } else {
+                Some(w)
+            }
+        }).max().unwrap_or(0)));
+
+    for cmd in cmds {
+        let mut line = String::from("  ");
+
+        line.push_str(&cmd.name);
+
+        if let Some(ref help) = cmd.help {
+            if line.len() < width {
+                let n = width - line.len();
+                line.extend(repeat(' ').take(n));
+            } else {
+                line.push('\n');
+                line.extend(repeat(' ').take(width));
+            }
+
+            line.push_str(help);
+        }
+
+        res.push_str(&line);
+        res.push('\n');
+    }
+
+    // Pop the last newline
     res.pop();
 
     res

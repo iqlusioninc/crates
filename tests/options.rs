@@ -1,3 +1,4 @@
+#[macro_use] extern crate assert_matches;
 extern crate gumdrop;
 #[macro_use] extern crate gumdrop_derive;
 
@@ -15,6 +16,8 @@ fn test_hygiene() {
     #[allow(dead_code)] type None = ();
     #[allow(dead_code)] type Options = ();
     #[allow(dead_code)] type Result = ();
+    #[allow(dead_code)] type Ok = ();
+    #[allow(dead_code)] type Err = ();
     #[allow(dead_code)] type String = ();
     #[allow(dead_code)] type ToString = ();
     #[allow(dead_code)] type Vec = ();
@@ -27,11 +30,98 @@ fn test_hygiene() {
         d: ::std::option::Option<i32>,
         e: ::std::vec::Vec<i32>,
         f: ::std::vec::Vec<::std::string::String>,
+
+        #[options(command)]
+        cmd: ::std::option::Option<Cmd>,
+    }
+
+    #[derive(Options)]
+    enum Cmd {
+        Foo(FooOpts),
+    }
+
+    #[derive(Default, Options)]
+    struct FooOpts {
+        #[options(free)]
+        free: ::std::vec::Vec<::std::string::String>,
+        a: i32,
     }
 
     // This is basically just a compile-pass test, but whatever.
     let empty: &[&str] = &[];
     let _ = Opts::parse_args_default(empty).unwrap();
+}
+
+#[test]
+fn test_command() {
+    #[derive(Default, Options)]
+    struct Opts {
+        help: bool,
+
+        #[options(command)]
+        command: Option<Command>,
+    }
+
+    #[derive(Debug, Options)]
+    enum Command {
+        Foo(FooOpts),
+        Bar(BarOpts),
+        #[options(name = "bzzz")]
+        Baz(NoOpts),
+        FooBar(NoOpts),
+        FooXYZ(NoOpts),
+    }
+
+    #[derive(Debug, Default, Options)]
+    struct FooOpts {
+        foo: Option<String>,
+    }
+
+    #[derive(Debug, Default, Options)]
+    struct BarOpts {
+        #[options(free)]
+        free: Vec<String>,
+    }
+
+    #[derive(Debug, Default, Options)]
+    struct NoOpts { }
+
+    let empty: &[&str] = &[];
+    let opts = Opts::parse_args_default(empty).unwrap();
+    assert_eq!(opts.command.is_none(), true);
+
+    let opts = Opts::parse_args_default(&["-h"]).unwrap();
+    assert_eq!(opts.help, true);
+    assert_eq!(opts.command.is_none(), true);
+
+    let opts = Opts::parse_args_default(&["-h", "foo", "--foo", "x"]).unwrap();
+    assert_eq!(opts.help, true);
+    let cmd = opts.command.unwrap();
+    assert_matches!(cmd, Command::Foo(FooOpts{foo: Some(ref foo)}) if foo == "x");
+
+    let opts = Opts::parse_args_default(&["--", "foo"]).unwrap();
+    assert_eq!(opts.help, false);
+    let cmd = opts.command.unwrap();
+    assert_matches!(cmd, Command::Foo(_));
+
+    let opts = Opts::parse_args_default(&["bar", "free"]).unwrap();
+    let cmd = opts.command.unwrap();
+    assert_matches!(cmd, Command::Bar(ref bar) if bar.free == ["free"]);
+
+    let opts = Opts::parse_args_default(&["bzzz"]).unwrap();
+    let cmd = opts.command.unwrap();
+    assert_matches!(cmd, Command::Baz(_));
+
+    let opts = Opts::parse_args_default(&["foo-bar"]).unwrap();
+    let cmd = opts.command.unwrap();
+    assert_matches!(cmd, Command::FooBar(_));
+
+    let opts = Opts::parse_args_default(&["foo-x-y-z"]).unwrap();
+    let cmd = opts.command.unwrap();
+    assert_matches!(cmd, Command::FooXYZ(_));
+
+    assert!(Opts::parse_args_default(&["foo", "-h"]).is_err());
+    assert!(Opts::parse_args_default(&["baz"]).is_err());
 }
 
 #[test]
