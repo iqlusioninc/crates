@@ -1,6 +1,6 @@
 [package]
 name = "gumdrop_derive"
-version = "0.2.0"
+version = "0.3.0"
 authors = ["Murarth <murarth@gmail.com>"]
 
 description = "custom derive support for gumdrop"
