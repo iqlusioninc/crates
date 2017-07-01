@@ -18,6 +18,12 @@ struct MyOptions {
     // starting at the first free argument.
     #[options(command)]
     command: Option<Command>,
+
+    // The `command_name` field will contain the name of the selected command.
+    //
+    // This field is optional when using a `command` field.
+    #[options(command_name)]
+    command_name: Option<String>,
 }
 
 // The set of commands and the options each one accepts.

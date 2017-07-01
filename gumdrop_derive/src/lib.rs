@@ -157,6 +157,7 @@ fn derive_options_struct(ast: &DeriveInput, fields: &[Field]) -> TokenStream {
     let mut long_names = Vec::new();
     let mut free = None;
     let mut command = None;
+    let mut command_name = None;
     let mut options = Vec::new();
 
     for field in fields {
@@ -173,6 +174,15 @@ fn derive_options_struct(ast: &DeriveInput, fields: &[Field]) -> TokenStream {
             }
 
             command = Some(ident);
+            continue;
+        }
+
+        if opts.command_name {
+            if command_name.is_some() {
+                panic!("duplicate declaration of `command_name` field");
+            }
+
+            command_name = Some(ident);
             continue;
         }
 
@@ -225,6 +235,10 @@ fn derive_options_struct(ast: &DeriveInput, fields: &[Field]) -> TokenStream {
             meta: opts.meta.take(),
             help: opts.help.take(),
         });
+    }
+
+    if command_name.is_some() && command.is_none() {
+        panic!("cannot declare `command_name` without `command`");
     }
 
     // Assign short names after checking all options.
@@ -289,10 +303,19 @@ fn derive_options_struct(ast: &DeriveInput, fields: &[Field]) -> TokenStream {
             }
         }
     } else if let Some(ident) = command {
-        quote!{
-            _result.#ident = ::std::option::Option::Some(
-                ::gumdrop::Options::parse_command(free, parser)?);
-            break;
+        if let Some(name_ident) = command_name {
+            quote!{
+                _result.#name_ident = Some(::std::string::ToString::to_string(free));
+                _result.#ident = ::std::option::Option::Some(
+                    ::gumdrop::Options::parse_command(free, parser)?);
+                break;
+            }
+        } else {
+            quote!{
+                _result.#ident = ::std::option::Option::Some(
+                    ::gumdrop::Options::parse_command(free, parser)?);
+                break;
+            }
         }
     } else {
         quote!{
@@ -396,11 +419,13 @@ struct AttrOpts {
     meta: Option<String>,
 
     command: bool,
+    command_name: bool,
 }
 
 impl AttrOpts {
     fn check(&self) {
         if self.command {
+            if self.command_name { panic!("`command` and `command_name` are mutually exclusive"); }
             if self.free { panic!("`command` and `free` are mutually exclusive"); }
             if self.long.is_some() { panic!("`command` and `long` are mutually exclusive"); }
             if self.short.is_some() { panic!("`command` and `short` are mutually exclusive"); }
@@ -411,8 +436,18 @@ impl AttrOpts {
             if self.meta.is_some() { panic!("`command` and `meta` are mutually exclusive"); }
         }
 
+        if self.command_name {
+            if self.free { panic!("`command_name` and `free` are mutually exclusive"); }
+            if self.long.is_some() { panic!("`command_name` and `long` are mutually exclusive"); }
+            if self.short.is_some() { panic!("`command_name` and `short` are mutually exclusive"); }
+            if self.count { panic!("`command_name` and `count` are mutually exclusive"); }
+            if self.no_short { panic!("`command_name` and `no_short` are mutually exclusive"); }
+            if self.no_long { panic!("`command_name` and `no_long` are mutually exclusive"); }
+            if self.help.is_some() { panic!("`command_name` and `help` are mutually exclusive"); }
+            if self.meta.is_some() { panic!("`command_name` and `meta` are mutually exclusive"); }
+        }
+
         if self.free {
-            if self.command { panic!("`free` and `command` are mutually exclusive"); }
             if self.long.is_some() { panic!("`free` and `long` are mutually exclusive"); }
             if self.short.is_some() { panic!("`free` and `short` are mutually exclusive"); }
             if self.count { panic!("`free` and `count` are mutually exclusive"); }
@@ -477,6 +512,7 @@ fn parse_attrs(attrs: &[Attribute]) -> AttrOpts {
                                     MetaItem::Word(ref w) => match w.as_ref() {
                                         "free" => opts.free = true,
                                         "command" => opts.command = true,
+                                        "command_name" => opts.command_name = true,
                                         "count" => opts.count = true,
                                         "no_short" => opts.no_short = true,
                                         "no_long" => opts.no_long = true,

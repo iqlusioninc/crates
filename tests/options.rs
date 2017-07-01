@@ -125,6 +125,34 @@ fn test_command() {
 }
 
 #[test]
+fn test_command_name() {
+    #[derive(Default, Options)]
+    struct Opts {
+        help: bool,
+
+        #[options(command)]
+        command: Option<Command>,
+        #[options(command_name)]
+        command_name: Option<String>,
+    }
+
+    #[derive(Debug, Options)]
+    enum Command {
+        Foo(NoOpts),
+        Bar(NoOpts),
+    }
+
+    #[derive(Debug, Default, Options)]
+    struct NoOpts { }
+
+    let opts = Opts::parse_args_default(&["foo"]).unwrap();
+    assert_matches!(opts.command_name, Some(ref name) if name == "foo");
+
+    let opts = Opts::parse_args_default(&["bar"]).unwrap();
+    assert_matches!(opts.command_name, Some(ref name) if name == "bar");
+}
+
+#[test]
 fn test_opt_bool() {
     #[derive(Default, Options)]
     struct Opts {
