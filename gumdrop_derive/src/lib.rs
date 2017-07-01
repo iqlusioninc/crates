@@ -116,7 +116,7 @@ fn derive_options_enum(ast: &DeriveInput, variants: &[Variant]) -> TokenStream {
                     parser: &mut ::gumdrop::Parser<__S>)
                     -> ::std::result::Result<Self, ::gumdrop::Error> {
                 let arg = parser.next_arg()
-                    .ok_or_else(|| ::gumdrop::Error::missing_command())?;
+                    .ok_or_else(::gumdrop::Error::missing_command)?;
 
                 Self::parse_command(arg, parser)
             }
