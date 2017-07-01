@@ -456,6 +456,12 @@ pub trait Options: Sized {
     /// an error is encountered.
     fn parse<S: AsRef<str>>(parser: &mut Parser<S>) -> Result<Self, Error>;
 
+    /// Returns whether the user supplied a "help" option to request
+    /// usage information about the program.
+    ///
+    /// The default implementation returns `false`.
+    fn help_requested(&self) -> bool { false }
+
     /// Parses arguments received from the command line.
     ///
     /// The first argument (the program name) should be omitted.

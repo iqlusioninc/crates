@@ -38,24 +38,17 @@ enum Command {
     // hyphen-separated name; e.g. `FooBar` becomes `foo-bar`.
     //
     // Names can be explicitly specified using `#[options(name = "...")]`
-    #[options(help = "show help for a command")]
-    Help(HelpOpts),
     #[options(help = "make stuff")]
     Make(MakeOpts),
     #[options(help = "install stuff")]
     Install(InstallOpts),
 }
 
-// Options accepted for the `help` command
-#[derive(Debug, Default, Options)]
-struct HelpOpts {
-    #[options(free)]
-    free: Vec<String>,
-}
-
 // Options accepted for the `make` command
 #[derive(Debug, Default, Options)]
 struct MakeOpts {
+    #[options(help = "print help message")]
+    help: bool,
     #[options(free)]
     free: Vec<String>,
     #[options(help = "number of jobs", meta = "N")]
@@ -65,6 +58,8 @@ struct MakeOpts {
 // Options accepted for the `install` command
 #[derive(Debug, Default, Options)]
 struct InstallOpts {
+    #[options(help = "print help message")]
+    help: bool,
     #[options(help = "target directory")]
     dir: Option<String>,
 }
@@ -81,42 +76,41 @@ fn main() {
         }
     };
 
-    if opts.help {
-        // Main options are printed in the usual way.
-        // This does not include any mention of commands because that
-        // information is held by the Command type itself.
-        println!("Usage: {} [OPTIONS] [COMMAND] [ARGUMENTS]", args[0]);
-        println!();
-        println!("{}", MyOptions::usage());
-        println!();
-
-        // Help text for commands comes can be found in the `usage` method
-        // of our Command enum.
-        println!("Available commands:");
-        println!();
-        println!("{}", Command::usage());
-    } else if let Some(Command::Help(ref opts)) = opts.command {
-        let cmd = match opts.free.get(0) {
-            Some(cmd) => cmd,
+    // The `help_requested` method will tell you whether the `--help` option
+    // was supplied in main options or in any subcommand.
+    if opts.help_requested() {
+        match opts.command_name {
             None => {
-                println!("{}: help: missing command", args[0]);
-                return;
-            }
-        };
-
-        // The Command enum will also give us a list of a command's options
-        // if we ask for it by name. These are the same strings you'd get
-        // from the `usage` method on each option struct.
-        if let Some(help) = Command::command_usage(cmd) {
-            if help.is_empty() {
-                println!("command `{}` has no options", cmd);
-            } else {
-                println!("command `{}` accepts the following options:", cmd);
+                // Main options are printed in the usual way.
+                // This does not include any mention of commands because that
+                // information is held by the Command type itself.
+                println!("Usage: {} [OPTIONS] [COMMAND] [ARGUMENTS]", args[0]);
                 println!();
-                println!("{}", help);
+                println!("{}", MyOptions::usage());
+                println!();
+
+                // Help text for commands comes can be found in the `usage` method
+                // of our Command enum.
+                println!("Available commands:");
+                println!();
+                println!("{}", Command::usage());
             }
-        } else {
-            println!("{}: unrecognized command: {}", args[0], cmd);
+            Some(ref cmd) => {
+                // The Command enum will also give us a list of a command's options
+                // if we ask for it by name. These are the same strings you'd get
+                // from the `usage` method on each option struct.
+                if let Some(help) = Command::command_usage(cmd) {
+                    if help.is_empty() {
+                        println!("command `{}` has no options", cmd);
+                    } else {
+                        println!("command `{}` accepts the following options:", cmd);
+                        println!();
+                        println!("{}", help);
+                    }
+                } else {
+                    println!("{}: unrecognized command: {}", args[0], cmd);
+                }
+            }
         }
     } else {
         println!("{:#?}", opts);
