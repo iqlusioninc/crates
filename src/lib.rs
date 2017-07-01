@@ -86,10 +86,10 @@
 //! ```no_run
 //! extern crate gumdrop;
 //! #[macro_use] extern crate gumdrop_derive;
-//! 
+//!
 //! use std::env::args;
 //! use gumdrop::Options;
-//! 
+//!
 //! // Define options for the program.
 //! #[derive(Debug, Default, Options)]
 //! struct MyOptions {
@@ -99,13 +99,13 @@
 //!     help: bool,
 //!     #[options(help = "be verbose")]
 //!     verbose: bool,
-//! 
+//!
 //!     // The `command` option will delegate option parsing to the command type,
 //!     // starting at the first free argument.
 //!     #[options(command)]
 //!     command: Option<Command>,
 //! }
-//! 
+//!
 //! // The set of commands and the options each one accepts.
 //! //
 //! // Each variant of a command enum should be a unary tuple variant with only
@@ -125,14 +125,14 @@
 //!     #[options(help = "install stuff")]
 //!     Install(InstallOpts),
 //! }
-//! 
+//!
 //! // Options accepted for the `help` command
 //! #[derive(Debug, Default, Options)]
 //! struct HelpOpts {
 //!     #[options(free)]
 //!     free: Vec<String>,
 //! }
-//! 
+//!
 //! // Options accepted for the `make` command
 //! #[derive(Debug, Default, Options)]
 //! struct MakeOpts {
@@ -141,17 +141,17 @@
 //!     #[options(help = "number of jobs", meta = "N")]
 //!     jobs: Option<u32>,
 //! }
-//! 
+//!
 //! // Options accepted for the `install` command
 //! #[derive(Debug, Default, Options)]
 //! struct InstallOpts {
 //!     #[options(help = "target directory")]
 //!     dir: Option<String>,
 //! }
-//! 
+//!
 //! fn main() {
 //!     let args: Vec<String> = args().collect();
-//! 
+//!
 //!     // Remember to skip the first argument. That's the program name.
 //!     let opts = match MyOptions::parse_args_default(&args[1..]) {
 //!         Ok(opts) => opts,
@@ -160,7 +160,7 @@
 //!             return;
 //!         }
 //!     };
-//! 
+//!
 //!     if opts.help {
 //!         // Main options are printed in the usual way.
 //!         // This does not include any mention of commands because that
@@ -169,7 +169,7 @@
 //!         println!();
 //!         println!("{}", MyOptions::usage());
 //!         println!();
-//! 
+//!
 //!         // Help text for commands comes can be found in the `usage` method
 //!         // of our Command enum.
 //!         println!("Available commands:");
@@ -183,7 +183,7 @@
 //!                 return;
 //!             }
 //!         };
-//! 
+//!
 //!         // The Command enum will also give us a list of a command's options
 //!         // if we ask for it by name. These are the same strings you'd get
 //!         // from the `usage` method on each option struct.
