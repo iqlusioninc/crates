@@ -2,7 +2,7 @@
 //!
 //! # Examples
 //!
-//! ```no_run
+//! ```
 //! extern crate gumdrop;
 //! #[macro_use] extern crate gumdrop_derive;
 //!
@@ -83,7 +83,7 @@
 //! `derive(Options)` can also be used on `enum`s to produce a subcommand
 //! option parser.
 //!
-//! ```no_run
+//! ```
 //! extern crate gumdrop;
 //! #[macro_use] extern crate gumdrop_derive;
 //!
