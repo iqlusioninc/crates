@@ -30,6 +30,7 @@ fn test_hygiene() {
         d: ::std::option::Option<i32>,
         e: ::std::vec::Vec<i32>,
         f: ::std::vec::Vec<::std::string::String>,
+        g: ::std::option::Option<(i32, i32)>,
 
         #[options(command)]
         cmd: ::std::option::Option<Cmd>,
@@ -205,7 +206,47 @@ fn test_opt_int() {
 }
 
 #[test]
-fn test_opt_append() {
+fn test_opt_tuple() {
+    #[derive(Default, Options)]
+    struct Opts {
+        alpha: (i32, i32),
+        bravo: Option<(i32, i32, i32)>,
+        charlie: Vec<(i32, i32, i32, i32)>,
+        #[options(free)]
+        free: Vec<String>,
+    }
+
+    let opts = Opts::parse_args_default(&[
+        "--alpha", "1", "2",
+        "--bravo", "11", "12", "13",
+        "--charlie", "21", "22", "23", "24",
+        "--charlie", "31", "32", "33", "34",
+        "free",
+    ]).unwrap();
+
+    assert_eq!(opts.alpha, (1, 2));
+    assert_eq!(opts.bravo, Some((11, 12, 13)));
+    assert_eq!(opts.charlie, vec![
+        (21, 22, 23, 24),
+        (31, 32, 33, 34),
+    ]);
+    assert_eq!(opts.free, vec!["free".to_owned()]);
+}
+
+#[test]
+fn test_opt_tuple_error() {
+    #[derive(Default, Options)]
+    struct Opts {
+        foo: Option<(i32, i32)>,
+    }
+
+    assert!(Opts::parse_args_default(&["--foo"]).is_err());
+    assert!(Opts::parse_args_default(&["--foo=0", "1"]).is_err());
+    assert!(Opts::parse_args_default(&["--foo", "0"]).is_err());
+}
+
+#[test]
+fn test_opt_push() {
     #[derive(Default, Options)]
     struct Opts {
         thing: Vec<String>,

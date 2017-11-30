@@ -239,10 +239,28 @@ impl Error {
         Error{kind: ErrorKind::FailedParse(opt.to_string(), err)}
     }
 
+    /// Returns an error for an option expecting two or more arguments not
+    /// receiving the expected number of arguments.
+    pub fn insufficient_arguments(opt: Opt, expected: usize, found: usize) -> Error {
+        Error{kind: ErrorKind::InsufficientArguments{
+            option: opt.to_string(),
+            expected: expected,
+            found: found,
+        }}
+    }
+
     /// Returns an error for an option receiving an unexpected argument value,
     /// e.g. `--option=value`.
     pub fn unexpected_argument(opt: Opt) -> Error {
         Error{kind: ErrorKind::UnexpectedArgument(opt.to_string())}
+    }
+
+    /// Returns an error for an option expecting two or more argument values
+    /// receiving only one in the long form, e.g. `--option=value`.
+    ///
+    /// These options must be passed as, e.g. `--option value second-value [...]`.
+    pub fn unexpected_single_argument(opt: Opt, n: usize) -> Error {
+        Error{kind: ErrorKind::UnexpectedSingleArgument(opt.to_string(), n)}
     }
 
     /// Returns an error for a missing required argument.
@@ -293,9 +311,14 @@ impl fmt::Display for Error {
 
         match self.kind {
             FailedParse(ref opt, ref arg) => write!(f, "invalid argument to option `{}`: {}", opt, arg),
+            InsufficientArguments{ref option, expected, found} =>
+                write!(f, "insufficient arguments to option `{}`: expected {}; found {}",
+                    option, expected, found),
             MissingArgument(ref opt) => write!(f, "missing argument to option `{}`", opt),
             MissingCommand => f.write_str("missing command name"),
             UnexpectedArgument(ref opt) => write!(f, "option `{}` does not accept an argument", opt),
+            UnexpectedSingleArgument(ref opt, n) =>
+                write!(f, "option `{}` expects {} arguments; found 1", opt, n),
             UnexpectedFree(ref arg) => write!(f, "unexpected free argument `{}`", arg),
             UnrecognizedCommand(ref cmd) => write!(f, "unrecognized command `{}`", cmd),
             UnrecognizedLongOption(ref opt) => write!(f, "unrecognized option `--{}`", opt),
@@ -313,9 +336,15 @@ impl StdError for Error {
 #[derive(Debug)]
 enum ErrorKind {
     FailedParse(String, String),
+    InsufficientArguments{
+        option: String,
+        expected: usize,
+        found: usize,
+    },
     MissingArgument(String),
     MissingCommand,
     UnexpectedArgument(String),
+    UnexpectedSingleArgument(String, usize),
     UnexpectedFree(String),
     UnrecognizedCommand(String),
     UnrecognizedLongOption(String),

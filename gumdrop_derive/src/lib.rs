@@ -49,7 +49,7 @@ use proc_macro::TokenStream;
 use quote::{Tokens, ToTokens};
 use syn::{
     Attribute, AttrStyle, Body, DeriveInput, Field, Ident, Lit,
-    MetaItem, NestedMetaItem, Ty, Variant, VariantData,
+    MetaItem, NestedMetaItem, PathParameters, Ty, Variant, VariantData,
 };
 
 #[proc_macro_derive(Options, attributes(options))]
@@ -240,7 +240,7 @@ fn derive_options_struct(ast: &DeriveInput, fields: &[Field]) -> TokenStream {
         let action = if opts.count {
             Action::Count
         } else {
-            infer_action(&field.ty).unwrap_or(Action::ParseArg)
+            infer_action(&field.ty)
         };
 
         if action.takes_arg() {
@@ -300,7 +300,11 @@ fn derive_options_struct(ast: &DeriveInput, fields: &[Field]) -> TokenStream {
         handle_opt.push(make_action(&opt.field, opt.action));
 
         if let Some(ref long) = opt.long {
-            let (pat, handle) = if opt.action.takes_arg() {
+            let (pat, handle) = if let Some(n) = opt.action.tuple_len() {
+                (quote!{ ::gumdrop::Opt::LongWithArg(#long, _) },
+                    quote!{ return ::std::result::Result::Err(
+                        ::gumdrop::Error::unexpected_single_argument(opt, #n)) })
+            } else if opt.action.takes_arg() {
                 (quote!{ ::gumdrop::Opt::LongWithArg(#long, arg) },
                     make_action_arg(&opt.field, opt.action))
             } else {
@@ -421,16 +425,24 @@ fn derive_options_struct(ast: &DeriveInput, fields: &[Field]) -> TokenStream {
 
 #[derive(Copy, Clone, Debug)]
 enum Action {
-    /// Append a parsed arg to a Vec
-    Append,
     /// Increase count
     Count,
-    /// Parse arg and set field
-    ParseArg,
-    /// Parse arg and set `Option<T>` field
-    ParseArgOption,
+    /// Push an argument to a `Vec<T>` field
+    Push(ActionType),
+    /// Set field
+    SetField(ActionType),
+    /// Set `Option<T>` field
+    SetOption(ActionType),
     /// Set field to `true`
     Switch,
+}
+
+#[derive(Copy, Clone, Debug)]
+enum ActionType {
+    /// Parse using `FromStr`
+    Parse,
+    /// Parse `n` tuple fields, each using `FromStr`
+    ParseTuple(usize),
 }
 
 impl Action {
@@ -438,23 +450,57 @@ impl Action {
         use self::Action::*;
 
         match *self {
-            Append | ParseArg | ParseArgOption => true,
+            Push(_) | SetField(_) | SetOption(_) => true,
             _ => false
+        }
+    }
+
+    fn tuple_len(&self) -> Option<usize> {
+        use self::Action::*;
+
+        match *self {
+            Push(ty) | SetField(ty) | SetOption(ty) => ty.tuple_len(),
+            _ => None
         }
     }
 }
 
-fn infer_action(ty: &Ty) -> Option<Action> {
+impl ActionType {
+    fn tuple_len(&self) -> Option<usize> {
+        match *self {
+            ActionType::ParseTuple(n) => Some(n),
+            _ => None
+        }
+    }
+}
+
+fn infer_action(ty: &Ty) -> Action {
     match *ty {
         Ty::Path(_, ref path) => {
-            match path.segments.last().unwrap().ident.as_ref() {
-                "bool" => Some(Action::Switch),
-                "Vec" => Some(Action::Append),
-                "Option" => Some(Action::ParseArgOption),
+            let path = path.segments.last().unwrap();
+
+            let param = match path.parameters {
+                PathParameters::AngleBracketed(ref data) => data.types.get(0),
                 _ => None
+            };
+
+            match path.ident.as_ref() {
+                "bool" => Action::Switch,
+                "Vec" => Action::Push(infer_action_type(
+                    param.expect("expected type parameter for `Vec`"))),
+                "Option" => Action::SetOption(infer_action_type(
+                    param.expect("expected type parameter for `Option`"))),
+                _ => Action::SetField(ActionType::Parse),
             }
         }
-        _ => None
+        _ => Action::SetField(infer_action_type(ty))
+    }
+}
+
+fn infer_action_type(ty: &Ty) -> ActionType {
+    match *ty {
+        Ty::Tup(ref fields) => ActionType::ParseTuple(fields.len()),
+        _ => ActionType::Parse,
     }
 }
 
@@ -694,32 +740,28 @@ fn make_action(ident: &Ident, action: Action) -> Tokens {
     use self::Action::*;
 
     match action {
-        Append => {
-            let act = make_action_arg(ident, action);
-
-            quote!{
-                let arg = parser.next_arg()
-                    .ok_or_else(|| ::gumdrop::Error::missing_argument(opt))?;
-                #act
-            }
-        }
         Count => quote!{
             _result.#ident += 1;
         },
-        ParseArg => {
-            let act = make_action_arg(ident, action);
+        Push(ty) => {
+            let act = make_action_type(ty);
+
             quote!{
-                let arg = parser.next_arg()
-                    .ok_or_else(|| ::gumdrop::Error::missing_argument(opt))?;
-                #act
+                _result.#ident.push(#act);
             }
         }
-        ParseArgOption => {
-            let act = make_action_arg(ident, action);
+        SetField(ty) => {
+            let act = make_action_type(ty);
+
             quote!{
-                let arg = parser.next_arg()
-                    .ok_or_else(|| ::gumdrop::Error::missing_argument(opt))?;
-                #act
+                _result.#ident = #act;
+            }
+        }
+        SetOption(ty) => {
+            let act = make_action_type(ty);
+
+            quote!{
+                _result.#ident = ::std::option::Option::Some(#act);
             }
         }
         Switch => quote!{
@@ -728,39 +770,77 @@ fn make_action(ident: &Ident, action: Action) -> Tokens {
     }
 }
 
+fn make_action_type(action_type: ActionType) -> Tokens {
+    use self::ActionType::*;
+
+    match action_type {
+        Parse => quote!{ {
+            let arg = parser.next_arg()
+                .ok_or_else(|| ::gumdrop::Error::missing_argument(opt))?;
+
+            ::std::str::FromStr::from_str(arg)
+                .map_err(|e| ::gumdrop::Error::failed_parse(
+                    opt, ::std::string::ToString::to_string(&e)))?
+        } },
+        ParseTuple(n) => {
+            let num = 0..n;
+            let n = repeat(n);
+
+            quote!{
+                ( #( {
+                    let found = #num;
+                    let arg = parser.next_arg()
+                        .ok_or_else(|| ::gumdrop::Error::insufficient_arguments(
+                            opt, #n, found))?;
+
+                    ::std::str::FromStr::from_str(arg)
+                        .map_err(|e| ::gumdrop::Error::failed_parse(
+                            opt, ::std::string::ToString::to_string(&e)))?
+                } , )* )
+            }
+        }
+    }
+}
+
 fn make_action_arg(ident: &Ident, action: Action) -> Tokens {
     use self::Action::*;
 
     match action {
-        Append => quote!{
-            match ::std::str::FromStr::from_str(arg) {
-                ::std::result::Result::Ok(v) => _result.#ident.push(v),
-                ::std::result::Result::Err(ref e) =>
-                    return ::std::result::Result::Err(
-                        ::gumdrop::Error::failed_parse(opt,
-                            ::std::string::ToString::to_string(e)))
+        Push(ty) => {
+            let act = make_action_type_arg(ty);
+
+            quote!{
+                _result.#ident.push(#act);
             }
-        },
-        ParseArg => quote!{
-            match ::std::str::FromStr::from_str(arg) {
-                ::std::result::Result::Ok(v) => _result.#ident = v,
-                ::std::result::Result::Err(ref e) =>
-                    return ::std::result::Result::Err(
-                        ::gumdrop::Error::failed_parse(opt,
-                            ::std::string::ToString::to_string(e)))
+        }
+        SetField(ty) => {
+            let act = make_action_type_arg(ty);
+
+            quote!{
+                _result.#ident = #act;
             }
-        },
-        ParseArgOption => quote!{
-            match ::std::str::FromStr::from_str(arg) {
-                ::std::result::Result::Ok(v) =>
-                    _result.#ident = ::std::option::Option::Some(v),
-                ::std::result::Result::Err(ref e) =>
-                    return ::std::result::Result::Err(
-                        ::gumdrop::Error::failed_parse(opt,
-                            ::std::string::ToString::to_string(e)))
+        }
+        SetOption(ty) => {
+            let act = make_action_type_arg(ty);
+
+            quote!{
+                _result.#ident = ::std::option::Option::Some(#act);
             }
-        },
+        }
         _ => unreachable!()
+    }
+}
+
+fn make_action_type_arg(action_type: ActionType) -> Tokens {
+    use self::ActionType::*;
+
+    match action_type {
+        Parse => quote!{
+            ::std::str::FromStr::from_str(arg)
+                .map_err(|e| ::gumdrop::Error::failed_parse(
+                    opt, ::std::string::ToString::to_string(&e)))?
+        },
+        ParseTuple(_) => unreachable!()
     }
 }
 
