@@ -16,3 +16,5 @@ readme = "README.md"
 [dev-dependencies]
 assert_matches = "1.1"
 gumdrop_derive = { version = "0.3", path = "gumdrop_derive" }
+
+[workspace]
