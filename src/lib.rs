@@ -230,40 +230,40 @@ pub fn parse_args_default<T: Options>(args: &[String]) -> Result<T, Error> {
 /// Represents an error encountered during argument parsing
 #[derive(Debug)]
 pub struct Error {
-    inner: InnerError,
+    kind: ErrorKind,
 }
 
 impl Error {
     /// Returns an error for a failed attempt at parsing an option value.
     pub fn failed_parse(opt: Opt, err: String) -> Error {
-        Error{inner: InnerError::FailedParse(opt.to_string(), err)}
+        Error{kind: ErrorKind::FailedParse(opt.to_string(), err)}
     }
 
     /// Returns an error for an option receiving an unexpected argument value,
     /// e.g. `--option=value`.
     pub fn unexpected_argument(opt: Opt) -> Error {
-        Error{inner: InnerError::UnexpectedArgument(opt.to_string())}
+        Error{kind: ErrorKind::UnexpectedArgument(opt.to_string())}
     }
 
     /// Returns an error for a missing required argument.
     pub fn missing_argument(opt: Opt) -> Error {
-        Error{inner: InnerError::MissingArgument(opt.to_string())}
+        Error{kind: ErrorKind::MissingArgument(opt.to_string())}
     }
 
     /// Returns an error for a missing command name.
     pub fn missing_command() -> Error {
-        Error{inner: InnerError::MissingCommand}
+        Error{kind: ErrorKind::MissingCommand}
     }
 
     /// Returns an error when a free argument was encountered, but the options
     /// type does not support free arguments.
     pub fn unexpected_free(arg: &str) -> Error {
-        Error{inner: InnerError::UnexpectedFree(arg.to_owned())}
+        Error{kind: ErrorKind::UnexpectedFree(arg.to_owned())}
     }
 
     /// Returns an error for an unrecognized command.
     pub fn unrecognized_command(name: &str) -> Error {
-        Error{inner: InnerError::UnrecognizedCommand(name.to_owned())}
+        Error{kind: ErrorKind::UnrecognizedCommand(name.to_owned())}
     }
 
     /// Returns an error for an unrecognized option.
@@ -278,20 +278,20 @@ impl Error {
 
     /// Returns an error for an unrecognized long option, e.g. `--option`.
     pub fn unrecognized_long(opt: &str) -> Error {
-        Error{inner: InnerError::UnrecognizedLongOption(opt.to_owned())}
+        Error{kind: ErrorKind::UnrecognizedLongOption(opt.to_owned())}
     }
 
     /// Returns an error for an unrecognized short option, e.g. `-o`.
     pub fn unrecognized_short(opt: char) -> Error {
-        Error{inner: InnerError::UnrecognizedShortOption(opt)}
+        Error{kind: ErrorKind::UnrecognizedShortOption(opt)}
     }
 }
 
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        use self::InnerError::*;
+        use self::ErrorKind::*;
 
-        match self.inner {
+        match self.kind {
             FailedParse(ref opt, ref arg) => write!(f, "invalid argument to option `{}`: {}", opt, arg),
             MissingArgument(ref opt) => write!(f, "missing argument to option `{}`", opt),
             MissingCommand => f.write_str("missing command name"),
@@ -311,7 +311,7 @@ impl StdError for Error {
 }
 
 #[derive(Debug)]
-enum InnerError {
+enum ErrorKind {
     FailedParse(String, String),
     MissingArgument(String),
     MissingCommand,
