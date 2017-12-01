@@ -245,7 +245,7 @@ fn derive_options_struct(ast: &DeriveInput, fields: &[Field]) -> TokenStream {
 
         if action.takes_arg() {
             if opts.meta.is_none() {
-                opts.meta = make_meta(ident.as_ref(), action);
+                opts.meta = Some(make_meta(ident.as_ref(), action));
             }
         } else if opts.meta.is_some() {
             panic!("`meta` value is invalid for option `{}`", ident.as_ref());
@@ -450,7 +450,7 @@ impl Action {
         use self::Action::*;
 
         match *self {
-            Push(_) | SetField(_) | SetOption(_) => true,
+            Push(ty) | SetField(ty) | SetOption(ty) => ty.takes_arg(),
             _ => false
         }
     }
@@ -466,6 +466,14 @@ impl Action {
 }
 
 impl ActionType {
+    fn takes_arg(&self) -> bool {
+        match *self {
+            ActionType::ParseTuple(0) => false,
+            ActionType::ParseTuple(_) |
+            ActionType::Parse => true
+        }
+    }
+
     fn tuple_len(&self) -> Option<usize> {
         match *self {
             ActionType::ParseTuple(n) => Some(n),
@@ -908,19 +916,12 @@ fn valid_short_name(ch: char, names: &[char]) {
     }
 }
 
-fn make_meta(name: &str, action: Action) -> Option<String> {
+fn make_meta(name: &str, action: Action) -> String {
     use std::fmt::Write;
-
-    let tuple_len = action.tuple_len();
-
-    if tuple_len == Some(0) {
-        return None;
-    }
 
     let mut name = name.replace('_', "-").to_uppercase();
 
     match action.tuple_len() {
-        // Handled above with early return
         Some(0) => unreachable!(),
         Some(1) | None => (),
         Some(2) => {
@@ -933,7 +934,7 @@ fn make_meta(name: &str, action: Action) -> Option<String> {
         }
     }
 
-    Some(name)
+    name
 }
 
 fn make_usage(opts: &[Opt]) -> String {
