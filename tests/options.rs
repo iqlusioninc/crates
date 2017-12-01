@@ -386,14 +386,42 @@ fn test_usage() {
         very_very_long_option_with_very_very_long_name: bool,
     }
 
-    assert_eq!(Opts::usage(),
-"  -a, --alpha    alpha help
+    assert_eq!(Opts::usage(), &"
+  -a, --alpha    alpha help
   --bravo BRAVO  bravo help
   -c             charlie help
   -d, --delta X  delta help
   -e, --echo Y   echo help
   --very-very-long-option-with-very-very-long-name
-                 long option help");
+                 long option help"
+        // Skip leading newline
+        [1..]);
+
+    #[derive(Default, Options)]
+    struct TupleOpts {
+        #[options(help = "alpha help")]
+        alpha: (),
+        #[options(help = "bravo help")]
+        bravo: (i32,),
+        #[options(help = "charlie help")]
+        charlie: (i32, i32),
+        #[options(help = "delta help")]
+        delta: (i32, i32, i32),
+        #[options(help = "echo help")]
+        echo: (i32, i32, i32, i32),
+    }
+
+    assert_eq!(TupleOpts::usage(), &"
+  -a, --alpha        alpha help
+  -b, --bravo BRAVO  bravo help
+  -c, --charlie CHARLIE VALUE
+                     charlie help
+  -d, --delta DELTA VALUE0 VALUE1
+                     delta help
+  -e, --echo ECHO VALUE0 VALUE1 VALUE2
+                     echo help"
+        // Skip leading newline
+        [1..]);
 }
 
 #[test]

@@ -245,7 +245,7 @@ fn derive_options_struct(ast: &DeriveInput, fields: &[Field]) -> TokenStream {
 
         if action.takes_arg() {
             if opts.meta.is_none() {
-                opts.meta = Some(make_meta(ident.as_ref()));
+                opts.meta = Some(make_meta(ident.as_ref(), action));
             }
         } else if opts.meta.is_some() {
             panic!("`meta` value is invalid for option `{}`", ident.as_ref());
@@ -908,8 +908,32 @@ fn valid_short_name(ch: char, names: &[char]) {
     }
 }
 
-fn make_meta(name: &str) -> String {
-    name.replace('_', "-").to_uppercase()
+fn make_meta(name: &str, action: Action) -> String {
+    use std::fmt::Write;
+
+    let tuple_len = action.tuple_len();
+
+    if tuple_len == Some(0) {
+        return String::new();
+    }
+
+    let mut name = name.replace('_', "-").to_uppercase();
+
+    match action.tuple_len() {
+        // Handled above with early return
+        Some(0) => unreachable!(),
+        Some(1) | None => (),
+        Some(2) => {
+            name.push_str(" VALUE");
+        }
+        Some(n) => {
+            for i in 1..n {
+                let _ = write!(name, " VALUE{}", i - 1);
+            }
+        }
+    }
+
+    name
 }
 
 fn make_usage(opts: &[Opt]) -> String {
