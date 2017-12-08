@@ -355,17 +355,9 @@ fn derive_options_struct(ast: &DeriveInput, fields: &[Field]) -> TokenStream {
     };
 
     let help_requested_impl = match (&help_flag, &command) {
-        (flags, &None) if flags.is_empty() => quote!{ },
         (flags, &None) => quote!{
             fn help_requested(&self) -> bool {
-                #( self.#flags )||*
-            }
-        },
-        (flags, &Some(ref cmd)) if flags.is_empty() => quote!{
-            fn help_requested(&self) -> bool {
-                ::std::option::Option::map_or(
-                    ::std::option::Option::as_ref(&self.#cmd),
-                    false, ::gumdrop::Options::help_requested)
+                false #( || self.#flags )*
             }
         },
         (flags, &Some(ref cmd)) => quote!{
