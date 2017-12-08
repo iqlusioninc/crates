@@ -1,7 +1,6 @@
 extern crate gumdrop;
 #[macro_use] extern crate gumdrop_derive;
 
-use std::env::args;
 use gumdrop::Options;
 
 // Defines options that can be parsed from the command line.
@@ -50,26 +49,10 @@ struct MyOptions {
 }
 
 fn main() {
-    let args: Vec<String> = args().collect();
+    // Parse options from the environment.
+    // If there's an error or the user requests help,
+    // the process will exit after giving the appropriate response.
+    let opts = MyOptions::parse_args_default_or_exit();
 
-    // Remember to skip the first argument. That's the program name.
-    let opts = match MyOptions::parse_args_default(&args[1..]) {
-        Ok(opts) => opts,
-        Err(e) => {
-            println!("{}: {}", args[0], e);
-            return;
-        }
-    };
-
-    if opts.help {
-        // Printing usage text for the `--help` option is handled explicitly
-        // by the program.
-        // However, `derive(Options)` does generate information about all
-        // defined options.
-        println!("Usage: {} [OPTIONS] [ARGUMENTS]", args[0]);
-        println!();
-        println!("{}", MyOptions::usage());
-    } else {
-        println!("{:#?}", opts);
-    }
+    println!("{:#?}", opts);
 }

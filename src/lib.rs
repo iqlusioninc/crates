@@ -6,7 +6,6 @@
 //! extern crate gumdrop;
 //! #[macro_use] extern crate gumdrop_derive;
 //!
-//! use std::env::args;
 //! use gumdrop::Options;
 //!
 //! // Defines options that can be parsed from the command line.
@@ -55,28 +54,9 @@
 //! }
 //!
 //! fn main() {
-//!     let args: Vec<String> = args().collect();
+//!     let opts = MyOptions::parse_args_default_or_exit();
 //!
-//!     // Remember to skip the first argument. That's the program name.
-//!     let opts = match MyOptions::parse_args_default(&args[1..]) {
-//!         Ok(opts) => opts,
-//!         Err(e) => {
-//!             println!("{}: {}", args[0], e);
-//!             return;
-//!         }
-//!     };
-//!
-//!     if opts.help {
-//!         // Printing usage text for the `--help` option is handled explicitly
-//!         // by the program.
-//!         // However, `derive(Options)` does generate information about all
-//!         // defined options.
-//!         println!("Usage: {} [OPTIONS] [ARGUMENTS]", args[0]);
-//!         println!();
-//!         println!("{}", MyOptions::usage());
-//!     } else {
-//!         println!("{:#?}", opts);
-//!     }
+//!     println!("{:#?}", opts);
 //! }
 //! ```
 //!
@@ -87,7 +67,6 @@
 //! extern crate gumdrop;
 //! #[macro_use] extern crate gumdrop_derive;
 //!
-//! use std::env::args;
 //! use gumdrop::Options;
 //!
 //! // Define options for the program.
@@ -150,57 +129,9 @@
 //! }
 //!
 //! fn main() {
-//!     let args: Vec<String> = args().collect();
+//!     let opts = MyOptions::parse_args_default_or_exit();
 //!
-//!     // Remember to skip the first argument. That's the program name.
-//!     let opts = match MyOptions::parse_args_default(&args[1..]) {
-//!         Ok(opts) => opts,
-//!         Err(e) => {
-//!             println!("{}: {}", args[0], e);
-//!             return;
-//!         }
-//!     };
-//!
-//!     if opts.help {
-//!         // Main options are printed in the usual way.
-//!         // This does not include any mention of commands because that
-//!         // information is held by the Command type itself.
-//!         println!("Usage: {} [OPTIONS] [COMMAND] [ARGUMENTS]", args[0]);
-//!         println!();
-//!         println!("{}", MyOptions::usage());
-//!         println!();
-//!
-//!         // Help text for commands comes can be found in the `usage` method
-//!         // of our Command enum.
-//!         println!("Available commands:");
-//!         println!();
-//!         println!("{}", Command::usage());
-//!     } else if let Some(Command::Help(ref opts)) = opts.command {
-//!         let cmd = match opts.free.get(0) {
-//!             Some(cmd) => cmd,
-//!             None => {
-//!                 println!("{}: help: missing command", args[0]);
-//!                 return;
-//!             }
-//!         };
-//!
-//!         // The Command enum will also give us a list of a command's options
-//!         // if we ask for it by name. These are the same strings you'd get
-//!         // from the `usage` method on each option struct.
-//!         if let Some(help) = Command::command_usage(cmd) {
-//!             if help.is_empty() {
-//!                 println!("command `{}` has no options", cmd);
-//!             } else {
-//!                 println!("command `{}` accepts the following options:", cmd);
-//!                 println!();
-//!                 println!("{}", help);
-//!             }
-//!         } else {
-//!             println!("{}: unrecognized command: {}", args[0], cmd);
-//!         }
-//!     } else {
-//!         println!("{:#?}", opts);
-//!     }
+//!     println!("{:#?}", opts);
 //! }
 //! ```
 
@@ -508,6 +439,67 @@ pub trait Options: Sized {
         Self::parse(&mut Parser::new(args, style))
     }
 
+    /// Parses arguments from the environment.
+    ///
+    /// If an error is encountered, the error is printed to `stderr` and the
+    /// process will exit with status code `2`.
+    ///
+    /// If the user supplies a help option, option usage will be printed to
+    /// `stdout` and the process will exit with status code `0`.
+    ///
+    /// Otherwise, the parsed options are returned.
+    fn parse_args_or_exit(style: ParsingStyle) -> Self {
+        use std::env::args;
+        use std::process::exit;
+
+        let args = args().collect::<Vec<_>>();
+
+        let opts = Self::parse_args(&args[1..], style).unwrap_or_else(|e| {
+            eprintln!("{}: {}", args[0], e);
+            exit(2);
+        });
+
+        if opts.help_requested() {
+            match opts.command_name() {
+                None => {
+                    println!("Usage: {} [OPTIONS]", args[0]);
+                    println!();
+                    println!("{}", Self::usage());
+
+                    if let Some(cmds) = Self::command_list() {
+                        println!();
+                        println!("Available commands:");
+                        println!();
+                        println!("{}", cmds);
+                    }
+                }
+                Some(cmd) => {
+                    let help = Self::command_usage(cmd).unwrap_or_default();
+
+                    println!("Usage: {} {} [OPTIONS]", args[0], cmd);
+                    println!();
+                    println!("{}", help);
+                }
+            }
+            exit(0);
+        }
+
+        opts
+    }
+
+    /// Parses arguments from the environment, using the default parsing style.
+    ///
+    /// If an error is encountered, the error is printed to `stderr` and the
+    /// process will exit with status code `2`.
+    ///
+    /// If the user supplies a help option, option usage will be printed to
+    /// `stdout` and the process will exit with status code `0`.
+    ///
+    /// Otherwise, the parsed options are returned.
+    fn parse_args_default_or_exit() -> Self {
+        Self::parse_args_or_exit(ParsingStyle::default())
+    }
+
     /// Parses arguments received from the command line,
     /// using the default parsing style.
     ///
@@ -532,6 +524,17 @@ pub trait Options: Sized {
     /// Command descriptions are separated by newlines. The returned string
     /// should **not** end with a newline.
     fn command_usage(command: &str) -> Option<&'static str>;
+
+    /// Returns a string listing available commands and help text.
+    ///
+    /// Commands are separated by newlines. The string should **not** end with
+    /// a newline.
+    ///
+    /// For `enum` types with `derive(Options)`, this is the same as `usage`.
+    ///
+    /// For `struct` types containing a field marked `#[options(command)]`,
+    /// `usage` is called on the command type.
+    fn command_list() -> Option<&'static str>;
 }
 
 /// Controls behavior of free arguments in `Parser`

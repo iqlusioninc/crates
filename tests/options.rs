@@ -8,19 +8,19 @@ use gumdrop::Options;
 fn test_hygiene() {
     // Define these aliases in local scope to ensure that generated code
     // is using absolute paths, i.e. `::std::result::Result`
-    #[allow(dead_code)] type AsRef = ();
-    #[allow(dead_code)] type Default = ();
-    #[allow(dead_code)] type FromStr = ();
-    #[allow(dead_code)] type Option = ();
-    #[allow(dead_code)] type Some = ();
-    #[allow(dead_code)] type None = ();
-    #[allow(dead_code)] type Options = ();
-    #[allow(dead_code)] type Result = ();
-    #[allow(dead_code)] type Ok = ();
-    #[allow(dead_code)] type Err = ();
-    #[allow(dead_code)] type String = ();
-    #[allow(dead_code)] type ToString = ();
-    #[allow(dead_code)] type Vec = ();
+    #[allow(dead_code)] struct AsRef;
+    #[allow(dead_code)] struct Default;
+    #[allow(dead_code)] struct FromStr;
+    #[allow(dead_code)] struct Option;
+    #[allow(dead_code)] struct Some;
+    #[allow(dead_code)] struct None;
+    #[allow(dead_code)] struct Options;
+    #[allow(dead_code)] struct Result;
+    #[allow(dead_code)] struct Ok;
+    #[allow(dead_code)] struct Err;
+    #[allow(dead_code)] struct String;
+    #[allow(dead_code)] struct ToString;
+    #[allow(dead_code)] struct Vec;
 
     #[derive(Default, Options)]
     struct Opts {
@@ -158,6 +158,42 @@ fn test_command_name() {
 
     let opts = Opts::parse_args_default(&["boopy-doop"]).unwrap();
     assert_matches!(opts.command_name(), Some("boopy-doop"));
+}
+
+#[test]
+fn test_command_usage() {
+    #[derive(Default, Options)]
+    struct NoOpts {}
+
+    #[derive(Default, Options)]
+    struct Opts {
+        #[options(help = "help me!")]
+        help: bool,
+
+        #[options(command)]
+        command: Option<Command>,
+    }
+
+    #[derive(Options)]
+    enum Command {
+        #[options(help = "foo help")]
+        Foo(NoOpts),
+        #[options(help = "bar help")]
+        Bar(NoOpts),
+        #[options(help = "baz help")]
+        #[options(name = "bzzz")]
+        Baz(NoOpts),
+    }
+
+    assert_eq!(Command::usage(), &"
+  foo   foo help
+  bar   bar help
+  bzzz  baz help"
+        // Skip leading newline
+        [1..]);
+
+    assert_eq!(Command::command_list(), Some(Command::usage()));
+    assert_eq!(Opts::command_list(), Some(Command::usage()));
 }
 
 #[test]

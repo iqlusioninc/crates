@@ -171,11 +171,15 @@ fn derive_options_enum(ast: &DeriveInput, variants: &[Variant]) -> TokenStream {
                 #usage
             }
 
+            fn command_list() -> ::std::option::Option<&'static str> {
+                ::std::option::Option::Some(<Self as ::gumdrop::Options>::usage())
+            }
+
             fn command_usage(name: &str) -> ::std::option::Option<&'static str> {
                 match name {
                     #( #command => ::std::option::Option::Some(
                         <#var_ty as ::gumdrop::Options>::usage()), )*
-                    _ => None
+                    _ => ::std::option::Option::None
                 }
             }
         }
@@ -191,6 +195,7 @@ fn derive_options_struct(ast: &DeriveInput, fields: &[Field]) -> TokenStream {
     let mut long_names = Vec::new();
     let mut free = None;
     let mut command = None;
+    let mut command_ty = None;
     let mut help_flag = Vec::new();
     let mut options = Vec::new();
 
@@ -208,6 +213,7 @@ fn derive_options_struct(ast: &DeriveInput, fields: &[Field]) -> TokenStream {
             }
 
             command = Some(ident);
+            command_ty = Some(first_ty_param(&field.ty).unwrap_or(&field.ty));
             continue;
         }
 
@@ -354,6 +360,25 @@ fn derive_options_struct(ast: &DeriveInput, fields: &[Field]) -> TokenStream {
         }
     };
 
+    let command_list = match command_ty {
+        Some(ty) => quote!{
+            ::std::option::Option::Some(
+                <#ty as ::gumdrop::Options>::usage())
+        },
+        None => quote!{
+            ::std::option::Option::None
+        }
+    };
+
+    let command_usage = match command_ty {
+        Some(ty) => quote!{
+            <#ty as ::gumdrop::Options>::command_usage(_name)
+        },
+        None => quote!{
+            ::std::option::Option::None
+        }
+    };
+
     let help_requested_impl = match (&help_flag, &command) {
         (flags, &None) => quote!{
             fn help_requested(&self) -> bool {
@@ -392,7 +417,7 @@ fn derive_options_struct(ast: &DeriveInput, fields: &[Field]) -> TokenStream {
                     }
                 }
 
-                Ok(_result)
+                ::std::result::Result::Ok(_result)
             }
 
             fn command_name(&self) -> ::std::option::Option<&'static str> {
@@ -404,15 +429,20 @@ fn derive_options_struct(ast: &DeriveInput, fields: &[Field]) -> TokenStream {
             fn parse_command<__S: ::std::convert::AsRef<str>>(name: &str,
                     _parser: &mut ::gumdrop::Parser<__S>)
                     -> ::std::result::Result<Self, ::gumdrop::Error> {
-                Err(::gumdrop::Error::unrecognized_command(name))
+                ::std::result::Result::Err(
+                    ::gumdrop::Error::unrecognized_command(name))
             }
 
             fn usage() -> &'static str {
                 #usage
             }
 
+            fn command_list() -> ::std::option::Option<&'static str> {
+                #command_list
+            }
+
             fn command_usage(_name: &str) -> ::std::option::Option<&'static str> {
-                None
+                #command_usage
             }
         }
     };
@@ -479,15 +509,25 @@ impl ActionType {
     }
 }
 
-fn infer_action(ty: &Ty) -> Action {
+fn first_ty_param(ty: &Ty) -> Option<&Ty> {
     match *ty {
         Ty::Path(_, ref path) => {
             let path = path.segments.last().unwrap();
 
-            let param = match path.parameters {
+            match path.parameters {
                 PathParameters::AngleBracketed(ref data) => data.types.get(0),
                 _ => None
-            };
+            }
+        }
+        _ => None
+    }
+}
+
+fn infer_action(ty: &Ty) -> Action {
+    match *ty {
+        Ty::Path(_, ref path) => {
+            let path = path.segments.last().unwrap();
+            let param = first_ty_param(ty);
 
             match path.ident.as_ref() {
                 "bool" => Action::Switch,
