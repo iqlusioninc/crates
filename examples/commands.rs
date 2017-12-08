@@ -18,12 +18,6 @@ struct MyOptions {
     // starting at the first free argument.
     #[options(command)]
     command: Option<Command>,
-
-    // The `command_name` field will contain the name of the selected command.
-    //
-    // This field is optional when using a `command` field.
-    #[options(command_name)]
-    command_name: Option<String>,
 }
 
 // The set of commands and the options each one accepts.
@@ -79,7 +73,7 @@ fn main() {
     // The `help_requested` method will tell you whether the `--help` option
     // was supplied in main options or in any subcommand.
     if opts.help_requested() {
-        match opts.command_name {
+        match opts.command_name() {
             None => {
                 // Main options are printed in the usual way.
                 // This does not include any mention of commands because that
@@ -95,7 +89,7 @@ fn main() {
                 println!();
                 println!("{}", Command::usage());
             }
-            Some(ref cmd) => {
+            Some(cmd) => {
                 // The Command enum will also give us a list of a command's options
                 // if we ask for it by name. These are the same strings you'd get
                 // from the `usage` method on each option struct.

@@ -18,8 +18,6 @@
 //! * `command` indicates that a field represents a subcommand. The field must
 //!   be of type `Option<T>` where `T` is a type implementing `Options`.
 //!   Typically, this type is an `enum` containing subcommand option types.
-//! * `command_name` will contain the name of the command selected by the user.
-//!   Its type must be `Option<String>`.
 //! * `help_flag` marks an option as a help flag. The field must be `bool` type.
 //!   Options named `help` will automatically receive this option.
 //! * `no_help_flag` prevents an option from being considered a help flag.
@@ -101,13 +99,16 @@ fn derive_options_enum(ast: &DeriveInput, variants: &[Variant]) -> TokenStream {
     let mut command = Vec::new();
     let mut handle_cmd = Vec::new();
     let mut help_req_impl = Vec::new();
+    let mut variant = Vec::new();
     let usage = make_cmd_usage(&commands);
 
     for cmd in commands {
         command.push(Lit::from(cmd.name));
 
-        let var_name = &cmd.variant_name;
+        let var_name = cmd.variant_name;
         let ty = &cmd.ty;
+
+        variant.push(var_name);
 
         handle_cmd.push(quote!{
             #name::#var_name(<#ty as ::gumdrop::Options>::parse(parser)?)
@@ -123,6 +124,16 @@ fn derive_options_enum(ast: &DeriveInput, variants: &[Variant]) -> TokenStream {
 
     let (impl_generics, ty_generics, where_clause) = ast.generics.split_for_impl();
 
+    let command_name_impl = {
+        let name = repeat(name);
+
+        quote!{
+            match *self {
+                #( #name::#variant(_) => ::std::option::Option::Some(#command), )*
+            }
+        }
+    };
+
     let expr = quote!{
         impl #impl_generics ::gumdrop::Options for #name #ty_generics #where_clause {
             fn parse<__S: ::std::convert::AsRef<str>>(
@@ -132,6 +143,10 @@ fn derive_options_enum(ast: &DeriveInput, variants: &[Variant]) -> TokenStream {
                     .ok_or_else(::gumdrop::Error::missing_command)?;
 
                 Self::parse_command(arg, parser)
+            }
+
+            fn command_name(&self) -> ::std::option::Option<&'static str> {
+                #command_name_impl
             }
 
             fn help_requested(&self) -> bool {
@@ -176,7 +191,6 @@ fn derive_options_struct(ast: &DeriveInput, fields: &[Field]) -> TokenStream {
     let mut long_names = Vec::new();
     let mut free = None;
     let mut command = None;
-    let mut command_name = None;
     let mut help_flag = Vec::new();
     let mut options = Vec::new();
 
@@ -194,15 +208,6 @@ fn derive_options_struct(ast: &DeriveInput, fields: &[Field]) -> TokenStream {
             }
 
             command = Some(ident);
-            continue;
-        }
-
-        if opts.command_name {
-            if command_name.is_some() {
-                panic!("duplicate declaration of `command_name` field");
-            }
-
-            command_name = Some(ident);
             continue;
         }
 
@@ -260,10 +265,6 @@ fn derive_options_struct(ast: &DeriveInput, fields: &[Field]) -> TokenStream {
             meta: opts.meta.take(),
             help: opts.help.take(),
         });
-    }
-
-    if command_name.is_some() && command.is_none() {
-        panic!("cannot declare `command_name` without `command`");
     }
 
     // Assign short names after checking all options.
@@ -332,24 +333,24 @@ fn derive_options_struct(ast: &DeriveInput, fields: &[Field]) -> TokenStream {
             }
         }
     } else if let Some(ident) = command {
-        if let Some(name_ident) = command_name {
-            quote!{
-                _result.#name_ident = Some(::std::string::ToString::to_string(free));
-                _result.#ident = ::std::option::Option::Some(
-                    ::gumdrop::Options::parse_command(free, parser)?);
-                break;
-            }
-        } else {
-            quote!{
-                _result.#ident = ::std::option::Option::Some(
-                    ::gumdrop::Options::parse_command(free, parser)?);
-                break;
-            }
+        quote!{
+            _result.#ident = ::std::option::Option::Some(
+                ::gumdrop::Options::parse_command(free, parser)?);
+            break;
         }
     } else {
         quote!{
             return ::std::result::Result::Err(
                 ::gumdrop::Error::unexpected_free(free));
+        }
+    };
+
+    let command_name_impl = match command {
+        None => quote!{ ::std::option::Option::None },
+        Some(ref field) => quote!{
+            ::std::option::Option::and_then(
+                ::std::option::Option::as_ref(&self.#field),
+                ::gumdrop::Options::command_name)
         }
     };
 
@@ -400,6 +401,10 @@ fn derive_options_struct(ast: &DeriveInput, fields: &[Field]) -> TokenStream {
                 }
 
                 Ok(_result)
+            }
+
+            fn command_name(&self) -> ::std::option::Option<&'static str> {
+                #command_name_impl
             }
 
             #help_requested_impl
@@ -526,13 +531,11 @@ struct AttrOpts {
     meta: Option<String>,
 
     command: bool,
-    command_name: bool,
 }
 
 impl AttrOpts {
     fn check(&self) {
         if self.command {
-            if self.command_name { panic!("`command` and `command_name` are mutually exclusive"); }
             if self.free { panic!("`command` and `free` are mutually exclusive"); }
             if self.long.is_some() { panic!("`command` and `long` are mutually exclusive"); }
             if self.short.is_some() { panic!("`command` and `short` are mutually exclusive"); }
@@ -543,19 +546,6 @@ impl AttrOpts {
             if self.no_long { panic!("`command` and `no_long` are mutually exclusive"); }
             if self.help.is_some() { panic!("`command` and `help` are mutually exclusive"); }
             if self.meta.is_some() { panic!("`command` and `meta` are mutually exclusive"); }
-        }
-
-        if self.command_name {
-            if self.free { panic!("`command_name` and `free` are mutually exclusive"); }
-            if self.long.is_some() { panic!("`command_name` and `long` are mutually exclusive"); }
-            if self.short.is_some() { panic!("`command_name` and `short` are mutually exclusive"); }
-            if self.count { panic!("`command_name` and `count` are mutually exclusive"); }
-            if self.help_flag { panic!("`command_name` and `help_flag` are mutually exclusive"); }
-            if self.no_help_flag { panic!("`command_name` and `no_help_flag` are mutually exclusive"); }
-            if self.no_short { panic!("`command_name` and `no_short` are mutually exclusive"); }
-            if self.no_long { panic!("`command_name` and `no_long` are mutually exclusive"); }
-            if self.help.is_some() { panic!("`command_name` and `help` are mutually exclusive"); }
-            if self.meta.is_some() { panic!("`command_name` and `meta` are mutually exclusive"); }
         }
 
         if self.free {
@@ -629,7 +619,6 @@ fn parse_attrs(attrs: &[Attribute]) -> AttrOpts {
                                     MetaItem::Word(ref w) => match w.as_ref() {
                                         "free" => opts.free = true,
                                         "command" => opts.command = true,
-                                        "command_name" => opts.command_name = true,
                                         "count" => opts.count = true,
                                         "help_flag" => opts.help_flag = true,
                                         "no_help_flag" => opts.no_help_flag = true,

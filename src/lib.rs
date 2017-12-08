@@ -485,6 +485,16 @@ pub trait Options: Sized {
     /// an error is encountered.
     fn parse<S: AsRef<str>>(parser: &mut Parser<S>) -> Result<Self, Error>;
 
+    /// Returns the name of a parsed command, if present.
+    ///
+    /// This is implemented by `derive(Options)` in one of two ways:
+    ///
+    /// * For `struct` types, if the type contains a field marked
+    ///   `#[options(command)]`, this method is called on that value.
+    ///   Otherwise, `None` is returned.
+    /// * For `enum` types, the name corresponding to the variant is returned.
+    fn command_name(&self) -> Option<&'static str> { None }
+
     /// Returns whether the user supplied a "help" option to request
     /// usage information about the program or any contained subcommands.
     ///

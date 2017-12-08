@@ -133,24 +133,31 @@ fn test_command_name() {
 
         #[options(command)]
         command: Option<Command>,
-        #[options(command_name)]
-        command_name: Option<String>,
     }
 
     #[derive(Debug, Options)]
     enum Command {
         Foo(NoOpts),
         Bar(NoOpts),
+        #[options(name = "bzzz")]
+        Baz(NoOpts),
+        BoopyDoop(NoOpts),
     }
 
     #[derive(Debug, Default, Options)]
     struct NoOpts { }
 
     let opts = Opts::parse_args_default(&["foo"]).unwrap();
-    assert_matches!(opts.command_name, Some(ref name) if name == "foo");
+    assert_matches!(opts.command_name(), Some("foo"));
 
     let opts = Opts::parse_args_default(&["bar"]).unwrap();
-    assert_matches!(opts.command_name, Some(ref name) if name == "bar");
+    assert_matches!(opts.command_name(), Some("bar"));
+
+    let opts = Opts::parse_args_default(&["bzzz"]).unwrap();
+    assert_matches!(opts.command_name(), Some("bzzz"));
+
+    let opts = Opts::parse_args_default(&["boopy-doop"]).unwrap();
+    assert_matches!(opts.command_name(), Some("boopy-doop"));
 }
 
 #[test]
