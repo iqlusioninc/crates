@@ -494,6 +494,22 @@ fn test_help_flag_command() {
         cmd: Option<Cmd>,
     }
 
+    #[derive(Default, Options)]
+    struct Opts2 {
+        #[options(command)]
+        cmd: Option<Cmd>,
+    }
+
+    #[derive(Default, Options)]
+    struct Opts3 {
+        help: bool,
+        #[options(help_flag)]
+        help2: bool,
+
+        #[options(command)]
+        cmd: Option<Cmd>,
+    }
+
     #[derive(Options)]
     enum Cmd {
         Foo(CmdOpts),
@@ -521,4 +537,10 @@ fn test_help_flag_command() {
 
     let opts = Opts::parse_args_default(&["baz", "-h"]).unwrap();
     assert_eq!(opts.help_requested(), true);
+
+    let opts = Opts2::parse_args_default(empty).unwrap();
+    assert_eq!(opts.help_requested(), false);
+
+    let opts = Opts3::parse_args_default(empty).unwrap();
+    assert_eq!(opts.help_requested(), false);
 }
