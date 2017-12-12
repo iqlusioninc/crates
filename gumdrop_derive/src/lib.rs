@@ -32,6 +32,9 @@
 //! * `help = "..."` sets help text returned from the `Options::usage` method
 //! * `meta = "..."` sets the meta variable displayed in usage for options
 //!   which accept an argument
+//!
+//! `#[options(...)]` may also be added at the type level. Only the flags
+//! `no_help_flag`, `no_long`, and `no_short` are supported at the type level.
 
 #![recursion_limit = "256"]
 
@@ -199,8 +202,11 @@ fn derive_options_struct(ast: &DeriveInput, fields: &[Field]) -> TokenStream {
     let mut help_flag = Vec::new();
     let mut options = Vec::new();
 
+    let default_opts = parse_type_attrs(&ast.attrs);
+
     for field in fields {
-        let mut opts = parse_attrs(&field.attrs);
+        let mut opts = parse_field_attrs(&field.attrs);
+        opts.set_defaults(&default_opts);
 
         let ident = field.ident.as_ref().unwrap();
 
@@ -565,6 +571,13 @@ struct AttrOpts {
     command: bool,
 }
 
+#[derive(Debug, Default)]
+struct DefaultOpts {
+    no_help_flag: bool,
+    no_long: bool,
+    no_short: bool,
+}
+
 impl AttrOpts {
     fn check(&self) {
         if self.command {
@@ -604,6 +617,18 @@ impl AttrOpts {
             panic!("`no_long` and `long` are mutually exclusive");
         }
     }
+
+    fn set_defaults(&mut self, defaults: &DefaultOpts) {
+        if !self.help_flag && defaults.no_help_flag {
+            self.no_help_flag = true;
+        }
+        if self.short.is_none() && defaults.no_short {
+            self.no_short = true;
+        }
+        if self.long.is_none() && defaults.no_long {
+            self.no_long = true;
+        }
+    }
 }
 
 #[derive(Debug)]
@@ -631,7 +656,44 @@ impl<'a> Opt<'a> {
     }
 }
 
-fn parse_attrs(attrs: &[Attribute]) -> AttrOpts {
+fn parse_type_attrs(attrs: &[Attribute]) -> DefaultOpts {
+    let mut opts = DefaultOpts::default();
+
+    for attr in attrs {
+        if attr.style == AttrStyle::Outer && attr.value.name() == "options" {
+            match attr.value {
+                MetaItem::Word(_) =>
+                    panic!("#[options] is not a valid attribute"),
+                MetaItem::NameValue(..) =>
+                    panic!("#[options = ...] is not a valid attribute"),
+                MetaItem::List(_, ref items) => {
+                    for item in items {
+                        match *item {
+                            NestedMetaItem::Literal(_) =>
+                                panic!("unexpected meta item `{}`", tokens_str(item)),
+                            NestedMetaItem::MetaItem(ref item) => {
+                                match *item {
+                                    MetaItem::Word(ref w) => match w.as_ref() {
+                                        "no_help_flag" => opts.no_help_flag = true,
+                                        "no_short" => opts.no_short = true,
+                                        "no_long" => opts.no_long = true,
+                                        _ => panic!("unexpected meta item `{}`", tokens_str(item))
+                                    },
+                                    MetaItem::List(..) | MetaItem::NameValue(..) =>
+                                        panic!("unexpected meta item `{}`", tokens_str(item)),
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    opts
+}
+
+fn parse_field_attrs(attrs: &[Attribute]) -> AttrOpts {
     let mut opts = AttrOpts::default();
 
     for attr in attrs {

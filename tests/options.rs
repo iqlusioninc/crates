@@ -580,3 +580,76 @@ fn test_help_flag_command() {
     let opts = Opts3::parse_args_default(empty).unwrap();
     assert_eq!(opts.help_requested(), false);
 }
+
+#[test]
+fn test_type_attrs() {
+    #[derive(Default, Options)]
+    #[options(no_help_flag, no_short, no_long)]
+    struct Opts {
+        #[options(long = "help")]
+        help: bool,
+        #[options(long = "foo")]
+        foo: bool,
+        #[options(short = "b")]
+        bar: bool,
+    }
+
+    assert!(Opts::parse_args_default(&["-f"]).is_err());
+    assert!(Opts::parse_args_default(&["--bar"]).is_err());
+    assert!(Opts::parse_args_default(&["-h"]).is_err());
+
+    let opts = Opts::parse_args_default(&["--help"]).unwrap();
+    assert_eq!(opts.help, true);
+    assert_eq!(opts.help_requested(), false);
+
+    let opts = Opts::parse_args_default(&["--foo"]).unwrap();
+    assert_eq!(opts.foo, true);
+
+    let opts = Opts::parse_args_default(&["-b"]).unwrap();
+    assert_eq!(opts.bar, true);
+
+    #[derive(Default, Options)]
+    #[options(no_short)]
+    struct Opts2 {
+        foo: bool,
+        #[options(short = "b")]
+        bar: bool,
+    }
+
+    assert!(Opts2::parse_args_default(&["-f"]).is_err());
+
+    let opts = Opts2::parse_args_default(&["--foo", "-b"]).unwrap();
+    assert_eq!(opts.foo, true);
+    assert_eq!(opts.bar, true);
+
+    let opts = Opts2::parse_args_default(&["--bar"]).unwrap();
+    assert_eq!(opts.bar, true);
+
+    #[derive(Default, Options)]
+    #[options(no_long)]
+    struct Opts3 {
+        foo: bool,
+        #[options(long = "bar")]
+        bar: bool,
+    }
+
+    assert!(Opts3::parse_args_default(&["--foo"]).is_err());
+
+    let opts = Opts3::parse_args_default(&["--bar"]).unwrap();
+    assert_eq!(opts.bar, true);
+
+    let opts = Opts3::parse_args_default(&["-f", "-b"]).unwrap();
+    assert_eq!(opts.foo, true);
+    assert_eq!(opts.bar, true);
+
+    #[derive(Default, Options)]
+    #[options(no_help_flag)]
+    struct Opts4 {
+        #[options(help_flag)]
+        help: bool,
+    }
+
+    let opts = Opts4::parse_args_default(&["-h"]).unwrap();
+    assert_eq!(opts.help, true);
+    assert_eq!(opts.help_requested(), true);
+}
