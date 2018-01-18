@@ -23,8 +23,10 @@
 //! * `no_help_flag` prevents an option from being considered a help flag.
 //! * `count` marks a field as a counter value. The field will be incremented
 //!   each time the option appears in the arguments, i.e. `field += 1;`
-//! * `free` marks a field as the free argument container. Non-option arguments
-//!   will be appended to this field using its `push` method.
+//! * `free` marks a field as a positional argument field. Non-option arguments
+//!   will be used to fill all `free` fields, in declared sequence.
+//!   If the final `free` field is of type `Vec<T>`, it will contain all
+//!   remaining free arguments.
 //! * `short = "?"` sets the short option name to the given character
 //! * `no_short` prevents a short option from being assigned to the field
 //! * `long = "..."` sets the long option name to the given string
@@ -196,7 +198,7 @@ fn derive_options_struct(ast: &DeriveInput, fields: &[Field]) -> TokenStream {
     let mut handle_opt = Vec::new();
     let mut short_names = Vec::new();
     let mut long_names = Vec::new();
-    let mut free = None;
+    let mut free: Vec<FreeOpt> = Vec::new();
     let mut command = None;
     let mut command_ty = None;
     let mut help_flag = Vec::new();
@@ -214,7 +216,7 @@ fn derive_options_struct(ast: &DeriveInput, fields: &[Field]) -> TokenStream {
             if command.is_some() {
                 panic!("duplicate declaration of `command` field");
             }
-            if free.is_some() {
+            if !free.is_empty() {
                 panic!("`command` and `free` options are mutually exclusive");
             }
 
@@ -227,11 +229,18 @@ fn derive_options_struct(ast: &DeriveInput, fields: &[Field]) -> TokenStream {
             if command.is_some() {
                 panic!("`command` and `free` options are mutually exclusive");
             }
-            if free.is_some() {
-                panic!("duplicate declaration of `free` field");
+
+            if let Some(last) = free.last() {
+                if last.action == FreeAction::Push {
+                    panic!("only the final `free` option may be of type `Vec<T>`");
+                }
             }
 
-            free = Some(ident);
+            free.push(FreeOpt{
+                field: ident,
+                action: infer_free_action(&field.ty),
+                help: opts.help,
+            });
             continue;
         }
 
@@ -332,16 +341,56 @@ fn derive_options_struct(ast: &DeriveInput, fields: &[Field]) -> TokenStream {
     }
 
     let name = &ast.ident;
-    let usage = Lit::from(make_usage(&options));
+    let usage = Lit::from(make_usage(&free, &options));
 
-    let handle_free = if let Some(free) = free {
+    let handle_free = if !free.is_empty() {
+        let catch_all = if free.last().unwrap().action == FreeAction::Push {
+            let last = free.pop().unwrap();
+
+            let free = last.field;
+
+            quote!{
+                match ::std::str::FromStr::from_str(free) {
+                    ::std::result::Result::Ok(v) => _result.#free.push(v),
+                    ::std::result::Result::Err(ref e) =>
+                        return ::std::result::Result::Err(
+                            ::gumdrop::Error::failed_parse(opt,
+                                ::std::string::ToString::to_string(e)))
+                }
+            }
+        } else {
+            quote!{
+                return ::std::result::Result::Err(
+                    ::gumdrop::Error::unexpected_free(free))
+            }
+        };
+
+        let num = 0..free.len();
+        let action = free.iter().map(|free| {
+            let field = free.field;
+            match free.action {
+                FreeAction::Push => quote!{ _result.#field.push(v); },
+                FreeAction::SetField => quote!{ _result.#field = v; },
+                FreeAction::SetOption => quote!{
+                    _result.#field = ::std::option::Option::Some(v);
+                },
+            }
+        }).collect::<Vec<_>>();
+
         quote!{
-            match ::std::str::FromStr::from_str(free) {
-                ::std::result::Result::Ok(v) => _result.#free.push(v),
-                ::std::result::Result::Err(ref e) =>
-                    return ::std::result::Result::Err(
-                        ::gumdrop::Error::failed_parse(opt,
-                            ::std::string::ToString::to_string(e)))
+            match _free_counter {
+                #( #num => {
+                    _free_counter += 1;
+
+                    match ::std::str::FromStr::from_str(free) {
+                        ::std::result::Result::Ok(v) => { #action }
+                        ::std::result::Result::Err(ref e) =>
+                            return ::std::result::Result::Err(
+                                ::gumdrop::Error::failed_parse(opt,
+                                    ::std::string::ToString::to_string(e)))
+                    }
+                } )*
+                _ => #catch_all
             }
         }
     } else if let Some(ident) = command {
@@ -409,6 +458,7 @@ fn derive_options_struct(ast: &DeriveInput, fields: &[Field]) -> TokenStream {
                     parser: &mut ::gumdrop::Parser<__S>)
                     -> ::std::result::Result<Self, ::gumdrop::Error> {
                 let mut _result = <Self as ::std::default::Default>::default();
+                let mut _free_counter = 0usize;
 
                 while let ::std::option::Option::Some(opt) = parser.next_opt() {
                     match opt {
@@ -476,6 +526,13 @@ enum ActionType {
     Parse,
     /// Parse `n` tuple fields, each using `FromStr`
     ParseTuple(usize),
+}
+
+#[derive(Copy, Clone, Debug, Eq, PartialEq)]
+enum FreeAction {
+    Push,
+    SetField,
+    SetOption,
 }
 
 impl Action {
@@ -555,6 +612,21 @@ fn infer_action_type(ty: &Ty) -> ActionType {
     }
 }
 
+fn infer_free_action(ty: &Ty) -> FreeAction {
+    match *ty {
+        Ty::Path(_, ref path) => {
+            let path = path.segments.last().unwrap();
+
+            match path.ident.as_ref() {
+                "Option" => FreeAction::SetOption,
+                "Vec" => FreeAction::Push,
+                _ => FreeAction::SetField
+            }
+        }
+        _ => FreeAction::SetField,
+    }
+}
+
 #[derive(Debug, Default)]
 struct AttrOpts {
     long: Option<String>,
@@ -601,7 +673,6 @@ impl AttrOpts {
             if self.no_help_flag { panic!("`free` and `no_help_flag` are mutually exclusive"); }
             if self.no_short { panic!("`free` and `no_short` are mutually exclusive"); }
             if self.no_long { panic!("`free` and `no_long` are mutually exclusive"); }
-            if self.help.is_some() { panic!("`free` and `help` are mutually exclusive"); }
             if self.meta.is_some() { panic!("`free` and `meta` are mutually exclusive"); }
         }
 
@@ -632,6 +703,13 @@ impl AttrOpts {
 }
 
 #[derive(Debug)]
+struct FreeOpt<'a> {
+    field: &'a Ident,
+    action: FreeAction,
+    help: Option<String>,
+}
+
+#[derive(Debug)]
 struct Opt<'a> {
     field: &'a Ident,
     action: Action,
@@ -644,6 +722,12 @@ struct Opt<'a> {
 
 const MIN_WIDTH: usize = 8;
 const MAX_WIDTH: usize = 30;
+
+impl<'a> FreeOpt<'a> {
+    fn width(&self) -> usize {
+        2 + self.field.as_ref().len() + 2 // name + spaces before and after
+    }
+}
 
 impl<'a> Opt<'a> {
     fn width(&self) -> usize {
@@ -1020,56 +1104,82 @@ fn make_meta(name: &str, action: Action) -> String {
     name
 }
 
-fn make_usage(opts: &[Opt]) -> String {
+fn make_usage(free: &[FreeOpt], opts: &[Opt]) -> String {
     let mut res = String::new();
 
-    let width = max(MIN_WIDTH, min(MAX_WIDTH,
-        opts.iter().filter_map(|opt| {
-            let w = opt.width();
+    let width = max(
+        max_width(free, |opt| opt.width()),
+        max_width(opts, |opt| opt.width()));
 
-            if w > MAX_WIDTH {
-                None
-            } else {
-                Some(w)
-            }
-        }).max().unwrap_or(0)));
+    if !free.is_empty() {
+        res.push_str("Positional arguments:\n");
 
-    for opt in opts {
-        let mut line = String::from("  ");
+        for opt in free {
+            let mut line = String::from("  ");
 
-        if let Some(short) = opt.short {
-            line.push('-');
-            line.push(short);
-        }
+            line.push_str(opt.field.as_ref());
 
-        if opt.short.is_some() && opt.long.is_some() {
-            line.push_str(", ");
-        }
+            if let Some(ref help) = opt.help {
+                if line.len() < width {
+                    let n = width - line.len();
+                    line.extend(repeat(' ').take(n));
+                } else {
+                    line.push('\n');
+                    line.extend(repeat(' ').take(width));
+                }
 
-        if let Some(ref long) = opt.long {
-            line.push_str("--");
-            line.push_str(long);
-        }
-
-        if let Some(ref meta) = opt.meta {
-            line.push(' ');
-            line.push_str(meta);
-        }
-
-        if let Some(ref help) = opt.help {
-            if line.len() < width {
-                let n = width - line.len();
-                line.extend(repeat(' ').take(n));
-            } else {
-                line.push('\n');
-                line.extend(repeat(' ').take(width));
+                line.push_str(help);
             }
 
-            line.push_str(help);
+            res.push_str(&line);
+            res.push('\n');
+        }
+    }
+
+    if !opts.is_empty() {
+        if !res.is_empty() {
+            res.push('\n');
         }
 
-        res.push_str(&line);
-        res.push('\n');
+        res.push_str("Optional arguments:\n");
+
+        for opt in opts {
+            let mut line = String::from("  ");
+
+            if let Some(short) = opt.short {
+                line.push('-');
+                line.push(short);
+            }
+
+            if opt.short.is_some() && opt.long.is_some() {
+                line.push_str(", ");
+            }
+
+            if let Some(ref long) = opt.long {
+                line.push_str("--");
+                line.push_str(long);
+            }
+
+            if let Some(ref meta) = opt.meta {
+                line.push(' ');
+                line.push_str(meta);
+            }
+
+            if let Some(ref help) = opt.help {
+                if line.len() < width {
+                    let n = width - line.len();
+                    line.extend(repeat(' ').take(n));
+                } else {
+                    line.push('\n');
+                    line.extend(repeat(' ').take(width));
+                }
+
+                line.push_str(help);
+            }
+
+            res.push_str(&line);
+            res.push('\n');
+        }
     }
 
     // Pop the last newline so the user may println!() the result.
@@ -1078,19 +1188,26 @@ fn make_usage(opts: &[Opt]) -> String {
     res
 }
 
-fn make_cmd_usage(cmds: &[Cmd]) -> String {
-    let mut res = String::new();
-
-    let width = max(MIN_WIDTH, min(MAX_WIDTH,
-        cmds.iter().filter_map(|cmd| {
-            let w = cmd.name.len() + 4; // Two spaces each, before and after
+fn max_width<T, F>(items: &[T], f: F) -> usize
+        where F: Fn(&T) -> usize {
+    max(MIN_WIDTH, min(MAX_WIDTH,
+        items.iter().filter_map(|item| {
+            let w = f(item);
 
             if w > MAX_WIDTH {
                 None
             } else {
                 Some(w)
             }
-        }).max().unwrap_or(0)));
+        }).max().unwrap_or(0)))
+}
+
+fn make_cmd_usage(cmds: &[Cmd]) -> String {
+    let mut res = String::new();
+
+    let width = max_width(cmds,
+        // Two spaces each, before and after
+        |cmd| cmd.name.len() + 4);
 
     for cmd in cmds {
         let mut line = String::from("  ");

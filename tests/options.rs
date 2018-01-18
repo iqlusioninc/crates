@@ -38,6 +38,7 @@ fn test_hygiene() {
     #[derive(Options)]
     enum Cmd {
         Foo(FooOpts),
+        Bar(BarOpts),
     }
 
     #[derive(Default, Options)]
@@ -47,9 +48,16 @@ fn test_hygiene() {
         a: i32,
     }
 
-    // This is basically just a compile-pass test, but whatever.
-    let empty: &[&str] = &[];
-    let _ = Opts::parse_args_default(empty).unwrap();
+    #[derive(Default, Options)]
+    struct BarOpts {
+        #[options(free)]
+        first: ::std::option::Option<::std::string::String>,
+        #[options(free)]
+        rest: ::std::vec::Vec<::std::string::String>,
+        a: i32,
+    }
+
+    // This is basically just a compile-pass test, so whatever.
 }
 
 #[test]
@@ -411,6 +419,74 @@ fn test_typed_free() {
 }
 
 #[test]
+fn test_multi_free() {
+    #[derive(Default, Options)]
+    struct Opts {
+        #[options(free, help = "alpha help")]
+        alpha: u32,
+        #[options(free, help = "bravo help")]
+        bravo: Option<String>,
+        #[options(free, help = "charlie help")]
+        charlie: Option<u32>,
+    }
+
+    let empty: &[&str] = &[];
+    let opts = Opts::parse_args_default(empty).unwrap();
+
+    assert_eq!(opts.alpha, 0);
+    assert_eq!(opts.bravo, None);
+    assert_eq!(opts.charlie, None);
+
+    let opts = Opts::parse_args_default(&["1"]).unwrap();
+
+    assert_eq!(opts.alpha, 1);
+    assert_eq!(opts.bravo, None);
+    assert_eq!(opts.charlie, None);
+
+    let opts = Opts::parse_args_default(&["1", "two", "3"]).unwrap();
+
+    assert_eq!(opts.alpha, 1);
+    assert_eq!(opts.bravo, Some("two".to_owned()));
+    assert_eq!(opts.charlie, Some(3));
+
+    assert!(Opts::parse_args_default(&["1", "two", "3", "4"]).is_err());
+
+    assert_eq!(Opts::usage(), &"
+Positional arguments:
+  alpha    alpha help
+  bravo    bravo help
+  charlie  charlie help"
+        // Skip leading newline
+        [1..]);
+
+    #[derive(Default, Options)]
+    struct ManyOpts {
+        #[options(free, help = "alpha help")]
+        alpha: u32,
+        #[options(free, help = "bravo help")]
+        bravo: Option<String>,
+        #[options(free, help = "charlie help")]
+        charlie: Option<u32>,
+        #[options(free)]
+        rest: Vec<String>,
+    }
+
+    let opts = ManyOpts::parse_args_default(empty).unwrap();
+
+    assert_eq!(opts.alpha, 0);
+    assert_eq!(opts.bravo, None);
+    assert_eq!(opts.charlie, None);
+    assert_eq!(opts.rest, Vec::<String>::new());
+
+    let opts = ManyOpts::parse_args_default(&["1", "two", "3", "4", "five", "VI"]).unwrap();
+
+    assert_eq!(opts.alpha, 1);
+    assert_eq!(opts.bravo, Some("two".to_owned()));
+    assert_eq!(opts.charlie, Some(3));
+    assert_eq!(opts.rest, vec!["4".to_owned(), "five".to_owned(), "VI".to_owned()]);
+}
+
+#[test]
 fn test_usage() {
     #[derive(Default, Options)]
     struct Opts {
@@ -429,6 +505,7 @@ fn test_usage() {
     }
 
     assert_eq!(Opts::usage(), &"
+Optional arguments:
   -a, --alpha    alpha help
   --bravo BRAVO  bravo help
   -c             charlie help
@@ -454,6 +531,7 @@ fn test_usage() {
     }
 
     assert_eq!(TupleOpts::usage(), &"
+Optional arguments:
   -a, --alpha        alpha help
   -b, --bravo BRAVO  bravo help
   -c, --charlie CHARLIE VALUE
@@ -462,6 +540,30 @@ fn test_usage() {
                      delta help
   -e, --echo ECHO VALUE0 VALUE1 VALUE2
                      echo help"
+        // Skip leading newline
+        [1..]);
+
+    #[derive(Default, Options)]
+    struct FreeOpts {
+        #[options(free, help = "a help")]
+        a: u32,
+        #[options(free, help = "b help")]
+        b: u32,
+        #[options(free, help = "c help")]
+        c: u32,
+
+        #[options(help = "option help")]
+        option: bool,
+    }
+
+    assert_eq!(FreeOpts::usage(), &"
+Positional arguments:
+  a             a help
+  b             b help
+  c             c help
+
+Optional arguments:
+  -o, --option  option help"
         // Skip leading newline
         [1..]);
 }
