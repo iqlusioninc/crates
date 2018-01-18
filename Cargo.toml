@@ -13,8 +13,10 @@ keywords = ["args", "command-line", "flag", "getopts", "option"]
 license = "MIT/Apache-2.0"
 readme = "README.md"
 
+[dependencies]
+gumdrop_derive = { version = "0.3", path = "gumdrop_derive" }
+
 [dev-dependencies]
 assert_matches = "1.1"
-gumdrop_derive = { version = "0.3", path = "gumdrop_derive" }
 
 [workspace]

@@ -10,15 +10,13 @@ To include `gumdrop` in your project, add the following to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-gumdrop = "0.2"
-gumdrop_derive = "0.2"
+gumdrop = "0.3"
 ```
 
 And the following to your crate root:
 
 ```rust
-extern crate gumdrop;
-#[macro_use] extern crate gumdrop_derive;
+#[macro_use] extern crate gumdrop;
 ```
 
 ## License

@@ -139,6 +139,13 @@
 
 #[cfg(test)] #[macro_use] extern crate assert_matches;
 
+#[macro_use]
+#[allow(unused_imports)]
+extern crate gumdrop_derive;
+
+#[doc(hidden)]
+pub use gumdrop_derive::*;
+
 use std::error::Error as StdError;
 use std::fmt;
 use std::slice::Iter;
