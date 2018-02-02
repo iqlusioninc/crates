@@ -51,39 +51,41 @@ use proc_macro::TokenStream;
 
 use quote::{Tokens, ToTokens};
 use syn::{
-    Attribute, AttrStyle, Body, DeriveInput, Field, Ident, Lit,
-    MetaItem, NestedMetaItem, PathParameters, Ty, Variant, VariantData,
+    Attribute, AttrStyle, Data, DataEnum, DataStruct, DeriveInput, Fields,
+    GenericArgument, Ident, Lit, Meta, NestedMeta, Path, PathArguments, Type,
 };
 
 #[proc_macro_derive(Options, attributes(options))]
 pub fn derive_options(input: TokenStream) -> TokenStream {
-    let ast = syn::parse_derive_input(&input.to_string())
-        .expect("parse_derive_input");
+    let ast: DeriveInput = syn::parse(input).unwrap();
 
-    match ast.body {
-        Body::Enum(ref variants) =>
-            derive_options_enum(&ast, variants),
-        Body::Struct(VariantData::Unit) =>
+    match ast.data {
+        Data::Enum(ref data) =>
+            derive_options_enum(&ast, data),
+        Data::Struct(DataStruct{fields: Fields::Unit, ..}) =>
             panic!("cannot derive Options for unit struct types"),
-        Body::Struct(VariantData::Tuple(_)) =>
+        Data::Struct(DataStruct{fields: Fields::Unnamed(..), ..}) =>
             panic!("cannot derive Options for tuple struct types"),
-        Body::Struct(VariantData::Struct(ref fields)) =>
-            derive_options_struct(&ast, fields)
+        Data::Struct(DataStruct{ref fields, ..}) =>
+            derive_options_struct(&ast, fields),
+        Data::Union(_) =>
+            panic!("cannot derive Options for union types"),
     }
 }
 
-fn derive_options_enum(ast: &DeriveInput, variants: &[Variant]) -> TokenStream {
+fn derive_options_enum(ast: &DeriveInput, data: &DataEnum) -> TokenStream {
     let name = &ast.ident;
     let mut commands = Vec::new();
     let mut var_ty = Vec::new();
 
-    for var in variants {
-        let ty = match var.data {
-            VariantData::Unit | VariantData::Struct(_) =>
+    for var in &data.variants {
+        let ty = match var.fields {
+            Fields::Unit | Fields::Named(_) =>
                 panic!("command variants must be unary tuple variants"),
-            VariantData::Tuple(ref fields) if fields.len() != 1 =>
+            Fields::Unnamed(ref fields) if fields.unnamed.len() != 1 =>
                 panic!("command variants must be unary tuple variants"),
-            VariantData::Tuple(ref fields) => &fields[0].ty,
+            Fields::Unnamed(ref fields) =>
+                &fields.unnamed.first().unwrap().into_value().ty,
         };
 
         let opts = parse_cmd_attrs(&var.attrs);
@@ -108,7 +110,7 @@ fn derive_options_enum(ast: &DeriveInput, variants: &[Variant]) -> TokenStream {
     let usage = make_cmd_usage(&commands);
 
     for cmd in commands {
-        command.push(Lit::from(cmd.name));
+        command.push(cmd.name);
 
         let var_name = cmd.variant_name;
         let ty = &cmd.ty;
@@ -193,7 +195,7 @@ fn derive_options_enum(ast: &DeriveInput, variants: &[Variant]) -> TokenStream {
     expr.to_string().parse().expect("parse quote!")
 }
 
-fn derive_options_struct(ast: &DeriveInput, fields: &[Field]) -> TokenStream {
+fn derive_options_struct(ast: &DeriveInput, fields: &Fields) -> TokenStream {
     let mut pattern = Vec::new();
     let mut handle_opt = Vec::new();
     let mut short_names = Vec::new();
@@ -341,7 +343,7 @@ fn derive_options_struct(ast: &DeriveInput, fields: &[Field]) -> TokenStream {
     }
 
     let name = &ast.ident;
-    let usage = Lit::from(make_usage(&free, &options));
+    let usage = make_usage(&free, &options);
 
     let handle_free = if !free.is_empty() {
         let catch_all = if free.last().unwrap().action == FreeAction::Push {
@@ -572,13 +574,17 @@ impl ActionType {
     }
 }
 
-fn first_ty_param(ty: &Ty) -> Option<&Ty> {
+fn first_ty_param(ty: &Type) -> Option<&Type> {
     match *ty {
-        Ty::Path(_, ref path) => {
-            let path = path.segments.last().unwrap();
+        Type::Path(ref path) => {
+            let path = path.path.segments.last().unwrap().into_value();
 
-            match path.parameters {
-                PathParameters::AngleBracketed(ref data) => data.types.get(0),
+            match path.arguments {
+                PathArguments::AngleBracketed(ref data) =>
+                    data.args.iter().filter_map(|arg| match arg {
+                        &GenericArgument::Type(ref ty) => Some(ty),
+                        _ => None
+                    }).next(),
                 _ => None
             }
         }
@@ -586,10 +592,10 @@ fn first_ty_param(ty: &Ty) -> Option<&Ty> {
     }
 }
 
-fn infer_action(ty: &Ty) -> Action {
+fn infer_action(ty: &Type) -> Action {
     match *ty {
-        Ty::Path(_, ref path) => {
-            let path = path.segments.last().unwrap();
+        Type::Path(ref path) => {
+            let path = path.path.segments.last().unwrap().into_value();
             let param = first_ty_param(ty);
 
             match path.ident.as_ref() {
@@ -605,17 +611,17 @@ fn infer_action(ty: &Ty) -> Action {
     }
 }
 
-fn infer_action_type(ty: &Ty) -> ActionType {
+fn infer_action_type(ty: &Type) -> ActionType {
     match *ty {
-        Ty::Tup(ref fields) => ActionType::ParseTuple(fields.len()),
+        Type::Tuple(ref tup) => ActionType::ParseTuple(tup.elems.len()),
         _ => ActionType::Parse,
     }
 }
 
-fn infer_free_action(ty: &Ty) -> FreeAction {
+fn infer_free_action(ty: &Type) -> FreeAction {
     match *ty {
-        Ty::Path(_, ref path) => {
-            let path = path.segments.last().unwrap();
+        Type::Path(ref path) => {
+            let path = path.path.segments.last().unwrap().into_value();
 
             match path.ident.as_ref() {
                 "Option" => FreeAction::SetOption,
@@ -744,26 +750,29 @@ fn parse_type_attrs(attrs: &[Attribute]) -> DefaultOpts {
     let mut opts = DefaultOpts::default();
 
     for attr in attrs {
-        if attr.style == AttrStyle::Outer && attr.value.name() == "options" {
-            match attr.value {
-                MetaItem::Word(_) =>
+        if is_outer(attr.style) && path_eq(&attr.path, "options") {
+            let meta = attr.interpret_meta().unwrap_or_else(
+                || panic!("invalid attribute: {}", tokens_str(attr)));
+
+            match meta {
+                Meta::Word(_) =>
                     panic!("#[options] is not a valid attribute"),
-                MetaItem::NameValue(..) =>
+                Meta::NameValue(..) =>
                     panic!("#[options = ...] is not a valid attribute"),
-                MetaItem::List(_, ref items) => {
-                    for item in items {
+                Meta::List(ref items) => {
+                    for item in &items.nested {
                         match *item {
-                            NestedMetaItem::Literal(_) =>
+                            NestedMeta::Literal(_) =>
                                 panic!("unexpected meta item `{}`", tokens_str(item)),
-                            NestedMetaItem::MetaItem(ref item) => {
+                            NestedMeta::Meta(ref item) => {
                                 match *item {
-                                    MetaItem::Word(ref w) => match w.as_ref() {
+                                    Meta::Word(ref w) => match w.as_ref() {
                                         "no_help_flag" => opts.no_help_flag = true,
                                         "no_short" => opts.no_short = true,
                                         "no_long" => opts.no_long = true,
                                         _ => panic!("unexpected meta item `{}`", tokens_str(item))
                                     },
-                                    MetaItem::List(..) | MetaItem::NameValue(..) =>
+                                    Meta::List(..) | Meta::NameValue(..) =>
                                         panic!("unexpected meta item `{}`", tokens_str(item)),
                                 }
                             }
@@ -781,20 +790,23 @@ fn parse_field_attrs(attrs: &[Attribute]) -> AttrOpts {
     let mut opts = AttrOpts::default();
 
     for attr in attrs {
-        if attr.style == AttrStyle::Outer && attr.value.name() == "options" {
-            match attr.value {
-                MetaItem::Word(_) =>
+        if is_outer(attr.style) && path_eq(&attr.path, "options") {
+            let meta = attr.interpret_meta().unwrap_or_else(
+                || panic!("invalid attribute: {}", tokens_str(attr)));
+
+            match meta {
+                Meta::Word(_) =>
                     panic!("#[options] is not a valid attribute"),
-                MetaItem::NameValue(..) =>
+                Meta::NameValue(..) =>
                     panic!("#[options = ...] is not a valid attribute"),
-                MetaItem::List(_, ref items) => {
-                    for item in items {
+                Meta::List(ref items) => {
+                    for item in &items.nested {
                         match *item {
-                            NestedMetaItem::Literal(_) =>
+                            NestedMeta::Literal(_) =>
                                 panic!("unexpected meta item `{}`", tokens_str(item)),
-                            NestedMetaItem::MetaItem(ref item) => {
+                            NestedMeta::Meta(ref item) => {
                                 match *item {
-                                    MetaItem::Word(ref w) => match w.as_ref() {
+                                    Meta::Word(ref w) => match w.as_ref() {
                                         "free" => opts.free = true,
                                         "command" => opts.command = true,
                                         "count" => opts.count = true,
@@ -804,13 +816,13 @@ fn parse_field_attrs(attrs: &[Attribute]) -> AttrOpts {
                                         "no_long" => opts.no_long = true,
                                         _ => panic!("unexpected meta item `{}`", tokens_str(item))
                                     },
-                                    MetaItem::List(..) => panic!("unexpected meta item `{}`", tokens_str(item)),
-                                    MetaItem::NameValue(ref name, ref value) => {
-                                        match name.as_ref() {
-                                            "long" => opts.long = Some(lit_str(value)),
-                                            "short" => opts.short = Some(lit_char(value)),
-                                            "help" => opts.help = Some(lit_str(value)),
-                                            "meta" => opts.meta = Some(lit_str(value)),
+                                    Meta::List(..) => panic!("unexpected meta item `{}`", tokens_str(item)),
+                                    Meta::NameValue(ref nv) => {
+                                        match nv.ident.as_ref() {
+                                            "long" => opts.long = Some(lit_str(&nv.lit)),
+                                            "short" => opts.short = Some(lit_char(&nv.lit)),
+                                            "help" => opts.help = Some(lit_str(&nv.lit)),
+                                            "meta" => opts.meta = Some(lit_str(&nv.lit)),
                                             _ => panic!("unexpected meta item `{}`", tokens_str(item))
                                         }
                                     }
@@ -828,12 +840,18 @@ fn parse_field_attrs(attrs: &[Attribute]) -> AttrOpts {
     opts
 }
 
-#[derive(Debug)]
+fn is_outer(style: AttrStyle) -> bool {
+    match style {
+        AttrStyle::Outer => true,
+        _ => false
+    }
+}
+
 struct Cmd<'a> {
     name: String,
     help: Option<String>,
     variant_name: &'a Ident,
-    ty: &'a Ty,
+    ty: &'a Type,
 }
 
 #[derive(Default)]
@@ -846,25 +864,28 @@ fn parse_cmd_attrs(attrs: &[Attribute]) -> CmdOpts {
     let mut opts = CmdOpts::default();
 
     for attr in attrs {
-        if attr.style == AttrStyle::Outer && attr.value.name() == "options" {
-            match attr.value {
-                MetaItem::Word(_) =>
+        if is_outer(attr.style) && path_eq(&attr.path, "options") {
+            let meta = attr.interpret_meta().unwrap_or_else(
+                || panic!("invalid attribute: {}", tokens_str(attr)));
+
+            match meta {
+                Meta::Word(_) =>
                     panic!("#[options] is not a valid attribute"),
-                MetaItem::NameValue(..) =>
+                Meta::NameValue(..) =>
                     panic!("#[options = ...] is not a valid attribute"),
-                MetaItem::List(_, ref items) => {
-                    for item in items {
+                Meta::List(ref items) => {
+                    for item in &items.nested {
                         match *item {
-                            NestedMetaItem::Literal(_) =>
+                            NestedMeta::Literal(_) =>
                                 panic!("unexpected meta item `{}`", tokens_str(item)),
-                            NestedMetaItem::MetaItem(ref item) => {
+                            NestedMeta::Meta(ref item) => {
                                 match *item {
-                                    MetaItem::Word(_) | MetaItem::List(..) =>
+                                    Meta::Word(_) | Meta::List(..) =>
                                         panic!("unexpected meta item `{}`", tokens_str(item)),
-                                    MetaItem::NameValue(ref name, ref value) => {
-                                        match name.as_ref() {
-                                            "name" => opts.name = Some(lit_str(value)),
-                                            "help" => opts.help = Some(lit_str(value)),
+                                    Meta::NameValue(ref nv) => {
+                                        match nv.ident.as_ref() {
+                                            "name" => opts.name = Some(lit_str(&nv.lit)),
+                                            "help" => opts.help = Some(lit_str(&nv.lit)),
                                             _ => panic!("unexpected meta item `{}`", tokens_str(item))
                                         }
                                     }
@@ -882,7 +903,7 @@ fn parse_cmd_attrs(attrs: &[Attribute]) -> CmdOpts {
 
 fn lit_str(lit: &Lit) -> String {
     match *lit {
-        Lit::Str(ref s, _) => s.clone(),
+        Lit::Str(ref s) => s.value(),
         _ => panic!("unexpected literal `{}`", tokens_str(lit))
     }
 }
@@ -890,7 +911,8 @@ fn lit_str(lit: &Lit) -> String {
 fn lit_char(lit: &Lit) -> char {
     match *lit {
         // Character literals in attributes are not necessarily allowed
-        Lit::Str(ref s, _) => {
+        Lit::Str(ref s) => {
+            let s = s.value();
             let mut chars = s.chars();
 
             let res = chars.next().expect("expected one-char string literal");
@@ -900,15 +922,26 @@ fn lit_char(lit: &Lit) -> char {
 
             res
         }
-        Lit::Char(ch) => ch,
+        Lit::Char(ref ch) => ch.value(),
         _ => panic!("unexpected literal `{}`", tokens_str(lit))
+    }
+}
+
+fn path_eq(path: &Path, s: &str) -> bool {
+    path.segments.len() == 1 && {
+        let seg = path.segments.first().unwrap().into_value();
+
+        match seg.arguments {
+            PathArguments::None => seg.ident.as_ref() == s,
+            _ => false
+        }
     }
 }
 
 fn tokens_str<T: ToTokens>(t: &T) -> String {
     let mut tok = Tokens::new();
     t.to_tokens(&mut tok);
-    tok.into_string()
+    tok.to_string()
 }
 
 fn make_action(ident: &Ident, action: Action) -> Tokens {
