@@ -10,7 +10,7 @@ To include `gumdrop` in your project, add the following to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-gumdrop = "0.3"
+gumdrop = "0.4"
 ```
 
 And the following to your crate root:
