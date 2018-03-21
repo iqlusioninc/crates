@@ -6,6 +6,8 @@
 An implementation of the [TAI64(N)] (*Temps Atomique International*) timestamp
 format in Rust.
 
+[TAI64(N)]: https://cr.yp.to/libtai/tai64.html
+
 ## License
 
 **tai64-rs** is distributed under the terms of both the MIT license and the
