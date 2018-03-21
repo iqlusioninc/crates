@@ -5,7 +5,10 @@
 //! Does not handle leap seconds. But libtai does not either. So we
 //! should interoperate just fine 😣.
 
-#![warn(missing_docs)]
+#![crate_name = "tai64"]
+#![crate_type = "rlib"]
+#![deny(warnings, missing_docs, unsafe_code, unused_import_braces, unused_qualifications)]
+#![doc(html_root_url = "https://docs.rs/tai64/0.1.0")]
 
 extern crate byteorder;
 
@@ -56,15 +59,16 @@ impl TAI64N {
     /// Parse `TAI64N` from external representation.
     pub fn from_external(ext: &[u8]) -> Option<Self> {
         if ext.len() != 12 {
-            None
+            return None;
+        }
+
+        let s = TAI64::from_external(&ext[..8]).unwrap();
+        let n = BigEndian::read_u32(&ext[8..]);
+
+        if n <= 999_999_999 {
+            Some(TAI64N(s, n))
         } else {
-            let s = TAI64::from_external(&ext[..8]).unwrap();
-            let n = BigEndian::read_u32(&ext[8..]);
-            if n > 999999999 {
-                None
-            } else {
-                Some(TAI64N(s, n))
-            }
+            None
         }
     }
 }
