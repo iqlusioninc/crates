@@ -1,9 +1,16 @@
 [package]
-authors = ["sopium <sopium@mysterious.site>"]
+name        = "tai64"
+version     = "0.1.0"
 description = "TAI64(N) timestamp support for Rust"
-license = "UNLICENSE"
-name = "tai64"
-version = "0.1.0"
+authors     = ["sopium <sopium@mysterious.site>", "Tony Arcieri <bascule@gmail.com>"]
+license     = "MIT/Apache-2.0"
+homepage    = "https://github.com/tarcieri/tai64-rs/"
+repository  = "https://github.com/tarcieri/tai64-rs/tree/master/src"
+readme      = "README.md"
+keywords    = ["time"]
+
+[badges]
+travis-ci = { repository = "tarcieri/tai64-rs" }
 
 [dependencies]
 byteorder = "1.0"
