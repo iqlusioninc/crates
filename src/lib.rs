@@ -217,8 +217,10 @@ mod tests {
         let tai64 = TAI64::from_unix(unix_secs);
 
         assert_eq!(tai64.0, 0x400000002a2b2c2d);
-        assert_eq!(&tai64.to_external(),
-                   &[0x40, 0, 0, 0, 0x2a, 0x2b, 0x2c, 0x2d]);
+        assert_eq!(
+            &tai64.to_external(),
+            &[0x40, 0, 0, 0, 0x2a, 0x2b, 0x2c, 0x2d]
+        );
     }
 
     #[test]
