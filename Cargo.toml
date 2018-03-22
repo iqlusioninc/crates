@@ -1,9 +1,2 @@
-[package]
-name          = "iq-crates"
-description   = "open source crates from iqlusion 📦"
-version       = "0.0.0"
-authors       = ["Tony Arcieri <tony@iqlusion.io>"]
-license       = "Apache-2.0"
-documentation = "https://github.com/iqlusion-io/crates"
-homepage      = "https://github.com/iqlusion-io/crates"
-repository    = "https://github.com/iqlusion-io/crates/tree/master/"
+[workspace]
+members = ["tai64"]
