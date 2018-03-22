@@ -1,0 +1,37 @@
+version: 2
+
+jobs:
+  build:
+    docker:
+      # If you bump this, make sure to bump the restore_cache and save_cache key
+      - image: iqlusion/crates:20180322
+
+    steps:
+      - checkout
+      - restore_cache:
+          key: cache-20180322
+      - run:
+          name: rustfmt
+          command: |
+            rustfmt --version
+            PROJECTS=$(find . -name "Cargo.toml" | sed -e "s/Cargo.toml//")
+            for project in $PROJECTS; do (cd $project && cargo fmt -- --write-mode=diff); done
+      - run:
+          name: clippy
+          command: |
+            cargo clippy --version
+            PROJECTS=$(find . -name "Cargo.toml" | sed -e "s/Cargo.toml//")
+            for project in $PROJECTS; do (cd $project && cargo clippy --verbose); done
+      - run:
+          name: tai64
+          command: |
+            rustc --version --verbose
+            cargo --version --verbose
+            cd tai64
+            cargo build
+            cargo test
+      - save_cache:
+          key: cache-20180322
+          paths:
+            - "~/.cargo"
+            - "./target"
