@@ -1,0 +1,14 @@
+language: rust
+
+rust:
+  - stable
+  - nightly
+
+matrix:
+  fast_finish: true
+  allow_failures:
+    - nightly
+
+branches:
+  only:
+    - master

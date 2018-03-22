@@ -1,0 +1,20 @@
+[package]
+name        = "tai64"
+description = "TAI64(N) timestamp support for Rust"
+version     = "0.1.0" # Also update html_root_url in lib.rs when bumping this
+authors     = ["sopium <sopium@mysterious.site>", "Tony Arcieri <bascule@gmail.com>"]
+license     = "MIT/Apache-2.0"
+homepage    = "https://github.com/tarcieri/tai64-rs/"
+repository  = "https://github.com/tarcieri/tai64-rs/tree/master/src"
+readme      = "README.md"
+keywords    = ["time"]
+
+[badges]
+travis-ci = { repository = "tarcieri/tai64-rs" }
+
+[dependencies]
+byteorder = "1.0"
+
+[dev-dependencies]
+chrono = "0.3"
+quickcheck = "0.4"
