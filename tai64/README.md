@@ -8,11 +8,16 @@
 [build-link]: https://travis-ci.org/tarcieri/tai64-rs
 
 An implementation of the [TAI64(N)] (*Temps Atomique International*) timestamp
-format in Rust.
+format in Rust. Supports converting to/from Rust's built-in [SystemTime] type
+and optionally to [chrono]'s [DateTime] type when the `"chrono"` feature is
+enabled.
 
 [Documentation][docs-link]
 
 [TAI64(N)]: https://cr.yp.to/libtai/tai64.html
+[SystemTime]: https://doc.rust-lang.org/std/time/struct.SystemTime.html
+[chrono]: https://github.com/chronotope/chrono
+[DateTime]: https://docs.rs/chrono/0.4.0/chrono/struct.DateTime.html
 
 ## License
 
