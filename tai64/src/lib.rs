@@ -7,12 +7,18 @@
 
 #![crate_name = "tai64"]
 #![crate_type = "rlib"]
+#![allow(unknown_lints, suspicious_arithmetic_impl)]
 #![deny(warnings, missing_docs, unsafe_code, unused_import_braces, unused_qualifications)]
 #![doc(html_root_url = "https://docs.rs/tai64/0.1.0")]
 
 extern crate byteorder;
+#[cfg(feature = "chrono")]
+extern crate chrono;
 
-use self::byteorder::{BigEndian, ByteOrder};
+use byteorder::{BigEndian, ByteOrder};
+
+#[cfg(feature = "chrono")]
+use chrono::{DateTime, NaiveDateTime, Utc};
 
 use std::ops::{Add, Sub};
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
@@ -192,24 +198,66 @@ impl From<SystemTime> for TAI64N {
     }
 }
 
+// To and from chrono::DateTime<Utc>
+
+#[cfg(feature = "chrono")]
+impl TAI64N {
+    /// Convert `chrono::DateTime<Utc>` to `TAI64N`
+    pub fn from_datetime_utc(t: &DateTime<Utc>) -> Self {
+        let unix_epoch: DateTime<Utc> =
+            DateTime::from_utc(NaiveDateTime::from_timestamp(0, 0), Utc);
+
+        let duration = t.signed_duration_since(unix_epoch);
+
+        if duration.num_seconds() > 0 {
+            UNIX_EPOCH_TAI64N + duration.to_std().unwrap()
+        } else {
+            UNIX_EPOCH_TAI64N - unix_epoch.signed_duration_since(*t).to_std().unwrap()
+        }
+    }
+
+    /// Convert `TAI64N` to `chrono::DateTime<Utc>`
+    pub fn to_datetime_utc(&self) -> DateTime<Utc> {
+        let (secs, nanos) = match self.to_system_time().duration_since(UNIX_EPOCH) {
+            Ok(duration) => (duration.as_secs() as i64, duration.subsec_nanos()),
+            Err(e) => (
+                -(e.duration().as_secs() as i64),
+                e.duration().subsec_nanos(),
+            ),
+        };
+
+        DateTime::from_utc(NaiveDateTime::from_timestamp(secs, nanos), Utc)
+    }
+}
+
+#[cfg(feature = "chrono")]
+impl From<DateTime<Utc>> for TAI64N {
+    fn from(t: DateTime<Utc>) -> TAI64N {
+        TAI64N::from_datetime_utc(&t)
+    }
+}
+
 #[cfg(test)]
 #[macro_use]
 extern crate quickcheck;
 
 #[cfg(test)]
 mod tests {
+    #[cfg(feature = "chrono")]
     extern crate chrono;
 
     use super::*;
 
     use std::time::{Duration, UNIX_EPOCH};
 
+    #[cfg(feature = "chrono")]
     use self::chrono::prelude::*;
 
     use quickcheck::{Arbitrary, Gen};
 
+    #[cfg(feature = "chrono")]
     #[test]
-    fn known_anser() {
+    fn known_answer() {
         // https://cr.yp.to/libtai/tai64.html:
         // The timestamp 1992-06-02 08:06:43 UTC should be TAI “40 00 00 00 2a 2b 2c 2d”.
 
