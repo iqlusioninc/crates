@@ -9,7 +9,7 @@
 #![crate_type = "rlib"]
 #![allow(unknown_lints, suspicious_arithmetic_impl)]
 #![deny(warnings, missing_docs, unsafe_code, unused_import_braces, unused_qualifications)]
-#![doc(html_root_url = "https://docs.rs/tai64/0.1.0")]
+#![doc(html_root_url = "https://docs.rs/tai64/0.2.0")]
 
 extern crate byteorder;
 #[cfg(feature = "chrono")]
