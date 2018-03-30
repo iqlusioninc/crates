@@ -31,12 +31,15 @@
 //! * `no_short` prevents a short option from being assigned to the field
 //! * `long = "..."` sets the long option name to the given string
 //! * `no_long` prevents a long option from being assigned to the field
+//! * `required` will cause an error if the option is not present
+//! * `not_required` will cancel a type-level `required` flag (see below).
 //! * `help = "..."` sets help text returned from the `Options::usage` method
 //! * `meta = "..."` sets the meta variable displayed in usage for options
 //!   which accept an argument
 //!
 //! `#[options(...)]` may also be added at the type level. Only the flags
-//! `no_help_flag`, `no_long`, and `no_short` are supported at the type level.
+//! `no_help_flag`, `no_long`, `no_short`, and `required`
+//! are supported at the type level.
 
 #![recursion_limit = "256"]
 
@@ -201,8 +204,11 @@ fn derive_options_struct(ast: &DeriveInput, fields: &Fields) -> TokenStream {
     let mut short_names = Vec::new();
     let mut long_names = Vec::new();
     let mut free: Vec<FreeOpt> = Vec::new();
+    let mut required = Vec::new();
+    let mut required_err = Vec::new();
     let mut command = None;
     let mut command_ty = None;
+    let mut command_required = false;
     let mut help_flag = Vec::new();
     let mut options = Vec::new();
 
@@ -224,6 +230,14 @@ fn derive_options_struct(ast: &DeriveInput, fields: &Fields) -> TokenStream {
 
             command = Some(ident);
             command_ty = Some(first_ty_param(&field.ty).unwrap_or(&field.ty));
+            command_required = opts.required;
+
+            if opts.required {
+                required.push(ident);
+                required_err.push(quote!{
+                    ::gumdrop::Error::missing_required_command() });
+            }
+
             continue;
         }
 
@@ -238,11 +252,19 @@ fn derive_options_struct(ast: &DeriveInput, fields: &Fields) -> TokenStream {
                 }
             }
 
+            if opts.required {
+                required.push(ident);
+                required_err.push(quote!{
+                    ::gumdrop::Error::missing_required_free() });
+            }
+
             free.push(FreeOpt{
                 field: ident,
                 action: infer_free_action(&field.ty),
+                required: opts.required,
                 help: opts.help,
             });
+
             continue;
         }
 
@@ -285,6 +307,7 @@ fn derive_options_struct(ast: &DeriveInput, fields: &Fields) -> TokenStream {
             long: opts.long.take(),
             short: opts.short,
             no_short: opts.no_short,
+            required: opts.required,
             meta: opts.meta.take(),
             help: opts.help.take(),
         });
@@ -305,6 +328,13 @@ fn derive_options_struct(ast: &DeriveInput, fields: &Fields) -> TokenStream {
     }
 
     for opt in &options {
+        if opt.required {
+            required.push(opt.field);
+            let display = opt.display_form();
+            required_err.push(quote!{
+                ::gumdrop::Error::missing_required(#display) });
+        }
+
         let pat = match (opt.long.as_ref(), opt.short) {
             (Some(long), Some(short)) => quote!{
                 ::gumdrop::Opt::Long(#long) | ::gumdrop::Opt::Short(#short)
@@ -321,7 +351,7 @@ fn derive_options_struct(ast: &DeriveInput, fields: &Fields) -> TokenStream {
         };
 
         pattern.push(pat);
-        handle_opt.push(make_action(&opt.field, opt.action));
+        handle_opt.push(make_action(opt));
 
         if let Some(ref long) = opt.long {
             let (pat, handle) = if let Some(n) = opt.action.tuple_len() {
@@ -330,7 +360,7 @@ fn derive_options_struct(ast: &DeriveInput, fields: &Fields) -> TokenStream {
                         ::gumdrop::Error::unexpected_single_argument(opt, #n)) })
             } else if opt.action.takes_arg() {
                 (quote!{ ::gumdrop::Opt::LongWithArg(#long, arg) },
-                    make_action_arg(&opt.field, opt.action))
+                    make_action_arg(opt))
             } else {
                 (quote!{ ::gumdrop::Opt::LongWithArg(#long, _) },
                     quote!{ return ::std::result::Result::Err(
@@ -351,9 +381,14 @@ fn derive_options_struct(ast: &DeriveInput, fields: &Fields) -> TokenStream {
 
             let free = last.field;
 
+            let mark_used = last.mark_used();
+
             quote!{
                 match ::std::str::FromStr::from_str(free) {
-                    ::std::result::Result::Ok(v) => _result.#free.push(v),
+                    ::std::result::Result::Ok(v) => {
+                        #mark_used
+                        _result.#free.push(v);
+                    }
                     ::std::result::Result::Err(ref e) =>
                         return ::std::result::Result::Err(
                             ::gumdrop::Error::failed_parse(opt,
@@ -370,12 +405,20 @@ fn derive_options_struct(ast: &DeriveInput, fields: &Fields) -> TokenStream {
         let num = 0..free.len();
         let action = free.iter().map(|free| {
             let field = free.field;
-            match free.action {
+
+            let mark_used = free.mark_used();
+
+            let assign = match free.action {
                 FreeAction::Push => quote!{ _result.#field.push(v); },
                 FreeAction::SetField => quote!{ _result.#field = v; },
                 FreeAction::SetOption => quote!{
                     _result.#field = ::std::option::Option::Some(v);
                 },
+            };
+
+            quote!{
+                #mark_used
+                #assign
             }
         }).collect::<Vec<_>>();
 
@@ -396,7 +439,14 @@ fn derive_options_struct(ast: &DeriveInput, fields: &Fields) -> TokenStream {
             }
         }
     } else if let Some(ident) = command {
+        let mark_used = if command_required {
+            quote!{ _used.#ident = true; }
+        } else {
+            quote!{ }
+        };
+
         quote!{
+            #mark_used
             _result.#ident = ::std::option::Option::Some(
                 ::gumdrop::Options::parse_command(free, parser)?);
             break;
@@ -452,6 +502,8 @@ fn derive_options_struct(ast: &DeriveInput, fields: &Fields) -> TokenStream {
         }
     };
 
+    let required = &required;
+
     let (impl_generics, ty_generics, where_clause) = ast.generics.split_for_impl();
 
     let expr = quote!{
@@ -459,8 +511,14 @@ fn derive_options_struct(ast: &DeriveInput, fields: &Fields) -> TokenStream {
             fn parse<__S: ::std::convert::AsRef<str>>(
                     parser: &mut ::gumdrop::Parser<__S>)
                     -> ::std::result::Result<Self, ::gumdrop::Error> {
+                #[derive(Default)]
+                struct _Used {
+                    #( #required: bool , )*
+                }
+
                 let mut _result = <Self as ::std::default::Default>::default();
                 let mut _free_counter = 0usize;
+                let mut _used = _Used::default();
 
                 while let ::std::option::Option::Some(opt) = parser.next_opt() {
                     match opt {
@@ -474,6 +532,10 @@ fn derive_options_struct(ast: &DeriveInput, fields: &Fields) -> TokenStream {
                         }
                     }
                 }
+
+                #( if !_used.#required {
+                    return ::std::result::Result::Err(#required_err);
+                } )*
 
                 ::std::result::Result::Ok(_result)
             }
@@ -643,6 +705,8 @@ struct AttrOpts {
     no_help_flag: bool,
     no_short: bool,
     no_long: bool,
+    required: bool,
+    not_required: bool,
     help: Option<String>,
     meta: Option<String>,
 
@@ -654,6 +718,7 @@ struct DefaultOpts {
     no_help_flag: bool,
     no_long: bool,
     no_short: bool,
+    required: bool,
 }
 
 impl AttrOpts {
@@ -693,6 +758,10 @@ impl AttrOpts {
         if self.no_long && self.long.is_some() {
             panic!("`no_long` and `long` are mutually exclusive");
         }
+
+        if self.required && self.not_required {
+            panic!("`required` and `not_required` are mutually exclusive");
+        }
     }
 
     fn set_defaults(&mut self, defaults: &DefaultOpts) {
@@ -705,6 +774,12 @@ impl AttrOpts {
         if self.long.is_none() && defaults.no_long {
             self.no_long = true;
         }
+
+        if self.not_required {
+            self.required = false;
+        } else if defaults.required {
+            self.required = true;
+        }
     }
 }
 
@@ -712,6 +787,7 @@ impl AttrOpts {
 struct FreeOpt<'a> {
     field: &'a Ident,
     action: FreeAction,
+    required: bool,
     help: Option<String>,
 }
 
@@ -722,6 +798,7 @@ struct Opt<'a> {
     long: Option<String>,
     short: Option<char>,
     no_short: bool,
+    required: bool,
     help: Option<String>,
     meta: Option<String>,
 }
@@ -730,12 +807,38 @@ const MIN_WIDTH: usize = 8;
 const MAX_WIDTH: usize = 30;
 
 impl<'a> FreeOpt<'a> {
+    fn mark_used(&self) -> Tokens {
+        if self.required {
+            let field = self.field;
+            quote!{ _used.#field = true; }
+        } else {
+            quote!{ }
+        }
+    }
+
     fn width(&self) -> usize {
         2 + self.field.as_ref().len() + 2 // name + spaces before and after
     }
 }
 
 impl<'a> Opt<'a> {
+    fn display_form(&self) -> String {
+        if let Some(ref long) = self.long {
+            format!("--{}", long)
+        } else {
+            format!("-{}", self.short.unwrap())
+        }
+    }
+
+    fn mark_used(&self) -> Tokens {
+        if self.required {
+            let field = self.field;
+            quote!{ _used.#field = true; }
+        } else {
+            quote!{ }
+        }
+    }
+
     fn width(&self) -> usize {
         let short = self.short.map_or(0, |_| 1 + 1); // '-' + char
         let long = self.long.as_ref().map_or(0, |s| s.len() + 2); // "--" + str
@@ -770,6 +873,7 @@ fn parse_type_attrs(attrs: &[Attribute]) -> DefaultOpts {
                                         "no_help_flag" => opts.no_help_flag = true,
                                         "no_short" => opts.no_short = true,
                                         "no_long" => opts.no_long = true,
+                                        "required" => opts.required = true,
                                         _ => panic!("unexpected meta item `{}`", tokens_str(item))
                                     },
                                     Meta::List(..) | Meta::NameValue(..) =>
@@ -814,6 +918,8 @@ fn parse_field_attrs(attrs: &[Attribute]) -> AttrOpts {
                                         "no_help_flag" => opts.no_help_flag = true,
                                         "no_short" => opts.no_short = true,
                                         "no_long" => opts.no_long = true,
+                                        "required" => opts.required = true,
+                                        "not_required" => opts.not_required = true,
                                         _ => panic!("unexpected meta item `{}`", tokens_str(item))
                                     },
                                     Meta::List(..) => panic!("unexpected meta item `{}`", tokens_str(item)),
@@ -944,37 +1050,45 @@ fn tokens_str<T: ToTokens>(t: &T) -> String {
     tok.to_string()
 }
 
-fn make_action(ident: &Ident, action: Action) -> Tokens {
+fn make_action(opt: &Opt) -> Tokens {
     use self::Action::*;
 
-    match action {
+    let field = opt.field;
+    let mark_used = opt.mark_used();
+
+    let action = match opt.action {
         Count => quote!{
-            _result.#ident += 1;
+            _result.#field += 1;
         },
         Push(ty) => {
             let act = make_action_type(ty);
 
             quote!{
-                _result.#ident.push(#act);
+                _result.#field.push(#act);
             }
         }
         SetField(ty) => {
             let act = make_action_type(ty);
 
             quote!{
-                _result.#ident = #act;
+                _result.#field = #act;
             }
         }
         SetOption(ty) => {
             let act = make_action_type(ty);
 
             quote!{
-                _result.#ident = ::std::option::Option::Some(#act);
+                _result.#field = ::std::option::Option::Some(#act);
             }
         }
         Switch => quote!{
-            _result.#ident = true;
+            _result.#field = true;
         }
+    };
+
+    quote!{
+        #mark_used
+        #action
     }
 }
 
@@ -1010,32 +1124,40 @@ fn make_action_type(action_type: ActionType) -> Tokens {
     }
 }
 
-fn make_action_arg(ident: &Ident, action: Action) -> Tokens {
+fn make_action_arg(opt: &Opt) -> Tokens {
     use self::Action::*;
 
-    match action {
+    let field = opt.field;
+    let mark_used = opt.mark_used();
+
+    let action = match opt.action {
         Push(ty) => {
             let act = make_action_type_arg(ty);
 
             quote!{
-                _result.#ident.push(#act);
+                _result.#field.push(#act);
             }
         }
         SetField(ty) => {
             let act = make_action_type_arg(ty);
 
             quote!{
-                _result.#ident = #act;
+                _result.#field = #act;
             }
         }
         SetOption(ty) => {
             let act = make_action_type_arg(ty);
 
             quote!{
-                _result.#ident = ::std::option::Option::Some(#act);
+                _result.#field = ::std::option::Option::Some(#act);
             }
         }
         _ => unreachable!()
+    };
+
+    quote!{
+        #mark_used
+        #action
     }
 }
 

@@ -211,6 +211,21 @@ impl Error {
         Error{kind: ErrorKind::MissingCommand}
     }
 
+    /// Returns an error for a missing required option.
+    pub fn missing_required(opt: &str) -> Error {
+        Error{kind: ErrorKind::MissingRequired(opt.to_owned())}
+    }
+
+    /// Returns an error for a missing required command.
+    pub fn missing_required_command() -> Error {
+        Error{kind: ErrorKind::MissingRequiredCommand}
+    }
+
+    /// Returns an error for a missing required free argument.
+    pub fn missing_required_free() -> Error {
+        Error{kind: ErrorKind::MissingRequiredFree}
+    }
+
     /// Returns an error when a free argument was encountered, but the options
     /// type does not support free arguments.
     pub fn unexpected_free(arg: &str) -> Error {
@@ -254,6 +269,9 @@ impl fmt::Display for Error {
                     option, expected, found),
             MissingArgument(ref opt) => write!(f, "missing argument to option `{}`", opt),
             MissingCommand => f.write_str("missing command name"),
+            MissingRequired(ref opt) => write!(f, "missing required option `{}`", opt),
+            MissingRequiredCommand => f.write_str("missing required command"),
+            MissingRequiredFree => f.write_str("missing required free argument"),
             UnexpectedArgument(ref opt) => write!(f, "option `{}` does not accept an argument", opt),
             UnexpectedSingleArgument(ref opt, n) =>
                 write!(f, "option `{}` expects {} arguments; found 1", opt, n),
@@ -281,6 +299,9 @@ enum ErrorKind {
     },
     MissingArgument(String),
     MissingCommand,
+    MissingRequired(String),
+    MissingRequiredCommand,
+    MissingRequiredFree,
     UnexpectedArgument(String),
     UnexpectedSingleArgument(String, usize),
     UnexpectedFree(String),

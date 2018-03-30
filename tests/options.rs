@@ -3,6 +3,11 @@
 
 use gumdrop::Options;
 
+const EMPTY: &'static [&'static str] = &[];
+
+#[derive(Debug, Default, Options)]
+struct NoOpts { }
+
 #[test]
 fn test_hygiene() {
     // Define these aliases in local scope to ensure that generated code
@@ -91,11 +96,7 @@ fn test_command() {
         free: Vec<String>,
     }
 
-    #[derive(Debug, Default, Options)]
-    struct NoOpts { }
-
-    let empty: &[&str] = &[];
-    let opts = Opts::parse_args_default(empty).unwrap();
+    let opts = Opts::parse_args_default(EMPTY).unwrap();
     assert_eq!(opts.command.is_none(), true);
 
     let opts = Opts::parse_args_default(&["-h"]).unwrap();
@@ -151,8 +152,6 @@ fn test_command_name() {
         BoopyDoop(NoOpts),
     }
 
-    #[derive(Debug, Default, Options)]
-    struct NoOpts { }
 
     let opts = Opts::parse_args_default(&["foo"]).unwrap();
     assert_matches!(opts.command_name(), Some("foo"));
@@ -169,9 +168,6 @@ fn test_command_name() {
 
 #[test]
 fn test_command_usage() {
-    #[derive(Default, Options)]
-    struct NoOpts {}
-
     #[derive(Default, Options)]
     struct Opts {
         #[options(help = "help me!")]
@@ -302,8 +298,7 @@ fn test_opt_push() {
         thing: Vec<String>,
     }
 
-    let empty: &[&str] = &[];
-    let opts = Opts::parse_args_default(empty).unwrap();
+    let opts = Opts::parse_args_default(EMPTY).unwrap();
     assert!(opts.thing.is_empty());
 
     let opts = Opts::parse_args_default(
@@ -319,8 +314,7 @@ fn test_opt_count() {
         number: i32,
     }
 
-    let empty: &[&str] = &[];
-    let opts = Opts::parse_args_default(empty).unwrap();
+    let opts = Opts::parse_args_default(EMPTY).unwrap();
     assert_eq!(opts.number, 0);
 
     let opts = Opts::parse_args_default(&["--number"]).unwrap();
@@ -401,8 +395,7 @@ fn test_opt_no_free() {
     struct Opts {
     }
 
-    let empty: &[&str] = &[];
-    assert!(Opts::parse_args_default(empty).is_ok());
+    assert!(Opts::parse_args_default(EMPTY).is_ok());
     assert!(Opts::parse_args_default(&["a"]).is_err());
 }
 
@@ -430,8 +423,7 @@ fn test_multi_free() {
         charlie: Option<u32>,
     }
 
-    let empty: &[&str] = &[];
-    let opts = Opts::parse_args_default(empty).unwrap();
+    let opts = Opts::parse_args_default(EMPTY).unwrap();
 
     assert_eq!(opts.alpha, 0);
     assert_eq!(opts.bravo, None);
@@ -471,7 +463,7 @@ Positional arguments:
         rest: Vec<String>,
     }
 
-    let opts = ManyOpts::parse_args_default(empty).unwrap();
+    let opts = ManyOpts::parse_args_default(EMPTY).unwrap();
 
     assert_eq!(opts.alpha, 0);
     assert_eq!(opts.bravo, None);
@@ -575,8 +567,7 @@ fn test_help_flag() {
         help: bool,
     }
 
-    let empty: &[&str] = &[];
-    let opts = Opts::parse_args_default(empty).unwrap();
+    let opts = Opts::parse_args_default(EMPTY).unwrap();
     assert_eq!(opts.help_requested(), false);
 
     let opts = Opts::parse_args_default(&["--help"]).unwrap();
@@ -607,8 +598,7 @@ fn test_many_help_flags() {
         help_please: bool,
     }
 
-    let empty: &[&str] = &[];
-    let opts = Opts::parse_args_default(empty).unwrap();
+    let opts = Opts::parse_args_default(EMPTY).unwrap();
     assert_eq!(opts.help_requested(), false);
 
     let opts = Opts::parse_args_default(&["--help"]).unwrap();
@@ -659,8 +649,7 @@ fn test_help_flag_command() {
         help: bool,
     }
 
-    let empty: &[&str] = &[];
-    let opts = Opts::parse_args_default(empty).unwrap();
+    let opts = Opts::parse_args_default(EMPTY).unwrap();
     assert_eq!(opts.help_requested(), false);
 
     let opts = Opts::parse_args_default(&["-h"]).unwrap();
@@ -675,10 +664,10 @@ fn test_help_flag_command() {
     let opts = Opts::parse_args_default(&["baz", "-h"]).unwrap();
     assert_eq!(opts.help_requested(), true);
 
-    let opts = Opts2::parse_args_default(empty).unwrap();
+    let opts = Opts2::parse_args_default(EMPTY).unwrap();
     assert_eq!(opts.help_requested(), false);
 
-    let opts = Opts3::parse_args_default(empty).unwrap();
+    let opts = Opts3::parse_args_default(EMPTY).unwrap();
     assert_eq!(opts.help_requested(), false);
 }
 
@@ -753,4 +742,70 @@ fn test_type_attrs() {
     let opts = Opts4::parse_args_default(&["-h"]).unwrap();
     assert_eq!(opts.help, true);
     assert_eq!(opts.help_requested(), true);
+
+    #[derive(Default, Options)]
+    #[options(required)]
+    struct Opts5 {
+        foo: i32,
+        #[options(not_required)]
+        bar: i32,
+    }
+
+    assert!(Opts5::parse_args_default(EMPTY).is_err());
+
+    let opts = Opts5::parse_args_default(&["--foo", "1"]).unwrap();
+    assert_eq!(opts.foo, 1);
+    assert_eq!(opts.bar, 0);
+
+    let opts = Opts5::parse_args_default(&["--foo", "1", "--bar", "2"]).unwrap();
+    assert_eq!(opts.foo, 1);
+    assert_eq!(opts.bar, 2);
+}
+
+#[test]
+fn test_required() {
+    #[derive(Default, Options)]
+    struct Opts {
+        #[options(required)]
+        foo: i32,
+        optional: i32,
+    }
+
+    #[derive(Default, Options)]
+    struct Opts2 {
+        #[options(command, required)]
+        command: Option<Cmd>,
+        optional: i32,
+    }
+
+    #[derive(Options)]
+    enum Cmd {
+        Foo(NoOpts),
+    }
+
+    #[derive(Default, Options)]
+    struct Opts3 {
+        #[options(free, required)]
+        bar: i32,
+        optional: i32,
+    }
+
+    assert!(Opts::parse_args_default(EMPTY).is_err());
+    assert!(Opts2::parse_args_default(EMPTY).is_err());
+    assert!(Opts3::parse_args_default(EMPTY).is_err());
+
+    let opts = Opts::parse_args_default(&["-f", "1"]).unwrap();
+    assert_eq!(opts.foo, 1);
+    let opts = Opts::parse_args_default(&["-f1"]).unwrap();
+    assert_eq!(opts.foo, 1);
+    let opts = Opts::parse_args_default(&["--foo", "1"]).unwrap();
+    assert_eq!(opts.foo, 1);
+    let opts = Opts::parse_args_default(&["--foo=1"]).unwrap();
+    assert_eq!(opts.foo, 1);
+
+    let opts = Opts2::parse_args_default(&["foo"]).unwrap();
+    assert!(opts.command.is_some());
+
+    let opts = Opts3::parse_args_default(&["1"]).unwrap();
+    assert_eq!(opts.bar, 1);
 }
