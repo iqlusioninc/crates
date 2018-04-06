@@ -3,29 +3,30 @@ version: 2
 jobs:
   build:
     docker:
-      - image: iqlusion/crates:20180322 # bump cache keys when modifying this
+      - image: iqlusion/rust-ci:20180405 # bump cache keys when modifying this
     environment:
       - PROJECTS=tai64
 
     steps:
       - checkout
       - restore_cache:
-          key: cache-20180322 # bump save_cache key below too
+          key: cache-20180405 # bump save_cache key below too
       - run:
           name: rustfmt
           command: |
             rustfmt --version
             for project in $PROJECTS; do
-              (echo "project: $project"; cd $project && cargo fmt -- --write-mode=diff)
+              echo "project: $project"
+              (cd $project && cargo fmt -- --write-mode=diff)
             done
-      # TODO: debug clippy
-      #- run:
-      #    name: clippy
-      #    command: |
-      #      cargo clippy --version
-      #      for project in $PROJECTS; do
-      #        (echo "project: $project"; cd $project && cargo clippy)
-      #      done
+      - run:
+          name: clippy
+          command: |
+            cargo clippy --version
+            for project in $PROJECTS; do
+              echo "project: $project"
+              (cd $project && rustup run $RUST_NIGHTLY_VERSION cargo clippy)
+            done
       - run:
           name: tai64
           command: |
@@ -36,7 +37,7 @@ jobs:
             cargo test
             cargo test --features=chrono
       - save_cache:
-          key: cache-20180322 # bump restore_cache key above too
+          key: cache-20180405 # bump restore_cache key above too
           paths:
             - "~/.cargo"
             - "./target"
