@@ -1,11 +1,14 @@
-# rpmlib: idiomatic Rust binding for the RedHat Package Manager (RPM) library
+# rpmlib.rs: RedHat Package Manager (RPM) binding for Rust
 
 [![Crate][crate-image]][crate-link]
+[![Docs][docs-image]][docs-link]
 [![Build Status][build-image]][build-link]
 [![Apache 2.0 Licensed][license-image]][license-link]
 
 [crate-image]: https://img.shields.io/crates/v/rpmlib.svg
 [crate-link]: https://crates.io/crates/rpmlib
+[docs-image]: https://docs.rs/rpmlib/badge.svg
+[docs-link]: https://docs.rs/rpmlib/
 [build-image]: https://circleci.com/gh/iqlusion-io/crates.svg?style=shield
 [build-link]: https://circleci.com/gh/iqlusion-io/crates
 [license-image]: https://img.shields.io/badge/license-Apache2.0-blue.svg
@@ -14,6 +17,8 @@
 The [rpmlib] C library (available in the `rpm-devel` RPM package) provides a
 programmatic interface to the [RedHat Package Manager (RPM)]. This crate aims to
 provide a safe, idiomatic Rust wrapper to this library.
+
+[Documentation](https://docs.rs/rpmlib/)
 
 [rpmlib]: https://docs.fedoraproject.org/en-US/Fedora_Draft_Documentation/0.1/html/RPM_Guide/ch-programming-c.html
 [RedHat Package Manager (RPM)]: http://rpm.org/
