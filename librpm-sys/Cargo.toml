@@ -1,7 +1,7 @@
 [package]
 name        = "librpm-sys"
 description = "FFI bindings for librpm: the RedHat Package Manager (RPM) library"
-version     = "0.0.1"
+version     = "0.0.2"
 license     = "Apache-2.0"
 authors     = ["Tony Arcieri <tony@iqlusion.io>"]
 categories  = ["external-ffi-bindings", "os"]

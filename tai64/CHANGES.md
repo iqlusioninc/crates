@@ -1,8 +1,8 @@
-## 0.2.2 (2018-03-27)
+## 0.2.2 (2018-04-08)
 
-* `README.md` formatting fixups for crates.io
+* `README.md` formatting fixups for [crates.io](https://crates.io)
 
-## 0.2.1 (2018-03-27)
+## 0.2.1 (2018-04-08)
 
 * [#7](https://github.com/iqlusion-io/crates/pull/7)
   Use Apache 2.0 license and clarify contribution guidelines.
