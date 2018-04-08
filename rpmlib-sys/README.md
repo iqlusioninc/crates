@@ -1,4 +1,4 @@
-# rpmlib-sys: bindgen wrapper for rpmlib (RedHat Package Manager library)
+# rpmlib-sys: bindgen wrapper for RedHat Package Manager (RPM) C library
 
 [![Crate][crate-image]][crate-link] [![Build Status][build-image]][build-link] [![Apache 2.0 Licensed][license-image]][license-link]
 
