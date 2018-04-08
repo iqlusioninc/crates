@@ -47,13 +47,14 @@ the project), and use the following commit message:
 ```
 AUTHORS.md: adding [MY GITHUB USERNAME] and licensing my contributions
 
-I, [LEGAL NAME HERE], hereby agree to license all contributions I make to
-this project under the terms of the Apache License, Version 2.0.
+I, [LEGAL NAME HERE], hereby agree to license all contributions I make
+to this project under the terms of the Apache License, Version 2.0.
 ```
 
 Please replace `[MY GITHUB USERNAME]` with the GitHub username you are sending
 the PR from, including the `@` symbol (e.g. `@defunkt`), and also replacing
 `[LEGAL NAME HERE]` with your full legal name.
+[See this commit for an example](https://github.com/iqlusion-io/crates/commit/3f5e3d53c6960bd41e8b3832cea04ab47dae3cb9).
 
 If you have concerns about including your legal name in this file but would
 still like to contribute, please [contact us] and we can discuss other potential
