@@ -1,6 +1,31 @@
 # iqlusion crates 📦
 
-Crates... for Rust... from iqlusion!
+[![Build Status][build-image]][build-link]
+[![Apache 2.0 Licensed][license-image]][license-link]
+
+[build-image]: https://circleci.com/gh/iqlusion-io/crates.svg?style=shield
+[build-link]: https://circleci.com/gh/iqlusion-io/crates
+[license-image]: https://img.shields.io/badge/license-Apache2.0-blue.svg
+[license-link]: https://github.com/iqlusion-io/crates/blob/master/LICENSE
+
+This repository contains a set of Apache 2.0-licensed packages (a.k.a.  "crates")
+for the [Rust](https://www.rust-lang.org/) programming language, contributed
+to the community by [iqlusion](https://www.iqlusion.io).
+
+If you are interested in contributing to this repository, please make sure to
+read the [CONTRIBUTING.md] and [CODE_OF_CONDUCT.md] files first.
+
+[CONTRIBUTING.md]: https://github.com/iqlusion-io/crates/blob/master/CONTRIBUTING.md
+[CODE_OF_CONDUCT.md]: https://github.com/iqlusion-io/crates/blob/master/CODE_OF_CONDUCT.md
+
+## Crate Descriptions
+
+This repository contains the following crates:
+
+* [librpm-sys:](https://github.com/iqlusion-io/crates/tree/master/librpm-sys)
+  bindgen wrapper to librpm (RedHat Package Manager library)
+* [tai64:](https://github.com/iqlusion-io/crates/tree/master/tai64)
+  TAI64(N) timestamp format (Temps Atomique International)
 
 ## License
 

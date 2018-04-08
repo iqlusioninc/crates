@@ -1,11 +1,13 @@
-# TAI64(N) for Rust [![Crate][crate-image]][crate-link] [![Docs][docs-image]][docs-link] [![Build Status][build-image]][build-link]
+# TAI64(N) for Rust [![Crate][crate-image]][crate-link] [![Docs][docs-image]][docs-link] [![Build Status][build-image]][build-link] [![Apache 2.0 Licensed][license-image]][license-link]
 
 [crate-image]: https://img.shields.io/crates/v/tai64.svg
 [crate-link]: https://crates.io/crates/tai64
 [docs-image]: https://docs.rs/tai64/badge.svg
 [docs-link]: https://docs.rs/tai64/
-[build-image]: https://travis-ci.org/tarcieri/tai64-rs.svg?branch=master
-[build-link]: https://travis-ci.org/tarcieri/tai64-rs
+[build-image]: https://circleci.com/gh/iqlusion-io/crates.svg?style=shield
+[build-link]: https://circleci.com/gh/iqlusion-io/crates
+[license-image]: https://img.shields.io/badge/license-Apache2.0-blue.svg
+[license-link]: https://github.com/iqlusion-io/crates/blob/master/LICENSE
 
 An implementation of the [TAI64(N)] (*Temps Atomique International*) timestamp
 format in Rust. Supports converting to/from Rust's built-in [SystemTime] type
@@ -21,7 +23,10 @@ enabled.
 
 ## License
 
-**tai64-rs** is distributed under the terms of both the MIT license and the
-Apache License (Version 2.0).
+The **tai64** crate is distributed under the terms of the Apache License
+(Version 2.0).
 
-See [LICENSE-APACHE](LICENSE-APACHE) and [LICENSE-MIT](LICENSE-MIT) for details.
+See [LICENSE] file in the `iqlusion-io/crates` toplevel directory for more
+information.
+
+[LICENSE]: https://github.com/iqlusion-io/crates/blob/master/LICENSE
