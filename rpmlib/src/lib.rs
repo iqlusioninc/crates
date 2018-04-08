@@ -14,3 +14,10 @@
 
 #[cfg(feature = "rpmlib-sys")]
 extern crate rpmlib_sys;
+
+mod txnset;
+
+pub use txnset::TxnSet;
+
+/// A shorter alias for TxnSet
+pub type Txn = TxnSet;
