@@ -20,12 +20,14 @@
 
 // NOTE: `rpmts.h` and `rpmfi.h` have not been included in the binding because
 // they casue the `bindgen_test_layout_max_align_t` test to fail.
-// Please open a GitHub issue if you would like to create bindings to them.
+//
+// See: https://github.com/iqlusion-io/crates/issues/11
 
 // TODO: rpmbuild, rpmsign, and rpmspec
 //
-// These are not included in the binding because they include `popt.h`,
-// which presently causes the following error in the generated binding:
+// These are not included in the binding because they include
+// `/usr/include/popt.h` which presently causes the following error in the
+// generated binding:
 //
 //     error[E0428]: the name `poptOption` is defined multiple times
 //     |
@@ -37,5 +39,4 @@
 //     |
 //     = note: `poptOption` must be defined only once in the type namespace of this module
 //
-// If you are interested in rpmbuild and/or rpmsign support, please open a
-// GitHub issue
+// See: https://github.com/iqlusion-io/crates/issues/12
