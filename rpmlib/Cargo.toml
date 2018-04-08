@@ -1,0 +1,26 @@
+[package]
+name        = "rpmlib"
+description = "RedHat Package Manager (RPM) library binding with an idiomatic Rust API"
+version     = "0.0.0" # Also update html_root_url in lib.rs when bumping this
+license     = "Apache-2.0"
+authors     = ["Tony Arcieri <tony@iqlusion.io>"]
+categories  = ["api-bindings", "os", "parsing"]
+keywords    = ["rpm", "linux", "redhat", "fedora", "centos"]
+readme      = "README.md"
+homepage    = "https://github.com/iqlusion-io/crates/tree/master/rpmlib"
+
+[badges]
+circle-ci = { repository = "iqlusion-io/crates" }
+
+[dependencies]
+rpmlib-sys = { version = "0", path = "../rpmlib-sys", optional = true }
+
+# Allow building without rpmlib-sys so we can e.g. use docs.rs for rendering
+# documentation for this crate
+[features]
+default=["rpmlib-sys"]
+
+# Disable default features on docs.rs, allowing the documentation to build
+# because we don't link against rpmlib-sys (which needs librpm.so)
+[package.metadata.docs.rs]
+no-default-features = true

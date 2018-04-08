@@ -1,6 +1,7 @@
 [workspace]
 license = "Apache-2.0"
 members = [
+    "rpmlib",
     "rpmlib-sys",
     "tai64"
 ]
