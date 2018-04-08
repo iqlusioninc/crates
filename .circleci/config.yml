@@ -3,14 +3,14 @@ version: 2
 jobs:
   build:
     docker:
-      - image: iqlusion/rust-ci:201804060 # bump cache keys when modifying this
+      - image: iqlusion/rust-ci:201804061 # bump cache keys when modifying this
     environment:
       - PROJECTS=rpmlib-sys tai64
 
     steps:
       - checkout
       - restore_cache:
-          key: cache-201804060 # bump save_cache key below too
+          key: cache-201804061 # bump save_cache key below too
       - run:
           name: rustfmt
           command: |
@@ -36,8 +36,8 @@ jobs:
             rustc --version
             cargo --version
             cd rpmlib-sys
-            scl enable llvm-toolset-7 "cargo build"
-            scl enable llvm-toolset-7 "cargo test"
+            cargo build
+            cargo test
       - run:
           name: "tai64 crate (build, test)"
           command: |
@@ -48,7 +48,7 @@ jobs:
             cargo test
             cargo test --features=chrono
       - save_cache:
-          key: cache-201804060 # bump restore_cache key above too
+          key: cache-201804061 # bump restore_cache key above too
           paths:
             - "~/.cargo"
             - "./target"
