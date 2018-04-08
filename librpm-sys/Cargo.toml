@@ -1,0 +1,11 @@
+[package]
+name        = "librpm-sys"
+description = "FFI bindings for librpm"
+version     = "0.0.0"
+authors     = ["Tony Arcieri <tony@iqlusion.io>"]
+license     = "MIT/Apache-2.0"
+categories  = ["external-ffi-bindings", "os"]
+keywords    = ["rpm", "linux", "redhat", "fedora", "centos"]
+
+[build-dependencies]
+bindgen = "0.35"
