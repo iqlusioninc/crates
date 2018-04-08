@@ -5,7 +5,7 @@ jobs:
     docker:
       - image: iqlusion/rust-ci:201804060 # bump cache keys when modifying this
     environment:
-      - PROJECTS=librpm-sys tai64
+      - PROJECTS=rpmlib-sys tai64
 
     steps:
       - checkout
@@ -24,18 +24,18 @@ jobs:
           command: |
             cargo clippy --version
             for project in $PROJECTS; do
-              # Ignore librpm-sys since it's just bindgen output
-              if [ "$project" != "librpm-sys" ]; then
+              # Ignore rpmlib-sys since it's just bindgen output
+              if [ "$project" != "rpmlib-sys" ]; then
                 echo "project: $project"
                 (cd $project && rustup run $RUST_NIGHTLY_VERSION cargo clippy)
               fi
             done
       - run:
-          name: "librpm-sys crate (build, test)"
+          name: "rpmlib-sys crate (build, test)"
           command: |
             rustc --version
             cargo --version
-            cd librpm-sys
+            cd rpmlib-sys
             scl enable llvm-toolset-7 "cargo build"
             scl enable llvm-toolset-7 "cargo test"
       - run:

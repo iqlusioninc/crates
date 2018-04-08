@@ -1,14 +1,14 @@
 [package]
-name        = "librpm-sys"
-description = "FFI bindings for librpm: the RedHat Package Manager (RPM) library"
-version     = "0.0.2"
+name        = "rpmlib-sys"
+description = "RedHat Package Manager (RPM) library low-level FFI bindings"
+version     = "0.0.0"
 license     = "Apache-2.0"
 authors     = ["Tony Arcieri <tony@iqlusion.io>"]
 categories  = ["external-ffi-bindings", "os"]
 keywords    = ["rpm", "linux", "redhat", "fedora", "centos"]
 readme      = "README.md"
-homepage    = "https://github.com/iqlusion-io/crates"
-repository  = "https://github.com/iqlusion-io/crates/tree/master/librpm-sys"
+homepage    = "https://github.com/iqlusion-io/crates/tree/master/rpmlib"
+repository  = "https://github.com/iqlusion-io/crates/tree/master/rpmlib-sys"
 
 [badges]
 circle-ci = { repository = "iqlusion-io/crates" }

@@ -22,8 +22,8 @@ read the [CONTRIBUTING.md] and [CODE_OF_CONDUCT.md] files first.
 
 This repository contains the following crates:
 
-* [librpm-sys:](https://github.com/iqlusion-io/crates/tree/master/librpm-sys)
-  bindgen wrapper to librpm (RedHat Package Manager library)
+* [rpmlib-sys:](https://github.com/iqlusion-io/crates/tree/master/rpmlib-sys)
+  bindgen wrapper for rpmlib (RedHat Package Manager library)
 * [tai64:](https://github.com/iqlusion-io/crates/tree/master/tai64)
   TAI64(N) timestamp format (Temps Atomique International)
 

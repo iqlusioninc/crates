@@ -8,8 +8,8 @@ contributions under the terms of the [Apache License, Version 2.0]
 [Apache License, Version 2.0]: https://www.apache.org/licenses/LICENSE-2.0
 [LICENSE]: https://github.com/iqlusion-io/crates/blob/master/LICENSE
 
-* Anthony Arcieri ([@tarcieri](https://github.com/tarcieri)): [librpm-sys], [tai64]
+* Anthony Arcieri ([@tarcieri](https://github.com/tarcieri)): [rpmlib-sys], [tai64]
 * Yin Guanhao ([@sopium](https://github.com/sopium)): [tai64]
 
-[librpm-sys]: https://github.com/iqlusion-io/crates/tree/master/librpm-sys
+[rpmlib-sys]: https://github.com/iqlusion-io/crates/tree/master/rpmlib-sys
 [tai64]: https://github.com/iqlusion-io/crates/tree/master/tai64
