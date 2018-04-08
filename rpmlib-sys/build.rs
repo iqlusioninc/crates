@@ -19,19 +19,23 @@ fn main() {
     // We don't yet link against librpmbuild.so or librpmsign.so because bindgen
     // is having trouble generating bindings for these libraries. See
     // `rpmlib-sys.h` for more information.
-    for lib in &["rpm", "rpmio"] {
-        println!("cargo:rustc-link-lib={}", lib);
-    }
+    println!("cargo:rustc-link-lib=rpm");
+    println!("cargo:rustc-link-lib=rpmio");
 
-    // `src/rpmlib-sys.h` includes all headers we generate bindings for
-    let bindings = bindgen::Builder::default()
-        .header("src/rpmlib-sys.h")
-        .generate()
-        .unwrap();
+    // librpmbuild.so
+    println!("cargo:rustc-link-lib=rpmbuild");
+
+    // librpmsign.so
+    println!("cargo:rustc-link-lib=rpmsign");
 
     // Write generated bindings.rs to OUT_DIR (to be included in `src/lib.rs`)
-    let out_path = PathBuf::from(env::var("OUT_DIR").unwrap());
-    bindings
-        .write_to_file(out_path.join("bindings.rs"))
+    let output = PathBuf::from(env::var("OUT_DIR").unwrap()).join("bindings.rs");
+
+    bindgen::Builder::default()
+        .header("src/rpmlib-sys.hpp") // See this file for headers we bind
+        .blacklist_type("timex") // See `lib.rs` for `struct timex` hax
+        .generate()
+        .unwrap()
+        .write_to_file(output)
         .unwrap();
 }
