@@ -17,7 +17,7 @@ This crate isn't intended to be used directly, but instead provides an unsafe,
 low-level binding used by the higher level **rpmlib** crate, which aims to
 provide a safe, idiomatic, high-level binding to the C library:
 
-https://github.com/iqlusion-io/crates/tree/master/rpmlib
+* **rpmlib crate**: https://docs.rs/crate/rpmlib/
 
 [rpmlib C library]: https://docs.fedoraproject.org/en-US/Fedora_Draft_Documentation/0.1/html/RPM_Guide/ch-programming-c.html
 [RedHat Package Manager (RPM)]: http://rpm.org/
