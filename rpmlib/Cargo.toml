@@ -1,7 +1,7 @@
 [package]
 name        = "rpmlib"
 description = "RedHat Package Manager (RPM) library binding with an idiomatic Rust API"
-version     = "0.0.0" # Also update html_root_url in lib.rs when bumping this
+version     = "0.0.1" # Also update html_root_url in lib.rs when bumping this
 license     = "Apache-2.0"
 authors     = ["Tony Arcieri <tony@iqlusion.io>"]
 categories  = ["api-bindings", "os", "parsing"]

@@ -10,7 +10,7 @@
 #![crate_type = "rlib"]
 #![deny(warnings, missing_docs, trivial_casts, trivial_numeric_casts)]
 #![deny(unused_import_braces, unused_qualifications)]
-#![doc(html_root_url = "https://docs.rs/rpmlib/0.0.0")]
+#![doc(html_root_url = "https://docs.rs/rpmlib/0.0.1")]
 
 #[cfg(feature = "rpmlib-sys")]
 extern crate rpmlib_sys;
