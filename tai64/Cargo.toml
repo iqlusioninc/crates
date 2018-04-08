@@ -1,16 +1,17 @@
 [package]
 name        = "tai64"
 description = "TAI64 and TAI64N (i.e. Temps Atomique International) timestamp support for Rust"
-version     = "0.2.0" # Also update html_root_url in lib.rs when bumping this
+version     = "0.2.1" # Also update html_root_url in lib.rs when bumping this
 authors     = ["sopium <sopium@mysterious.site>", "Tony Arcieri <bascule@gmail.com>"]
 license     = "Apache-2.0"
-homepage    = "https://github.com/tarcieri/tai64-rs/"
-repository  = "https://github.com/tarcieri/tai64-rs/tree/master/src"
+homepage    = "https://github.com/iqlusion-io/crates/"
+repository  = "https://github.com/iqlusion-io/crates/tree/master/tai64"
 readme      = "README.md"
-keywords    = ["time"]
+categories  = ["date-and-time", "internationalization", "network-programming", "parser-implementations"]
+keywords    = ["tai64", "time", "timestamps", "chrono"]
 
 [badges]
-travis-ci = { repository = "tarcieri/tai64-rs" }
+circle-ci = { repository = "iqlusion-io/oxides" }
 
 [dependencies]
 byteorder = "1.0"
