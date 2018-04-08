@@ -1,3 +1,7 @@
+## 0.2.2 (2018-03-27)
+
+* `README.md` formatting fixups for crates.io
+
 ## 0.2.1 (2018-03-27)
 
 * [#7](https://github.com/iqlusion-io/crates/pull/7)

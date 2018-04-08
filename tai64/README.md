@@ -1,4 +1,9 @@
-# TAI64(N) for Rust [![Crate][crate-image]][crate-link] [![Docs][docs-image]][docs-link] [![Build Status][build-image]][build-link] [![Apache 2.0 Licensed][license-image]][license-link]
+# TAI64 / TAI64N Timestamps for Rust
+
+[![Crate][crate-image]][crate-link]
+[![Docs][docs-image]][docs-link]
+[![Build Status][build-image]][build-link]
+[![Apache 2.0 Licensed][license-image]][license-link]
 
 [crate-image]: https://img.shields.io/crates/v/tai64.svg
 [crate-link]: https://crates.io/crates/tai64
@@ -10,9 +15,10 @@
 [license-link]: https://github.com/iqlusion-io/crates/blob/master/LICENSE
 
 An implementation of the [TAI64(N)] (*Temps Atomique International*) timestamp
-format in Rust. Supports converting to/from Rust's built-in [SystemTime] type
-and optionally to [chrono]'s [DateTime] type when the `"chrono"` feature is
-enabled.
+format in Rust.
+
+Supports converting to/from Rust's built-in [SystemTime] type and optionally to
+[chrono]'s [DateTime] type when the `"chrono"` feature is enabled.
 
 [Documentation][docs-link]
 
