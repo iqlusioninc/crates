@@ -4,6 +4,7 @@
 //! This crate isn't intended to be used directly, but instead provides the
 //! low-level binding which is used by the idiomatic rpmlib crate.
 
+#![allow(unknown_lints, clippy)]
 #![allow(non_upper_case_globals)]
 #![allow(non_camel_case_types)]
 #![allow(non_snake_case)]

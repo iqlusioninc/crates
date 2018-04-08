@@ -5,7 +5,8 @@ jobs:
     docker:
       - image: iqlusion/rust-ci:201804061 # bump cache keys when modifying this
     environment:
-      - PROJECTS=rpmlib-sys tai64
+      - PROJECTS=rpmlib rpmlib-sys tai64
+      - NO_CLIPPY=rpmlib-sys
 
     steps:
       - checkout
@@ -24,12 +25,21 @@ jobs:
           command: |
             cargo clippy --version
             for project in $PROJECTS; do
-              # Ignore rpmlib-sys since it's just bindgen output
-              if [ "$project" != "rpmlib-sys" ]; then
+              # NOTE: This only works for one 'NO_CLIPPY' project
+              if [ "$project" != "$NO_CLIPPY" ]; then
                 echo "project: $project"
                 (cd $project && rustup run $RUST_NIGHTLY_VERSION cargo clippy)
               fi
             done
+      - run:
+          name: "rpmlib crate (build, test)"
+          command: |
+            rustc --version
+            cargo --version
+            cd rpmlib
+            cargo build --no-default-features
+            cargo build
+            cargo test
       - run:
           name: "rpmlib-sys crate (build, test)"
           command: |
