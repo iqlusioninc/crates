@@ -3,7 +3,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: iqlusion/rust-ci:201804061 # bump cache keys when modifying this
+      - image: iqlusion/rust-ci:201804090 # bump cache keys when modifying this
 
     steps:
       - checkout
