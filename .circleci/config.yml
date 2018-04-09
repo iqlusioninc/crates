@@ -8,7 +8,11 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: cache-201804061 # bump save_cache key below too
+          key: cache-201804090 # bump save_cache key below too
+      - run:
+          name: lint scripts
+          command: |
+            .scripts/duplicate-crate-lint.sh # ensure Cargo.lock only contains one version of each crate
       - run:
           name: rustfmt
           command: |
@@ -46,7 +50,7 @@ jobs:
             cargo test
             cargo test --features=chrono
       - save_cache:
-          key: cache-201804061 # bump restore_cache key above too
+          key: cache-201804090 # bump restore_cache key above too
           paths:
             - "~/.cargo"
             - "./target"
