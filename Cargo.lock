@@ -54,7 +54,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "canonical-path"
-version = "0.0.0"
+version = "0.1.1"
 dependencies = [
  "tempdir 0.3.7 (registry+https://github.com/rust-lang/crates.io-index)",
 ]

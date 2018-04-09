@@ -7,7 +7,7 @@
 #![crate_name = "canonical_path"]
 #![crate_type = "rlib"]
 #![deny(warnings, missing_docs, unused_import_braces, unused_qualifications)]
-#![doc(html_root_url = "https://docs.rs/canonical-path/0.1.0")]
+#![doc(html_root_url = "https://docs.rs/canonical-path/0.1.1")]
 
 use std::borrow::Borrow;
 use std::env;
