@@ -1,0 +1,17 @@
+[package]
+name        = "canonical-path"
+description = "Path and PathBuf-like types for representing canonical filesystem paths"
+version     = "0.0.0"
+authors     = ["Tony Arcieri <tony@iqlusion.io>"]
+license     = "Apache-2.0"
+homepage    = "https://github.com/iqlusion-io/crates/"
+repository  = "https://github.com/iqlusion-io/crates/tree/master/canonical-path"
+readme      = "README.md"
+categories  = ["filesystem"]
+keywords    = ["filesystem", "path", "canonicalization"]
+
+[badges]
+circle-ci = { repository = "iqlusion-io/oxides" }
+
+[dev-dependencies]
+tempdir = "0.3"

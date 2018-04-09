@@ -24,31 +24,24 @@ jobs:
             cargo clippy --version
             rustup run $RUST_NIGHTLY_VERSION cargo clippy --all
       - run:
-          name: "rpmlib crate (build, test)"
+          name: "build (all crates)"
           command: |
             rustc --version
             cargo --version
-            cd rpmlib
-            cargo build --no-default-features
-            cargo build
-            cargo test
+            cargo build --all --no-default-features
+            cargo build --all
       - run:
-          name: "rpmlib-sys crate (build, test)"
+          name: "test (all crates)"
           command: |
             rustc --version
             cargo --version
-            cd rpmlib-sys
-            cargo build
-            cargo test
+            cargo test --all
       - run:
-          name: "tai64 crate (build, test)"
+          name: "test (crates w\ non-default features)"
           command: |
             rustc --version
             cargo --version
-            cd tai64
-            cargo build
-            cargo test
-            cargo test --features=chrono
+            (cd tai64 && cargo test --features=chrono)
       - save_cache:
           key: cache-201804090 # bump restore_cache key above too
           paths:

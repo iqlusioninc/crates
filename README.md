@@ -22,6 +22,8 @@ read the [CONTRIBUTING.md] and [CODE_OF_CONDUCT.md] files first.
 
 This repository contains the following crates:
 
+* [canonical-path:](https://github.com/iqlusion-io/crates/tree/master/canonical-path)
+  `Path` and `PathBuf`-like types for representing canonical filesystem paths.
 * [rpmlib:](https://github.com/iqlusion-io/crates/tree/master/rpmlib)
   Rust binding to rpmlib (RedHat Package Manager library)
 * [rpmlib-sys:](https://github.com/iqlusion-io/crates/tree/master/rpmlib-sys)
