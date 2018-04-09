@@ -14,7 +14,7 @@ repository  = "https://github.com/iqlusion-io/crates/tree/master/rpmlib"
 circle-ci = { repository = "iqlusion-io/crates" }
 
 [dependencies]
-rpmlib-sys = { version = "0", path = "../rpmlib-sys", optional = true }
+rpmlib-sys = { version = "0.2", path = "../rpmlib-sys", optional = true }
 
 # Allow building without rpmlib-sys so we can e.g. use docs.rs for rendering
 # documentation for this crate
