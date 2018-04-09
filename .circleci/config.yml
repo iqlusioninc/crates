@@ -4,9 +4,6 @@ jobs:
   build:
     docker:
       - image: iqlusion/rust-ci:201804061 # bump cache keys when modifying this
-    environment:
-      - PROJECTS=rpmlib rpmlib-sys tai64
-      - NO_CLIPPY=rpmlib-sys
 
     steps:
       - checkout
@@ -16,21 +13,12 @@ jobs:
           name: rustfmt
           command: |
             rustfmt --version
-            for project in $PROJECTS; do
-              echo "project: $project"
-              (cd $project && cargo fmt -- --write-mode=diff)
-            done
+            cargo fmt --all -- --write-mode=diff
       - run:
           name: clippy
           command: |
             cargo clippy --version
-            for project in $PROJECTS; do
-              # NOTE: This only works for one 'NO_CLIPPY' project
-              if [ "$project" != "$NO_CLIPPY" ]; then
-                echo "project: $project"
-                (cd $project && rustup run $RUST_NIGHTLY_VERSION cargo clippy)
-              fi
-            done
+            rustup run $RUST_NIGHTLY_VERSION cargo clippy --all
       - run:
           name: "rpmlib crate (build, test)"
           command: |
