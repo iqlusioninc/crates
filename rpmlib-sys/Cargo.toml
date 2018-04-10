@@ -15,3 +15,8 @@ circle-ci = { repository = "iqlusion-io/crates" }
 
 [build-dependencies]
 bindgen = "0.35"
+
+[features]
+default = []
+rpmbuild = []
+rpmsign = []

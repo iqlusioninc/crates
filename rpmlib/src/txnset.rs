@@ -4,7 +4,7 @@
 //! involve operations on the RPM database, require a transaction set.
 
 #[cfg(feature = "rpmlib-sys")]
-use rpmlib_sys::{rpmts, rpmtsCreate, rpmtsFree};
+use rpmlib_sys::rpmlib::{rpmts, rpmtsCreate, rpmtsFree};
 
 /// Transactions within rpmlib over the RPM database and other functionality
 pub struct TxnSet {

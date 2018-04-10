@@ -41,6 +41,7 @@ jobs:
           command: |
             rustc --version
             cargo --version
+            (cd rpmlib-sys && cargo test --features=rpmbuild,rpmsign)
             (cd tai64 && cargo test --features=chrono)
       - save_cache:
           key: cache-201804090 # bump restore_cache key above too
