@@ -7,10 +7,27 @@
 
 extern crate bindgen;
 
+use bindgen::Builder;
 use std::env;
 use std::path::PathBuf;
 
 fn main() {
+    // Bind to librpm.so + librpmio.so
+    bind_rpmlib();
+
+    // Bind to librpmbuild.so (if "rpmbuild" feature is enabled)
+    if feature_enabled("rpmbuild") {
+        bind_rpmbuild();
+    }
+
+    // Bind to librpmsign.so (if "rpmsign" feature is enabled)
+    if feature_enabled("rpmsign") {
+        bind_rpmsign();
+    }
+}
+
+/// Bind to librpm.so + librpmio.so
+fn bind_rpmlib() {
     // Link with librpm.so + librpmio.so
     //
     // See "Table 16-3: Required rpm libraries" from the "Compiling and Linking
@@ -22,20 +39,60 @@ fn main() {
     println!("cargo:rustc-link-lib=rpm");
     println!("cargo:rustc-link-lib=rpmio");
 
-    // librpmbuild.so
+    generate_binding(
+        "rpmlib_binding.rs",
+        // TODO: whitelist types and functions we actually use
+        Builder::default()
+            .header("include/rpmlib.hpp")
+            .blacklist_type("timex"),
+    )
+}
+
+/// Bind to librpmbuild.so
+fn bind_rpmbuild() {
+    // Link with librpmbuild.so
     println!("cargo:rustc-link-lib=rpmbuild");
 
-    // librpmsign.so
+    generate_binding(
+        "rpmbuild_binding.rs",
+        // TODO: whitelist types and functions we actually use
+        Builder::default()
+            .header("include/rpmbuild.hpp")
+            .blacklist_type("timex"),
+    )
+}
+
+/// Bind to librpmsign.so
+fn bind_rpmsign() {
+    // Link with librpmsign.so
     println!("cargo:rustc-link-lib=rpmsign");
 
-    // Write generated bindings.rs to OUT_DIR (to be included in `src/lib.rs`)
-    let output = PathBuf::from(env::var("OUT_DIR").unwrap()).join("bindings.rs");
+    generate_binding(
+        "rpmsign_binding.rs",
+        // TODO: whitelist types and functions we actually use
+        Builder::default().header("include/rpmsign.hpp"),
+    )
+}
 
-    bindgen::Builder::default()
-        .header("src/rpmlib-sys.hpp") // See this file for headers we bind
-        .blacklist_type("timex") // See `lib.rs` for `struct timex` hax
+/// Use environment variables to determine what cargo features are enabled
+fn feature_enabled(feature_name: &str) -> bool {
+    let env_var = format!("CARGO_FEATURE_{}", feature_name.to_uppercase());
+
+    if let Ok(ref enabled) = env::var(env_var) {
+        if enabled == "1" {
+            return true;
+        }
+    }
+
+    false
+}
+
+// Write generated bindings to OUT_DIR (to be included in the crate)
+fn generate_binding(filename: &str, binding: Builder) {
+    let output_path = PathBuf::from(env::var("OUT_DIR").unwrap()).join(filename);
+    binding
         .generate()
         .unwrap()
-        .write_to_file(output)
+        .write_to_file(output_path)
         .unwrap();
 }

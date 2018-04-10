@@ -1,4 +1,4 @@
-// rpmlib-sys.hpp: Wrapper for rpmlib header files to be passed to bindgen
+// rpmlib.hpp: Wrapper for rpmlib header files to be passed to bindgen
 //
 // See "Using the RPM Library" section of "Chapter 15. Programming RPM with C"
 // of the Fedora RPM Guide (Draft 0.1):
@@ -46,10 +46,3 @@
 #include <rpm/rpmds.h> // Dependency sets
 #include <rpm/rpmfi.h> // File information
 #include <rpm/header.h> // Package headers
-
-/** librpmbuild headers */
-#include <rpm/rpmbuild.h>
-#include <rpm/rpmspec.h>
-
-/** librpmsign headers */
-#include <rpm/rpmsign.h>
