@@ -3,6 +3,14 @@
 //!
 //! This crate isn't intended to be used directly, but instead provides the
 //! low-level binding which is used by the idiomatic rpmlib crate.
+//!
+//! By default this crate only includes an `rpmlib` module which contains
+//! bindings for `librpm.so` and `librpmio.so`
+//!
+//! The `rpmbuild` and `rpmsign` cargo features can be used to enable
+//! bindings to `librpmbuild.so` and `librpmsign.so` respectively,
+//! which if enabled will be available in the `rpmbuild` and `rpmsign`
+//! Rust modules.
 
 #![allow(unknown_lints, clippy)]
 #![allow(non_upper_case_globals)]
