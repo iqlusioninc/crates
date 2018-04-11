@@ -2,4 +2,3 @@
 
 /** librpmbuild headers */
 #include <rpm/rpmbuild.h>
-#include <rpm/rpmspec.h>

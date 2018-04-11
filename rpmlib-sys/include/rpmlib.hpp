@@ -21,6 +21,8 @@
 // likewise also not valid in bindgen's generated bindings for the same reason:
 // they map to type aliases with the same name as the types they're aliasing.
 //
+// See: https://github.com/rust-lang-nursery/rust-bindgen/issues/1252
+//
 // By naming this file with a .hpp extension we instruct bindgen to produce a
 // C++ binding instead of a C one, which triggers macro-based gating (i.e.
 // `#ifdef __cplusplus`) througout rpmlib's headers.
@@ -30,19 +32,25 @@
 //
 // Additionally it resolved bindgen-generated test failures for memory
 // alignment, allowing us to generate a low-level binding for all parts of
-// RPM worth caring about.
+// RPM worth caring about (although FWIW that should be fixed soon in bindgen
+// now that `#[repr(align(N))]` is stable..
 //
 // For more backstory, see the following issues:
+//
 // - https://github.com/iqlusion-io/crates/issues/11
 // - https://github.com/iqlusion-io/crates/issues/12
+
+/** RPM configuration */
+#include <rpm/rpmlib.h> // RIP Steve Taylor
+#include <rpm/rpmmacro.h> // Macros control RPM configuration
 
 /** RPM sub-system header files (from Table 16-1, omitting popt.h) */
 #include <rpm/rpmdb.h> // RPM database access
 #include <rpm/rpmio.h> // RPM input/output routines
 
 /** RPM data object header files (from Table 16-2) */
-#include <rpm/rpmts.h> // Transaction sets
-#include <rpm/rpmte.h> // Transaction elements (packages)
+#include <rpm/header.h> // Package headers
 #include <rpm/rpmds.h> // Dependency sets
 #include <rpm/rpmfi.h> // File information
-#include <rpm/header.h> // Package headers
+#include <rpm/rpmts.h> // Transaction sets
+#include <rpm/rpmte.h> // Transaction elements (packages)

@@ -1,0 +1,345 @@
+#![allow(missing_docs, non_camel_case_types)]
+
+use rpmlib_sys::rpmlib;
+
+/// Identifiers for data in RPM headers (`rpmTag_e` in rpmlib)
+#[derive(Copy, Clone, Debug, Eq, PartialEq)]
+pub enum Tag {
+    /// Unknown tag
+    NOT_FOUND = rpmlib::rpmTag_e_RPMTAG_NOT_FOUND as isize,
+
+    /// Current image
+    HEADERIMAGE = rpmlib::rpmTag_e_RPMTAG_HEADERIMAGE as isize,
+
+    /// Signatures
+    HEADERSIGNATURES = rpmlib::rpmTag_e_RPMTAG_HEADERSIGNATURES as isize,
+
+    /// Original image
+    HEADERIMMUTABLE = rpmlib::rpmTag_e_RPMTAG_HEADERIMMUTABLE as isize,
+
+    /// Regions
+    HEADERREGIONS = rpmlib::rpmTag_e_RPMTAG_HEADERREGIONS as isize,
+
+    /// I18N string locales
+    HEADERI18NTABLE = rpmlib::rpmTag_e_RPMTAG_HEADERI18NTABLE as isize,
+    SIG_BASE = rpmlib::rpmTag_e_RPMTAG_SIG_BASE as isize,
+    SIGSIZE = rpmlib::rpmTag_e_RPMTAG_SIGSIZE as isize,
+    SIGPGP = rpmlib::rpmTag_e_RPMTAG_SIGPGP as isize,
+    SIGMD5 = rpmlib::rpmTag_e_RPMTAG_SIGMD5 as isize,
+    SIGGPG = rpmlib::rpmTag_e_RPMTAG_SIGGPG as isize,
+    PUBKEYS = rpmlib::rpmTag_e_RPMTAG_PUBKEYS as isize,
+    DSAHEADER = rpmlib::rpmTag_e_RPMTAG_DSAHEADER as isize,
+    RSAHEADER = rpmlib::rpmTag_e_RPMTAG_RSAHEADER as isize,
+    SHA1HEADER = rpmlib::rpmTag_e_RPMTAG_SHA1HEADER as isize,
+    LONGSIGSIZE = rpmlib::rpmTag_e_RPMTAG_LONGSIGSIZE as isize,
+    LONGARCHIVESIZE = rpmlib::rpmTag_e_RPMTAG_LONGARCHIVESIZE as isize,
+    NAME = rpmlib::rpmTag_e_RPMTAG_NAME as isize,
+    VERSION = rpmlib::rpmTag_e_RPMTAG_VERSION as isize,
+    RELEASE = rpmlib::rpmTag_e_RPMTAG_RELEASE as isize,
+    EPOCH = rpmlib::rpmTag_e_RPMTAG_EPOCH as isize,
+    SUMMARY = rpmlib::rpmTag_e_RPMTAG_SUMMARY as isize,
+    DESCRIPTION = rpmlib::rpmTag_e_RPMTAG_DESCRIPTION as isize,
+    BUILDTIME = rpmlib::rpmTag_e_RPMTAG_BUILDTIME as isize,
+    BUILDHOST = rpmlib::rpmTag_e_RPMTAG_BUILDHOST as isize,
+    INSTALLTIME = rpmlib::rpmTag_e_RPMTAG_INSTALLTIME as isize,
+    SIZE = rpmlib::rpmTag_e_RPMTAG_SIZE as isize,
+    DISTRIBUTION = rpmlib::rpmTag_e_RPMTAG_DISTRIBUTION as isize,
+    VENDOR = rpmlib::rpmTag_e_RPMTAG_VENDOR as isize,
+    GIF = rpmlib::rpmTag_e_RPMTAG_GIF as isize,
+    XPM = rpmlib::rpmTag_e_RPMTAG_XPM as isize,
+    LICENSE = rpmlib::rpmTag_e_RPMTAG_LICENSE as isize,
+    PACKAGER = rpmlib::rpmTag_e_RPMTAG_PACKAGER as isize,
+    GROUP = rpmlib::rpmTag_e_RPMTAG_GROUP as isize,
+    CHANGELOG = rpmlib::rpmTag_e_RPMTAG_CHANGELOG as isize,
+    SOURCE = rpmlib::rpmTag_e_RPMTAG_SOURCE as isize,
+    PATCH = rpmlib::rpmTag_e_RPMTAG_PATCH as isize,
+    URL = rpmlib::rpmTag_e_RPMTAG_URL as isize,
+    OS = rpmlib::rpmTag_e_RPMTAG_OS as isize,
+    ARCH = rpmlib::rpmTag_e_RPMTAG_ARCH as isize,
+    PREIN = rpmlib::rpmTag_e_RPMTAG_PREIN as isize,
+    POSTIN = rpmlib::rpmTag_e_RPMTAG_POSTIN as isize,
+    PREUN = rpmlib::rpmTag_e_RPMTAG_PREUN as isize,
+    POSTUN = rpmlib::rpmTag_e_RPMTAG_POSTUN as isize,
+    FILESIZES = rpmlib::rpmTag_e_RPMTAG_FILESIZES as isize,
+    FILESTATES = rpmlib::rpmTag_e_RPMTAG_FILESTATES as isize,
+    FILEMODES = rpmlib::rpmTag_e_RPMTAG_FILEMODES as isize,
+    FILERDEVS = rpmlib::rpmTag_e_RPMTAG_FILERDEVS as isize,
+    FILEMTIMES = rpmlib::rpmTag_e_RPMTAG_FILEMTIMES as isize,
+    FILEDIGESTS = rpmlib::rpmTag_e_RPMTAG_FILEDIGESTS as isize,
+    FILELINKTOS = rpmlib::rpmTag_e_RPMTAG_FILELINKTOS as isize,
+    FILEFLAGS = rpmlib::rpmTag_e_RPMTAG_FILEFLAGS as isize,
+    ROOT = rpmlib::rpmTag_e_RPMTAG_ROOT as isize,
+    FILEUSERNAME = rpmlib::rpmTag_e_RPMTAG_FILEUSERNAME as isize,
+    FILEGROUPNAME = rpmlib::rpmTag_e_RPMTAG_FILEGROUPNAME as isize,
+    ICON = rpmlib::rpmTag_e_RPMTAG_ICON as isize,
+    SOURCERPM = rpmlib::rpmTag_e_RPMTAG_SOURCERPM as isize,
+    FILEVERIFYFLAGS = rpmlib::rpmTag_e_RPMTAG_FILEVERIFYFLAGS as isize,
+    ARCHIVESIZE = rpmlib::rpmTag_e_RPMTAG_ARCHIVESIZE as isize,
+    PROVIDENAME = rpmlib::rpmTag_e_RPMTAG_PROVIDENAME as isize,
+    REQUIREFLAGS = rpmlib::rpmTag_e_RPMTAG_REQUIREFLAGS as isize,
+    REQUIRENAME = rpmlib::rpmTag_e_RPMTAG_REQUIRENAME as isize,
+    REQUIREVERSION = rpmlib::rpmTag_e_RPMTAG_REQUIREVERSION as isize,
+    NOSOURCE = rpmlib::rpmTag_e_RPMTAG_NOSOURCE as isize,
+    NOPATCH = rpmlib::rpmTag_e_RPMTAG_NOPATCH as isize,
+    CONFLICTFLAGS = rpmlib::rpmTag_e_RPMTAG_CONFLICTFLAGS as isize,
+    CONFLICTNAME = rpmlib::rpmTag_e_RPMTAG_CONFLICTNAME as isize,
+    CONFLICTVERSION = rpmlib::rpmTag_e_RPMTAG_CONFLICTVERSION as isize,
+    DEFAULTPREFIX = rpmlib::rpmTag_e_RPMTAG_DEFAULTPREFIX as isize,
+    BUILDROOT = rpmlib::rpmTag_e_RPMTAG_BUILDROOT as isize,
+    INSTALLPREFIX = rpmlib::rpmTag_e_RPMTAG_INSTALLPREFIX as isize,
+    EXCLUDEARCH = rpmlib::rpmTag_e_RPMTAG_EXCLUDEARCH as isize,
+    EXCLUDEOS = rpmlib::rpmTag_e_RPMTAG_EXCLUDEOS as isize,
+    EXCLUSIVEARCH = rpmlib::rpmTag_e_RPMTAG_EXCLUSIVEARCH as isize,
+    EXCLUSIVEOS = rpmlib::rpmTag_e_RPMTAG_EXCLUSIVEOS as isize,
+    AUTOREQPROV = rpmlib::rpmTag_e_RPMTAG_AUTOREQPROV as isize,
+    RPMVERSION = rpmlib::rpmTag_e_RPMTAG_RPMVERSION as isize,
+    TRIGGERSCRIPTS = rpmlib::rpmTag_e_RPMTAG_TRIGGERSCRIPTS as isize,
+    TRIGGERNAME = rpmlib::rpmTag_e_RPMTAG_TRIGGERNAME as isize,
+    TRIGGERVERSION = rpmlib::rpmTag_e_RPMTAG_TRIGGERVERSION as isize,
+    TRIGGERFLAGS = rpmlib::rpmTag_e_RPMTAG_TRIGGERFLAGS as isize,
+    TRIGGERINDEX = rpmlib::rpmTag_e_RPMTAG_TRIGGERINDEX as isize,
+    VERIFYSCRIPT = rpmlib::rpmTag_e_RPMTAG_VERIFYSCRIPT as isize,
+    CHANGELOGTIME = rpmlib::rpmTag_e_RPMTAG_CHANGELOGTIME as isize,
+    CHANGELOGNAME = rpmlib::rpmTag_e_RPMTAG_CHANGELOGNAME as isize,
+    CHANGELOGTEXT = rpmlib::rpmTag_e_RPMTAG_CHANGELOGTEXT as isize,
+    PREREQ = rpmlib::rpmTag_e_RPMTAG_PREREQ as isize,
+    PREINPROG = rpmlib::rpmTag_e_RPMTAG_PREINPROG as isize,
+    POSTINPROG = rpmlib::rpmTag_e_RPMTAG_POSTINPROG as isize,
+    PREUNPROG = rpmlib::rpmTag_e_RPMTAG_PREUNPROG as isize,
+    POSTUNPROG = rpmlib::rpmTag_e_RPMTAG_POSTUNPROG as isize,
+    BUILDARCHS = rpmlib::rpmTag_e_RPMTAG_BUILDARCHS as isize,
+    OBSOLETENAME = rpmlib::rpmTag_e_RPMTAG_OBSOLETENAME as isize,
+    VERIFYSCRIPTPROG = rpmlib::rpmTag_e_RPMTAG_VERIFYSCRIPTPROG as isize,
+    TRIGGERSCRIPTPROG = rpmlib::rpmTag_e_RPMTAG_TRIGGERSCRIPTPROG as isize,
+    DOCDIR = rpmlib::rpmTag_e_RPMTAG_DOCDIR as isize,
+    COOKIE = rpmlib::rpmTag_e_RPMTAG_COOKIE as isize,
+    FILEDEVICES = rpmlib::rpmTag_e_RPMTAG_FILEDEVICES as isize,
+    FILEINODES = rpmlib::rpmTag_e_RPMTAG_FILEINODES as isize,
+    FILELANGS = rpmlib::rpmTag_e_RPMTAG_FILELANGS as isize,
+    PREFIXES = rpmlib::rpmTag_e_RPMTAG_PREFIXES as isize,
+    INSTPREFIXES = rpmlib::rpmTag_e_RPMTAG_INSTPREFIXES as isize,
+    TRIGGERIN = rpmlib::rpmTag_e_RPMTAG_TRIGGERIN as isize,
+    TRIGGERUN = rpmlib::rpmTag_e_RPMTAG_TRIGGERUN as isize,
+    TRIGGERPOSTUN = rpmlib::rpmTag_e_RPMTAG_TRIGGERPOSTUN as isize,
+    AUTOREQ = rpmlib::rpmTag_e_RPMTAG_AUTOREQ as isize,
+    AUTOPROV = rpmlib::rpmTag_e_RPMTAG_AUTOPROV as isize,
+    CAPABILITY = rpmlib::rpmTag_e_RPMTAG_CAPABILITY as isize,
+    SOURCEPACKAGE = rpmlib::rpmTag_e_RPMTAG_SOURCEPACKAGE as isize,
+    BUILDPREREQ = rpmlib::rpmTag_e_RPMTAG_BUILDPREREQ as isize,
+    BUILDREQUIRES = rpmlib::rpmTag_e_RPMTAG_BUILDREQUIRES as isize,
+    BUILDCONFLICTS = rpmlib::rpmTag_e_RPMTAG_BUILDCONFLICTS as isize,
+    PROVIDEFLAGS = rpmlib::rpmTag_e_RPMTAG_PROVIDEFLAGS as isize,
+    PROVIDEVERSION = rpmlib::rpmTag_e_RPMTAG_PROVIDEVERSION as isize,
+    DIRINDEXES = rpmlib::rpmTag_e_RPMTAG_DIRINDEXES as isize,
+    BASENAMES = rpmlib::rpmTag_e_RPMTAG_BASENAMES as isize,
+    DIRNAMES = rpmlib::rpmTag_e_RPMTAG_DIRNAMES as isize,
+    ORIGDIRINDEXES = rpmlib::rpmTag_e_RPMTAG_ORIGDIRINDEXES as isize,
+    ORIGBASENAMES = rpmlib::rpmTag_e_RPMTAG_ORIGBASENAMES as isize,
+    ORIGDIRNAMES = rpmlib::rpmTag_e_RPMTAG_ORIGDIRNAMES as isize,
+    OPTFLAGS = rpmlib::rpmTag_e_RPMTAG_OPTFLAGS as isize,
+    DISTURL = rpmlib::rpmTag_e_RPMTAG_DISTURL as isize,
+    PAYLOADFORMAT = rpmlib::rpmTag_e_RPMTAG_PAYLOADFORMAT as isize,
+    PAYLOADCOMPRESSOR = rpmlib::rpmTag_e_RPMTAG_PAYLOADCOMPRESSOR as isize,
+    PAYLOADFLAGS = rpmlib::rpmTag_e_RPMTAG_PAYLOADFLAGS as isize,
+    INSTALLCOLOR = rpmlib::rpmTag_e_RPMTAG_INSTALLCOLOR as isize,
+    INSTALLTID = rpmlib::rpmTag_e_RPMTAG_INSTALLTID as isize,
+    REMOVETID = rpmlib::rpmTag_e_RPMTAG_REMOVETID as isize,
+    PLATFORM = rpmlib::rpmTag_e_RPMTAG_PLATFORM as isize,
+    PATCHESNAME = rpmlib::rpmTag_e_RPMTAG_PATCHESNAME as isize,
+    PATCHESFLAGS = rpmlib::rpmTag_e_RPMTAG_PATCHESFLAGS as isize,
+    PATCHESVERSION = rpmlib::rpmTag_e_RPMTAG_PATCHESVERSION as isize,
+    FILECOLORS = rpmlib::rpmTag_e_RPMTAG_FILECOLORS as isize,
+    FILECLASS = rpmlib::rpmTag_e_RPMTAG_FILECLASS as isize,
+    CLASSDICT = rpmlib::rpmTag_e_RPMTAG_CLASSDICT as isize,
+    FILEDEPENDSX = rpmlib::rpmTag_e_RPMTAG_FILEDEPENDSX as isize,
+    FILEDEPENDSN = rpmlib::rpmTag_e_RPMTAG_FILEDEPENDSN as isize,
+    DEPENDSDICT = rpmlib::rpmTag_e_RPMTAG_DEPENDSDICT as isize,
+    SOURCEPKGID = rpmlib::rpmTag_e_RPMTAG_SOURCEPKGID as isize,
+    FSCONTEXTS = rpmlib::rpmTag_e_RPMTAG_FSCONTEXTS as isize,
+    RECONTEXTS = rpmlib::rpmTag_e_RPMTAG_RECONTEXTS as isize,
+    POLICIES = rpmlib::rpmTag_e_RPMTAG_POLICIES as isize,
+    PRETRANS = rpmlib::rpmTag_e_RPMTAG_PRETRANS as isize,
+    POSTTRANS = rpmlib::rpmTag_e_RPMTAG_POSTTRANS as isize,
+    PRETRANSPROG = rpmlib::rpmTag_e_RPMTAG_PRETRANSPROG as isize,
+    POSTTRANSPROG = rpmlib::rpmTag_e_RPMTAG_POSTTRANSPROG as isize,
+    DISTTAG = rpmlib::rpmTag_e_RPMTAG_DISTTAG as isize,
+    SUGGESTSNAME = rpmlib::rpmTag_e_RPMTAG_SUGGESTSNAME as isize,
+    SUGGESTSVERSION = rpmlib::rpmTag_e_RPMTAG_SUGGESTSVERSION as isize,
+    SUGGESTSFLAGS = rpmlib::rpmTag_e_RPMTAG_SUGGESTSFLAGS as isize,
+    ENHANCESNAME = rpmlib::rpmTag_e_RPMTAG_ENHANCESNAME as isize,
+    ENHANCESVERSION = rpmlib::rpmTag_e_RPMTAG_ENHANCESVERSION as isize,
+    ENHANCESFLAGS = rpmlib::rpmTag_e_RPMTAG_ENHANCESFLAGS as isize,
+    PRIORITY = rpmlib::rpmTag_e_RPMTAG_PRIORITY as isize,
+    CVSID = rpmlib::rpmTag_e_RPMTAG_CVSID as isize,
+    BLINKPKGID = rpmlib::rpmTag_e_RPMTAG_BLINKPKGID as isize,
+    BLINKHDRID = rpmlib::rpmTag_e_RPMTAG_BLINKHDRID as isize,
+    BLINKNEVRA = rpmlib::rpmTag_e_RPMTAG_BLINKNEVRA as isize,
+    FLINKPKGID = rpmlib::rpmTag_e_RPMTAG_FLINKPKGID as isize,
+    FLINKHDRID = rpmlib::rpmTag_e_RPMTAG_FLINKHDRID as isize,
+    FLINKNEVRA = rpmlib::rpmTag_e_RPMTAG_FLINKNEVRA as isize,
+    PACKAGEORIGIN = rpmlib::rpmTag_e_RPMTAG_PACKAGEORIGIN as isize,
+    TRIGGERPREIN = rpmlib::rpmTag_e_RPMTAG_TRIGGERPREIN as isize,
+    BUILDSUGGESTS = rpmlib::rpmTag_e_RPMTAG_BUILDSUGGESTS as isize,
+    BUILDENHANCES = rpmlib::rpmTag_e_RPMTAG_BUILDENHANCES as isize,
+    SCRIPTSTATES = rpmlib::rpmTag_e_RPMTAG_SCRIPTSTATES as isize,
+    SCRIPTMETRICS = rpmlib::rpmTag_e_RPMTAG_SCRIPTMETRICS as isize,
+    BUILDCPUCLOCK = rpmlib::rpmTag_e_RPMTAG_BUILDCPUCLOCK as isize,
+    FILEDIGESTALGOS = rpmlib::rpmTag_e_RPMTAG_FILEDIGESTALGOS as isize,
+    VARIANTS = rpmlib::rpmTag_e_RPMTAG_VARIANTS as isize,
+    XMAJOR = rpmlib::rpmTag_e_RPMTAG_XMAJOR as isize,
+    XMINOR = rpmlib::rpmTag_e_RPMTAG_XMINOR as isize,
+    REPOTAG = rpmlib::rpmTag_e_RPMTAG_REPOTAG as isize,
+    KEYWORDS = rpmlib::rpmTag_e_RPMTAG_KEYWORDS as isize,
+    BUILDPLATFORMS = rpmlib::rpmTag_e_RPMTAG_BUILDPLATFORMS as isize,
+    PACKAGECOLOR = rpmlib::rpmTag_e_RPMTAG_PACKAGECOLOR as isize,
+    PACKAGEPREFCOLOR = rpmlib::rpmTag_e_RPMTAG_PACKAGEPREFCOLOR as isize,
+    XATTRSDICT = rpmlib::rpmTag_e_RPMTAG_XATTRSDICT as isize,
+    FILEXATTRSX = rpmlib::rpmTag_e_RPMTAG_FILEXATTRSX as isize,
+    DEPATTRSDICT = rpmlib::rpmTag_e_RPMTAG_DEPATTRSDICT as isize,
+    CONFLICTATTRSX = rpmlib::rpmTag_e_RPMTAG_CONFLICTATTRSX as isize,
+    OBSOLETEATTRSX = rpmlib::rpmTag_e_RPMTAG_OBSOLETEATTRSX as isize,
+    PROVIDEATTRSX = rpmlib::rpmTag_e_RPMTAG_PROVIDEATTRSX as isize,
+    REQUIREATTRSX = rpmlib::rpmTag_e_RPMTAG_REQUIREATTRSX as isize,
+    BUILDPROVIDES = rpmlib::rpmTag_e_RPMTAG_BUILDPROVIDES as isize,
+    BUILDOBSOLETES = rpmlib::rpmTag_e_RPMTAG_BUILDOBSOLETES as isize,
+    DBINSTANCE = rpmlib::rpmTag_e_RPMTAG_DBINSTANCE as isize,
+    NVRA = rpmlib::rpmTag_e_RPMTAG_NVRA as isize,
+    FILENAMES = rpmlib::rpmTag_e_RPMTAG_FILENAMES as isize,
+    FILEPROVIDE = rpmlib::rpmTag_e_RPMTAG_FILEPROVIDE as isize,
+    FILEREQUIRE = rpmlib::rpmTag_e_RPMTAG_FILEREQUIRE as isize,
+    FSNAMES = rpmlib::rpmTag_e_RPMTAG_FSNAMES as isize,
+    FSSIZES = rpmlib::rpmTag_e_RPMTAG_FSSIZES as isize,
+    TRIGGERCONDS = rpmlib::rpmTag_e_RPMTAG_TRIGGERCONDS as isize,
+    TRIGGERTYPE = rpmlib::rpmTag_e_RPMTAG_TRIGGERTYPE as isize,
+    ORIGFILENAMES = rpmlib::rpmTag_e_RPMTAG_ORIGFILENAMES as isize,
+    LONGFILESIZES = rpmlib::rpmTag_e_RPMTAG_LONGFILESIZES as isize,
+    LONGSIZE = rpmlib::rpmTag_e_RPMTAG_LONGSIZE as isize,
+    FILECAPS = rpmlib::rpmTag_e_RPMTAG_FILECAPS as isize,
+    FILEDIGESTALGO = rpmlib::rpmTag_e_RPMTAG_FILEDIGESTALGO as isize,
+    BUGURL = rpmlib::rpmTag_e_RPMTAG_BUGURL as isize,
+    EVR = rpmlib::rpmTag_e_RPMTAG_EVR as isize,
+    NVR = rpmlib::rpmTag_e_RPMTAG_NVR as isize,
+    NEVR = rpmlib::rpmTag_e_RPMTAG_NEVR as isize,
+    NEVRA = rpmlib::rpmTag_e_RPMTAG_NEVRA as isize,
+    HEADERCOLOR = rpmlib::rpmTag_e_RPMTAG_HEADERCOLOR as isize,
+    VERBOSE = rpmlib::rpmTag_e_RPMTAG_VERBOSE as isize,
+    EPOCHNUM = rpmlib::rpmTag_e_RPMTAG_EPOCHNUM as isize,
+    PREINFLAGS = rpmlib::rpmTag_e_RPMTAG_PREINFLAGS as isize,
+    POSTINFLAGS = rpmlib::rpmTag_e_RPMTAG_POSTINFLAGS as isize,
+    PREUNFLAGS = rpmlib::rpmTag_e_RPMTAG_PREUNFLAGS as isize,
+    POSTUNFLAGS = rpmlib::rpmTag_e_RPMTAG_POSTUNFLAGS as isize,
+    PRETRANSFLAGS = rpmlib::rpmTag_e_RPMTAG_PRETRANSFLAGS as isize,
+    POSTTRANSFLAGS = rpmlib::rpmTag_e_RPMTAG_POSTTRANSFLAGS as isize,
+    VERIFYSCRIPTFLAGS = rpmlib::rpmTag_e_RPMTAG_VERIFYSCRIPTFLAGS as isize,
+    TRIGGERSCRIPTFLAGS = rpmlib::rpmTag_e_RPMTAG_TRIGGERSCRIPTFLAGS as isize,
+    COLLECTIONS = rpmlib::rpmTag_e_RPMTAG_COLLECTIONS as isize,
+    POLICYNAMES = rpmlib::rpmTag_e_RPMTAG_POLICYNAMES as isize,
+    POLICYTYPES = rpmlib::rpmTag_e_RPMTAG_POLICYTYPES as isize,
+    POLICYTYPESINDEXES = rpmlib::rpmTag_e_RPMTAG_POLICYTYPESINDEXES as isize,
+    POLICYFLAGS = rpmlib::rpmTag_e_RPMTAG_POLICYFLAGS as isize,
+    VCS = rpmlib::rpmTag_e_RPMTAG_VCS as isize,
+    ORDERNAME = rpmlib::rpmTag_e_RPMTAG_ORDERNAME as isize,
+    ORDERVERSION = rpmlib::rpmTag_e_RPMTAG_ORDERVERSION as isize,
+    ORDERFLAGS = rpmlib::rpmTag_e_RPMTAG_ORDERFLAGS as isize,
+    MSSFMANIFEST = rpmlib::rpmTag_e_RPMTAG_MSSFMANIFEST as isize,
+    MSSFDOMAIN = rpmlib::rpmTag_e_RPMTAG_MSSFDOMAIN as isize,
+    INSTFILENAMES = rpmlib::rpmTag_e_RPMTAG_INSTFILENAMES as isize,
+    REQUIRENEVRS = rpmlib::rpmTag_e_RPMTAG_REQUIRENEVRS as isize,
+    PROVIDENEVRS = rpmlib::rpmTag_e_RPMTAG_PROVIDENEVRS as isize,
+    OBSOLETENEVRS = rpmlib::rpmTag_e_RPMTAG_OBSOLETENEVRS as isize,
+    CONFLICTNEVRS = rpmlib::rpmTag_e_RPMTAG_CONFLICTNEVRS as isize,
+    FILENLINKS = rpmlib::rpmTag_e_RPMTAG_FILENLINKS as isize,
+}
+
+/// RPM database index tags (`rpmDbiTag_e` in rpmlib)
+#[derive(Copy, Clone, Debug, Eq, PartialEq)]
+pub enum DBIndexTag {
+    PACKAGES = rpmlib::rpmDbiTag_e_RPMDBI_PACKAGES as isize,
+    LABEL = rpmlib::rpmDbiTag_e_RPMDBI_LABEL as isize,
+    NAME = rpmlib::rpmDbiTag_e_RPMDBI_NAME as isize,
+    BASENAMES = rpmlib::rpmDbiTag_e_RPMDBI_BASENAMES as isize,
+    GROUP = rpmlib::rpmDbiTag_e_RPMDBI_GROUP as isize,
+    REQUIRENAME = rpmlib::rpmDbiTag_e_RPMDBI_REQUIRENAME as isize,
+    PROVIDENAME = rpmlib::rpmDbiTag_e_RPMDBI_PROVIDENAME as isize,
+    CONFLICTNAME = rpmlib::rpmDbiTag_e_RPMDBI_CONFLICTNAME as isize,
+    OBSOLETENAME = rpmlib::rpmDbiTag_e_RPMDBI_OBSOLETENAME as isize,
+    TRIGGERNAME = rpmlib::rpmDbiTag_e_RPMDBI_TRIGGERNAME as isize,
+    DIRNAMES = rpmlib::rpmDbiTag_e_RPMDBI_DIRNAMES as isize,
+    INSTALLTID = rpmlib::rpmDbiTag_e_RPMDBI_INSTALLTID as isize,
+    SIGMD5 = rpmlib::rpmDbiTag_e_RPMDBI_SIGMD5 as isize,
+    SHA1HEADER = rpmlib::rpmDbiTag_e_RPMDBI_SHA1HEADER as isize,
+    INSTFILENAMES = rpmlib::rpmDbiTag_e_RPMDBI_INSTFILENAMES as isize,
+}
+
+/// RPM package signature tags (`rpmSigTag_e` in rpmlib)
+#[derive(Copy, Clone, Debug, Eq, PartialEq)]
+pub enum SignatureTag {
+    /// Header + payload size (32-bit) in bytes
+    SIZE = rpmlib::rpmSigTag_e_RPMSIGTAG_SIZE as isize,
+
+    /// Broken MD5 (take 1 as isize, deprecated/legacy)
+    LEMD5_1 = rpmlib::rpmSigTag_e_RPMSIGTAG_LEMD5_1 as isize,
+
+    /// Broken MD5 (take 2 as isize, deprecated/legacy)
+    LEMD5_2 = rpmlib::rpmSigTag_e_RPMSIGTAG_LEMD5_2 as isize,
+
+    /// PGP 2.6.3 signature
+    PGP = rpmlib::rpmSigTag_e_RPMSIGTAG_PGP as isize,
+
+    /// MD5 signature
+    MD5 = rpmlib::rpmSigTag_e_RPMSIGTAG_MD5 as isize,
+
+    /// GnuPG signature
+    GPG = rpmlib::rpmSigTag_e_RPMSIGTAG_GPG as isize,
+
+    /// PGP5 signature (deprecated/legacy)
+    PGP5 = rpmlib::rpmSigTag_e_RPMSIGTAG_PGP5 as isize,
+
+    /// Uncompressed payload size in bytes
+    PAYLOADSIZE = rpmlib::rpmSigTag_e_RPMSIGTAG_PAYLOADSIZE as isize,
+
+    /// Broken SHA1 (take 1)
+    BADSHA1_1 = rpmlib::rpmSigTag_e_RPMSIGTAG_BADSHA1_1 as isize,
+
+    /// Broken SHA1 (take 2)
+    BADSHA1_2 = rpmlib::rpmSigTag_e_RPMSIGTAG_BADSHA1_2 as isize,
+
+    /// SHA1 header digest
+    SHA1 = rpmlib::rpmSigTag_e_RPMSIGTAG_SHA1 as isize,
+
+    /// DSA header signature
+    DSA = rpmlib::rpmSigTag_e_RPMSIGTAG_DSA as isize,
+
+    /// RSA header signature
+    RSA = rpmlib::rpmSigTag_e_RPMSIGTAG_RSA as isize,
+
+    /// Header + payload size (64-bit) in bytes
+    LONGSIZE = rpmlib::rpmSigTag_e_RPMSIGTAG_LONGSIZE as isize,
+
+    /// Uncompressed payload size in bytes
+    LONGARCHIVESIZE = rpmlib::rpmSigTag_e_RPMSIGTAG_LONGARCHIVESIZE as isize,
+}
+
+/// Types of data in tags from headers (`rpmTagType_e` in rpmlib)
+#[derive(Copy, Clone, Debug, Eq, PartialEq)]
+pub enum TagType {
+    NULL = rpmlib::rpmTagType_e_RPM_NULL_TYPE as isize,
+    CHAR = rpmlib::rpmTagType_e_RPM_CHAR_TYPE as isize,
+    INT8 = rpmlib::rpmTagType_e_RPM_INT8_TYPE as isize,
+    INT16 = rpmlib::rpmTagType_e_RPM_INT16_TYPE as isize,
+    INT32 = rpmlib::rpmTagType_e_RPM_INT32_TYPE as isize,
+    INT64 = rpmlib::rpmTagType_e_RPM_INT64_TYPE as isize,
+    STRING = rpmlib::rpmTagType_e_RPM_STRING_TYPE as isize,
+    BIN = rpmlib::rpmTagType_e_RPM_BIN_TYPE as isize,
+    STRING_ARRAY = rpmlib::rpmTagType_e_RPM_STRING_ARRAY_TYPE as isize,
+    I18NSTRING = rpmlib::rpmTagType_e_RPM_I18NSTRING_TYPE as isize,
+}
+
+/// Classes of data in tags from headers (`rpmTagClass_e` in rpmlib)
+#[derive(Copy, Clone, Debug, Eq, PartialEq)]
+pub enum TagClass {
+    NULL = rpmlib::rpmTagClass_e_RPM_NULL_CLASS as isize,
+    NUMERIC = rpmlib::rpmTagClass_e_RPM_NUMERIC_CLASS as isize,
+    STRING = rpmlib::rpmTagClass_e_RPM_STRING_CLASS as isize,
+    BINARY = rpmlib::rpmTagClass_e_RPM_BINARY_CLASS as isize,
+}
