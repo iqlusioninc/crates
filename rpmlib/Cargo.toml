@@ -18,5 +18,5 @@ byteorder = { version = "1", default-features = false }
 failure = "0.1"
 lazy_static = "1"
 libc = { version = "0.2", default-features = false }
-rpmlib-sys = { version = "0.3", path = "../rpmlib-sys" }
+rpmlib-sys = { version = "0.4", path = "../rpmlib-sys" }
 streaming-iterator = "0.1"

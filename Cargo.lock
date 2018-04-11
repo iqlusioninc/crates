@@ -337,13 +337,13 @@ dependencies = [
  "failure 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "lazy_static 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "libc 0.2.40 (registry+https://github.com/rust-lang/crates.io-index)",
- "rpmlib-sys 0.3.0",
+ "rpmlib-sys 0.4.0",
  "streaming-iterator 0.1.3 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
 name = "rpmlib-sys"
-version = "0.3.0"
+version = "0.4.0"
 dependencies = [
  "bindgen 0.35.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]

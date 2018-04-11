@@ -1,3 +1,9 @@
+## 0.4.0 (2018-04-11)
+
+* [#24](https://github.com/iqlusion-io/crates/pull/24)
+  Additional features related to RPM database support such as bindings for
+  rpmlib.h and rpmmacro.h.
+
 ## 0.3.0 (2018-04-10)
 
 * [#23](https://github.com/iqlusion-io/crates/pull/23)
