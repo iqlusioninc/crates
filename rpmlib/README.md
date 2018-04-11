@@ -25,8 +25,13 @@ provide a safe, idiomatic Rust wrapper to this library.
 
 ## Status
 
-Nothing to see yet. Check back soon, or open an issue if there's a specific
-feature you'd like to request and/or contribute.
+- [X] Search and query RPM database by tag with exact match, glob, and regex [#13](https://github.com/iqlusion-io/crates/issues/13)
+- [ ] RPM database management: create database, delete database [#25](https://github.com/iqlusion-io/crates/issues/25)
+- [ ] Install and upgrade packages [#16](https://github.com/iqlusion-io/crates/issues/16)
+- [ ] Version comparison support (i.e. dependency sets) [#15](https://github.com/iqlusion-io/crates/issues/15)
+- [ ] RPM reader API (i.e. for `.rpm` files) [#14](https://github.com/iqlusion-io/crates/issues/14)
+- [ ] RPM builder API (i.e. `librpmbuild`) [#18](https://github.com/iqlusion-io/crates/issues/18)
+- [ ] RPM signing API (i.e. `librpmsign`) [#18](https://github.com/iqlusion-io/crates/issues/18)
 
 ## License
 
