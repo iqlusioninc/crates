@@ -1,6 +1,6 @@
 [package]
 name        = "rpmlib"
-description = "RedHat Package Manager (RPM) library binding with an idiomatic Rust API"
+description = "RPM Package Manager library binding with an idiomatic Rust API"
 version     = "0.1.0"
 license     = "Apache-2.0"
 authors     = ["Tony Arcieri <tony@iqlusion.io>"]

@@ -25,9 +25,9 @@ This repository contains the following crates:
 * [canonical-path:](https://github.com/iqlusion-io/crates/tree/master/canonical-path)
   `Path` and `PathBuf`-like types for representing canonical filesystem paths.
 * [rpmlib:](https://github.com/iqlusion-io/crates/tree/master/rpmlib)
-  Rust binding to rpmlib (RedHat Package Manager library)
+  Rust binding to rpmlib (RPM Package Manager library)
 * [rpmlib-sys:](https://github.com/iqlusion-io/crates/tree/master/rpmlib-sys)
-  Low-level bindgen wrapper to rpmlib (RedHat Package Manager library)
+  Low-level bindgen wrapper to rpmlib (RPM Package Manager library)
 * [tai64:](https://github.com/iqlusion-io/crates/tree/master/tai64)
   TAI64(N) timestamp format (Temps Atomique International)
 

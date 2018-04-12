@@ -1,4 +1,4 @@
-# rpmlib-sys: bindgen wrapper for RedHat Package Manager (RPM) C library
+# rpmlib-sys: bindgen wrapper for RPM Package Manager C library
 
 [![Crate][crate-image]][crate-link] [![Build Status][build-image]][build-link] [![Apache 2.0 Licensed][license-image]][license-link]
 
@@ -11,7 +11,7 @@
 
 This crate uses bindgen to generate an unsafe FFI wrapper for the
 [rpmlib C library], which provides a low-level API for interacting with the
-[RedHat Package Manager (RPM)] and **.rpm** files.
+[RPM Package Manager] and **.rpm** files.
 
 This crate isn't intended to be used directly, but instead provides an unsafe,
 low-level binding used by the higher level **rpmlib** crate, which aims to
@@ -20,7 +20,7 @@ provide a safe, idiomatic, high-level binding to the C library:
 * **rpmlib crate**: https://docs.rs/crate/rpmlib/
 
 [rpmlib C library]: https://docs.fedoraproject.org/en-US/Fedora_Draft_Documentation/0.1/html/RPM_Guide/ch-programming-c.html
-[RedHat Package Manager (RPM)]: http://rpm.org/
+[RPM Package Manager]: http://rpm.org/
 
 ## License
 

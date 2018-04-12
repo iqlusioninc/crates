@@ -1,4 +1,4 @@
-//! Rust binding for rpmlib: the RedHat Package Manager (RPM) library
+//! Rust binding for rpmlib: the RPM Package Manager library
 //!
 //! This crate contains idiomatic Rust bindings which aim to expose a safe
 //! API to rpmlib. The low-level unsafe bindings are located in the
