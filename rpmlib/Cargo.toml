@@ -7,7 +7,7 @@ authors     = ["Tony Arcieri <tony@iqlusion.io>"]
 categories  = ["api-bindings", "os", "parsing"]
 keywords    = ["rpm", "linux", "redhat", "fedora", "centos"]
 readme      = "README.md"
-homepage    = "https://docs.rs/crate/rpmlib/"
+homepage    = "https://rpmlib.rs/rpmlib/"
 repository  = "https://github.com/iqlusion-io/crates/tree/master/rpmlib"
 
 [badges]

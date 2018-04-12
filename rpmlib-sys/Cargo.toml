@@ -7,7 +7,7 @@ authors     = ["Tony Arcieri <tony@iqlusion.io>"]
 categories  = ["external-ffi-bindings", "os"]
 keywords    = ["rpm", "linux", "redhat", "fedora", "centos"]
 readme      = "README.md"
-homepage    = "https://docs.rs/crate/rpmlib/"
+homepage    = "https://rpmlib.rs/rpmlib-sys/"
 repository  = "https://github.com/iqlusion-io/crates/tree/master/rpmlib-sys"
 
 [badges]

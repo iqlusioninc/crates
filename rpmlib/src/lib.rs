@@ -9,12 +9,13 @@
 //! See the `rpmlib::db::Database` type for examples of how to interact with
 //! the RPM database.
 //!
-//! [rpmlib-sys]: https://github.com/iqlusion-io/crates/tree/master/rpmlib-sys
+//! [rpmlib-sys]: https://rpmlib.rs/rpmlib-sys/
 
 #![crate_name = "rpmlib"]
 #![crate_type = "rlib"]
 #![deny(warnings, missing_docs, trivial_casts, trivial_numeric_casts)]
 #![deny(unused_import_braces, unused_qualifications)]
+#![doc(html_root_url = "https://rpmlib.rs/rpmlib/")]
 
 extern crate byteorder;
 #[macro_use]

@@ -17,7 +17,12 @@ This crate isn't intended to be used directly, but instead provides an unsafe,
 low-level binding used by the higher level **rpmlib** crate, which aims to
 provide a safe, idiomatic, high-level binding to the C library:
 
-* **rpmlib crate**: https://docs.rs/crate/rpmlib/
+https://docs.rs/crate/rpmlib/
+
+If you're intending to add a feature to the **rpmlib** crate however, you have
+come to the right place. You can find documentation here:
+
+[Documentation]: https://rpmlib.rs/rpmlib-sys/
 
 [rpmlib C library]: https://docs.fedoraproject.org/en-US/Fedora_Draft_Documentation/0.1/html/RPM_Guide/ch-programming-c.html
 [RPM Package Manager]: http://rpm.org/
