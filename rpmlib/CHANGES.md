@@ -1,3 +1,7 @@
+## 0.1.2 (2018-04-12)
+
+* Host documentation on https://rpmlib.rs/rpmlib
+
 ## 0.1.1 (2018-04-11)
 
 * Update status section in README.md so it shows up on https://crates.io
