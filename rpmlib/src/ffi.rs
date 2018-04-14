@@ -37,16 +37,6 @@ impl FFI {
             .map_err(|e| format_err!("couldn't acquire rpmlib FFI lock: {}", e))
     }
 
-    /// rpmReadConfigFiles()
-    #[inline]
-    pub unsafe fn rpmReadConfigFiles(
-        &mut self,
-        file: *const c_char,
-        target: *const c_char,
-    ) -> c_int {
-        rpmlib::rpmReadConfigFiles(file, target)
-    }
-
     /// rpmDefineMacro()
     pub unsafe fn rpmDefineMacro(
         &mut self,

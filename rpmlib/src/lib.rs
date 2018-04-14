@@ -26,6 +26,9 @@ extern crate libc;
 extern crate rpmlib_sys;
 pub extern crate streaming_iterator;
 
+/// RPM configuration (i.e. rpmrc)
+pub mod config;
+
 /// RPM database access
 pub mod db;
 
@@ -54,39 +57,3 @@ pub use streaming_iterator::StreamingIterator;
 pub use td::TagData;
 pub use ts::TransactionSet as Txn;
 pub use tag::Tag;
-
-use failure::Error;
-use std::ffi::CString;
-use std::os::unix::ffi::OsStrExt;
-use std::path::Path;
-use std::ptr;
-
-use ffi::FFI;
-
-/// Read RPM configuration (a.k.a. rpmrc)
-///
-/// If `None` is passed, the default configuration will be used
-///
-/// Configuration is global to the process
-pub fn read_config(config_file: Option<&Path>) -> Result<(), Error> {
-    let mut ffi = FFI::try_lock()?;
-    let rc;
-
-    if let Some(path) = config_file {
-        let path_cstr = CString::new(path.as_os_str().as_bytes())
-            .map_err(|e| format_err!("invalid path: {} ({})", path.display(), e))?;
-
-        rc = unsafe { ffi.rpmReadConfigFiles(path_cstr.as_ptr(), ptr::null()) };
-    } else {
-        rc = unsafe { ffi.rpmReadConfigFiles(ptr::null(), ptr::null()) };
-    }
-
-    if rc != 0 {
-        match config_file {
-            Some(path) => bail!("error reading RPM config from: {}", path.display()),
-            None => bail!("error reading RPM config from default location"),
-        }
-    }
-
-    Ok(())
-}
