@@ -7,7 +7,7 @@ use std::os::unix::ffi::OsStrExt;
 use std::path::Path;
 use std::ptr;
 
-use MacroContext;
+use {GlobalState, MacroContext};
 
 /// Name of the macro which defines the path to the database
 const DB_PATH_MACRO: &str = "_dbpath";
@@ -18,9 +18,17 @@ const DB_PATH_MACRO: &str = "_dbpath";
 ///
 /// Configuration is global to the process.
 pub fn read_file(config_file: Option<&Path>) -> Result<(), Error> {
-    // TODO: nothing presently prevents this from being called from a different
-    // thread than operations occurring inside of a TransactionSet. We should
-    // add a mutex that covers both to ensure thread safety.
+    let mut global_state = GlobalState::lock();
+
+    // Avoid invoking `rpmReadConfigFiles` more than once. This vicariously
+    // invokes `rpmInitCrypto` which causes segfaults (NULL struct pointer
+    // derefs) if invoked more than once.
+    if global_state.configured {
+        bail!("already configured");
+    }
+
+    global_state.configured = true;
+
     let rc = match config_file {
         Some(path) => {
             if !path.exists() {

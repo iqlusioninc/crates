@@ -38,6 +38,9 @@ pub mod header;
 /// Wrapper for rpmlib which ensures single-threaded access
 mod ffi;
 
+/// RPM's global state
+mod global_state;
+
 /// Macros are RPM's configuration system
 pub mod macro_context;
 
@@ -52,6 +55,7 @@ pub mod tag;
 
 pub use db::Database;
 pub use header::Header;
+pub(crate) use global_state::GlobalState;
 pub use macro_context::MacroContext;
 pub use streaming_iterator::StreamingIterator;
 pub use td::TagData;
