@@ -1,3 +1,7 @@
+## 0.2.3 (2018-04-14)
+
+* Fix CI badge location (for crates.io)
+
 ## 0.2.2 (2018-04-08)
 
 * `README.md` formatting fixups for [crates.io](https://crates.io)
