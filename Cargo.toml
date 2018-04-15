@@ -1,6 +1,7 @@
 [workspace]
 members = [
     "canonical-path",
+    "iq-cli",
     "rpmlib",
     "rpmlib-sys",
     "tai64"
