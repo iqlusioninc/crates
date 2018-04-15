@@ -23,9 +23,9 @@ use ts::TransactionSet;
 /// Finding the "rpm-devel" RPM in the database:
 ///
 /// ```
-/// use rpmlib::{Database, StreamingIterator, Txn, Tag, TagData};
+/// use rpmlib::{self, Database, StreamingIterator, Txn, Tag, TagData};
 ///
-/// rpmlib::read_config(None).unwrap();
+/// rpmlib::config::read_file(None).unwrap();
 ///
 /// let mut txn = Txn::create().unwrap();
 /// let mut db = Database::open(&mut txn, false).unwrap();
@@ -244,7 +244,7 @@ impl<'db, 'ts> Drop for MatchIterator<'db, 'ts> {
 
 #[cfg(test)]
 mod tests {
-    use {read_config, Database, Tag, TagData, Txn};
+    use {config, Database, Tag, TagData, Txn};
     use streaming_iterator::StreamingIterator;
 
     /// The `.rpm` containing rpmlib itself
@@ -254,7 +254,7 @@ mod tests {
     fn test_package_lookup() {
         // Read the default config
         // TODO: create a mock RPM database for testing
-        read_config(None).unwrap();
+        config::read_file(None).unwrap();
 
         let mut txn = Txn::create().unwrap();
         let mut db = Database::open(&mut txn, false).unwrap();
