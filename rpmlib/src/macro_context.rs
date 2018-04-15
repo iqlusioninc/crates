@@ -2,18 +2,16 @@
 //! previous rpmrc system.
 
 use failure::Error;
-use rpmlib_sys::rpmlib;
+use rpmlib_sys::rpmlib as ffi;
 use std::ffi::CString;
 
-use ffi::FFI;
-
 /// Scopes in which macros are defined
-pub struct MacroContext(rpmlib::rpmMacroContext);
+pub struct MacroContext(ffi::rpmMacroContext);
 
 /// Obtain the default global context
 impl Default for MacroContext {
     fn default() -> MacroContext {
-        unsafe { MacroContext(rpmlib::rpmGlobalMacroContext) }
+        unsafe { MacroContext(ffi::rpmGlobalMacroContext) }
     }
 }
 
@@ -24,11 +22,10 @@ impl MacroContext {
     ///
     /// Level defines the macro recursion level (0 is the entry API)
     pub fn define(&self, macro_string: &str, level: isize) -> Result<(), Error> {
-        let mut ffi = FFI::try_lock()?;
-        let macro_cstr = CString::new(macro_string).map_err(|e| format_err!("{}", e))?;
+        let cstr = CString::new(macro_string).map_err(|e| format_err!("{}", e))?;
 
         unsafe {
-            ffi.rpmDefineMacro(self.0, macro_cstr.as_ptr(), level as i32);
+            ffi::rpmDefineMacro(self.0, cstr.as_ptr(), level as i32);
         }
 
         Ok(())
@@ -36,11 +33,10 @@ impl MacroContext {
 
     /// Delete a macro from this context.
     pub fn delete(&self, name: &str) -> Result<(), Error> {
-        let mut ffi = FFI::try_lock()?;
-        let name_cstr = CString::new(name).unwrap();
+        let cstr = CString::new(name).unwrap();
 
         unsafe {
-            ffi.delMacro(self.0, name_cstr.as_ptr());
+            ffi::delMacro(self.0, cstr.as_ptr());
         }
 
         Ok(())

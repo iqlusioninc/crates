@@ -1,46 +1,69 @@
-use failure::Error;
-use rpmlib_sys::rpmlib;
-use std::ops::DerefMut;
-use std::sync::MutexGuard;
+//! Transaction sets: rpmlib's transaction API
 
-use ffi::FFI;
+use rpmlib_sys::rpmlib as ffi;
+use std::sync::MutexGuard;
+use std::sync::atomic::AtomicPtr;
+
+use GlobalState;
 
 /// rpmlib transactions, a.k.a. "transaction sets" (or "rpmts" in rpmlib)
 ///
 /// Nearly all access to rpmlib, including actions which don't necessarily
 /// involve operations on the RPM database, require a transaction set.
-pub struct TransactionSet {
-    /// Ensure we hold the FFI global lock throughout the transaction
-    ffi: MutexGuard<'static, FFI>,
-
-    /// Pointer to the underlying rpmlib transaction set
-    ptr: rpmlib::rpmts,
-}
+///
+/// This library opens a single global transaction set on command, and all
+/// operations which require one acquire it, use it, and then release it.
+/// This allows us to keep them out of the public API.
+pub(crate) struct TransactionSet(AtomicPtr<ffi::rpmts_s>);
 
 impl TransactionSet {
     /// Create a transaction set (i.e. begin a transaction)
-    #[inline]
-    pub fn create() -> Result<Self, Error> {
-        let mut ffi = FFI::try_lock()?;
-        let ptr = unsafe { ffi.rpmtsCreate() };
-        Ok(Self { ffi, ptr })
-    }
-
-    /// Borrow this transaction's lock on the FFI
-    pub(crate) fn ffi(&mut self) -> &mut FFI {
-        self.ffi.deref_mut()
-    }
-
-    /// Obtain the internal pointer to the transaction set
-    pub(crate) fn as_ptr(&mut self) -> rpmlib::rpmts {
-        self.ptr
+    ///
+    /// This is not intended to be invoked directly, but instead obtained
+    /// from `GlobalState`.
+    pub(crate) fn create() -> Self {
+        TransactionSet(AtomicPtr::new(unsafe { ffi::rpmtsCreate() }))
     }
 }
 
 impl Drop for TransactionSet {
     fn drop(&mut self) {
         unsafe {
-            self.ffi.rpmtsFree(self.ptr);
+            ffi::rpmtsFree(*self.0.get_mut());
+        }
+    }
+}
+
+impl TransactionSet {
+    pub(crate) fn as_mut_ptr(&mut self) -> &mut *mut ffi::rpmts_s {
+        self.0.get_mut()
+    }
+}
+
+/// Crate-public wrapper for acquiring and releasing the global transaction set
+/// which also cleans it prior to unlocking it.
+pub(crate) struct Txn(MutexGuard<'static, GlobalState>);
+
+impl Txn {
+    /// Acquire the global state mutex, giving the current thread exclusive
+    /// access to the global transaction set.
+    pub fn create() -> Self {
+        Txn(GlobalState::lock())
+    }
+
+    /// Obtain the internal pointer to the transaction set
+    pub(crate) fn as_mut_ptr(&mut self) -> *mut ffi::rpmts_s {
+        // Since we're guaranteed to be holding the GlobalState mutex here,
+        // we're free to deref the pointer.
+        *self.0.ts.as_mut_ptr()
+    }
+}
+
+/// Tidy up the shared global transaction set between uses
+impl Drop for Txn {
+    fn drop(&mut self) {
+        unsafe {
+            ffi::rpmtsClean(self.as_mut_ptr());
         }
     }
 }
