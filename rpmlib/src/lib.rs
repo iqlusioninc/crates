@@ -24,7 +24,6 @@ extern crate failure;
 extern crate lazy_static;
 extern crate libc;
 extern crate rpmlib_sys;
-pub extern crate streaming_iterator;
 
 /// RPM configuration (i.e. rpmrc)
 pub mod config;
@@ -35,8 +34,8 @@ pub mod db;
 /// RPM package headers
 pub mod header;
 
-/// Wrapper for rpmlib which ensures single-threaded access
-mod ffi;
+/// Iterators over the RPM database
+pub mod iterator;
 
 /// RPM's global state
 mod global_state;
@@ -53,11 +52,9 @@ pub mod ts;
 /// Tags for header entries and indexes
 pub mod tag;
 
-pub use db::Database;
 pub use header::Header;
 pub(crate) use global_state::GlobalState;
+pub use iterator::MatchIterator;
 pub use macro_context::MacroContext;
-pub use streaming_iterator::StreamingIterator;
 pub use td::TagData;
-pub use ts::TransactionSet as Txn;
 pub use tag::Tag;

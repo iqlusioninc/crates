@@ -8,6 +8,8 @@
 
 use std::sync::{Mutex, MutexGuard};
 
+use ts::TransactionSet;
+
 lazy_static! {
     static ref RPM_GLOBAL_STATE: Mutex<GlobalState> = Mutex::new(GlobalState::default());
 }
@@ -17,11 +19,18 @@ pub(crate) struct GlobalState {
     /// Have any configuration functions been called? (Specifically any ones
     /// which invoke `rpmInitCrypto`, which it seems should only be called once)
     pub configured: bool,
+
+    /// Global shared transaction set created the first time rpmlib's global
+    /// state is accessed.
+    pub ts: TransactionSet,
 }
 
 impl Default for GlobalState {
     fn default() -> GlobalState {
-        GlobalState { configured: false }
+        GlobalState {
+            configured: false,
+            ts: TransactionSet::create(),
+        }
     }
 }
 
