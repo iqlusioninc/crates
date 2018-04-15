@@ -11,7 +11,7 @@ categories  = ["date-and-time", "internationalization", "network-programming", "
 keywords    = ["tai64", "time", "timestamps", "chrono"]
 
 [badges]
-circle-ci = { repository = "iqlusion-io/oxides" }
+circle-ci = { repository = "iqlusion-io/crates" }
 
 [dependencies]
 byteorder = "1.0"
