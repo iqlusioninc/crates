@@ -1,6 +1,7 @@
 [workspace]
 members = [
     "canonical-path",
+    "cargo-rpm",
     "iq-cli",
     "rpmlib",
     "rpmlib-sys",
