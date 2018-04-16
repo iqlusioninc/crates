@@ -2,30 +2,12 @@
 //!
 //! Portions of this code are borrowed from Cargo
 
-use libc::isatty;
 use std::fmt;
 use std::io;
 use std::io::prelude::*;
 use term::{self, Attr, TerminfoTerminal};
 use term::Terminal as RawTerminal;
 use term::color::{Color, BLACK};
-
-/// Is STDOUT a tty?
-pub(crate) fn is_tty() -> bool {
-    #[allow(unsafe_code)]
-    unsafe {
-        isatty(0) == 1
-    }
-}
-
-/// Create a new shell
-pub fn create(color_config: ColorConfig) -> Shell {
-    let config = ShellConfig {
-        color_config,
-        tty: is_tty(),
-    };
-    Shell::create(|| Box::new(io::stdout()), config)
-}
 
 /// Color configuration
 #[derive(Clone, Copy, PartialEq)]

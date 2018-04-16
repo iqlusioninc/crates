@@ -10,6 +10,26 @@ extern crate term;
 
 mod shell;
 
-pub use shell::{create, ColorConfig, Shell, ShellConfig};
+pub use shell::{ColorConfig, Shell, ShellConfig};
 pub use term::color;
 pub use term::color::Color;
+
+use std::io;
+use libc::isatty;
+
+/// Create a new shell
+pub fn create_shell(color_config: ColorConfig) -> Shell {
+    let config = ShellConfig {
+        color_config,
+        tty: is_tty(),
+    };
+    Shell::create(|| Box::new(io::stdout()), config)
+}
+
+/// Is STDOUT a tty?
+fn is_tty() -> bool {
+    #[allow(unsafe_code)]
+    unsafe {
+        isatty(0) == 1
+    }
+}

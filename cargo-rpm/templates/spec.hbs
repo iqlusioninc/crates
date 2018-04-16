@@ -1,0 +1,66 @@
+%define __spec_install_post %{nil}
+%define __os_install_post %{_dbpath}/brp-compress
+%define debug_package %{nil}
+
+Name: {{ name }}
+Summary: {{ summary }}
+Version: @@VERSION@@ # Set automatically by "cargo rpm build"
+Release: 1
+{{#if license ~}}
+License: {{ license }}
+{{/if ~}}
+{{#if service ~}}
+Group: System Environment/Daemons
+{{else ~}}
+Group: Applications/System
+{{/if ~}}
+Source0: %{name}-%{version}.tar.gz
+{{#if url ~}}
+URL: {{ url }}
+{{/if}}
+BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
+{{#if service ~}}
+BuildRequires: systemd
+
+Requires(post): systemd
+Requires(preun): systemd
+Requires(postun): systemd
+{{/if}}
+%description
+%{summary}
+
+%prep
+%setup -q
+
+%build
+# Empty section.
+
+%install
+rm -rf %{buildroot}
+mkdir -p  %{buildroot}
+
+# in builddir
+cp -a * %{buildroot}
+
+%clean
+rm -rf %{buildroot}
+
+{{#if service ~}}
+%systemd_post {{service}}
+
+%preun
+%systemd_preun {{service}}
+
+%postun
+%systemd_postun_with_restart {{service}}
+
+{{/if ~}}
+
+%files
+%defattr(-,root,root,-)
+%config(noreplace) %{_sysconfdir}/*
+${_bindir}/*
+%{_sbindir}/*
+{{#if service ~}}
+%{_unitdir}/{{service}}
+{{/if ~}}

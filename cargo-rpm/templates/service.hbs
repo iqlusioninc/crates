@@ -1,0 +1,12 @@
+[Unit]
+Description={{ description }}
+After=network.target
+
+[Service]
+Type=simple
+ExecStart={{ bin_path }}
+KillMode=process
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
