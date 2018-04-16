@@ -30,7 +30,7 @@ pub struct InitOpts {
 
     /// Path to the systemd service unit config template
     #[options(no_short, long = "service")]
-    pub service: Option<PathBuf>,
+    pub service: Option<String>,
 
     /// Configure this RPM as a systemd service unit
     #[options(short = "s", long = "systemd")]
@@ -38,7 +38,7 @@ pub struct InitOpts {
 
     /// Path to the RPM spec template
     #[options(long = "template")]
-    pub template: Option<PathBuf>,
+    pub template: Option<String>,
 }
 
 impl InitOpts {
@@ -149,13 +149,15 @@ impl InitOpts {
 /// Render this package's RPM spec
 fn render_spec(
     spec_path: &Path,
-    template: &Option<PathBuf>,
+    template_path_str: &Option<String>,
     package_config: &PackageConfig,
     service_name: &Option<String>,
 ) -> Result<(), Error> {
     let mut spec_params = SpecParams::from(package_config);
     spec_params.service = service_name.clone();
-    let spec_rendered = spec_params.render(template.as_ref().map(|p| p.as_ref()))?;
+
+    let template_path = template_path_str.as_ref().map(|t| PathBuf::from(t));
+    let spec_rendered = spec_params.render(template_path.as_ref().map(|t| t.as_ref()))?;
 
     let mut spec_file = File::create(spec_path)?;
     spec_file.write_all(spec_rendered.as_bytes())?;
@@ -173,11 +175,12 @@ fn render_spec(
 /// Render this package's systemd service unit config (if enabled)
 fn render_service(
     service_path: &Path,
-    template: &Option<PathBuf>,
+    template_path_str: &Option<String>,
     package_config: &PackageConfig,
 ) -> Result<(), Error> {
     let service_params = ServiceParams::from(package_config);
-    let service_rendered = service_params.render(template.as_ref().map(|p| p.as_ref()))?;
+    let template_path = template_path_str.as_ref().map(|t| PathBuf::from(t));
+    let service_rendered = service_params.render(template_path.as_ref().map(|t| t.as_ref()))?;
 
     let mut service_file = File::create(service_path)?;
     service_file.write_all(service_rendered.as_bytes())?;
