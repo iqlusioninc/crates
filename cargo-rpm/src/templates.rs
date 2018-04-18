@@ -7,7 +7,7 @@ use std::fs::File;
 use std::io::Read;
 use std::path::{Path, PathBuf};
 
-use cargo_config::PackageConfig;
+use config::PackageConfig;
 use license;
 use shell;
 

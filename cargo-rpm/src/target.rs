@@ -2,7 +2,26 @@
 
 use failure::Error;
 use std::fs;
-use std::path::Path;
+use std::path::{Path, PathBuf};
+
+/// Locate the project's target directory
+pub fn find_dir() -> Result<PathBuf, Error> {
+    // Check all parents of the current directory for a target directory.
+    // We could call `cargo metadata` to find it but this is much cheaper.
+    let mut path = fs::canonicalize(".")?;
+
+    loop {
+        let target = path.join("target");
+        if target.exists() {
+            return Ok(target);
+        }
+
+        path = match path.parent() {
+            Some(p) => p.to_path_buf(),
+            None => bail!("couldn't find target directory!"),
+        }
+    }
+}
 
 /// Target types we can autodetect
 pub enum TargetType {

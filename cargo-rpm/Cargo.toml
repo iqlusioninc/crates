@@ -12,6 +12,7 @@ keywords    = ["rpm", "cargo", "package", "release"]
 
 [dependencies]
 failure = "0.1"
+flate2 = { version = "1.0", default-features = false, features = ["zlib"] }
 gumdrop = "0.4"
 gumdrop_derive = "0.4"
 handlebars = "1.0.0-beta.1"
@@ -19,7 +20,11 @@ iq-cli = { version = "0", path = "../iq-cli" }
 lazy_static = "1"
 serde = "1"
 serde_derive = "1"
+tar = "0.4"
 toml = "0.4"
 
-[package.metadata.rpm.target]
+[package.metadata.rpm.cargo]
+buildflags = ["--release"]
+
+[package.metadata.rpm.targets]
 cargo-rpm = { path = "/usr/bin/cargo-rpm" }
