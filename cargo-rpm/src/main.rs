@@ -2,6 +2,7 @@
 
 #[macro_use]
 extern crate failure;
+extern crate flate2;
 extern crate gumdrop;
 #[macro_use]
 extern crate gumdrop_derive;
@@ -12,10 +13,17 @@ extern crate lazy_static;
 extern crate serde;
 #[macro_use]
 extern crate serde_derive;
+extern crate tar;
 extern crate toml;
 
+/// Support for building the release archive passed to rpmbuild
+pub mod archive;
+
+/// The `cargo rpm build` subcommand
+pub mod build;
+
 /// Cargo.toml parser
-pub mod cargo_config;
+pub mod config;
 
 /// License format converter
 pub mod license;
@@ -39,6 +47,7 @@ use gumdrop::Options;
 use std::env;
 use std::process::exit;
 
+use build::BuildOpts;
 use init::InitOpts;
 
 /// Command line arguments (parsed by gumdrop)
@@ -56,13 +65,16 @@ enum RpmOpts {
 
     #[options(help = "Initialize a Rust project with RPM support")]
     Init(InitOpts),
+
+    #[options(help = "Build an RPM out of the current project")]
+    Build(BuildOpts),
 }
 
 /// Options for the `help` command
 #[derive(Debug, Default, Options)]
 struct HelpOpts {
     #[options(free)]
-    free: Vec<String>,
+    commands: Vec<String>,
 }
 
 /// Main entry point
@@ -72,7 +84,7 @@ fn main() {
     let Opts::Rpm(rpm_opts) = Opts::parse_args_default(&args[1..]).unwrap_or_else(|e| {
         match e.to_string().as_ref() {
             // Show usage if no command name is given or if "help" is given
-            "missing command name" => help(),
+            "missing command name" => help(&[]),
             string => eprintln!("{}: {}", args[0], string),
         }
 
@@ -80,20 +92,31 @@ fn main() {
     });
 
     match rpm_opts {
-        RpmOpts::Help(_commands) => help(),
+        RpmOpts::Help(opts) => help(opts.commands.as_slice()),
         RpmOpts::Init(init) => init.call(),
+        RpmOpts::Build(build) => build.call(),
     }.unwrap_or_else(|e| shell::exit_error(e));
 
     exit(0);
 }
 
 /// Print help message
-fn help() -> ! {
+fn help(commands: &[String]) -> ! {
+    if commands.len() == 1 {
+        if let Some(usage) = RpmOpts::command_usage(&commands[0]) {
+            println!("Usage: cargo rpm {} [OPTIONS]", commands[0]);
+            println!();
+            println!("{}", usage);
+            exit(2);
+        }
+    }
+
     println!("Usage: cargo rpm [COMMAND] [OPTIONS]");
     println!();
     println!("Available commands:");
     println!();
     println!("{}", RpmOpts::command_list().unwrap());
     println!();
+
     exit(2);
 }

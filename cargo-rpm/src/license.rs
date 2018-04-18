@@ -12,9 +12,9 @@ use failure::Error;
 pub fn convert(license_string: &str) -> Result<String, Error> {
     let mut output = vec![];
 
-    if license_string.find("/").is_some() {
+    if license_string.find('/').is_some() {
         // Legacy syntax with '/' delimiter meaning "or"
-        for license in license_string.split("/") {
+        for license in license_string.split('/') {
             output.push(License::parse(license)?.as_rpm_str());
         }
 

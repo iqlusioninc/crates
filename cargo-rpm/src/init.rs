@@ -1,18 +1,15 @@
 //! The `cargo rpm init` subcommand
 
 use failure::Error;
-use std::fs::{self, File, OpenOptions};
+use std::fs::{self, File};
 use std::io::Write;
 use std::path::{Path, PathBuf};
 
 use RPM_CONFIG_DIR;
-use cargo_config::PackageConfig;
+use config::{self, PackageConfig, CARGO_CONFIG_FILE};
 use shell::{self, color};
 use target::TargetType;
 use templates::{ServiceParams, SpecParams};
-
-/// Name of the file containing cargo configuration. You know...
-const CARGO_CONFIG_FILE: &str = "Cargo.toml";
 
 /// Directory in which systemd service unit configs reside
 const SYSTEMD_DIR: &str = "/usr/lib/systemd/system";
@@ -129,7 +126,7 @@ impl InitOpts {
             }
 
             let bin_dir: PathBuf = if use_sbin { "/usr/sbin" } else { "/usr/bin" }.into();
-            update_cargo_metadata(&cargo_toml, &targets, &extra_files, &bin_dir)?;
+            config::append_rpm_metadata(&cargo_toml, &targets, &extra_files, &bin_dir)?;
         }
 
         shell::say_status(
@@ -156,7 +153,7 @@ fn render_spec(
     let mut spec_params = SpecParams::from(package_config);
     spec_params.service = service_name.clone();
 
-    let template_path = template_path_str.as_ref().map(|t| PathBuf::from(t));
+    let template_path = template_path_str.as_ref().map(PathBuf::from);
     let spec_rendered = spec_params.render(template_path.as_ref().map(|t| t.as_ref()))?;
 
     let mut spec_file = File::create(spec_path)?;
@@ -179,7 +176,7 @@ fn render_service(
     package_config: &PackageConfig,
 ) -> Result<(), Error> {
     let service_params = ServiceParams::from(package_config);
-    let template_path = template_path_str.as_ref().map(|t| PathBuf::from(t));
+    let template_path = template_path_str.as_ref().map(PathBuf::from);
     let service_rendered = service_params.render(template_path.as_ref().map(|t| t.as_ref()))?;
 
     let mut service_file = File::create(service_path)?;
@@ -191,60 +188,6 @@ fn render_service(
         color::GREEN,
         true,
     );
-
-    Ok(())
-}
-
-/// Render `package.metadata.rpm` section to include in Cargo.toml
-fn update_cargo_metadata(
-    path: &Path,
-    targets: &[String],
-    extra_files: &[PathBuf],
-    bin_dir: &Path,
-) -> Result<(), Error> {
-    assert!(!targets.is_empty(), "no target configuration?!");
-
-    shell::say_status(
-        "Updating",
-        path.canonicalize().unwrap().display(),
-        color::BRIGHT_CYAN,
-        true,
-    );
-
-    // TODO: use real serde serializer?
-    let mut cargo_toml = OpenOptions::new().append(true).open(path)?;
-    writeln!(cargo_toml, "\n[package.metadata.rpm.target]")?;
-
-    for target in targets {
-        writeln!(
-            cargo_toml,
-            "{} = {{ path = {:?} }}",
-            target,
-            bin_dir.join(target)
-        )?;
-    }
-
-    // These files come from the .rpm directory
-    if !extra_files.is_empty() {
-        writeln!(cargo_toml, "\n[package.metadata.rpm.file]")?;
-
-        for path in extra_files {
-            if !path.is_absolute() {
-                shell::exit_error(format!("path is not absolute: {}", path.display()));
-            }
-
-            let file = path.file_name().unwrap_or_else(|| {
-                shell::exit_error(format!("path has no filename: {}", path.display()));
-            });
-
-            writeln!(
-                cargo_toml,
-                "{:?} = {{ path = {:?} }}",
-                file.to_str().unwrap(),
-                path.display()
-            )?;
-        }
-    }
 
     Ok(())
 }
