@@ -1,7 +1,7 @@
 [package]
 name        = "cargo-rpm"
 description = "Build RPMs from Rust projects using Cargo"
-version     = "0.1.0" # Also update html_root_url in lib.rs when bumping this
+version     = "0.1.1"
 authors     = ["Tony Arcieri <tony@iqlusion.io>"]
 license     = "Apache-2.0"
 homepage    = "https://github.com/iqlusion-io/crates/"
