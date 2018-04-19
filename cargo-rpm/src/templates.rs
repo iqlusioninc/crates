@@ -39,6 +39,7 @@ pub struct SpecParams {
 }
 
 impl SpecParams {
+    /// Create a new set of RPM spec template parameters
     pub fn new(package: &PackageConfig, service: Option<String>, use_sbin: bool) -> Self {
         let rpm_license = package.license.as_ref().map(|spdx_license| {
             license::convert(spdx_license).unwrap_or_else(|e| {

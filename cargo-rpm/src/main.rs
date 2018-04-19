@@ -26,6 +26,11 @@
 //!
 //! Finished `.rpm` files will be placed in `target/release/rpmbuild/RPMs/<arch>`
 
+#![crate_name = "cargo_rpm"]
+#![crate_type = "bin"]
+#![deny(warnings, missing_docs, unsafe_code, unused_import_braces, unused_qualifications)]
+#![doc(html_root_url = "https://docs.rs/cargo-rpm/0.1.0")]
+
 #[macro_use]
 extern crate failure;
 extern crate flate2;
