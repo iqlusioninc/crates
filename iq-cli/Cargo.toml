@@ -1,7 +1,8 @@
 [package]
 name        = "iq-cli"
 description = "Cargo-like colored command-line interfaces"
-version     = "0.0.0" # Also update html_root_url in lib.rs when bumping this
+version     = "0.1.0" # Also update html_root_url in lib.rs when bumping this
+license     = "Apache-2.0"
 authors     = ["Tony Arcieri <tony@iqlusion.io>"]
 homepage    = "https://github.com/iqlusion-io/crates/"
 repository  = "https://github.com/iqlusion-io/crates/tree/master/iq-cli"

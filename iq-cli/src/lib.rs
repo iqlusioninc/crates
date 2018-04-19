@@ -3,7 +3,7 @@
 #![crate_name = "iq_cli"]
 #![crate_type = "rlib"]
 #![deny(warnings, missing_docs, unsafe_code, unused_import_braces, unused_qualifications)]
-#![doc(html_root_url = "https://docs.rs/iq-cli/0.0.0")]
+#![doc(html_root_url = "https://docs.rs/iq-cli/0.1.0")]
 
 #[macro_use]
 extern crate lazy_static;

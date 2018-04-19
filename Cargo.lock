@@ -89,7 +89,7 @@ dependencies = [
  "gumdrop 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "gumdrop_derive 0.4.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "handlebars 1.0.0-beta.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "iq-cli 0.0.0",
+ "iq-cli 0.1.0",
  "serde 1.0.39 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde_derive 1.0.39 (registry+https://github.com/rust-lang/crates.io-index)",
  "tar 0.4.15 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -263,7 +263,7 @@ dependencies = [
 
 [[package]]
 name = "iq-cli"
-version = "0.0.0"
+version = "0.1.0"
 dependencies = [
  "lazy_static 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "libc 0.2.40 (registry+https://github.com/rust-lang/crates.io-index)",
