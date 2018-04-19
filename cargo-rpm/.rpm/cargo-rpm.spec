@@ -10,6 +10,7 @@ License: ASL 2.0
 Group: Applications/System
 Source0: %{name}-%{version}.tar.gz
 URL: https://github.com/iqlusion-io/crates/
+Requires: rpm-build >= 4
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 
