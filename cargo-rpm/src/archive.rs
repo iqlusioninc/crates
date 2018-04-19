@@ -5,7 +5,7 @@
 
 use failure::{self, Error};
 use flate2::{Compression, write::GzEncoder};
-use std::fs::File;
+use std::fs::{File, OpenOptions};
 use std::path::{Path, PathBuf};
 use std::time::UNIX_EPOCH;
 use tar::{Builder, Header};
@@ -151,7 +151,12 @@ impl Archive {
 
     /// Build the archive, placing the resulting file at the given path
     pub fn build(&self, output_file: &Path) -> Result<(), Error> {
-        let archive = File::create(output_file)?;
+        let archive = OpenOptions::new()
+            .create(true)
+            .write(true)
+            .truncate(true)
+            .open(output_file)?;
+
         let gzipper = GzEncoder::new(archive, Compression::default());
         let mut builder = Builder::new(gzipper);
 
