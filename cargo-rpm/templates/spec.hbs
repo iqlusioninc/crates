@@ -4,7 +4,7 @@
 
 Name: {{ name }}
 Summary: {{ summary }}
-Version: @@VERSION@@ # Set automatically by "cargo rpm build"
+Version: @@VERSION@@
 Release: 1
 {{#if license ~}}
 License: {{ license }}
@@ -32,14 +32,9 @@ Requires(postun): systemd
 %prep
 %setup -q
 
-%build
-# Empty section.
-
 %install
 rm -rf %{buildroot}
-mkdir -p  %{buildroot}
-
-# in builddir
+mkdir -p %{buildroot}
 cp -a * %{buildroot}
 
 %clean
@@ -58,9 +53,11 @@ rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root,-)
-%config(noreplace) %{_sysconfdir}/*
-${_bindir}/*
+{{#if use_sbin ~}}
 %{_sbindir}/*
+{{else ~}}
+%{_bindir}/*
+{{/if ~}}
 {{#if service ~}}
 %{_unitdir}/{{service}}
 {{/if ~}}

@@ -34,23 +34,13 @@ pub struct SpecParams {
 
     /// Name of a systemd service unit (if enabled)
     pub service: Option<String>,
+
+    /// Are we placing targets in sbin instead of bin?
+    pub use_sbin: bool,
 }
 
 impl SpecParams {
-    /// Render an RPM spec template at the given path (or default)
-    pub fn render(&self, template_path: Option<&Path>) -> Result<String, Error> {
-        let name = match template_path {
-            Some(p) => p.display().to_string(),
-            None => "(default:spec.hbs)".to_owned(),
-        };
-
-        let template = load_template(template_path, DEFAULT_SPEC_TEMPLATE)?;
-        render_template(&name, &template, self)
-    }
-}
-
-impl<'a> From<&'a PackageConfig> for SpecParams {
-    fn from(package: &'a PackageConfig) -> Self {
+    pub fn new(package: &PackageConfig, service: Option<String>, use_sbin: bool) -> Self {
         let rpm_license = package.license.as_ref().map(|spdx_license| {
             license::convert(spdx_license).unwrap_or_else(|e| {
                 shell::warning(format!("couldn't parse license {:?}: {}", spdx_license, e));
@@ -63,8 +53,20 @@ impl<'a> From<&'a PackageConfig> for SpecParams {
             summary: package.description.to_owned(),
             license: rpm_license,
             url: package.homepage.to_owned(),
-            service: None,
+            service,
+            use_sbin,
         }
+    }
+
+    /// Render an RPM spec template at the given path (or default)
+    pub fn render(&self, template_path: Option<&Path>) -> Result<String, Error> {
+        let name = match template_path {
+            Some(p) => p.display().to_string(),
+            None => "(default:spec.hbs)".to_owned(),
+        };
+
+        let template = load_template(template_path, DEFAULT_SPEC_TEMPLATE)?;
+        render_template(&name, &template, self)
     }
 }
 

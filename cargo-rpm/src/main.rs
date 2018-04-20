@@ -20,7 +20,7 @@ extern crate toml;
 pub mod archive;
 
 /// The `cargo rpm build` subcommand
-pub mod build;
+pub mod builder;
 
 /// Cargo.toml parser
 pub mod config;
@@ -30,6 +30,9 @@ pub mod license;
 
 /// The `cargo rpm init` subcommand
 pub mod init;
+
+/// Wrapper for running the `rpmbuild` command
+pub mod rpmbuild;
 
 /// Shell support (for printing status messages)
 pub mod shell;
@@ -47,7 +50,7 @@ use gumdrop::Options;
 use std::env;
 use std::process::exit;
 
-use build::BuildOpts;
+use builder::BuildOpts;
 use init::InitOpts;
 
 /// Command line arguments (parsed by gumdrop)

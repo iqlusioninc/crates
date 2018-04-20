@@ -4,7 +4,7 @@
 
 Name: cargo-rpm
 Summary: Build RPMs from Rust projects using Cargo
-Version: @@VERSION@@ # Set automatically by "cargo rpm build"
+Version: @@VERSION@@
 Release: 1
 License: ASL 2.0
 Group: Applications/System
@@ -19,14 +19,9 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 %prep
 %setup -q
 
-%build
-# Empty section.
-
 %install
 rm -rf %{buildroot}
-mkdir -p  %{buildroot}
-
-# in builddir
+mkdir -p %{buildroot}
 cp -a * %{buildroot}
 
 %clean
@@ -34,7 +29,5 @@ rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root,-)
-%config(noreplace) %{_sysconfdir}/*
-${_bindir}/*
-%{_sbindir}/*
+%{_bindir}/*
 

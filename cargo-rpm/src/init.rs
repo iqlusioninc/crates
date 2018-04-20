@@ -1,7 +1,7 @@
 //! The `cargo rpm init` subcommand
 
 use failure::Error;
-use std::fs::{self, File};
+use std::fs::{self, File, OpenOptions};
 use std::io::Write;
 use std::path::{Path, PathBuf};
 
@@ -103,7 +103,8 @@ impl InitOpts {
 
         // Render `.rpm/<cratename>.spec`
         let spec_path = rpm_config_dir.join(format!("{}.spec", package_config.name));
-        render_spec(&spec_path, &self.template, &package_config, &service_name)?;
+        let spec_params = SpecParams::new(&package_config, service_name.clone(), use_sbin);
+        render_spec(&spec_path, &self.template, &spec_params)?;
 
         // (Optional) Render `.rpm/<cratename>.service` (systemd service unit config)
         if let Some(ref service) = service_name {
@@ -147,16 +148,17 @@ impl InitOpts {
 fn render_spec(
     spec_path: &Path,
     template_path_str: &Option<String>,
-    package_config: &PackageConfig,
-    service_name: &Option<String>,
+    spec_params: &SpecParams,
 ) -> Result<(), Error> {
-    let mut spec_params = SpecParams::from(package_config);
-    spec_params.service = service_name.clone();
-
     let template_path = template_path_str.as_ref().map(PathBuf::from);
     let spec_rendered = spec_params.render(template_path.as_ref().map(|t| t.as_ref()))?;
 
-    let mut spec_file = File::create(spec_path)?;
+    let mut spec_file = OpenOptions::new()
+        .create(true)
+        .write(true)
+        .truncate(true)
+        .open(spec_path)?;
+
     spec_file.write_all(spec_rendered.as_bytes())?;
 
     shell::say_status(
