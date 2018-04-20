@@ -55,7 +55,7 @@ impl Default for ShellConfig {
 /// Is STDOUT a tty?
 fn is_tty() -> bool {
     #[allow(unsafe_code)]
-        unsafe {
+    unsafe {
         isatty(0) == 1
     }
 }
