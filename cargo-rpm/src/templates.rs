@@ -9,7 +9,6 @@ use std::path::{Path, PathBuf};
 
 use config::PackageConfig;
 use license;
-use shell;
 
 /// Default RPM spec template (in toplevel `template/spec.hbs`)
 pub const DEFAULT_SPEC_TEMPLATE: &str = include_str!("../templates/spec.hbs");
@@ -43,7 +42,7 @@ impl SpecParams {
     pub fn new(package: &PackageConfig, service: Option<String>, use_sbin: bool) -> Self {
         let rpm_license = package.license.as_ref().map(|spdx_license| {
             license::convert(spdx_license).unwrap_or_else(|e| {
-                shell::warning(format!("couldn't parse license {:?}: {}", spdx_license, e));
+                status_warn!("couldn't parse license {:?}: {}", spdx_license, e);
                 spdx_license.to_owned()
             })
         });

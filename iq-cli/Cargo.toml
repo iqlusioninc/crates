@@ -13,5 +13,6 @@ keywords    = ["cli", "color"]
 circle-ci = { repository = "iqlusion-io/crates" }
 
 [dependencies]
+lazy_static = "1"
 libc = "0.2"
 term = "0.5"

@@ -6,8 +6,6 @@ use std::io::{BufRead, BufReader};
 use std::path::PathBuf;
 use std::process::{Child, Command, Stdio};
 
-use shell::{self, color};
-
 /// Path to the `rpmbuild` command
 pub const DEFAULT_RPMBUILD_PATH: &str = "/usr/bin/rpmbuild";
 
@@ -77,12 +75,16 @@ impl Rpmbuild {
             .spawn()
             .map_err(|e| format_err!("error running {}: {}", self.path.display(), e))?;
 
-        self.read_rpmbuild_output(&mut rpmbuild)?;
+        let output = self.read_rpmbuild_output(&mut rpmbuild)?;
         let status = rpmbuild.wait()?;
 
         if status.success() {
             Ok(())
         } else {
+            if !self.verbose {
+                eprintln!("{}", &output);
+            }
+
             bail!(
                 "error running {} (exit status: {})",
                 self.path.display(),
@@ -92,18 +94,17 @@ impl Rpmbuild {
     }
 
     /// Read stdout from rpmbuild, either displaying it or discarding it
-    fn read_rpmbuild_output(&self, subprocess: &mut Child) -> Result<(), Error> {
+    fn read_rpmbuild_output(&self, subprocess: &mut Child) -> Result<String, Error> {
         let mut reader = BufReader::new(subprocess.stdout.as_mut().unwrap());
-        let mut line = String::new();
+        let mut string = String::new();
 
-        while reader.read_line(&mut line)? != 0 {
+        while reader.read_line(&mut string)? != 0 {
             if self.verbose {
-                shell::say_status("rpmbuild", &line, color::GREEN, true);
+                status_ok!("rpmbuild", &string);
+                string.clear();
             }
-
-            line.clear();
         }
 
-        Ok(())
+        Ok(string)
     }
 }

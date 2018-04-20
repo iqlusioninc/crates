@@ -2,6 +2,7 @@
 //!
 //! Portions of this code are borrowed from Cargo
 
+use libc::isatty;
 use std::fmt;
 use std::io;
 use std::io::prelude::*;
@@ -42,6 +43,23 @@ pub struct ShellConfig {
     pub tty: bool,
 }
 
+impl Default for ShellConfig {
+    fn default() -> Self {
+        Self {
+            color_config: ColorConfig::Auto,
+            tty: is_tty(),
+        }
+    }
+}
+
+/// Is STDOUT a tty?
+fn is_tty() -> bool {
+    #[allow(unsafe_code)]
+        unsafe {
+        isatty(0) == 1
+    }
+}
+
 enum Terminal {
     NoColor(Box<Write + Send>),
     Colored(Box<RawTerminal<Output = Box<Write + Send>> + Send>),
@@ -80,27 +98,12 @@ impl Shell {
         }
     }
 
-    /// Say something with the given color
-    pub fn say<T: ToString>(&mut self, message: &T, color: Color) -> term::Result<()> {
-        self.reset()?;
-
-        if color != BLACK {
-            self.fg(color)?;
-        }
-
-        write!(self, "{}\n", message.to_string())?;
-        self.reset()?;
-        self.flush()?;
-
-        Ok(())
-    }
-
     /// Say a status message with the given color
-    pub fn say_status<T, U>(
+    pub fn status<T, U>(
         &mut self,
+        color: Color,
         status: T,
         message: U,
-        color: Color,
         justified: bool,
     ) -> term::Result<()>
     where
@@ -175,6 +178,12 @@ impl Shell {
     fn colored(&self) -> bool {
         self.config.tty && ColorConfig::Auto == self.config.color_config
             || ColorConfig::Always == self.config.color_config
+    }
+}
+
+impl Default for Shell {
+    fn default() -> Self {
+        Shell::create(|| Box::new(io::stdout()), ShellConfig::default())
     }
 }
 

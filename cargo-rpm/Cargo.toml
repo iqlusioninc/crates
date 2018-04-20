@@ -17,7 +17,6 @@ gumdrop = "0.4"
 gumdrop_derive = "0.4"
 handlebars = "1.0.0-beta.1"
 iq-cli = { version = "0", path = "../iq-cli" }
-lazy_static = "1"
 serde = "1"
 serde_derive = "1"
 tar = "0.4"

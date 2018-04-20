@@ -4,10 +4,10 @@ use failure::Error;
 use std::fs::{self, File, OpenOptions};
 use std::io::Write;
 use std::path::{Path, PathBuf};
+use std::process::exit;
 
 use RPM_CONFIG_DIR;
 use config::{self, PackageConfig, CARGO_CONFIG_FILE};
-use shell::{self, color};
 use target::TargetType;
 use templates::{ServiceParams, SpecParams};
 
@@ -53,18 +53,18 @@ impl InitOpts {
         if rpm_config_dir.exists() {
             if self.force {
                 let canonical_rpm_config_dir = rpm_config_dir.canonicalize()?;
-                shell::say_status(
+                status_ok!(
                     "Deleting",
-                    format!("{} (forced)", canonical_rpm_config_dir.display()),
-                    color::YELLOW,
-                    true,
+                    "{} (forced)",
+                    canonical_rpm_config_dir.display()
                 );
                 fs::remove_dir_all(&rpm_config_dir)?;
             } else {
-                shell::exit_error(format!(
+                status_error!(
                     "destination `{}` already exists!",
                     rpm_config_dir.canonicalize().unwrap().display()
-                ));
+                );
+                exit(1);
             }
         }
 
@@ -85,7 +85,8 @@ impl InitOpts {
                     // If forced, just return an empty target list
                     vec![]
                 } else {
-                    shell::exit_error("detected unsupported library crate (-f to override)");
+                    status_error!("detected unsupported crate type: library (-f to override)");
+                    exit(1);
                 }
             }
             TargetType::Bin => vec![package_config.name.clone()],
@@ -94,12 +95,7 @@ impl InitOpts {
 
         // Create `.rpm` directory
         fs::create_dir(&rpm_config_dir)?;
-        shell::say_status(
-            "Created",
-            rpm_config_dir.canonicalize().unwrap().display(),
-            color::GREEN,
-            true,
-        );
+        status_ok!("Created", rpm_config_dir.canonicalize().unwrap().display());
 
         // Render `.rpm/<cratename>.spec`
         let spec_path = rpm_config_dir.join(format!("{}.spec", package_config.name));
@@ -117,9 +113,7 @@ impl InitOpts {
 
         // Update Cargo.toml with RPM metadata
         if package_config.rpm_metadata().is_some() && !self.force {
-            shell::warning(
-                "not updating Cargo.toml because [package.metadata.rpm] already present",
-            );
+            status_warn!("not updating Cargo.toml because [package.metadata.rpm] already present");
         } else {
             let mut extra_files = vec![];
             if let Some(ref service) = service_name {
@@ -130,14 +124,10 @@ impl InitOpts {
             config::append_rpm_metadata(&cargo_toml, &targets, &extra_files, &bin_dir)?;
         }
 
-        shell::say_status(
+        status_ok!(
             "Finished",
-            format!(
-                "{} configured (type \"cargo rpm build\" to build)",
-                package_config.name
-            ),
-            color::GREEN,
-            true,
+            "{} configured (type \"cargo rpm build\" to build)",
+            package_config.name
         );
 
         Ok(())
@@ -161,12 +151,7 @@ fn render_spec(
 
     spec_file.write_all(spec_rendered.as_bytes())?;
 
-    shell::say_status(
-        "Rendered",
-        spec_path.canonicalize().unwrap().display(),
-        color::GREEN,
-        true,
-    );
+    status_ok!("Rendered", spec_path.canonicalize().unwrap().display());
 
     Ok(())
 }
@@ -184,12 +169,7 @@ fn render_service(
     let mut service_file = File::create(service_path)?;
     service_file.write_all(service_rendered.as_bytes())?;
 
-    shell::say_status(
-        "Rendered",
-        service_path.canonicalize().unwrap().display(),
-        color::GREEN,
-        true,
-    );
+    status_ok!("Rendered", service_path.canonicalize().unwrap().display());
 
     Ok(())
 }

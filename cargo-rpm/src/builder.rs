@@ -11,7 +11,6 @@ use std::time::SystemTime;
 use archive::Archive;
 use config::{PackageConfig, RpmConfig, CARGO_CONFIG_FILE};
 use rpmbuild::Rpmbuild;
-use shell::{self, color};
 use target;
 use RPM_CONFIG_DIR;
 
@@ -76,14 +75,9 @@ impl Builder {
 
         {
             let rpm_metadata = config.rpm_metadata().unwrap_or_else(|| {
-                shell::say_status(
-                    "error:",
-                    "No [package.metadata.rpm] in Cargo.toml!",
-                    color::RED,
-                    false,
-                );
-
+                status_error!("No [package.metadata.rpm] in Cargo.toml!");
                 println!("\nRun 'cargo rpm init' to configure crate for RPM builds");
+
                 exit(1);
             });
 
@@ -115,16 +109,12 @@ impl Builder {
         self.render_spec()?;
         self.rpmbuild()?;
 
-        shell::say_status(
+        status_ok!(
             "Finished",
-            format!(
-                "{}-{}.rpm built in {} secs",
-                self.config.name,
-                self.config.version,
-                began_at.elapsed()?.as_secs()
-            ),
-            color::GREEN,
-            true,
+            "{}-{}.rpm: built in {} secs",
+            self.config.name,
+            self.config.version,
+            began_at.elapsed()?.as_secs()
         );
         Ok(())
     }
@@ -145,12 +135,7 @@ impl Builder {
         };
 
         if self.verbose {
-            shell::say_status(
-                "Running",
-                format!("cargo build {}", buildflags.join(" ")),
-                color::GREEN,
-                true,
-            );
+            status_ok!("Running", "cargo build {}", buildflags.join(" "));
         }
 
         let status = Command::new("cargo")
@@ -176,12 +161,7 @@ impl Builder {
         let archive_path = sources_dir.join(&archive_file);
 
         if self.verbose {
-            shell::say_status(
-                "Creating",
-                format!("release archive ({})", &archive_file),
-                color::GREEN,
-                true,
-            );
+            status_ok!("Creating", "release archive ({})", &archive_file);
         }
 
         Archive::new(&self.config, &self.rpm_config_dir, &self.target_dir)?.build(&archive_path)?;
@@ -219,11 +199,11 @@ impl Builder {
         let rpm_file = format!("{}-{}.rpm", self.config.name, self.config.version);
         let cmd = Rpmbuild::new(self.verbose)?;
 
-        shell::say_status(
+        status_ok!(
             "Building",
-            format!("{} (using rpmbuild {})", rpm_file, cmd.version().unwrap()),
-            color::GREEN,
-            true,
+            "{} (using rpmbuild {})",
+            rpm_file,
+            cmd.version().unwrap()
         );
 
         // Create directories needed by rpmbuild
@@ -243,12 +223,7 @@ impl Builder {
         let args = ["-D", &topdir_macro, "-D", &tmppath_macro, "-ba", &spec_path];
 
         if self.verbose {
-            shell::say_status(
-                "Running",
-                format!("{} {}", cmd.path.display(), &args.join(" ")),
-                color::GREEN,
-                true,
-            );
+            status_ok!("Running", "{} {}", cmd.path.display(), &args.join(" "));
         }
 
         // Actually run rpmbuild

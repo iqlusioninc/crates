@@ -33,9 +33,8 @@ extern crate gumdrop;
 #[macro_use]
 extern crate gumdrop_derive;
 extern crate handlebars;
-extern crate iq_cli;
 #[macro_use]
-extern crate lazy_static;
+extern crate iq_cli;
 extern crate serde;
 #[macro_use]
 extern crate serde_derive;
@@ -59,9 +58,6 @@ pub mod init;
 
 /// Wrapper for running the `rpmbuild` command
 pub mod rpmbuild;
-
-/// Shell support (for printing status messages)
-pub mod shell;
 
 /// Target type autodetection for crates
 pub mod target;
@@ -124,7 +120,10 @@ fn main() {
         RpmOpts::Help(opts) => help(opts.commands.as_slice()),
         RpmOpts::Init(init) => init.call(),
         RpmOpts::Build(build) => build.call(),
-    }.unwrap_or_else(|e| shell::exit_error(e));
+    }.unwrap_or_else(|e| {
+        status_error!(e);
+        exit(1)
+    });
 
     exit(0);
 }

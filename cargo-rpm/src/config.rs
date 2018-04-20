@@ -5,9 +5,8 @@ use std::collections::BTreeMap;
 use std::fs::{File, OpenOptions};
 use std::io::{Read, Write};
 use std::path::{Path, PathBuf};
+use std::process::exit;
 use toml;
-
-use shell::{self, color};
 
 /// Name of the file containing cargo configuration. You know...
 pub const CARGO_CONFIG_FILE: &str = "Cargo.toml";
@@ -121,12 +120,7 @@ pub fn append_rpm_metadata(
 ) -> Result<(), Error> {
     assert!(!targets.is_empty(), "no target configuration?!");
 
-    shell::say_status(
-        "Updating",
-        path.canonicalize().unwrap().display(),
-        color::BRIGHT_CYAN,
-        true,
-    );
+    status_ok!("Updating", path.canonicalize().unwrap().display());
 
     let mut cargo_toml = OpenOptions::new().append(true).open(path)?;
 
@@ -153,11 +147,13 @@ pub fn append_rpm_metadata(
 
         for path in extra_files {
             if !path.is_absolute() {
-                shell::exit_error(format!("path is not absolute: {}", path.display()));
+                status_error!("path is not absolute: {}", path.display());
+                exit(1);
             }
 
             let file = path.file_name().unwrap_or_else(|| {
-                shell::exit_error(format!("path has no filename: {}", path.display()));
+                status_error!("path has no filename: {}", path.display());
+                exit(1);
             });
 
             writeln!(
