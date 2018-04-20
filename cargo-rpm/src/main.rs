@@ -1,4 +1,30 @@
 //! cargo-rpm: Cargo subcommand for creating RPM releases of Rust projects
+//!
+//! ## Installation
+//!
+//! Install `cargo rpm` by running: `cargo install cargo-rpm`.
+//!
+//! ## Configuring a crate
+//!
+//! To configure your crate for RPM releases, run `cargo rpm init`
+//!
+//! This will create a `.rpm/YOURCRATENAME.spec` file which is passed to the
+//! `rpmbuild` command. Though the generated spec should work out of the box,
+//! it may need some customization if the resulting RPM has dependencies or
+//! files other than target binaries.
+//!
+//! For more information on spec files, see:
+//! <http://ftp.rpm.org/max-rpm/s1-rpm-build-creating-spec-file.html>
+//!
+//! ## Building RPMs
+//!
+//! Once your crate has been configured, run `cargo rpm build` to build release
+//! targets for your project and package them into an RPM.
+//!
+//! If you encounter errors, you may need to see more information about why
+//! `rpmbuild` failed. Run `cargo rpm build -v` to enable verbose mode.
+//!
+//! Finished `.rpm` files will be placed in `target/release/rpmbuild/RPMs/<arch>`
 
 #[macro_use]
 extern crate failure;
