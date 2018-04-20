@@ -26,9 +26,9 @@ lazy_static! {
 
 /// Say a status message with the given color
 pub fn status<T, U>(color: Color, status: T, message: U, justified: bool)
-    where
-        T: fmt::Display,
-        U: fmt::Display,
+where
+    T: fmt::Display,
+    U: fmt::Display,
 {
     SHELL
         .lock()
