@@ -100,7 +100,7 @@ impl Rpmbuild {
 
         while reader.read_line(&mut string)? != 0 {
             if self.verbose {
-                status_ok!("rpmbuild", &string);
+                status_ok!("rpmbuild", string.trim_right());
                 string.clear();
             }
         }

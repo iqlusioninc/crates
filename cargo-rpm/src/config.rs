@@ -1,6 +1,7 @@
 //! Cargo.toml parser specialized for the `cargo rpm` use case
 
 use failure::Error;
+use iq_cli::color::BRIGHT_CYAN;
 use std::collections::BTreeMap;
 use std::fs::{File, OpenOptions};
 use std::io::{Read, Write};
@@ -120,7 +121,11 @@ pub fn append_rpm_metadata(
 ) -> Result<(), Error> {
     assert!(!targets.is_empty(), "no target configuration?!");
 
-    status_ok!("Updating", path.canonicalize().unwrap().display());
+    status!(
+        BRIGHT_CYAN,
+        "Updating",
+        path.canonicalize().unwrap().display()
+    );
 
     let mut cargo_toml = OpenOptions::new().append(true).open(path)?;
 

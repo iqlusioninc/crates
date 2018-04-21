@@ -1,6 +1,7 @@
 //! The `cargo rpm init` subcommand
 
 use failure::Error;
+use iq_cli::color::YELLOW;
 use std::fs::{self, File, OpenOptions};
 use std::io::Write;
 use std::path::{Path, PathBuf};
@@ -53,7 +54,8 @@ impl InitOpts {
         if rpm_config_dir.exists() {
             if self.force {
                 let canonical_rpm_config_dir = rpm_config_dir.canonicalize()?;
-                status_ok!(
+                status!(
+                    YELLOW,
                     "Deleting",
                     "{} (forced)",
                     canonical_rpm_config_dir.display()

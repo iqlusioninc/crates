@@ -161,7 +161,7 @@ impl Builder {
         let archive_path = sources_dir.join(&archive_file);
 
         if self.verbose {
-            status_ok!("Creating", "release archive ({})", &archive_file);
+            status_ok!("Creating", "release archive: {}", &archive_file);
         }
 
         Archive::new(&self.config, &self.rpm_config_dir, &self.target_dir)?.build(&archive_path)?;
