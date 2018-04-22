@@ -49,7 +49,7 @@ impl PackageConfig {
     {
         let mut file = File::open(filename.as_ref())?;
         let mut data = String::new();
-        file.read_to_string(&mut data).unwrap();
+        file.read_to_string(&mut data)?;
 
         let config: CargoConfig = toml::from_str(&data)
             .map_err(|e| format_err!("error parsing {}: {}", filename.as_ref().display(), e))?;
