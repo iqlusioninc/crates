@@ -3,7 +3,5 @@ members = [
     "canonical-path",
     "cargo-rpm",
     "iq-cli",
-    "rpmlib",
-    "rpmlib-sys",
     "tai64"
 ]
