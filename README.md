@@ -28,10 +28,6 @@ This repository contains the following crates:
   A cargo subcommand for building `.rpm` releases of Rust projects.
 * [iq-cli:](https://github.com/iqlusion-io/crates/tree/master/iq-cli)
   Cargo-like colored command-line interfaces.
-* [rpmlib:](https://github.com/iqlusion-io/crates/tree/master/rpmlib)
-  Rust binding to rpmlib (RPM Package Manager library)
-* [rpmlib-sys:](https://github.com/iqlusion-io/crates/tree/master/rpmlib-sys)
-  Low-level bindgen wrapper to rpmlib (RPM Package Manager library)
 * [tai64:](https://github.com/iqlusion-io/crates/tree/master/tai64)
   TAI64(N) timestamp format (Temps Atomique International)
 
