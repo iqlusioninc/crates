@@ -6,9 +6,9 @@ use libc::isatty;
 use std::fmt;
 use std::io;
 use std::io::prelude::*;
-use term::{self, Attr, TerminfoTerminal};
-use term::Terminal as RawTerminal;
 use term::color::{Color, BLACK};
+use term::Terminal as RawTerminal;
+use term::{self, Attr, TerminfoTerminal};
 
 /// Color configuration
 #[derive(Clone, Copy, PartialEq)]
@@ -127,7 +127,7 @@ impl Shell {
         }
 
         self.reset()?;
-        write!(self, " {}\n", message)?;
+        writeln!(self, " {}", message)?;
         self.flush()?;
 
         Ok(())

@@ -7,10 +7,10 @@ use std::io::Write;
 use std::path::{Path, PathBuf};
 use std::process::exit;
 
-use RPM_CONFIG_DIR;
 use config::{self, PackageConfig, CARGO_CONFIG_FILE};
 use target::TargetType;
 use templates::{ServiceParams, SpecParams};
+use RPM_CONFIG_DIR;
 
 /// Directory in which systemd service unit configs reside
 const SYSTEMD_DIR: &str = "/usr/lib/systemd/system";
