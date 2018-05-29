@@ -4,7 +4,7 @@
 //! Rust support for tar is presently (as of writing) better.
 
 use failure::{self, Error};
-use flate2::{Compression, write::GzEncoder};
+use flate2::{write::GzEncoder, Compression};
 use std::fs::{File, OpenOptions};
 use std::path::{Path, PathBuf};
 use std::time::UNIX_EPOCH;
