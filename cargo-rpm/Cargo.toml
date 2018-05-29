@@ -15,7 +15,7 @@ failure = "0.1"
 flate2 = { version = "1.0", default-features = false, features = ["zlib"] }
 gumdrop = "0.4"
 gumdrop_derive = "0.4"
-handlebars = "1.0.0-beta.1"
+handlebars = "= 1.0.0-beta.1"
 iq-cli = { version = "0", path = "../iq-cli" }
 serde = "1"
 serde_derive = "1"

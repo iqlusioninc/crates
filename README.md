@@ -28,6 +28,8 @@ This repository contains the following crates:
   A cargo subcommand for building `.rpm` releases of Rust projects.
 * [iq-cli:](https://github.com/iqlusion-io/crates/tree/master/iq-cli)
   Cargo-like colored command-line interfaces.
+* [keyuri:](https://github.com/iqlusion-io/crates/tree/master/keyuri)
+  URI-like serialization format for cryptographic keys.
 * [tai64:](https://github.com/iqlusion-io/crates/tree/master/tai64)
   TAI64(N) timestamp format (Temps Atomique International)
 
