@@ -3,12 +3,12 @@ version: 2
 jobs:
   build:
     docker:
-      - image: iqlusion/rust-ci:20180602.1 # bump cache keys when modifying this
+      - image: iqlusion/rust-ci:20180602.2 # bump cache keys when modifying this
 
     steps:
       - checkout
       - restore_cache:
-          key: cache-20180602.1 # bump save_cache key below too
+          key: cache-20180602.2 # bump save_cache key below too
       - run:
           name: lint scripts
           command: |
@@ -43,7 +43,7 @@ jobs:
             cargo --version
             (cd tai64 && cargo test --features=chrono)
       - save_cache:
-          key: cache-20180602.1 # bump restore_cache key above too
+          key: cache-20180602.2 # bump restore_cache key above too
           paths:
             - "~/.cargo"
             - "./target"
