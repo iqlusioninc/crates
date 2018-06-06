@@ -10,3 +10,4 @@ contributions under the terms of the [Apache License, Version 2.0]
 
 * Anthony Arcieri ([@tarcieri](https://github.com/tarcieri))
 * Yin Guanhao ([@sopium](https://github.com/sopium))
+* Josh Huber ([@uberjay](https://github.com/uberjay))

@@ -1,11 +1,17 @@
 //! Target-type autodetection for crates
 
 use failure::Error;
+use std::env;
 use std::fs;
 use std::path::{Path, PathBuf};
 
 /// Locate the project's target directory
 pub fn find_dir() -> Result<PathBuf, Error> {
+    // Allow for an explicit override of the target directory.
+    if let Some(p) = env::var_os("CARGO_TARGET_DIR") {
+        return Ok(PathBuf::from(p));
+    }
+
     // Check all parents of the current directory for a target directory.
     // We could call `cargo metadata` to find it but this is much cheaper.
     let mut path = fs::canonicalize(".")?;
