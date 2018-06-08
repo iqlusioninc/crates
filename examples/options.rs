@@ -1,5 +1,4 @@
-extern crate gumdrop;
-#[macro_use] extern crate gumdrop_derive;
+#[macro_use] extern crate gumdrop;
 
 use gumdrop::Options;
 
