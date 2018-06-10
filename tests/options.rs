@@ -847,3 +847,31 @@ fn test_required() {
     let opts = Opts3::parse_args_default(&["1"]).unwrap();
     assert_eq!(opts.bar, 1);
 }
+
+#[test]
+fn test_parse() {
+    use std::str::FromStr;
+
+    #[derive(Default, Options)]
+    struct Opts {
+        #[options(help = "foo", parse(from_str = "parse_foo"))]
+        foo: Option<Foo>,
+        #[options(help = "bar", parse(try_from_str = "parse_bar"))]
+        bar: Option<Bar>,
+    }
+
+    #[derive(Debug)]
+    struct Foo(String);
+    #[derive(Debug)]
+    struct Bar(u32);
+
+    fn parse_foo(s: &str) -> Foo { Foo(s.to_owned()) }
+    fn parse_bar(s: &str) -> Result<Bar, <u32 as FromStr>::Err> { s.parse().map(Bar) }
+
+    let opts = Opts::parse_args_default(&["-ffoo", "--bar=123"]).unwrap();
+    assert_matches!(opts.foo, Some(Foo(ref s)) if s == "foo");
+    assert_matches!(opts.bar, Some(Bar(123)));
+
+    is_err!(Opts::parse_args_default(&["-b", "xyz"]),
+        |e| e.starts_with("invalid argument to option `-b`: "));
+}

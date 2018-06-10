@@ -132,6 +132,38 @@
 //!     println!("{:#?}", opts);
 //! }
 //! ```
+//!
+//! A custom parsing function can be supplied for each option field.
+//!
+//! ```
+//! #[macro_use] extern crate gumdrop;
+//!
+//! use gumdrop::Options;
+//!
+//! #[derive(Debug, Default, Options)]
+//! struct MyOptions {
+//!     // `try_from_str = "..."` supplies a conversion function that may fail
+//!     #[options(help = "a hexadecimal value", parse(try_from_str = "parse_hex"))]
+//!     hex: u32,
+//!     // `from_str = "..."` supplies a conversion function that always succeeds
+//!     #[options(help = "a string that becomes uppercase", parse(from_str = "to_upper"))]
+//!     upper: String,
+//! }
+//!
+//! fn parse_hex(s: &str) -> Result<u32, std::num::ParseIntError> {
+//!     u32::from_str_radix(s, 16)
+//! }
+//!
+//! fn to_upper(s: &str) -> String {
+//!     s.to_uppercase()
+//! }
+//!
+//! fn main() {
+//!     let opts = MyOptions::parse_args_default_or_exit();
+//!
+//!     println!("{:#?}", opts);
+//! }
+//! ```
 
 #![deny(missing_docs)]
 
