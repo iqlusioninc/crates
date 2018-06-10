@@ -1,7 +1,6 @@
 [workspace]
 members = [
     "canonical-path",
-    "cargo-rpm",
     "iq-cli",
     "keyuri",
     "tai64"
