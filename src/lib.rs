@@ -185,14 +185,40 @@ use std::str::Chars;
 ///
 /// The first argument (the program name) should be omitted.
 pub fn parse_args<T: Options>(args: &[String], style: ParsingStyle) -> Result<T, Error> {
-    T::parse(&mut Parser::new(args, style))
+    T::parse_args(args, style)
 }
 
 /// Parses arguments from the command line using the default parsing style.
 ///
 /// The first argument (the program name) should be omitted.
 pub fn parse_args_default<T: Options>(args: &[String]) -> Result<T, Error> {
-    T::parse(&mut Parser::new(args, ParsingStyle::default()))
+    T::parse_args_default(args)
+}
+
+/// Parses arguments from the environment.
+///
+/// If an error is encountered, the error is printed to `stderr` and the
+/// process will exit with status code `2`.
+///
+/// If the user supplies a help option, option usage will be printed to
+/// `stdout` and the process will exit with status code `0`.
+///
+/// Otherwise, the parsed options are returned.
+pub fn parse_args_or_exit<T: Options>(style: ParsingStyle) -> T {
+    T::parse_args_or_exit(style)
+}
+
+/// Parses arguments from the environment, using the default parsing style.
+///
+/// If an error is encountered, the error is printed to `stderr` and the
+/// process will exit with status code `2`.
+///
+/// If the user supplies a help option, option usage will be printed to
+/// `stdout` and the process will exit with status code `0`.
+///
+/// Otherwise, the parsed options are returned.
+pub fn parse_args_default_or_exit<T: Options>() -> T {
+    T::parse_args_default_or_exit()
 }
 
 /// Represents an error encountered during argument parsing
