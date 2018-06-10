@@ -41,6 +41,8 @@
 //!     * `parse(from_str = "...")` for `fn(&str) -> T`
 //!     * `parse(try_from_str = "...")` for
 //!       `fn(&str) -> Result<T, E> where E: Display`
+//!     * `parse(from_str)` uses `std::convert::From::from`
+//!     * `parse(try_from_str)` uses `std::str::FromStr::from_str`
 //!
 //! `#[options(...)]` may also be added at the type level. Only the flags
 //! `no_help_flag`, `no_long`, `no_short`, and `required`
@@ -652,7 +654,7 @@ struct Opt<'a> {
 
 enum ParseFn {
     Default,
-    FromStr(Path),
+    FromStr(Option<Path>),
     TryFromStr(Path),
 }
 
@@ -1091,11 +1093,18 @@ impl<'a> Opt<'a> {
 impl ParseFn {
     fn parse(item: &NestedMeta) -> ParseFn {
         match *item {
+            NestedMeta::Meta(Meta::Word(ref ident)) => {
+                match ident.as_ref() {
+                    "from_str" => ParseFn::FromStr(None),
+                    "try_from_str" => ParseFn::Default,
+                    _ => panic!("unexpected meta item `{}`", tokens_str(item))
+                }
+            }
             NestedMeta::Meta(Meta::NameValue(ref nv)) => {
                 match nv.ident.as_ref() {
                     "from_str" => {
                         let path = parse_str(&lit_str(&nv.lit)).unwrap();
-                        ParseFn::FromStr(path)
+                        ParseFn::FromStr(Some(path))
                     }
                     "try_from_str" => {
                         let path = parse_str(&lit_str(&nv.lit)).unwrap();
@@ -1114,6 +1123,9 @@ impl ParseFn {
                 ::std::str::FromStr::from_str(_arg)
                     .map_err(|e| ::gumdrop::Error::failed_parse(_opt,
                         ::std::string::ToString::to_string(&e)))?
+            },
+            ParseFn::FromStr(None) => quote!{
+                ::std::convert::From::from(_arg)
             },
             ParseFn::FromStr(ref fun) => quote!{
                 #fun(_arg)

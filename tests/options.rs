@@ -858,20 +858,47 @@ fn test_parse() {
         foo: Option<Foo>,
         #[options(help = "bar", parse(try_from_str = "parse_bar"))]
         bar: Option<Bar>,
+        #[options(help = "baz", parse(from_str))]
+        baz: Option<Baz>,
+        #[options(help = "quux", parse(try_from_str))]
+        quux: Option<Quux>,
     }
 
     #[derive(Debug)]
     struct Foo(String);
     #[derive(Debug)]
     struct Bar(u32);
+    #[derive(Debug)]
+    struct Baz(String);
+    #[derive(Debug)]
+    struct Quux(u32);
 
     fn parse_foo(s: &str) -> Foo { Foo(s.to_owned()) }
     fn parse_bar(s: &str) -> Result<Bar, <u32 as FromStr>::Err> { s.parse().map(Bar) }
 
-    let opts = Opts::parse_args_default(&["-ffoo", "--bar=123"]).unwrap();
+    impl<'a> From<&'a str> for Baz {
+        fn from(s: &str) -> Baz {
+            Baz(s.to_owned())
+        }
+    }
+
+    impl FromStr for Quux {
+        type Err = <u32 as FromStr>::Err;
+
+        fn from_str(s: &str) -> Result<Quux, Self::Err> {
+            s.parse().map(Quux)
+        }
+    }
+
+    let opts = Opts::parse_args_default(&[
+        "-ffoo", "--bar=123", "--baz", "sup", "-q", "456"]).unwrap();
     assert_matches!(opts.foo, Some(Foo(ref s)) if s == "foo");
     assert_matches!(opts.bar, Some(Bar(123)));
+    assert_matches!(opts.baz, Some(Baz(ref s)) if s == "sup");
+    assert_matches!(opts.quux, Some(Quux(456)));
 
-    is_err!(Opts::parse_args_default(&["-b", "xyz"]),
-        |e| e.starts_with("invalid argument to option `-b`: "));
+    is_err!(Opts::parse_args_default(&["--bar", "xyz"]),
+        |e| e.starts_with("invalid argument to option `--bar`: "));
+    is_err!(Opts::parse_args_default(&["--quux", "xyz"]),
+        |e| e.starts_with("invalid argument to option `--quux`: "));
 }
