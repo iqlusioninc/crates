@@ -47,7 +47,6 @@ extern crate proc_macro;
 #[macro_use] extern crate quote;
 extern crate syn;
 
-use std::cmp::{max, min};
 use std::iter::repeat;
 
 use proc_macro::TokenStream;
@@ -91,7 +90,7 @@ fn derive_options_enum(ast: &DeriveInput, data: &DataEnum) -> TokenStream {
                 &fields.unnamed.first().unwrap().into_value().ty,
         };
 
-        let opts = parse_cmd_attrs(&var.attrs);
+        let opts = CmdOpts::parse(&var.attrs);
 
         let var_name = &var.ident;
 
@@ -212,10 +211,10 @@ fn derive_options_struct(ast: &DeriveInput, fields: &Fields) -> TokenStream {
     let mut help_flag = Vec::new();
     let mut options = Vec::new();
 
-    let default_opts = parse_type_attrs(&ast.attrs);
+    let default_opts = DefaultOpts::parse(&ast.attrs);
 
     for field in fields {
-        let mut opts = parse_field_attrs(&field.attrs);
+        let mut opts = AttrOpts::parse(&field.attrs);
         opts.set_defaults(&default_opts);
 
         let ident = field.ident.as_ref().unwrap();
@@ -260,7 +259,7 @@ fn derive_options_struct(ast: &DeriveInput, fields: &Fields) -> TokenStream {
 
             free.push(FreeOpt{
                 field: ident,
-                action: infer_free_action(&field.ty),
+                action: FreeAction::infer(&field.ty),
                 required: opts.required,
                 help: opts.help,
             });
@@ -273,12 +272,12 @@ fn derive_options_struct(ast: &DeriveInput, fields: &Fields) -> TokenStream {
         }
 
         if let Some(ref long) = opts.long {
-            valid_long_name(long, &long_names);
+            validate_long_name(long, &long_names);
             long_names.push(long.clone());
         }
 
         if let Some(short) = opts.short {
-            valid_short_name(short, &short_names);
+            validate_short_name(short, &short_names);
             short_names.push(short);
         }
 
@@ -290,7 +289,7 @@ fn derive_options_struct(ast: &DeriveInput, fields: &Fields) -> TokenStream {
         let action = if opts.count {
             Action::Count
         } else {
-            infer_action(&field.ty)
+            Action::infer(&field.ty)
         };
 
         if action.takes_arg() {
@@ -351,7 +350,7 @@ fn derive_options_struct(ast: &DeriveInput, fields: &Fields) -> TokenStream {
         };
 
         pattern.push(pat);
-        handle_opt.push(make_action(opt));
+        handle_opt.push(opt.make_action());
 
         if let Some(ref long) = opt.long {
             let (pat, handle) = if let Some(n) = opt.action.tuple_len() {
@@ -360,7 +359,7 @@ fn derive_options_struct(ast: &DeriveInput, fields: &Fields) -> TokenStream {
                         ::gumdrop::Error::unexpected_single_argument(opt, #n)) })
             } else if opt.action.takes_arg() {
                 (quote!{ ::gumdrop::Opt::LongWithArg(#long, arg) },
-                    make_action_arg(opt))
+                    opt.make_action_arg())
             } else {
                 (quote!{ ::gumdrop::Opt::LongWithArg(#long, _) },
                     quote!{ return ::std::result::Result::Err(
@@ -592,6 +591,45 @@ enum ActionType {
     ParseTuple(usize),
 }
 
+#[derive(Debug, Default)]
+struct AttrOpts {
+    long: Option<String>,
+    short: Option<char>,
+    free: bool,
+    count: bool,
+    help_flag: bool,
+    no_help_flag: bool,
+    no_short: bool,
+    no_long: bool,
+    required: bool,
+    not_required: bool,
+    help: Option<String>,
+    meta: Option<String>,
+
+    command: bool,
+}
+
+struct Cmd<'a> {
+    name: String,
+    help: Option<String>,
+    variant_name: &'a Ident,
+    ty: &'a Type,
+}
+
+#[derive(Default)]
+struct CmdOpts {
+    name: Option<String>,
+    help: Option<String>,
+}
+
+#[derive(Debug, Default)]
+struct DefaultOpts {
+    no_help_flag: bool,
+    no_long: bool,
+    no_short: bool,
+    required: bool,
+}
+
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
 enum FreeAction {
     Push,
@@ -599,7 +637,46 @@ enum FreeAction {
     SetOption,
 }
 
+#[derive(Debug)]
+struct FreeOpt<'a> {
+    field: &'a Ident,
+    action: FreeAction,
+    required: bool,
+    help: Option<String>,
+}
+
+#[derive(Debug)]
+struct Opt<'a> {
+    field: &'a Ident,
+    action: Action,
+    long: Option<String>,
+    short: Option<char>,
+    no_short: bool,
+    required: bool,
+    help: Option<String>,
+    meta: Option<String>,
+}
+
 impl Action {
+    fn infer(ty: &Type) -> Action {
+        match *ty {
+            Type::Path(ref path) => {
+                let path = path.path.segments.last().unwrap().into_value();
+                let param = first_ty_param(ty);
+
+                match path.ident.as_ref() {
+                    "bool" => Action::Switch,
+                    "Vec" => Action::Push(ActionType::infer(
+                        param.expect("expected type parameter for `Vec`"))),
+                    "Option" => Action::SetOption(ActionType::infer(
+                        param.expect("expected type parameter for `Option`"))),
+                    _ => Action::SetField(ActionType::Parse),
+                }
+            }
+            _ => Action::SetField(ActionType::infer(ty))
+        }
+    }
+
     fn takes_arg(&self) -> bool {
         use self::Action::*;
 
@@ -620,6 +697,13 @@ impl Action {
 }
 
 impl ActionType {
+    fn infer(ty: &Type) -> ActionType {
+        match *ty {
+            Type::Tuple(ref tup) => ActionType::ParseTuple(tup.elems.len()),
+            _ => ActionType::Parse,
+        }
+    }
+
     fn takes_arg(&self) -> bool {
         match *self {
             ActionType::ParseTuple(0) => false,
@@ -634,91 +718,51 @@ impl ActionType {
             _ => None
         }
     }
-}
 
-fn first_ty_param(ty: &Type) -> Option<&Type> {
-    match *ty {
-        Type::Path(ref path) => {
-            let path = path.path.segments.last().unwrap().into_value();
+    fn make_action_type(&self) -> Tokens {
+        use self::ActionType::*;
 
-            match path.arguments {
-                PathArguments::AngleBracketed(ref data) =>
-                    data.args.iter().filter_map(|arg| match arg {
-                        &GenericArgument::Type(ref ty) => Some(ty),
-                        _ => None
-                    }).next(),
-                _ => None
+        match *self {
+            Parse => quote!{ {
+                let arg = parser.next_arg()
+                    .ok_or_else(|| ::gumdrop::Error::missing_argument(opt))?;
+
+                ::std::str::FromStr::from_str(arg)
+                    .map_err(|e| ::gumdrop::Error::failed_parse(
+                        opt, ::std::string::ToString::to_string(&e)))?
+            } },
+            ParseTuple(n) => {
+                let num = 0..n;
+                let n = repeat(n);
+
+                quote!{
+                    ( #( {
+                        let found = #num;
+                        let arg = parser.next_arg()
+                            .ok_or_else(|| ::gumdrop::Error::insufficient_arguments(
+                                opt, #n, found))?;
+
+                        ::std::str::FromStr::from_str(arg)
+                            .map_err(|e| ::gumdrop::Error::failed_parse(
+                                opt, ::std::string::ToString::to_string(&e)))?
+                    } , )* )
+                }
             }
         }
-        _ => None
     }
-}
 
-fn infer_action(ty: &Type) -> Action {
-    match *ty {
-        Type::Path(ref path) => {
-            let path = path.path.segments.last().unwrap().into_value();
-            let param = first_ty_param(ty);
+    fn make_action_type_arg(&self) -> Tokens {
+        use self::ActionType::*;
 
-            match path.ident.as_ref() {
-                "bool" => Action::Switch,
-                "Vec" => Action::Push(infer_action_type(
-                    param.expect("expected type parameter for `Vec`"))),
-                "Option" => Action::SetOption(infer_action_type(
-                    param.expect("expected type parameter for `Option`"))),
-                _ => Action::SetField(ActionType::Parse),
-            }
+        match *self {
+            Parse => quote!{
+                ::std::str::FromStr::from_str(arg)
+                    .map_err(|e| ::gumdrop::Error::failed_parse(
+                        opt, ::std::string::ToString::to_string(&e)))?
+            },
+            ParseTuple(_) => unreachable!()
         }
-        _ => Action::SetField(infer_action_type(ty))
     }
-}
-
-fn infer_action_type(ty: &Type) -> ActionType {
-    match *ty {
-        Type::Tuple(ref tup) => ActionType::ParseTuple(tup.elems.len()),
-        _ => ActionType::Parse,
-    }
-}
-
-fn infer_free_action(ty: &Type) -> FreeAction {
-    match *ty {
-        Type::Path(ref path) => {
-            let path = path.path.segments.last().unwrap().into_value();
-
-            match path.ident.as_ref() {
-                "Option" => FreeAction::SetOption,
-                "Vec" => FreeAction::Push,
-                _ => FreeAction::SetField
-            }
-        }
-        _ => FreeAction::SetField,
-    }
-}
-
-#[derive(Debug, Default)]
-struct AttrOpts {
-    long: Option<String>,
-    short: Option<char>,
-    free: bool,
-    count: bool,
-    help_flag: bool,
-    no_help_flag: bool,
-    no_short: bool,
-    no_long: bool,
-    required: bool,
-    not_required: bool,
-    help: Option<String>,
-    meta: Option<String>,
-
-    command: bool,
-}
-
-#[derive(Debug, Default)]
-struct DefaultOpts {
-    no_help_flag: bool,
-    no_long: bool,
-    no_short: bool,
-    required: bool,
 }
 
 impl AttrOpts {
@@ -764,6 +808,62 @@ impl AttrOpts {
         }
     }
 
+    fn parse(attrs: &[Attribute]) -> AttrOpts {
+        let mut opts = AttrOpts::default();
+
+        for attr in attrs {
+            if is_outer(attr.style) && path_eq(&attr.path, "options") {
+                let meta = attr.interpret_meta().unwrap_or_else(
+                    || panic!("invalid attribute: {}", tokens_str(attr)));
+
+                match meta {
+                    Meta::Word(_) =>
+                        panic!("#[options] is not a valid attribute"),
+                    Meta::NameValue(..) =>
+                        panic!("#[options = ...] is not a valid attribute"),
+                    Meta::List(ref items) => {
+                        for item in &items.nested {
+                            match *item {
+                                NestedMeta::Literal(_) =>
+                                    panic!("unexpected meta item `{}`", tokens_str(item)),
+                                NestedMeta::Meta(ref item) => {
+                                    match *item {
+                                        Meta::Word(ref w) => match w.as_ref() {
+                                            "free" => opts.free = true,
+                                            "command" => opts.command = true,
+                                            "count" => opts.count = true,
+                                            "help_flag" => opts.help_flag = true,
+                                            "no_help_flag" => opts.no_help_flag = true,
+                                            "no_short" => opts.no_short = true,
+                                            "no_long" => opts.no_long = true,
+                                            "required" => opts.required = true,
+                                            "not_required" => opts.not_required = true,
+                                            _ => panic!("unexpected meta item `{}`", tokens_str(item))
+                                        },
+                                        Meta::List(..) => panic!("unexpected meta item `{}`", tokens_str(item)),
+                                        Meta::NameValue(ref nv) => {
+                                            match nv.ident.as_ref() {
+                                                "long" => opts.long = Some(lit_str(&nv.lit)),
+                                                "short" => opts.short = Some(lit_char(&nv.lit)),
+                                                "help" => opts.help = Some(lit_str(&nv.lit)),
+                                                "meta" => opts.meta = Some(lit_str(&nv.lit)),
+                                                _ => panic!("unexpected meta item `{}`", tokens_str(item))
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        opts.check();
+
+        opts
+    }
+
     fn set_defaults(&mut self, defaults: &DefaultOpts) {
         if !self.help_flag && defaults.no_help_flag {
             self.no_help_flag = true;
@@ -783,28 +883,108 @@ impl AttrOpts {
     }
 }
 
-#[derive(Debug)]
-struct FreeOpt<'a> {
-    field: &'a Ident,
-    action: FreeAction,
-    required: bool,
-    help: Option<String>,
+impl CmdOpts {
+    fn parse(attrs: &[Attribute]) -> CmdOpts {
+        let mut opts = CmdOpts::default();
+
+        for attr in attrs {
+            if is_outer(attr.style) && path_eq(&attr.path, "options") {
+                let meta = attr.interpret_meta().unwrap_or_else(
+                    || panic!("invalid attribute: {}", tokens_str(attr)));
+
+                match meta {
+                    Meta::Word(_) =>
+                        panic!("#[options] is not a valid attribute"),
+                    Meta::NameValue(..) =>
+                        panic!("#[options = ...] is not a valid attribute"),
+                    Meta::List(ref items) => {
+                        for item in &items.nested {
+                            match *item {
+                                NestedMeta::Literal(_) =>
+                                    panic!("unexpected meta item `{}`", tokens_str(item)),
+                                NestedMeta::Meta(ref item) => {
+                                    match *item {
+                                        Meta::Word(_) | Meta::List(..) =>
+                                            panic!("unexpected meta item `{}`", tokens_str(item)),
+                                        Meta::NameValue(ref nv) => {
+                                            match nv.ident.as_ref() {
+                                                "name" => opts.name = Some(lit_str(&nv.lit)),
+                                                "help" => opts.help = Some(lit_str(&nv.lit)),
+                                                _ => panic!("unexpected meta item `{}`", tokens_str(item))
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        opts
+    }
 }
 
-#[derive(Debug)]
-struct Opt<'a> {
-    field: &'a Ident,
-    action: Action,
-    long: Option<String>,
-    short: Option<char>,
-    no_short: bool,
-    required: bool,
-    help: Option<String>,
-    meta: Option<String>,
+impl DefaultOpts {
+    fn parse(attrs: &[Attribute]) -> DefaultOpts {
+        let mut opts = DefaultOpts::default();
+
+        for attr in attrs {
+            if is_outer(attr.style) && path_eq(&attr.path, "options") {
+                let meta = attr.interpret_meta().unwrap_or_else(
+                    || panic!("invalid attribute: {}", tokens_str(attr)));
+
+                match meta {
+                    Meta::Word(_) =>
+                        panic!("#[options] is not a valid attribute"),
+                    Meta::NameValue(..) =>
+                        panic!("#[options = ...] is not a valid attribute"),
+                    Meta::List(ref items) => {
+                        for item in &items.nested {
+                            match *item {
+                                NestedMeta::Literal(_) =>
+                                    panic!("unexpected meta item `{}`", tokens_str(item)),
+                                NestedMeta::Meta(ref item) => {
+                                    match *item {
+                                        Meta::Word(ref w) => match w.as_ref() {
+                                            "no_help_flag" => opts.no_help_flag = true,
+                                            "no_short" => opts.no_short = true,
+                                            "no_long" => opts.no_long = true,
+                                            "required" => opts.required = true,
+                                            _ => panic!("unexpected meta item `{}`", tokens_str(item))
+                                        },
+                                        Meta::List(..) | Meta::NameValue(..) =>
+                                            panic!("unexpected meta item `{}`", tokens_str(item)),
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        opts
+    }
 }
 
-const MIN_WIDTH: usize = 8;
-const MAX_WIDTH: usize = 30;
+impl FreeAction {
+    fn infer(ty: &Type) -> FreeAction {
+        match *ty {
+            Type::Path(ref path) => {
+                let path = path.path.segments.last().unwrap().into_value();
+
+                match path.ident.as_ref() {
+                    "Option" => FreeAction::SetOption,
+                    "Vec" => FreeAction::Push,
+                    _ => FreeAction::SetField
+                }
+            }
+            _ => FreeAction::SetField,
+        }
+    }
+}
 
 impl<'a> FreeOpt<'a> {
     fn mark_used(&self) -> Tokens {
@@ -842,108 +1022,108 @@ impl<'a> Opt<'a> {
     fn width(&self) -> usize {
         let short = self.short.map_or(0, |_| 1 + 1); // '-' + char
         let long = self.long.as_ref().map_or(0, |s| s.len() + 2); // "--" + str
-        let sep = if short == 0 || long == 0 { 0 } else { 2 };
+        let sep = if short == 0 || long == 0 { 0 } else { 2 }; // ", "
         let meta = self.meta.as_ref().map_or(0, |s| s.len() + 1); // ' ' + meta
 
         2 + short + long + sep + meta + 2 // total + spaces before and after
     }
-}
 
-fn parse_type_attrs(attrs: &[Attribute]) -> DefaultOpts {
-    let mut opts = DefaultOpts::default();
+    fn make_action(&self) -> Tokens {
+        use self::Action::*;
 
-    for attr in attrs {
-        if is_outer(attr.style) && path_eq(&attr.path, "options") {
-            let meta = attr.interpret_meta().unwrap_or_else(
-                || panic!("invalid attribute: {}", tokens_str(attr)));
+        let field = self.field;
+        let mark_used = self.mark_used();
 
-            match meta {
-                Meta::Word(_) =>
-                    panic!("#[options] is not a valid attribute"),
-                Meta::NameValue(..) =>
-                    panic!("#[options = ...] is not a valid attribute"),
-                Meta::List(ref items) => {
-                    for item in &items.nested {
-                        match *item {
-                            NestedMeta::Literal(_) =>
-                                panic!("unexpected meta item `{}`", tokens_str(item)),
-                            NestedMeta::Meta(ref item) => {
-                                match *item {
-                                    Meta::Word(ref w) => match w.as_ref() {
-                                        "no_help_flag" => opts.no_help_flag = true,
-                                        "no_short" => opts.no_short = true,
-                                        "no_long" => opts.no_long = true,
-                                        "required" => opts.required = true,
-                                        _ => panic!("unexpected meta item `{}`", tokens_str(item))
-                                    },
-                                    Meta::List(..) | Meta::NameValue(..) =>
-                                        panic!("unexpected meta item `{}`", tokens_str(item)),
-                                }
-                            }
-                        }
-                    }
+        let action = match self.action {
+            Count => quote!{
+                _result.#field += 1;
+            },
+            Push(ty) => {
+                let act = ty.make_action_type();
+
+                quote!{
+                    _result.#field.push(#act);
                 }
             }
+            SetField(ty) => {
+                let act = ty.make_action_type();
+
+                quote!{
+                    _result.#field = #act;
+                }
+            }
+            SetOption(ty) => {
+                let act = ty.make_action_type();
+
+                quote!{
+                    _result.#field = ::std::option::Option::Some(#act);
+                }
+            }
+            Switch => quote!{
+                _result.#field = true;
+            }
+        };
+
+        quote!{
+            #mark_used
+            #action
         }
     }
 
-    opts
-}
+    fn make_action_arg(&self) -> Tokens {
+        use self::Action::*;
 
-fn parse_field_attrs(attrs: &[Attribute]) -> AttrOpts {
-    let mut opts = AttrOpts::default();
+        let field = self.field;
+        let mark_used = self.mark_used();
 
-    for attr in attrs {
-        if is_outer(attr.style) && path_eq(&attr.path, "options") {
-            let meta = attr.interpret_meta().unwrap_or_else(
-                || panic!("invalid attribute: {}", tokens_str(attr)));
+        let action = match self.action {
+            Push(ty) => {
+                let act = ty.make_action_type_arg();
 
-            match meta {
-                Meta::Word(_) =>
-                    panic!("#[options] is not a valid attribute"),
-                Meta::NameValue(..) =>
-                    panic!("#[options = ...] is not a valid attribute"),
-                Meta::List(ref items) => {
-                    for item in &items.nested {
-                        match *item {
-                            NestedMeta::Literal(_) =>
-                                panic!("unexpected meta item `{}`", tokens_str(item)),
-                            NestedMeta::Meta(ref item) => {
-                                match *item {
-                                    Meta::Word(ref w) => match w.as_ref() {
-                                        "free" => opts.free = true,
-                                        "command" => opts.command = true,
-                                        "count" => opts.count = true,
-                                        "help_flag" => opts.help_flag = true,
-                                        "no_help_flag" => opts.no_help_flag = true,
-                                        "no_short" => opts.no_short = true,
-                                        "no_long" => opts.no_long = true,
-                                        "required" => opts.required = true,
-                                        "not_required" => opts.not_required = true,
-                                        _ => panic!("unexpected meta item `{}`", tokens_str(item))
-                                    },
-                                    Meta::List(..) => panic!("unexpected meta item `{}`", tokens_str(item)),
-                                    Meta::NameValue(ref nv) => {
-                                        match nv.ident.as_ref() {
-                                            "long" => opts.long = Some(lit_str(&nv.lit)),
-                                            "short" => opts.short = Some(lit_char(&nv.lit)),
-                                            "help" => opts.help = Some(lit_str(&nv.lit)),
-                                            "meta" => opts.meta = Some(lit_str(&nv.lit)),
-                                            _ => panic!("unexpected meta item `{}`", tokens_str(item))
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
+                quote!{
+                    _result.#field.push(#act);
                 }
             }
+            SetField(ty) => {
+                let act = ty.make_action_type_arg();
+
+                quote!{
+                    _result.#field = #act;
+                }
+            }
+            SetOption(ty) => {
+                let act = ty.make_action_type_arg();
+
+                quote!{
+                    _result.#field = ::std::option::Option::Some(#act);
+                }
+            }
+            _ => unreachable!()
+        };
+
+        quote!{
+            #mark_used
+            #action
         }
     }
+}
 
-    opts.check();
+fn first_ty_param(ty: &Type) -> Option<&Type> {
+    match *ty {
+        Type::Path(ref path) => {
+            let path = path.path.segments.last().unwrap().into_value();
 
-    opts
+            match path.arguments {
+                PathArguments::AngleBracketed(ref data) =>
+                    data.args.iter().filter_map(|arg| match arg {
+                        &GenericArgument::Type(ref ty) => Some(ty),
+                        _ => None
+                    }).next(),
+                _ => None
+            }
+        }
+        _ => None
+    }
 }
 
 fn is_outer(style: AttrStyle) -> bool {
@@ -951,60 +1131,6 @@ fn is_outer(style: AttrStyle) -> bool {
         AttrStyle::Outer => true,
         _ => false
     }
-}
-
-struct Cmd<'a> {
-    name: String,
-    help: Option<String>,
-    variant_name: &'a Ident,
-    ty: &'a Type,
-}
-
-#[derive(Default)]
-struct CmdOpts {
-    name: Option<String>,
-    help: Option<String>,
-}
-
-fn parse_cmd_attrs(attrs: &[Attribute]) -> CmdOpts {
-    let mut opts = CmdOpts::default();
-
-    for attr in attrs {
-        if is_outer(attr.style) && path_eq(&attr.path, "options") {
-            let meta = attr.interpret_meta().unwrap_or_else(
-                || panic!("invalid attribute: {}", tokens_str(attr)));
-
-            match meta {
-                Meta::Word(_) =>
-                    panic!("#[options] is not a valid attribute"),
-                Meta::NameValue(..) =>
-                    panic!("#[options = ...] is not a valid attribute"),
-                Meta::List(ref items) => {
-                    for item in &items.nested {
-                        match *item {
-                            NestedMeta::Literal(_) =>
-                                panic!("unexpected meta item `{}`", tokens_str(item)),
-                            NestedMeta::Meta(ref item) => {
-                                match *item {
-                                    Meta::Word(_) | Meta::List(..) =>
-                                        panic!("unexpected meta item `{}`", tokens_str(item)),
-                                    Meta::NameValue(ref nv) => {
-                                        match nv.ident.as_ref() {
-                                            "name" => opts.name = Some(lit_str(&nv.lit)),
-                                            "help" => opts.help = Some(lit_str(&nv.lit)),
-                                            _ => panic!("unexpected meta item `{}`", tokens_str(item))
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    opts
 }
 
 fn lit_str(lit: &Lit) -> String {
@@ -1050,130 +1176,6 @@ fn tokens_str<T: ToTokens>(t: &T) -> String {
     tok.to_string()
 }
 
-fn make_action(opt: &Opt) -> Tokens {
-    use self::Action::*;
-
-    let field = opt.field;
-    let mark_used = opt.mark_used();
-
-    let action = match opt.action {
-        Count => quote!{
-            _result.#field += 1;
-        },
-        Push(ty) => {
-            let act = make_action_type(ty);
-
-            quote!{
-                _result.#field.push(#act);
-            }
-        }
-        SetField(ty) => {
-            let act = make_action_type(ty);
-
-            quote!{
-                _result.#field = #act;
-            }
-        }
-        SetOption(ty) => {
-            let act = make_action_type(ty);
-
-            quote!{
-                _result.#field = ::std::option::Option::Some(#act);
-            }
-        }
-        Switch => quote!{
-            _result.#field = true;
-        }
-    };
-
-    quote!{
-        #mark_used
-        #action
-    }
-}
-
-fn make_action_type(action_type: ActionType) -> Tokens {
-    use self::ActionType::*;
-
-    match action_type {
-        Parse => quote!{ {
-            let arg = parser.next_arg()
-                .ok_or_else(|| ::gumdrop::Error::missing_argument(opt))?;
-
-            ::std::str::FromStr::from_str(arg)
-                .map_err(|e| ::gumdrop::Error::failed_parse(
-                    opt, ::std::string::ToString::to_string(&e)))?
-        } },
-        ParseTuple(n) => {
-            let num = 0..n;
-            let n = repeat(n);
-
-            quote!{
-                ( #( {
-                    let found = #num;
-                    let arg = parser.next_arg()
-                        .ok_or_else(|| ::gumdrop::Error::insufficient_arguments(
-                            opt, #n, found))?;
-
-                    ::std::str::FromStr::from_str(arg)
-                        .map_err(|e| ::gumdrop::Error::failed_parse(
-                            opt, ::std::string::ToString::to_string(&e)))?
-                } , )* )
-            }
-        }
-    }
-}
-
-fn make_action_arg(opt: &Opt) -> Tokens {
-    use self::Action::*;
-
-    let field = opt.field;
-    let mark_used = opt.mark_used();
-
-    let action = match opt.action {
-        Push(ty) => {
-            let act = make_action_type_arg(ty);
-
-            quote!{
-                _result.#field.push(#act);
-            }
-        }
-        SetField(ty) => {
-            let act = make_action_type_arg(ty);
-
-            quote!{
-                _result.#field = #act;
-            }
-        }
-        SetOption(ty) => {
-            let act = make_action_type_arg(ty);
-
-            quote!{
-                _result.#field = ::std::option::Option::Some(#act);
-            }
-        }
-        _ => unreachable!()
-    };
-
-    quote!{
-        #mark_used
-        #action
-    }
-}
-
-fn make_action_type_arg(action_type: ActionType) -> Tokens {
-    use self::ActionType::*;
-
-    match action_type {
-        Parse => quote!{
-            ::std::str::FromStr::from_str(arg)
-                .map_err(|e| ::gumdrop::Error::failed_parse(
-                    opt, ::std::string::ToString::to_string(&e)))?
-        },
-        ParseTuple(_) => unreachable!()
-    }
-}
-
 fn make_command_name(name: &str) -> String {
     let mut res = String::with_capacity(name.len());
 
@@ -1217,7 +1219,7 @@ fn make_short_name(name: &str, short: &[char]) -> Option<char> {
     }
 }
 
-fn valid_long_name(name: &str, names: &[String]) {
+fn validate_long_name(name: &str, names: &[String]) {
     if name.is_empty() || name.starts_with('-') ||
             name.contains(|ch: char| ch.is_whitespace()) {
         panic!("`{}` is not a valid long option", name);
@@ -1228,7 +1230,7 @@ fn valid_long_name(name: &str, names: &[String]) {
     }
 }
 
-fn valid_short_name(ch: char, names: &[char]) {
+fn validate_short_name(ch: char, names: &[char]) {
     if ch == '-' || ch.is_whitespace() {
         panic!("`{}` is not a valid short option", ch);
     }
@@ -1262,9 +1264,8 @@ fn make_meta(name: &str, action: Action) -> String {
 fn make_usage(free: &[FreeOpt], opts: &[Opt]) -> String {
     let mut res = String::new();
 
-    let width = max(
-        max_width(free, |opt| opt.width()),
-        max_width(opts, |opt| opt.width()));
+    let width = max_width(free, |opt| opt.width())
+        .max(max_width(opts, |opt| opt.width()));
 
     if !free.is_empty() {
         res.push_str("Positional arguments:\n");
@@ -1345,16 +1346,20 @@ fn make_usage(free: &[FreeOpt], opts: &[Opt]) -> String {
 
 fn max_width<T, F>(items: &[T], f: F) -> usize
         where F: Fn(&T) -> usize {
-    max(MIN_WIDTH, min(MAX_WIDTH,
-        items.iter().filter_map(|item| {
-            let w = f(item);
+    const MIN_WIDTH: usize = 8;
+    const MAX_WIDTH: usize = 30;
 
-            if w > MAX_WIDTH {
-                None
-            } else {
-                Some(w)
-            }
-        }).max().unwrap_or(0)))
+    let width = items.iter().filter_map(|item| {
+        let w = f(item);
+
+        if w > MAX_WIDTH {
+            None
+        } else {
+            Some(w)
+        }
+    }).max().unwrap_or(0);
+
+    width.max(MIN_WIDTH).min(MAX_WIDTH)
 }
 
 fn make_cmd_usage(cmds: &[Cmd]) -> String {
