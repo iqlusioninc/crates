@@ -1,6 +1,7 @@
 [workspace]
 members = [
     "canonical-path",
+    "iq-bech32",
     "iq-cli",
     "keyuri",
     "tai64"
