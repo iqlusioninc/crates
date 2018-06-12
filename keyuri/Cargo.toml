@@ -1,6 +1,6 @@
 [package]
 name        = "keyuri"
-description = "A URI-based format for encoding cryptographic keys"
+description = "A URI-based format for encoding cryptographic keys (with bech32 binary encoding/checksums)"
 version     = "0.0.0" # Also update html_root_url in lib.rs when bumping this
 authors     = ["Tony Arcieri <bascule@gmail.com>"]
 license     = "Apache-2.0"
@@ -8,10 +8,15 @@ homepage    = "https://github.com/iqlusion-io/crates/"
 repository  = "https://github.com/iqlusion-io/crates/tree/master/keyuri"
 readme      = "README.md"
 categories  = ["cryptography", "encoding"]
-keywords    = ["cryptography", "security"]
+keywords    = ["bech32", "cryptography", "security", "uri"]
 
 [badges]
 circle-ci = { repository = "iqlusion-io/crates" }
 
 [dependencies]
+clear_on_drop = "0.2"
 failure = "0.1"
+iq-bech32 = { version = "0", path = "../iq-bech32" }
+
+[features]
+nightly = ["clear_on_drop/nightly"]
