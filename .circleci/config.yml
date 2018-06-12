@@ -10,10 +10,6 @@ jobs:
       - restore_cache:
           key: cache-20180602.2 # bump save_cache key below too
       - run:
-          name: lint scripts
-          command: |
-            .scripts/duplicate-crate-lint.sh # ensure Cargo.lock only contains one version of each crate
-      - run:
           name: rustfmt
           command: |
             cargo +$RUST_NIGHTLY_VERSION fmt --version
