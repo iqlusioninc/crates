@@ -19,9 +19,9 @@ A format for serializing cryptographic keys based on the URI generic syntax.
 KeyURI leverages the URI generic syntax defined in [RFC 3986] to provide simple
 and succinct encodings of cryptographic keys, including public keys,
 private/secret keys, encrypted secret keys with password-based key derivation,
-and key fingerprints.
+digital signatures, key fingerprints, and other digests.
 
-It further leverages a modified version of the [Bech32] encoding format to
+Binary data is serialized using the [Bech32] encoding format which helps
 avoid human transcription errors. This format has been designed to use a
 minimal set of alphanumeric characters which have been selected to avoid
 accidental confusion, and also adds a checksum across the entire URI,
