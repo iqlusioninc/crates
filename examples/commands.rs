@@ -3,7 +3,7 @@
 use gumdrop::Options;
 
 // Define options for the program.
-#[derive(Debug, Default, Options)]
+#[derive(Debug, Options)]
 struct MyOptions {
     // Options here can be accepted with any command (or none at all),
     // but they must come before the command name.
@@ -37,7 +37,7 @@ enum Command {
 }
 
 // Options accepted for the `make` command
-#[derive(Debug, Default, Options)]
+#[derive(Debug, Options)]
 struct MakeOpts {
     #[options(help = "print help message")]
     help: bool,
@@ -48,7 +48,7 @@ struct MakeOpts {
 }
 
 // Options accepted for the `install` command
-#[derive(Debug, Default, Options)]
+#[derive(Debug, Options)]
 struct InstallOpts {
     #[options(help = "print help message")]
     help: bool,

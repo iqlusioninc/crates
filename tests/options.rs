@@ -5,7 +5,7 @@ use gumdrop::Options;
 
 const EMPTY: &'static [&'static str] = &[];
 
-#[derive(Debug, Default, Options)]
+#[derive(Debug, Options)]
 struct NoOpts { }
 
 macro_rules! is_err {
@@ -37,7 +37,7 @@ fn test_hygiene() {
     #[allow(dead_code)] struct ToString;
     #[allow(dead_code)] struct Vec;
 
-    #[derive(Default, Options)]
+    #[derive(Options)]
     struct Opts {
         a: i32,
         b: ::std::string::String,
@@ -57,14 +57,14 @@ fn test_hygiene() {
         Bar(BarOpts),
     }
 
-    #[derive(Default, Options)]
+    #[derive(Options)]
     struct FooOpts {
         #[options(free)]
         free: ::std::vec::Vec<::std::string::String>,
         a: i32,
     }
 
-    #[derive(Default, Options)]
+    #[derive(Options)]
     struct BarOpts {
         #[options(free)]
         first: ::std::option::Option<::std::string::String>,
@@ -78,7 +78,7 @@ fn test_hygiene() {
 
 #[test]
 fn test_command() {
-    #[derive(Default, Options)]
+    #[derive(Options)]
     struct Opts {
         help: bool,
 
@@ -96,12 +96,12 @@ fn test_command() {
         FooXYZ(NoOpts),
     }
 
-    #[derive(Debug, Default, Options)]
+    #[derive(Debug, Options)]
     struct FooOpts {
         foo: Option<String>,
     }
 
-    #[derive(Debug, Default, Options)]
+    #[derive(Debug, Options)]
     struct BarOpts {
         #[options(free)]
         free: Vec<String>,
@@ -148,7 +148,7 @@ fn test_command() {
 
 #[test]
 fn test_command_name() {
-    #[derive(Default, Options)]
+    #[derive(Options)]
     struct Opts {
         help: bool,
 
@@ -181,7 +181,7 @@ fn test_command_name() {
 
 #[test]
 fn test_command_usage() {
-    #[derive(Default, Options)]
+    #[derive(Options)]
     struct Opts {
         #[options(help = "help me!")]
         help: bool,
@@ -214,7 +214,7 @@ fn test_command_usage() {
 
 #[test]
 fn test_opt_bool() {
-    #[derive(Default, Options)]
+    #[derive(Options)]
     struct Opts {
         switch: bool,
     }
@@ -231,7 +231,7 @@ fn test_opt_bool() {
 
 #[test]
 fn test_opt_string() {
-    #[derive(Default, Options)]
+    #[derive(Options)]
     struct Opts {
         foo: String,
     }
@@ -248,7 +248,7 @@ fn test_opt_string() {
 
 #[test]
 fn test_opt_int() {
-    #[derive(Default, Options)]
+    #[derive(Options)]
     struct Opts {
         number: i32,
     }
@@ -272,7 +272,7 @@ fn test_opt_int() {
 
 #[test]
 fn test_opt_tuple() {
-    #[derive(Default, Options)]
+    #[derive(Options)]
     struct Opts {
         alpha: (i32, i32),
         bravo: Option<(i32, i32, i32)>,
@@ -300,7 +300,7 @@ fn test_opt_tuple() {
 
 #[test]
 fn test_opt_tuple_error() {
-    #[derive(Default, Options)]
+    #[derive(Options)]
     struct Opts {
         foo: Option<(i32, i32)>,
     }
@@ -315,7 +315,7 @@ fn test_opt_tuple_error() {
 
 #[test]
 fn test_opt_push() {
-    #[derive(Default, Options)]
+    #[derive(Options)]
     struct Opts {
         thing: Vec<String>,
     }
@@ -330,7 +330,7 @@ fn test_opt_push() {
 
 #[test]
 fn test_opt_count() {
-    #[derive(Default, Options)]
+    #[derive(Options)]
     struct Opts {
         #[options(count)]
         number: i32,
@@ -348,7 +348,7 @@ fn test_opt_count() {
 
 #[test]
 fn test_opt_long() {
-    #[derive(Default, Options)]
+    #[derive(Options)]
     struct Opts {
         #[options(long = "thing", no_short)]
         foo: bool,
@@ -365,7 +365,7 @@ fn test_opt_long() {
 
 #[test]
 fn test_opt_short() {
-    #[derive(Default, Options)]
+    #[derive(Options)]
     struct Opts {
         #[options(short = "x", no_long)]
         foo: bool,
@@ -386,7 +386,7 @@ fn test_opt_short_override() {
     // option for `option_1` before generating a short option for `option_0`.
     // Thus, giving `option_0` an automatic short option of `O`,
     // rather than causing a collision.
-    #[derive(Default, Options)]
+    #[derive(Options)]
     struct Opts {
         #[options(no_long)]
         option_0: bool,
@@ -405,7 +405,7 @@ fn test_opt_short_override() {
 
 #[test]
 fn test_opt_free() {
-    #[derive(Default, Options)]
+    #[derive(Options)]
     struct Opts {
         #[options(free)]
         free: Vec<String>,
@@ -417,7 +417,7 @@ fn test_opt_free() {
 
 #[test]
 fn test_opt_no_free() {
-    #[derive(Default, Options)]
+    #[derive(Options)]
     struct Opts {
     }
 
@@ -428,7 +428,7 @@ fn test_opt_no_free() {
 
 #[test]
 fn test_typed_free() {
-    #[derive(Default, Options)]
+    #[derive(Options)]
     struct Opts {
         #[options(free)]
         free: Vec<i32>,
@@ -440,7 +440,7 @@ fn test_typed_free() {
 
 #[test]
 fn test_multi_free() {
-    #[derive(Default, Options)]
+    #[derive(Options)]
     struct Opts {
         #[options(free, help = "alpha help")]
         alpha: u32,
@@ -479,7 +479,7 @@ Positional arguments:
         // Skip leading newline
         [1..]);
 
-    #[derive(Default, Options)]
+    #[derive(Options)]
     struct ManyOpts {
         #[options(free, help = "alpha help")]
         alpha: u32,
@@ -508,7 +508,7 @@ Positional arguments:
 
 #[test]
 fn test_usage() {
-    #[derive(Default, Options)]
+    #[derive(Options)]
     struct Opts {
         #[options(help = "alpha help")]
         alpha: bool,
@@ -536,7 +536,7 @@ Optional arguments:
         // Skip leading newline
         [1..]);
 
-    #[derive(Default, Options)]
+    #[derive(Options)]
     struct TupleOpts {
         #[options(help = "alpha help")]
         alpha: (),
@@ -563,7 +563,7 @@ Optional arguments:
         // Skip leading newline
         [1..]);
 
-    #[derive(Default, Options)]
+    #[derive(Options)]
     struct FreeOpts {
         #[options(free, help = "a help")]
         a: u32,
@@ -590,7 +590,7 @@ Optional arguments:
 
 #[test]
 fn test_help_flag() {
-    #[derive(Default, Options)]
+    #[derive(Options)]
     struct Opts {
         help: bool,
     }
@@ -604,7 +604,7 @@ fn test_help_flag() {
 
 #[test]
 fn test_no_help_flag() {
-    #[derive(Default, Options)]
+    #[derive(Options)]
     struct Opts {
         #[options(no_help_flag)]
         help: bool,
@@ -616,7 +616,7 @@ fn test_no_help_flag() {
 
 #[test]
 fn test_many_help_flags() {
-    #[derive(Default, Options)]
+    #[derive(Options)]
     struct Opts {
         #[options(help_flag)]
         help: bool,
@@ -641,7 +641,7 @@ fn test_many_help_flags() {
 
 #[test]
 fn test_help_flag_command() {
-    #[derive(Default, Options)]
+    #[derive(Options)]
     struct Opts {
         help: bool,
 
@@ -649,13 +649,13 @@ fn test_help_flag_command() {
         cmd: Option<Cmd>,
     }
 
-    #[derive(Default, Options)]
+    #[derive(Options)]
     struct Opts2 {
         #[options(command)]
         cmd: Option<Cmd>,
     }
 
-    #[derive(Default, Options)]
+    #[derive(Options)]
     struct Opts3 {
         help: bool,
         #[options(help_flag)]
@@ -672,7 +672,7 @@ fn test_help_flag_command() {
         Baz(CmdOpts),
     }
 
-    #[derive(Default, Options)]
+    #[derive(Options)]
     struct CmdOpts {
         help: bool,
     }
@@ -701,7 +701,7 @@ fn test_help_flag_command() {
 
 #[test]
 fn test_type_attrs() {
-    #[derive(Default, Options)]
+    #[derive(Options)]
     #[options(no_help_flag, no_short, no_long)]
     struct Opts {
         #[options(long = "help")]
@@ -729,7 +729,7 @@ fn test_type_attrs() {
     let opts = Opts::parse_args_default(&["-b"]).unwrap();
     assert_eq!(opts.bar, true);
 
-    #[derive(Default, Options)]
+    #[derive(Options)]
     #[options(no_short)]
     struct Opts2 {
         foo: bool,
@@ -747,7 +747,7 @@ fn test_type_attrs() {
     let opts = Opts2::parse_args_default(&["--bar"]).unwrap();
     assert_eq!(opts.bar, true);
 
-    #[derive(Default, Options)]
+    #[derive(Options)]
     #[options(no_long)]
     struct Opts3 {
         foo: bool,
@@ -765,7 +765,7 @@ fn test_type_attrs() {
     assert_eq!(opts.foo, true);
     assert_eq!(opts.bar, true);
 
-    #[derive(Default, Options)]
+    #[derive(Options)]
     #[options(no_help_flag)]
     struct Opts4 {
         #[options(help_flag)]
@@ -776,7 +776,7 @@ fn test_type_attrs() {
     assert_eq!(opts.help, true);
     assert_eq!(opts.help_requested(), true);
 
-    #[derive(Default, Options)]
+    #[derive(Options)]
     #[options(required)]
     struct Opts5 {
         #[options(no_long)]
@@ -799,14 +799,14 @@ fn test_type_attrs() {
 
 #[test]
 fn test_required() {
-    #[derive(Default, Options)]
+    #[derive(Options)]
     struct Opts {
         #[options(required)]
         foo: i32,
         optional: i32,
     }
 
-    #[derive(Default, Options)]
+    #[derive(Options)]
     struct Opts2 {
         #[options(command, required)]
         command: Option<Cmd>,
@@ -818,7 +818,7 @@ fn test_required() {
         Foo(NoOpts),
     }
 
-    #[derive(Default, Options)]
+    #[derive(Options)]
     struct Opts3 {
         #[options(free, required)]
         bar: i32,
@@ -852,7 +852,7 @@ fn test_required() {
 fn test_parse() {
     use std::str::FromStr;
 
-    #[derive(Default, Options)]
+    #[derive(Options)]
     struct Opts {
         #[options(help = "foo", parse(from_str = "parse_foo"))]
         foo: Option<Foo>,
@@ -901,4 +901,31 @@ fn test_parse() {
         |e| e.starts_with("invalid argument to option `--bar`: "));
     is_err!(Opts::parse_args_default(&["--quux", "xyz"]),
         |e| e.starts_with("invalid argument to option `--quux`: "));
+}
+
+#[test]
+fn test_default() {
+    #[derive(Options)]
+    struct Opts {
+        foo: u32,
+        #[options(default = "123")]
+        bar: u32,
+        #[options(count, default = "456")]
+        count: u32,
+        #[options(free, default = "vec![1]")]
+        free: Vec<u32>,
+    }
+
+    let opts = Opts::parse_args_default(EMPTY).unwrap();
+    assert_eq!(opts.foo, 0);
+    assert_eq!(opts.bar, 123);
+    assert_eq!(opts.count, 456);
+    assert_eq!(opts.free, vec![1]);
+
+    let opts = Opts::parse_args_default(
+        &["-b99", "-c", "-f1", "2", "3"]).unwrap();
+    assert_eq!(opts.foo, 1);
+    assert_eq!(opts.bar, 99);
+    assert_eq!(opts.count, 457);
+    assert_eq!(opts.free, vec![1, 2, 3]);
 }

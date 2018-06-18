@@ -5,11 +5,11 @@ use gumdrop::Options;
 // Defines options that can be parsed from the command line.
 //
 // `derive(Options)` will generate an implementation of the trait `Options`.
-// An implementation of `Default` (derived or otherwise) is required for the
-// generated implementation.
+// Each field must either have a `Default` implementation or an inline
+// default value provided.
 //
 // (`Debug` is only derived here for demonstration purposes.)
-#[derive(Debug, Default, Options)]
+#[derive(Debug, Options)]
 struct MyOptions {
     // Contains "free" arguments -- those that are not options.
     // If no `free` field is declared, free arguments will result in an error.

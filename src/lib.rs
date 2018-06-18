@@ -10,11 +10,11 @@
 //! // Defines options that can be parsed from the command line.
 //! //
 //! // `derive(Options)` will generate an implementation of the trait `Options`.
-//! // An implementation of `Default` (derived or otherwise) is required for the
-//! // generated implementation.
+//! // Each field must either have a `Default` implementation or an inline
+//! // default value provided.
 //! //
 //! // (`Debug` is only derived here for demonstration purposes.)
-//! #[derive(Debug, Default, Options)]
+//! #[derive(Debug, Options)]
 //! struct MyOptions {
 //!     // Contains "free" arguments -- those that are not options.
 //!     // If no `free` field is declared, free arguments will result in an error.
@@ -68,7 +68,7 @@
 //! use gumdrop::Options;
 //!
 //! // Define options for the program.
-//! #[derive(Debug, Default, Options)]
+//! #[derive(Debug, Options)]
 //! struct MyOptions {
 //!     // Options here can be accepted with any command (or none at all),
 //!     // but they must come before the command name.
@@ -104,14 +104,14 @@
 //! }
 //!
 //! // Options accepted for the `help` command
-//! #[derive(Debug, Default, Options)]
+//! #[derive(Debug, Options)]
 //! struct HelpOpts {
 //!     #[options(free)]
 //!     free: Vec<String>,
 //! }
 //!
 //! // Options accepted for the `make` command
-//! #[derive(Debug, Default, Options)]
+//! #[derive(Debug, Options)]
 //! struct MakeOpts {
 //!     #[options(free)]
 //!     free: Vec<String>,
@@ -120,7 +120,7 @@
 //! }
 //!
 //! // Options accepted for the `install` command
-//! #[derive(Debug, Default, Options)]
+//! #[derive(Debug, Options)]
 //! struct InstallOpts {
 //!     #[options(help = "target directory")]
 //!     dir: Option<String>,
@@ -140,7 +140,7 @@
 //!
 //! use gumdrop::Options;
 //!
-//! #[derive(Debug, Default, Options)]
+//! #[derive(Debug, Options)]
 //! struct MyOptions {
 //!     // `try_from_str = "..."` supplies a conversion function that may fail
 //!     #[options(help = "a hexadecimal value", parse(try_from_str = "parse_hex"))]
@@ -492,9 +492,7 @@ impl<'a> Opt<'a> {
 
 /// Implements a set of options parsed from command line arguments.
 ///
-/// An implementation of this trait can be generated with `#[derive(Options)]`
-/// from the crate `gumdrop_derive`. Such a derived implementation requires that
-/// the type implement the trait `Default`.
+/// An implementation of this trait can be generated with `#[derive(Options)]`.
 pub trait Options: Sized {
     /// Parses arguments until the given parser is exhausted or until
     /// an error is encountered.

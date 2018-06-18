@@ -62,6 +62,7 @@ use quote::{Tokens, ToTokens};
 use syn::{
     Attribute, AttrStyle, Data, DataEnum, DataStruct, DeriveInput, Fields,
     GenericArgument, Ident, Lit, Meta, NestedMeta, Path, PathArguments, Type,
+    Expr,
     parse_str,
 };
 
@@ -218,7 +219,10 @@ fn derive_options_struct(ast: &DeriveInput, fields: &Fields) -> TokenStream {
     let mut command_required = false;
     let mut help_flag = Vec::new();
     let mut options = Vec::new();
+    let mut field_name = Vec::new();
+    let mut default = Vec::new();
 
+    let default_expr: Expr = parse_str("::std::default::Default::default()").unwrap();
     let default_opts = DefaultOpts::parse(&ast.attrs);
 
     for field in fields {
@@ -226,6 +230,14 @@ fn derive_options_struct(ast: &DeriveInput, fields: &Fields) -> TokenStream {
         opts.set_defaults(&default_opts);
 
         let ident = field.ident.as_ref().unwrap();
+
+        field_name.push(ident);
+
+        if let Some(expr) = opts.default {
+            default.push(expr);
+        } else {
+            default.push(default_expr.clone());
+        }
 
         if opts.command {
             if command.is_some() {
@@ -519,7 +531,9 @@ fn derive_options_struct(ast: &DeriveInput, fields: &Fields) -> TokenStream {
                     #( #required: bool , )*
                 }
 
-                let mut _result = <Self as ::std::default::Default>::default();
+                let mut _result = #name{
+                    #( #field_name: #default ),*
+                };
                 let mut _free_counter = 0usize;
                 let mut _used = _Used::default();
 
@@ -601,6 +615,7 @@ struct AttrOpts {
     help: Option<String>,
     meta: Option<String>,
     parse: Option<ParseFn>,
+    default: Option<Expr>,
 
     command: bool,
 }
@@ -732,6 +747,7 @@ impl AttrOpts {
     fn check(&self) {
         if self.command {
             if self.free { panic!("`command` and `free` are mutually exclusive"); }
+            if self.default.is_some() { panic!("`command` and `default` are mutually exclusive"); }
             if self.long.is_some() { panic!("`command` and `long` are mutually exclusive"); }
             if self.short.is_some() { panic!("`command` and `short` are mutually exclusive"); }
             if self.count { panic!("`command` and `count` are mutually exclusive"); }
@@ -834,6 +850,13 @@ impl AttrOpts {
                     }
                     Meta::NameValue(ref nv) => {
                         match nv.ident.as_ref() {
+                            "default" => {
+                                let expr = lit_str(&nv.lit);
+                                let expr = parse_str(&expr).unwrap_or_else(
+                                    |_| panic!("failed to parse default expression `{}`", expr));
+
+                                self.default = Some(expr);
+                            }
                             "long" => self.long = Some(lit_str(&nv.lit)),
                             "short" => self.short = Some(lit_char(&nv.lit)),
                             "help" => self.help = Some(lit_str(&nv.lit)),
