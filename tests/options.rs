@@ -1,6 +1,8 @@
 #[macro_use] extern crate assert_matches;
 #[macro_use] extern crate gumdrop;
 
+use std::str::FromStr;
+
 use gumdrop::Options;
 
 const EMPTY: &'static [&'static str] = &[];
@@ -850,8 +852,6 @@ fn test_required() {
 
 #[test]
 fn test_parse() {
-    use std::str::FromStr;
-
     #[derive(Options)]
     struct Opts {
         #[options(help = "foo", parse(from_str = "parse_foo"))]
@@ -910,22 +910,61 @@ fn test_default() {
         foo: u32,
         #[options(default = "123")]
         bar: u32,
-        #[options(count, default = "456")]
+        #[options(default = "456")]
+        baz: Baz,
+        #[options(count, default = "789")]
         count: u32,
-        #[options(free, default = "vec![1]")]
-        free: Vec<u32>,
+    }
+
+    #[derive(Copy, Clone, Debug, Eq, PartialEq)]
+    struct Baz(u32);
+
+    impl FromStr for Baz {
+        type Err = <u32 as FromStr>::Err;
+
+        fn from_str(s: &str) -> Result<Self, Self::Err> {
+            s.parse().map(Baz)
+        }
     }
 
     let opts = Opts::parse_args_default(EMPTY).unwrap();
     assert_eq!(opts.foo, 0);
     assert_eq!(opts.bar, 123);
-    assert_eq!(opts.count, 456);
-    assert_eq!(opts.free, vec![1]);
+    assert_eq!(opts.baz, Baz(456));
+    assert_eq!(opts.count, 789);
 
-    let opts = Opts::parse_args_default(
-        &["-b99", "-c", "-f1", "2", "3"]).unwrap();
+    let opts = Opts::parse_args_default(&["-b99", "--baz=4387", "-c", "-f1"]).unwrap();
     assert_eq!(opts.foo, 1);
     assert_eq!(opts.bar, 99);
-    assert_eq!(opts.count, 457);
-    assert_eq!(opts.free, vec![1, 2, 3]);
+    assert_eq!(opts.baz, Baz(4387));
+    assert_eq!(opts.count, 790);
+}
+
+#[test]
+fn test_failed_default() {
+    #[derive(Options)]
+    struct Opts {
+        #[options(default = "lolwut")]
+        foo: u32,
+    }
+
+    is_err!(Opts::parse_args_default(EMPTY),
+        |e| e.starts_with(r#"invalid default value for `foo` ("lolwut"): "#));
+}
+
+#[test]
+fn test_default_parse() {
+    #[derive(Options)]
+    struct Opts {
+        #[options(default = "1", parse(try_from_str = "parse_foo"))]
+        foo: Foo,
+    }
+
+    #[derive(Debug, Eq, PartialEq)]
+    struct Foo(u32);
+
+    fn parse_foo(s: &str) -> Result<Foo, <u32 as FromStr>::Err> { s.parse().map(Foo) }
+
+    let opts = Opts::parse_args_default(EMPTY).unwrap();
+    assert_eq!(opts.foo, Foo(1));
 }

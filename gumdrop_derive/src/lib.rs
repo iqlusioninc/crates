@@ -62,7 +62,6 @@ use quote::{Tokens, ToTokens};
 use syn::{
     Attribute, AttrStyle, Data, DataEnum, DataStruct, DeriveInput, Fields,
     GenericArgument, Ident, Lit, Meta, NestedMeta, Path, PathArguments, Type,
-    Expr,
     parse_str,
 };
 
@@ -222,7 +221,7 @@ fn derive_options_struct(ast: &DeriveInput, fields: &Fields) -> TokenStream {
     let mut field_name = Vec::new();
     let mut default = Vec::new();
 
-    let default_expr: Expr = parse_str("::std::default::Default::default()").unwrap();
+    let default_expr = quote!{ ::std::default::Default::default() };
     let default_opts = DefaultOpts::parse(&ast.attrs);
 
     for field in fields {
@@ -234,7 +233,9 @@ fn derive_options_struct(ast: &DeriveInput, fields: &Fields) -> TokenStream {
         field_name.push(ident);
 
         if let Some(expr) = opts.default {
-            default.push(expr);
+            default.push(opts.parse.as_ref()
+                .unwrap_or(&ParseFn::Default)
+                .make_parse_default_action(ident, &expr));
         } else {
             default.push(default_expr.clone());
         }
@@ -615,7 +616,7 @@ struct AttrOpts {
     help: Option<String>,
     meta: Option<String>,
     parse: Option<ParseFn>,
-    default: Option<Expr>,
+    default: Option<String>,
 
     command: bool,
 }
@@ -760,6 +761,7 @@ impl AttrOpts {
         }
 
         if self.free {
+            if self.default.is_some() { panic!("`free` and `default` are mutually exclusive"); }
             if self.long.is_some() { panic!("`free` and `long` are mutually exclusive"); }
             if self.short.is_some() { panic!("`free` and `short` are mutually exclusive"); }
             if self.count { panic!("`free` and `count` are mutually exclusive"); }
@@ -850,13 +852,7 @@ impl AttrOpts {
                     }
                     Meta::NameValue(ref nv) => {
                         match nv.ident.as_ref() {
-                            "default" => {
-                                let expr = lit_str(&nv.lit);
-                                let expr = parse_str(&expr).unwrap_or_else(
-                                    |_| panic!("failed to parse default expression `{}`", expr));
-
-                                self.default = Some(expr);
-                            }
+                            "default" => self.default = Some(lit_str(&nv.lit)),
                             "long" => self.long = Some(lit_str(&nv.lit)),
                             "short" => self.short = Some(lit_char(&nv.lit)),
                             "help" => self.help = Some(lit_str(&nv.lit)),
@@ -1150,12 +1146,37 @@ impl ParseFn {
             ParseFn::FromStr(None) => quote!{
                 ::std::convert::From::from(_arg)
             },
-            ParseFn::FromStr(ref fun) => quote!{
+            ParseFn::FromStr(Some(ref fun)) => quote!{
                 #fun(_arg)
             },
             ParseFn::TryFromStr(ref fun) => quote!{
                 #fun(_arg)
                     .map_err(|e| ::gumdrop::Error::failed_parse(_opt,
+                        ::std::string::ToString::to_string(&e)))?
+            }
+        };
+
+        res
+    }
+
+    fn make_parse_default_action(&self, ident: &Ident, expr: &str) -> Tokens {
+        let res = match *self {
+            ParseFn::Default => quote!{
+                ::std::str::FromStr::from_str(#expr)
+                    .map_err(|e| ::gumdrop::Error::failed_parse_default(
+                        stringify!(#ident), #expr,
+                        ::std::string::ToString::to_string(&e)))?
+            },
+            ParseFn::FromStr(None) => quote!{
+                ::std::convert::From::from(#expr)
+            },
+            ParseFn::FromStr(Some(ref fun)) => quote!{
+                #fun(#expr)
+            },
+            ParseFn::TryFromStr(ref fun) => quote!{
+                #fun(#expr)
+                    .map_err(|e| ::gumdrop::Error::failed_parse_default(
+                        stringify!(#ident), #expr,
                         ::std::string::ToString::to_string(&e)))?
             }
         };

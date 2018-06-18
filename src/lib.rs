@@ -233,6 +233,12 @@ impl Error {
         Error{kind: ErrorKind::FailedParse(opt.to_string(), err)}
     }
 
+    /// Returns an error for a failed attempt at parsing an option's default value.
+    pub fn failed_parse_default(option: &'static str,
+            value: &'static str, err: String) -> Error {
+        Error{kind: ErrorKind::FailedParseDefault{option, value, err}}
+    }
+
     /// Returns an error for an option expecting two or more arguments not
     /// receiving the expected number of arguments.
     pub fn insufficient_arguments(opt: Opt, expected: usize, found: usize) -> Error {
@@ -320,6 +326,7 @@ impl fmt::Display for Error {
 
         match self.kind {
             FailedParse(ref opt, ref arg) => write!(f, "invalid argument to option `{}`: {}", opt, arg),
+            FailedParseDefault{ref option, value, ref err} => write!(f, "invalid default value for `{}` ({:?}): {}", option, value, err),
             InsufficientArguments{ref option, expected, found} =>
                 write!(f, "insufficient arguments to option `{}`: expected {}; found {}",
                     option, expected, found),
@@ -348,6 +355,11 @@ impl StdError for Error {
 #[derive(Debug)]
 enum ErrorKind {
     FailedParse(String, String),
+    FailedParseDefault{
+        option: &'static str,
+        value: &'static str,
+        err: String,
+    },
     InsufficientArguments{
         option: String,
         expected: usize,
