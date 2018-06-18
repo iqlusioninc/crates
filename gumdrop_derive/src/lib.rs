@@ -232,7 +232,7 @@ fn derive_options_struct(ast: &DeriveInput, fields: &Fields) -> TokenStream {
 
         field_name.push(ident);
 
-        if let Some(expr) = opts.default {
+        if let Some(ref expr) = opts.default {
             default.push(opts.parse.as_ref()
                 .unwrap_or(&ParseFn::Default)
                 .make_parse_default_action(ident, &expr));
@@ -331,6 +331,7 @@ fn derive_options_struct(ast: &DeriveInput, fields: &Fields) -> TokenStream {
             required: opts.required,
             meta: opts.meta.take(),
             help: opts.help.take(),
+            default: opts.default.take(),
         });
     }
 
@@ -666,6 +667,7 @@ struct Opt<'a> {
     required: bool,
     help: Option<String>,
     meta: Option<String>,
+    default: Option<String>,
 }
 
 enum ParseFn {
@@ -1107,6 +1109,51 @@ impl<'a> Opt<'a> {
             #action
         }
     }
+
+    fn usage(&self, col_width: usize) -> String {
+        let mut res = String::from("  ");
+
+        if let Some(short) = self.short {
+            res.push('-');
+            res.push(short);
+        }
+
+        if self.short.is_some() && self.long.is_some() {
+            res.push_str(", ");
+        }
+
+        if let Some(ref long) = self.long {
+            res.push_str("--");
+            res.push_str(long);
+        }
+
+        if let Some(ref meta) = self.meta {
+            res.push(' ');
+            res.push_str(meta);
+        }
+
+        if self.help.is_some() || self.default.is_some() {
+            if res.len() < col_width {
+                let n = col_width - res.len();
+                res.extend(repeat(' ').take(n));
+            } else {
+                res.push('\n');
+                res.extend(repeat(' ').take(col_width));
+            }
+        }
+
+        if let Some(ref help) = self.help {
+            res.push_str(help);
+        }
+
+        if let Some(ref default) = self.default {
+            res.push_str(" (default: ");
+            res.push_str(default);
+            res.push_str(")");
+        }
+
+        res
+    }
 }
 
 impl ParseFn {
@@ -1434,40 +1481,7 @@ fn make_usage(free: &[FreeOpt], opts: &[Opt]) -> String {
         res.push_str("Optional arguments:\n");
 
         for opt in opts {
-            let mut line = String::from("  ");
-
-            if let Some(short) = opt.short {
-                line.push('-');
-                line.push(short);
-            }
-
-            if opt.short.is_some() && opt.long.is_some() {
-                line.push_str(", ");
-            }
-
-            if let Some(ref long) = opt.long {
-                line.push_str("--");
-                line.push_str(long);
-            }
-
-            if let Some(ref meta) = opt.meta {
-                line.push(' ');
-                line.push_str(meta);
-            }
-
-            if let Some(ref help) = opt.help {
-                if line.len() < width {
-                    let n = width - line.len();
-                    line.extend(repeat(' ').take(n));
-                } else {
-                    line.push('\n');
-                    line.extend(repeat(' ').take(width));
-                }
-
-                line.push_str(help);
-            }
-
-            res.push_str(&line);
+            res.push_str(&opt.usage(width));
             res.push('\n');
         }
     }

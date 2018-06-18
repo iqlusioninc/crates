@@ -522,19 +522,22 @@ fn test_usage() {
         delta: i32,
         #[options(help = "echo help", meta = "Y")]
         echo: Vec<String>,
+        #[options(help = "foxtrot help", meta = "Z", default = "99")]
+        foxtrot: u32,
         #[options(no_short, help = "long option help")]
         very_very_long_option_with_very_very_long_name: bool,
     }
 
     assert_eq!(Opts::usage(), &"
 Optional arguments:
-  -a, --alpha    alpha help
-  --bravo BRAVO  bravo help
-  -c             charlie help
-  -d, --delta X  delta help
-  -e, --echo Y   echo help
+  -a, --alpha      alpha help
+  --bravo BRAVO    bravo help
+  -c               charlie help
+  -d, --delta X    delta help
+  -e, --echo Y     echo help
+  -f, --foxtrot Z  foxtrot help (default: 99)
   --very-very-long-option-with-very-very-long-name
-                 long option help"
+                   long option help"
         // Skip leading newline
         [1..]);
 
