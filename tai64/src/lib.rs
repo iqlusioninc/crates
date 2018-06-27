@@ -37,7 +37,7 @@ pub struct TAI64N(pub TAI64, pub u32);
 
 impl TAI64 {
     /// Convert `TAI64` to external representation.
-    pub fn to_external(&self) -> [u8; 8] {
+    pub fn to_external(self) -> [u8; 8] {
         let mut result = [0u8; 8];
         BigEndian::write_u64(&mut result, self.0);
         result
@@ -164,7 +164,7 @@ impl TAI64 {
     }
 
     /// Convert `TAI64` to unix timestamp.
-    pub fn to_unix(&self) -> i64 {
+    pub fn to_unix(self) -> i64 {
         (self.0 as i64).checked_sub(10 + (1 << 62)).unwrap()
     }
 }
