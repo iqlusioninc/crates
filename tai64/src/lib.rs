@@ -8,7 +8,13 @@
 #![crate_name = "tai64"]
 #![crate_type = "rlib"]
 #![allow(unknown_lints, suspicious_arithmetic_impl)]
-#![deny(warnings, missing_docs, unsafe_code, unused_import_braces, unused_qualifications)]
+#![deny(
+    warnings,
+    missing_docs,
+    unsafe_code,
+    unused_import_braces,
+    unused_qualifications
+)]
 #![doc(html_root_url = "https://docs.rs/tai64/0.2.3")]
 
 extern crate byteorder;
