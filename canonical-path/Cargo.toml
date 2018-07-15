@@ -4,14 +4,14 @@ description = "Path and PathBuf-like types for representing canonical filesystem
 version     = "0.1.1" # Also update html_root_url in lib.rs when bumping this
 authors     = ["Tony Arcieri <tony@iqlusion.io>"]
 license     = "Apache-2.0"
-homepage    = "https://github.com/iqlusion-io/crates/"
-repository  = "https://github.com/iqlusion-io/crates/tree/master/canonical-path"
+homepage    = "https://github.com/iqlusioninc/crates/"
+repository  = "https://github.com/iqlusioninc/crates/tree/master/canonical-path"
 readme      = "README.md"
 categories  = ["filesystem"]
 keywords    = ["filesystem", "path", "canonicalization"]
 
 [badges]
-circle-ci = { repository = "iqlusion-io/crates" }
+circle-ci = { repository = "iqlusioninc/crates" }
 
 [dev-dependencies]
 tempdir = "0.3"

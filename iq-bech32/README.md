@@ -9,10 +9,10 @@
 [crate-link]: https://crates.io/crates/iq-bech32
 [docs-image]: https://docs.rs/iq-bech32/badge.svg
 [docs-link]: https://docs.rs/iq-bech32/
-[build-image]: https://circleci.com/gh/iqlusion-io/crates.svg?style=shield
-[build-link]: https://circleci.com/gh/iqlusion-io/crates
+[build-image]: https://circleci.com/gh/iqlusioninc/crates.svg?style=shield
+[build-link]: https://circleci.com/gh/iqlusioninc/crates
 [license-image]: https://img.shields.io/badge/license-Apache2.0-blue.svg
-[license-link]: https://github.com/iqlusion-io/crates/blob/master/LICENSE
+[license-link]: https://github.com/iqlusioninc/crates/blob/master/LICENSE
 
 Rust crate for encoding/decoding Bech32 ([BIP-173]), a human-friendly base32
 encoding for binary data intended for use with cryptographic keys.
@@ -36,7 +36,7 @@ with the general purpose of using this format for cryptographic secret keys:
 The **iq-bech32** crate is distributed under the terms of the Apache License
 (Version 2.0).
 
-See [LICENSE] file in the `iqlusion-io/crates` toplevel directory for more
+See [LICENSE] file in the `iqlusioninc/crates` toplevel directory for more
 information.
 
-[LICENSE]: https://github.com/iqlusion-io/crates/blob/master/LICENSE
+[LICENSE]: https://github.com/iqlusioninc/crates/blob/master/LICENSE

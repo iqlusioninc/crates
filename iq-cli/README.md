@@ -9,10 +9,10 @@
 [crate-link]: https://crates.io/crates/iq-cli
 [docs-image]: https://docs.rs/iq-cli/badge.svg
 [docs-link]: https://docs.rs/iq-cli/
-[build-image]: https://circleci.com/gh/iqlusion-io/crates.svg?style=shield
-[build-link]: https://circleci.com/gh/iqlusion-io/crates
+[build-image]: https://circleci.com/gh/iqlusioninc/crates.svg?style=shield
+[build-link]: https://circleci.com/gh/iqlusioninc/crates
 [license-image]: https://img.shields.io/badge/license-Apache2.0-blue.svg
-[license-link]: https://github.com/iqlusion-io/crates/blob/master/LICENSE
+[license-link]: https://github.com/iqlusioninc/crates/blob/master/LICENSE
 
 This crate contains reusable components for building Cargo-like command-line
 interfaces which can selectively enable colored output when a TTY is available.
@@ -27,7 +27,7 @@ project, which is copyright The Rust Project Developers, and dual licensed under
 the MIT and Apache 2.0 licenses. However, at least for now we are only making
 our codebase available under the Apache 2.0 license.
 
-See [LICENSE] file in the `iqlusion-io/crates` toplevel directory for more
+See [LICENSE] file in the `iqlusioninc/crates` toplevel directory for more
 information.
 
-[LICENSE]: https://github.com/iqlusion-io/crates/blob/master/LICENSE
+[LICENSE]: https://github.com/iqlusioninc/crates/blob/master/LICENSE

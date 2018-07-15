@@ -2,7 +2,7 @@
 
 Thank you for your interest in contributing to the [iqlusion crates] repository!
 
-[iqlusion crates]: https://github.com/iqlusion-io/crates
+[iqlusion crates]: https://github.com/iqlusioninc/crates
 
 To contribute to this repository, here is all you need to do:
 
@@ -11,8 +11,8 @@ To contribute to this repository, here is all you need to do:
 3. Create one or more additional commits including your contributions, then open
    a [pull request] along with the commit adding yourself to [AUTHORS.md].
 
-[CODE_OF_CONDUCT.md]: https://github.com/iqlusion-io/crates/blob/master/CODE_OF_CONDUCT.md
-[AUTHORS.md]: https://github.com/iqlusion-io/crates/blob/master/AUTHORS.md
+[CODE_OF_CONDUCT.md]: https://github.com/iqlusioninc/crates/blob/master/CODE_OF_CONDUCT.md
+[AUTHORS.md]: https://github.com/iqlusioninc/crates/blob/master/AUTHORS.md
 [pull request]: https://help.github.com/articles/about-pull-requests/
 
 ## Code of Conduct
@@ -34,7 +34,7 @@ the terms of the [Apache License, Version 2.0] (included in this repository in
 the toplevel [LICENSE] file).
 
 [Apache License, Version 2.0]: https://www.apache.org/licenses/LICENSE-2.0
-[LICENSE]: https://github.com/iqlusion-io/crates/blob/master/LICENSE
+[LICENSE]: https://github.com/iqlusioninc/crates/blob/master/LICENSE
 
 To do this, edit the [AUTHORS.md] file, inserting your name in the list of
 contributors (in rougly alphabetical order by last name, preferably) along with
@@ -54,7 +54,7 @@ to this project under the terms of the Apache License, Version 2.0.
 Please replace `[MY GITHUB USERNAME]` with the GitHub username you are sending
 the PR from, including the `@` symbol (e.g. `@defunkt`), and also replacing
 `[LEGAL NAME HERE]` with your full legal name.
-[See this commit for an example](https://github.com/iqlusion-io/crates/commit/3f5e3d53c6960bd41e8b3832cea04ab47dae3cb9).
+[See this commit for an example](https://github.com/iqlusioninc/crates/commit/3f5e3d53c6960bd41e8b3832cea04ab47dae3cb9).
 
 If you have concerns about including your legal name in this file but would
 still like to contribute, please [contact us] and we can discuss other potential

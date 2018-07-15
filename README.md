@@ -3,10 +3,10 @@
 [![Build Status][build-image]][build-link]
 [![Apache 2.0 Licensed][license-image]][license-link]
 
-[build-image]: https://circleci.com/gh/iqlusion-io/crates.svg?style=shield
-[build-link]: https://circleci.com/gh/iqlusion-io/crates
+[build-image]: https://circleci.com/gh/iqlusioninc/crates.svg?style=shield
+[build-link]: https://circleci.com/gh/iqlusioninc/crates
 [license-image]: https://img.shields.io/badge/license-Apache2.0-blue.svg
-[license-link]: https://github.com/iqlusion-io/crates/blob/master/LICENSE
+[license-link]: https://github.com/iqlusioninc/crates/blob/master/LICENSE
 
 This repository contains a set of Apache 2.0-licensed packages (a.k.a.  "crates")
 for the [Rust](https://www.rust-lang.org/) programming language, contributed
@@ -15,22 +15,22 @@ to the community by [iqlusion](https://www.iqlusion.io).
 If you are interested in contributing to this repository, please make sure to
 read the [CONTRIBUTING.md] and [CODE_OF_CONDUCT.md] files first.
 
-[CONTRIBUTING.md]: https://github.com/iqlusion-io/crates/blob/master/CONTRIBUTING.md
-[CODE_OF_CONDUCT.md]: https://github.com/iqlusion-io/crates/blob/master/CODE_OF_CONDUCT.md
+[CONTRIBUTING.md]: https://github.com/iqlusioninc/crates/blob/master/CONTRIBUTING.md
+[CODE_OF_CONDUCT.md]: https://github.com/iqlusioninc/crates/blob/master/CODE_OF_CONDUCT.md
 
 ## Crate Descriptions
 
 This repository contains the following crates:
 
-* [canonical-path:](https://github.com/iqlusion-io/crates/tree/master/canonical-path)
+* [canonical-path:](https://github.com/iqlusioninc/crates/tree/master/canonical-path)
   `Path` and `PathBuf`-like types for representing canonical filesystem paths.
-* [cargo-rpm:](https://github.com/iqlusion-io/crates/tree/master/cargo-rpm)
+* [cargo-rpm:](https://github.com/iqlusioninc/crates/tree/master/cargo-rpm)
   A cargo subcommand for building `.rpm` releases of Rust projects.
-* [iq-cli:](https://github.com/iqlusion-io/crates/tree/master/iq-cli)
+* [iq-cli:](https://github.com/iqlusioninc/crates/tree/master/iq-cli)
   Cargo-like colored command-line interfaces.
-* [keyuri:](https://github.com/iqlusion-io/crates/tree/master/keyuri)
+* [keyuri:](https://github.com/iqlusioninc/crates/tree/master/keyuri)
   URI-like serialization format for cryptographic keys.
-* [tai64:](https://github.com/iqlusion-io/crates/tree/master/tai64)
+* [tai64:](https://github.com/iqlusioninc/crates/tree/master/tai64)
   TAI64(N) timestamp format (Temps Atomique International)
 
 ## License

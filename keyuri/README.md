@@ -9,10 +9,10 @@
 [crate-link]: https://crates.io/crates/keyuri
 [docs-image]: https://docs.rs/keyuri/badge.svg
 [docs-link]: https://docs.rs/keyuri/
-[build-image]: https://circleci.com/gh/iqlusion-io/crates.svg?style=shield
-[build-link]: https://circleci.com/gh/iqlusion-io/crates
+[build-image]: https://circleci.com/gh/iqlusioninc/crates.svg?style=shield
+[build-link]: https://circleci.com/gh/iqlusioninc/crates
 [license-image]: https://img.shields.io/badge/license-Apache2.0-blue.svg
-[license-link]: https://github.com/iqlusion-io/crates/blob/master/LICENSE
+[license-link]: https://github.com/iqlusioninc/crates/blob/master/LICENSE
 
 A format for serializing cryptographic keys based on the URI generic syntax.
 
@@ -36,7 +36,7 @@ decode.
 The **keyuri** crate is distributed under the terms of the Apache License
 (Version 2.0).
 
-See [LICENSE] file in the `iqlusion-io/crates` toplevel directory for more
+See [LICENSE] file in the `iqlusioninc/crates` toplevel directory for more
 information.
 
-[LICENSE]: https://github.com/iqlusion-io/crates/blob/master/LICENSE
+[LICENSE]: https://github.com/iqlusioninc/crates/blob/master/LICENSE

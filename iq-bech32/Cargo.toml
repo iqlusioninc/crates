@@ -4,14 +4,14 @@ description = "Bech32 (BIP-173) is a human-friendly base32 encoding format with 
 version     = "0.0.0" # Also update html_root_url in lib.rs when bumping this
 authors     = ["Tony Arcieri <tony@iqlusion.io>"]
 license     = "Apache-2.0"
-homepage    = "https://github.com/iqlusion-io/crates/"
-repository  = "https://github.com/iqlusion-io/crates/tree/master/iq-bip32"
+homepage    = "https://github.com/iqlusioninc/crates/"
+repository  = "https://github.com/iqlusioninc/crates/tree/master/iq-bip32"
 readme      = "README.md"
 categories  = ["cryptography", "encoding"]
 keywords    = ["bech32", "cryptography", "security"]
 
 [badges]
-circle-ci = { repository = "iqlusion-io/crates" }
+circle-ci = { repository = "iqlusioninc/crates" }
 
 [dependencies]
 clear_on_drop = "0.2"
