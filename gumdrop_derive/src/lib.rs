@@ -51,14 +51,16 @@
 #![recursion_limit = "1024"]
 
 extern crate proc_macro;
+extern crate proc_macro2;
 #[macro_use] extern crate quote;
 extern crate syn;
 
 use std::iter::repeat;
 
 use proc_macro::TokenStream;
+use proc_macro2::TokenStream as TokenStream2;
 
-use quote::{Tokens, ToTokens};
+use quote::{ToTokens};
 use syn::{
     Attribute, AttrStyle, Data, DataEnum, DataStruct, DeriveInput, Fields,
     GenericArgument, Ident, Lit, Meta, NestedMeta, Path, PathArguments, Type,
@@ -106,7 +108,7 @@ fn derive_options_enum(ast: &DeriveInput, data: &DataEnum) -> TokenStream {
 
         commands.push(Cmd{
             name: opts.name.unwrap_or_else(
-                || make_command_name(var_name.as_ref())),
+                || make_command_name(&var_name.to_string())),
             help: opts.help,
             variant_name: var_name,
             ty: ty,
@@ -290,7 +292,7 @@ fn derive_options_struct(ast: &DeriveInput, fields: &Fields) -> TokenStream {
         }
 
         if opts.long.is_none() && !opts.no_long {
-            opts.long = Some(make_long_name(ident.as_ref()));
+            opts.long = Some(make_long_name(&ident.to_string()));
         }
 
         if let Some(ref long) = opts.long {
@@ -316,10 +318,10 @@ fn derive_options_struct(ast: &DeriveInput, fields: &Fields) -> TokenStream {
 
         if action.takes_arg() {
             if opts.meta.is_none() {
-                opts.meta = Some(make_meta(ident.as_ref(), &action));
+                opts.meta = Some(make_meta(&ident.to_string(), &action));
             }
         } else if opts.meta.is_some() {
-            panic!("`meta` value is invalid for option `{}`", ident.as_ref());
+            panic!("`meta` value is invalid for option `{}`", ident);
         }
 
         options.push(Opt{
@@ -339,7 +341,7 @@ fn derive_options_struct(ast: &DeriveInput, fields: &Fields) -> TokenStream {
     // Thus, manual short names will take priority over automatic ones.
     for opt in &mut options {
         if opt.short.is_none() && !opt.no_short {
-            let short = make_short_name(opt.field.as_ref(), &short_names);
+            let short = make_short_name(&opt.field.to_string(), &short_names);
 
             if let Some(short) = short {
                 short_names.push(short);
@@ -368,7 +370,7 @@ fn derive_options_struct(ast: &DeriveInput, fields: &Fields) -> TokenStream {
                 ::gumdrop::Opt::Short(#short)
             },
             (None, None) => {
-                panic!("option `{}` has no long or short flags", opt.field.as_ref());
+                panic!("option `{}` has no long or short flags", opt.field);
             }
         };
 
@@ -688,7 +690,7 @@ impl Action {
                 let path = path.path.segments.last().unwrap().into_value();
                 let param = first_ty_param(ty);
 
-                match path.ident.as_ref() {
+                match &path.ident.to_string()[..] {
                     "bool" if parse.is_none() => Action::Switch,
                     "Vec" if param.is_some() => {
                         let tuple_len = tuple_len(param.unwrap());
@@ -828,7 +830,7 @@ impl AttrOpts {
                 panic!("unexpected meta item `{}`", tokens_str(item)),
             NestedMeta::Meta(ref item) => {
                 match *item {
-                    Meta::Word(ref w) => match w.as_ref() {
+                    Meta::Word(ref w) => match &w.to_string()[..] {
                         "free" => self.free = true,
                         "command" => self.command = true,
                         "count" => self.count = true,
@@ -841,7 +843,7 @@ impl AttrOpts {
                         _ => panic!("unexpected meta item `{}`", tokens_str(item))
                     },
                     Meta::List(ref list) => {
-                        match list.ident.as_ref() {
+                        match &list.ident.to_string()[..] {
                             "parse" => {
                                 if list.nested.len() != 1 {
                                     panic!("unexpected meta item `{}`", tokens_str(item));
@@ -853,7 +855,7 @@ impl AttrOpts {
                         }
                     }
                     Meta::NameValue(ref nv) => {
-                        match nv.ident.as_ref() {
+                        match &nv.ident.to_string()[..] {
                             "default" => self.default = Some(lit_str(&nv.lit)),
                             "long" => self.long = Some(lit_str(&nv.lit)),
                             "short" => self.short = Some(lit_char(&nv.lit)),
@@ -910,7 +912,7 @@ impl CmdOpts {
                                         Meta::Word(_) | Meta::List(..) =>
                                             panic!("unexpected meta item `{}`", tokens_str(item)),
                                         Meta::NameValue(ref nv) => {
-                                            match nv.ident.as_ref() {
+                                            match &nv.ident.to_string()[..] {
                                                 "name" => opts.name = Some(lit_str(&nv.lit)),
                                                 "help" => opts.help = Some(lit_str(&nv.lit)),
                                                 _ => panic!("unexpected meta item `{}`", tokens_str(item))
@@ -950,7 +952,7 @@ impl DefaultOpts {
                                     panic!("unexpected meta item `{}`", tokens_str(item)),
                                 NestedMeta::Meta(ref item) => {
                                     match *item {
-                                        Meta::Word(ref w) => match w.as_ref() {
+                                        Meta::Word(ref w) => match &w.to_string()[..] {
                                             "no_help_flag" => opts.no_help_flag = true,
                                             "no_short" => opts.no_short = true,
                                             "no_long" => opts.no_long = true,
@@ -978,7 +980,7 @@ impl FreeAction {
             Type::Path(ref path) => {
                 let path = path.path.segments.last().unwrap().into_value();
 
-                match path.ident.as_ref() {
+                match &path.ident.to_string()[..] {
                     "Option" => FreeAction::SetOption,
                     "Vec" => FreeAction::Push,
                     _ => FreeAction::SetField
@@ -990,7 +992,7 @@ impl FreeAction {
 }
 
 impl<'a> FreeOpt<'a> {
-    fn mark_used(&self) -> Tokens {
+    fn mark_used(&self) -> TokenStream2 {
         if self.required {
             let field = self.field;
             quote!{ _used.#field = true; }
@@ -1000,7 +1002,7 @@ impl<'a> FreeOpt<'a> {
     }
 
     fn width(&self) -> usize {
-        2 + self.field.as_ref().len() + 2 // name + spaces before and after
+        2 + self.field.to_string().len() + 2 // name + spaces before and after
     }
 }
 
@@ -1013,7 +1015,7 @@ impl<'a> Opt<'a> {
         }
     }
 
-    fn mark_used(&self) -> Tokens {
+    fn mark_used(&self) -> TokenStream2 {
         if self.required {
             let field = self.field;
             quote!{ _used.#field = true; }
@@ -1031,7 +1033,7 @@ impl<'a> Opt<'a> {
         2 + short + long + sep + meta + 2 // total + spaces before and after
     }
 
-    fn make_action(&self) -> Tokens {
+    fn make_action(&self) -> TokenStream2 {
         use self::Action::*;
 
         let field = self.field;
@@ -1073,7 +1075,7 @@ impl<'a> Opt<'a> {
         }
     }
 
-    fn make_action_arg(&self) -> Tokens {
+    fn make_action_arg(&self) -> TokenStream2 {
         use self::Action::*;
 
         let field = self.field;
@@ -1160,14 +1162,14 @@ impl ParseFn {
     fn parse(item: &NestedMeta) -> ParseFn {
         match *item {
             NestedMeta::Meta(Meta::Word(ref ident)) => {
-                match ident.as_ref() {
+                match &ident.to_string()[..] {
                     "from_str" => ParseFn::FromStr(None),
                     "try_from_str" => ParseFn::Default,
                     _ => panic!("unexpected meta item `{}`", tokens_str(item))
                 }
             }
             NestedMeta::Meta(Meta::NameValue(ref nv)) => {
-                match nv.ident.as_ref() {
+                match &nv.ident.to_string()[..] {
                     "from_str" => {
                         let path = parse_str(&lit_str(&nv.lit)).unwrap();
                         ParseFn::FromStr(Some(path))
@@ -1183,7 +1185,7 @@ impl ParseFn {
         }
     }
 
-    fn make_parse_action(&self) -> Tokens {
+    fn make_parse_action(&self) -> TokenStream2 {
         let res = match *self {
             ParseFn::Default => quote!{
                 ::std::str::FromStr::from_str(_arg)
@@ -1206,7 +1208,7 @@ impl ParseFn {
         res
     }
 
-    fn make_parse_default_action(&self, ident: &Ident, expr: &str) -> Tokens {
+    fn make_parse_default_action(&self, ident: &Ident, expr: &str) -> TokenStream2 {
         let res = match *self {
             ParseFn::Default => quote!{
                 ::std::str::FromStr::from_str(#expr)
@@ -1239,7 +1241,7 @@ impl Default for ParseFn {
 }
 
 impl ParseMethod {
-    fn make_action_type(&self) -> Tokens {
+    fn make_action_type(&self) -> TokenStream2 {
         let parse = self.parse_fn.make_parse_action();
 
         match self.tuple_len {
@@ -1268,7 +1270,7 @@ impl ParseMethod {
         }
     }
 
-    fn make_action_type_arg(&self) -> Tokens {
+    fn make_action_type_arg(&self) -> TokenStream2 {
         match self.tuple_len {
             None => self.parse_fn.make_parse_action(),
             Some(_) => unreachable!()
@@ -1338,16 +1340,14 @@ fn path_eq(path: &Path, s: &str) -> bool {
         let seg = path.segments.first().unwrap().into_value();
 
         match seg.arguments {
-            PathArguments::None => seg.ident.as_ref() == s,
+            PathArguments::None => seg.ident == s,
             _ => false
         }
     }
 }
 
 fn tokens_str<T: ToTokens>(t: &T) -> String {
-    let mut tok = Tokens::new();
-    t.to_tokens(&mut tok);
-    tok.to_string()
+    t.into_token_stream().to_string()
 }
 
 fn tuple_len(ty: &Type) -> Option<usize> {
@@ -1454,7 +1454,7 @@ fn make_usage(free: &[FreeOpt], opts: &[Opt]) -> String {
         for opt in free {
             let mut line = String::from("  ");
 
-            line.push_str(opt.field.as_ref());
+            line.push_str(&opt.field.to_string());
 
             if let Some(ref help) = opt.help {
                 if line.len() < width {
