@@ -24,8 +24,6 @@ This repository contains the following crates:
 
 * [canonical-path:](https://github.com/iqlusioninc/crates/tree/master/canonical-path)
   `Path` and `PathBuf`-like types for representing canonical filesystem paths.
-* [cargo-rpm:](https://github.com/iqlusioninc/crates/tree/master/cargo-rpm)
-  A cargo subcommand for building `.rpm` releases of Rust projects.
 * [iq-cli:](https://github.com/iqlusioninc/crates/tree/master/iq-cli)
   Cargo-like colored command-line interfaces.
 * [keyuri:](https://github.com/iqlusioninc/crates/tree/master/keyuri)

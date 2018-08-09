@@ -14,6 +14,16 @@ keywords    = ["cli", "color"]
 circle-ci = { repository = "iqlusioninc/crates" }
 
 [dependencies]
+failure = "0.1"
+failure_derive = "0.1"
 lazy_static = "1"
-libc = "0.2"
 term = "0.5"
+
+[target.'cfg(unix)'.dependencies]
+libc = "0.2"
+
+[target.'cfg(windows)'.dependencies]
+winapi = { version = "0.3", features = ["consoleapi", "fileapi", "minwinbase", "minwindef", "processenv", "winbase", "winnt"] }
+
+[target.'cfg(target_os = "redox")'.dependencies]
+redox_syscall = "0.1"
