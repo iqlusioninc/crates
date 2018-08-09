@@ -1,6 +1,6 @@
 [package]
 name        = "iq-cli"
-description = "Cargo-like colored command-line interfaces"
+description = "Command-line app microframework with support for Cargo-like status messages"
 version     = "0.1.0" # Also update html_root_url in lib.rs when bumping this
 license     = "Apache-2.0"
 authors     = ["Tony Arcieri <tony@iqlusion.io>"]

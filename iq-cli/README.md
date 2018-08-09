@@ -1,4 +1,4 @@
-# iq-cli: Crate for making Cargo-like command-line interfaces
+# iq-cli: Command-line app microframework
 
 [![Crate][crate-image]][crate-link]
 [![Docs][docs-image]][docs-link]
@@ -17,18 +17,23 @@
 [license-image]: https://img.shields.io/badge/license-Apache2.0-blue.svg
 [license-link]: https://github.com/iqlusioninc/crates/blob/master/LICENSE
 
-This crate contains reusable components for building Cargo-like command-line
-interfaces which can selectively enable colored output when a TTY is available.
+This crate provides a set of largely self-contained, opinionated components
+for building command-line applications in Rust. It provides the following
+features:
+
+* Cargo-like status messages with easy-to-use macros
+* Colored terminal output (with autodetection of color support)
 
 ## License
 
 The **iq-cli** crate is distributed under the terms of the
 Apache License (Version 2.0).
 
-Parts of this code were taken from the [Cargo](https://github.com/rust-lang/cargo)
-project, which is copyright The Rust Project Developers, and dual licensed under
-the MIT and Apache 2.0 licenses. However, at least for now we are only making
-our codebase available under the Apache 2.0 license.
+Parts of this code were taken from the following projects, which have agreed
+to license their code under the Apache License (Version 2.0):
+
+* [Cargo](https://github.com/rust-lang/cargo)
+* [isatty](https://github.com/dtolnay/isatty)
 
 See [LICENSE] file in the `iqlusioninc/crates` toplevel directory for more
 information.
