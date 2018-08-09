@@ -27,7 +27,7 @@ pub(crate) fn isatty(stream: Stream) -> bool {
 }
 
 #[cfg(windows)]
-pub(crate) use windows::isatty;
+pub(crate) use self::windows::isatty;
 
 #[cfg(windows)]
 mod windows {

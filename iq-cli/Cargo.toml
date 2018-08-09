@@ -12,6 +12,7 @@ keywords    = ["cli", "color"]
 
 [badges]
 circle-ci = { repository = "iqlusioninc/crates" }
+appveyor  = { repository = "iqlusioninc/crates" }
 
 [dependencies]
 failure = "0.1"
