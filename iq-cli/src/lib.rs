@@ -9,7 +9,7 @@
 //! use iq_cli::{self, ColorConfig};
 //!
 //! // Initialize the terminal (uses autodetection for if colors are supported)
-//! iq_cli::init(ColorConfig::default());
+//! iq_cli::config(ColorConfig::default());
 //!
 //! // Print a Cargo-like justified status to STDOUT
 //! status_ok!("Loaded", "app loaded successfully");
@@ -51,4 +51,4 @@ mod macros;
 mod shell;
 
 pub use error::Error;
-pub use shell::{init, status, ColorConfig, Stream};
+pub use shell::{config, status, ColorConfig, Stream};

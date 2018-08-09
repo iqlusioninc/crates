@@ -21,17 +21,31 @@ mod isatty;
 pub use self::color_config::ColorConfig;
 
 lazy_static! {
-    static ref STDOUT: Mutex<RefCell<Option<Shell>>> = Mutex::new(RefCell::new(None));
-    static ref STDERR: Mutex<RefCell<Option<Shell>>> = Mutex::new(RefCell::new(None));
+    static ref STDOUT: Mutex<RefCell<Shell>> = {
+        Mutex::new(RefCell::new(Shell::new(
+            Stream::Stdout,
+            ColorConfig::default(),
+        )))
+    };
+    static ref STDERR: Mutex<RefCell<Shell>> = {
+        Mutex::new(RefCell::new(Shell::new(
+            Stream::Stderr,
+            ColorConfig::default(),
+        )))
+    };
 }
 
-/// (Re-)Initialize the shell
-pub fn init(color_config: ColorConfig) {
-    let stdout = Shell::new(Stream::Stdout, color_config);
-    STDOUT.lock().unwrap().replace(Some(stdout));
+/// Reconfigure the shell
+pub fn config(color_config: ColorConfig) {
+    STDOUT
+        .lock()
+        .unwrap()
+        .replace(Shell::new(Stream::Stdout, color_config));
 
-    let stderr = Shell::new(Stream::Stderr, color_config);
-    STDERR.lock().unwrap().replace(Some(stderr));
+    STDERR
+        .lock()
+        .unwrap()
+        .replace(Shell::new(Stream::Stderr, color_config));
 }
 
 /// Say a status message with the given color
@@ -44,8 +58,6 @@ where
 
     shell
         .borrow_mut()
-        .as_mut()
-        .expect("shell not configured!")
         .status(color, status, message, justified)
         .unwrap();
 }
@@ -63,7 +75,7 @@ pub enum Stream {
 impl Stream {
     /// Get a shell for this stream type
     #[allow(unknown_lints, trivially_copy_pass_by_ref)]
-    pub(crate) fn lock_shell(&self) -> MutexGuard<RefCell<Option<Shell>>> {
+    pub(crate) fn lock_shell(&self) -> MutexGuard<RefCell<Shell>> {
         match self {
             Stream::Stdout => STDOUT.lock().unwrap(),
             Stream::Stderr => STDERR.lock().unwrap(),
