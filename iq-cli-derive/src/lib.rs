@@ -1,11 +1,11 @@
-//! Provides `derive(Options)` for `gumdrop` crate
+//! Provides `derive(Options)` for `iq_cli` crate
 //!
 //! # `derive(Options)`
 //!
 //! `derive(Options)` generates an implementation of the trait `Options`,
 //! creating an option for each field of the decorated `struct`.
 //!
-//! See the `gumdrop` [documentation](https://docs.rs/gumdrop/) for an example
+//! See the `iq_cli` [documentation](https://docs.rs/iq_cli/) for an example
 //! of its usage.
 //!
 //! ## `options` attribute
@@ -47,12 +47,27 @@
 //! `#[options(...)]` may also be added at the type level. Only the flags
 //! `no_help_flag`, `no_long`, `no_short`, and `required`
 //! are supported at the type level.
+//!
+//! # Notice
+//!
+//! The `iq-cli-derive` crate is a fork of the `gumdrop-derive` crate:
+//! <https://github.com/murarth/gumdrop>
 
+#![crate_name = "iq_cli_derive"]
+#![crate_type = "rlib"]
+#![deny(
+    warnings,
+    unsafe_code,
+    unused_import_braces,
+    unused_qualifications
+)]
 #![recursion_limit = "1024"]
+#![doc(html_root_url = "https://docs.rs/iq-cli-derive/0.0.0")]
 
 extern crate proc_macro;
 extern crate proc_macro2;
-#[macro_use] extern crate quote;
+#[macro_use]
+extern crate quote;
 extern crate syn;
 
 use std::iter::repeat;
@@ -60,31 +75,33 @@ use std::iter::repeat;
 use proc_macro::TokenStream;
 use proc_macro2::TokenStream as TokenStream2;
 
-use quote::{ToTokens};
+use quote::ToTokens;
 use syn::{
-    Attribute, AttrStyle, Data, DataEnum, DataStruct, DeriveInput, Fields,
+    parse_str, AttrStyle, Attribute, Data, DataEnum, DataStruct, DeriveInput, Fields,
     GenericArgument, Ident, Lit, Meta, NestedMeta, Path, PathArguments, Type,
-    parse_str,
 };
 
+/// Derive the `Options` trait
 #[proc_macro_derive(Options, attributes(options))]
 pub fn derive_options(input: TokenStream) -> TokenStream {
     let ast: DeriveInput = syn::parse(input).unwrap();
 
     match ast.data {
-        Data::Enum(ref data) =>
-            derive_options_enum(&ast, data),
-        Data::Struct(DataStruct{fields: Fields::Unit, ..}) =>
-            panic!("cannot derive Options for unit struct types"),
-        Data::Struct(DataStruct{fields: Fields::Unnamed(..), ..}) =>
-            panic!("cannot derive Options for tuple struct types"),
-        Data::Struct(DataStruct{ref fields, ..}) =>
-            derive_options_struct(&ast, fields),
-        Data::Union(_) =>
-            panic!("cannot derive Options for union types"),
+        Data::Enum(ref data) => derive_options_enum(&ast, data),
+        Data::Struct(DataStruct {
+            fields: Fields::Unit,
+            ..
+        }) => panic!("cannot derive Options for unit struct types"),
+        Data::Struct(DataStruct {
+            fields: Fields::Unnamed(..),
+            ..
+        }) => panic!("cannot derive Options for tuple struct types"),
+        Data::Struct(DataStruct { ref fields, .. }) => derive_options_struct(&ast, fields),
+        Data::Union(_) => panic!("cannot derive Options for union types"),
     }
 }
 
+/// Derive the `Options` trait on an enum
 fn derive_options_enum(ast: &DeriveInput, data: &DataEnum) -> TokenStream {
     let name = &ast.ident;
     let mut commands = Vec::new();
@@ -92,12 +109,13 @@ fn derive_options_enum(ast: &DeriveInput, data: &DataEnum) -> TokenStream {
 
     for var in &data.variants {
         let ty = match var.fields {
-            Fields::Unit | Fields::Named(_) =>
-                panic!("command variants must be unary tuple variants"),
-            Fields::Unnamed(ref fields) if fields.unnamed.len() != 1 =>
-                panic!("command variants must be unary tuple variants"),
-            Fields::Unnamed(ref fields) =>
-                &fields.unnamed.first().unwrap().into_value().ty,
+            Fields::Unit | Fields::Named(_) => {
+                panic!("command variants must be unary tuple variants")
+            }
+            Fields::Unnamed(ref fields) if fields.unnamed.len() != 1 => {
+                panic!("command variants must be unary tuple variants")
+            }
+            Fields::Unnamed(ref fields) => &fields.unnamed.first().unwrap().into_value().ty,
         };
 
         let opts = CmdOpts::parse(&var.attrs);
@@ -106,12 +124,13 @@ fn derive_options_enum(ast: &DeriveInput, data: &DataEnum) -> TokenStream {
 
         var_ty.push(ty);
 
-        commands.push(Cmd{
-            name: opts.name.unwrap_or_else(
-                || make_command_name(&var_name.to_string())),
+        commands.push(Cmd {
+            name: opts
+                .name
+                .unwrap_or_else(|| make_command_name(&var_name.to_string())),
             help: opts.help,
             variant_name: var_name,
-            ty: ty,
+            ty,
         });
     }
 
@@ -130,11 +149,11 @@ fn derive_options_enum(ast: &DeriveInput, data: &DataEnum) -> TokenStream {
         variant.push(var_name);
 
         handle_cmd.push(quote!{
-            #name::#var_name(<#ty as ::gumdrop::Options>::parse(_parser)?)
+            #name::#var_name(<#ty as ::iq_cli::Options>::parse(_parser)?)
         });
 
         help_req_impl.push(quote!{
-            #name::#var_name(ref cmd) => { ::gumdrop::Options::help_requested(cmd) }
+            #name::#var_name(ref cmd) => { ::iq_cli::Options::help_requested(cmd) }
         });
     }
 
@@ -154,12 +173,12 @@ fn derive_options_enum(ast: &DeriveInput, data: &DataEnum) -> TokenStream {
     };
 
     let expr = quote!{
-        impl #impl_generics ::gumdrop::Options for #name #ty_generics #where_clause {
+        impl #impl_generics ::iq_cli::Options for #name #ty_generics #where_clause {
             fn parse<__S: ::std::convert::AsRef<str>>(
-                    _parser: &mut ::gumdrop::Parser<__S>)
-                    -> ::std::result::Result<Self, ::gumdrop::Error> {
+                    _parser: &mut ::iq_cli::options::Parser<__S>)
+                    -> ::std::result::Result<Self, ::iq_cli::options::Error> {
                 let _arg = _parser.next_arg()
-                    .ok_or_else(::gumdrop::Error::missing_command)?;
+                    .ok_or_else(::iq_cli::options::Error::missing_command)?;
 
                 Self::parse_command(_arg, _parser)
             }
@@ -175,12 +194,12 @@ fn derive_options_enum(ast: &DeriveInput, data: &DataEnum) -> TokenStream {
             }
 
             fn parse_command<__S: ::std::convert::AsRef<str>>(name: &str,
-                    _parser: &mut ::gumdrop::Parser<__S>)
-                    -> ::std::result::Result<Self, ::gumdrop::Error> {
+                    _parser: &mut ::iq_cli::options::Parser<__S>)
+                    -> ::std::result::Result<Self, ::iq_cli::options::Error> {
                 let cmd = match name {
                     #( #command => { #handle_cmd } )*
                     _ => return ::std::result::Result::Err(
-                        ::gumdrop::Error::unrecognized_command(name))
+                        ::iq_cli::options::Error::unrecognized_command(name))
                 };
 
                 ::std::result::Result::Ok(cmd)
@@ -191,13 +210,13 @@ fn derive_options_enum(ast: &DeriveInput, data: &DataEnum) -> TokenStream {
             }
 
             fn command_list() -> ::std::option::Option<&'static str> {
-                ::std::option::Option::Some(<Self as ::gumdrop::Options>::usage())
+                ::std::option::Option::Some(<Self as ::iq_cli::Options>::usage())
             }
 
             fn command_usage(name: &str) -> ::std::option::Option<&'static str> {
                 match name {
                     #( #command => ::std::option::Option::Some(
-                        <#var_ty as ::gumdrop::Options>::usage()), )*
+                        <#var_ty as ::iq_cli::Options>::usage()), )*
                     _ => ::std::option::Option::None
                 }
             }
@@ -207,6 +226,7 @@ fn derive_options_enum(ast: &DeriveInput, data: &DataEnum) -> TokenStream {
     expr.to_string().parse().expect("parse quote!")
 }
 
+#[allow(unknown_lints, cyclomatic_complexity)]
 fn derive_options_struct(ast: &DeriveInput, fields: &Fields) -> TokenStream {
     let mut pattern = Vec::new();
     let mut handle_opt = Vec::new();
@@ -235,9 +255,12 @@ fn derive_options_struct(ast: &DeriveInput, fields: &Fields) -> TokenStream {
         field_name.push(ident);
 
         if let Some(ref expr) = opts.default {
-            default.push(opts.parse.as_ref()
-                .unwrap_or(&ParseFn::Default)
-                .make_parse_default_action(ident, &expr));
+            default.push(
+                opts.parse
+                    .as_ref()
+                    .unwrap_or(&ParseFn::Default)
+                    .make_parse_default_action(ident, &expr),
+            );
         } else {
             default.push(default_expr.clone());
         }
@@ -257,7 +280,7 @@ fn derive_options_struct(ast: &DeriveInput, fields: &Fields) -> TokenStream {
             if opts.required {
                 required.push(ident);
                 required_err.push(quote!{
-                    ::gumdrop::Error::missing_required_command() });
+                ::iq_cli::options::Error::missing_required_command() });
             }
 
             continue;
@@ -277,10 +300,10 @@ fn derive_options_struct(ast: &DeriveInput, fields: &Fields) -> TokenStream {
             if opts.required {
                 required.push(ident);
                 required_err.push(quote!{
-                    ::gumdrop::Error::missing_required_free() });
+                ::iq_cli::options::Error::missing_required_free() });
             }
 
-            free.push(FreeOpt{
+            free.push(FreeOpt {
                 field: ident,
                 action: FreeAction::infer(&field.ty),
                 parse: opts.parse.unwrap_or_default(),
@@ -305,8 +328,9 @@ fn derive_options_struct(ast: &DeriveInput, fields: &Fields) -> TokenStream {
             short_names.push(short);
         }
 
-        if opts.help_flag || (!opts.no_help_flag &&
-                opts.long.as_ref().map(|s| &s[..]) == Some("help")) {
+        if opts.help_flag
+            || (!opts.no_help_flag && opts.long.as_ref().map(|s| &s[..]) == Some("help"))
+        {
             help_flag.push(ident);
         }
 
@@ -324,9 +348,9 @@ fn derive_options_struct(ast: &DeriveInput, fields: &Fields) -> TokenStream {
             panic!("`meta` value is invalid for option `{}`", ident);
         }
 
-        options.push(Opt{
+        options.push(Opt {
             field: ident,
-            action: action,
+            action,
             long: opts.long.take(),
             short: opts.short,
             no_short: opts.no_short,
@@ -356,18 +380,18 @@ fn derive_options_struct(ast: &DeriveInput, fields: &Fields) -> TokenStream {
             required.push(opt.field);
             let display = opt.display_form();
             required_err.push(quote!{
-                ::gumdrop::Error::missing_required(#display) });
+            ::iq_cli::options::Error::missing_required(#display) });
         }
 
         let pat = match (opt.long.as_ref(), opt.short) {
             (Some(long), Some(short)) => quote!{
-                ::gumdrop::Opt::Long(#long) | ::gumdrop::Opt::Short(#short)
+                ::iq_cli::options::Opt::Long(#long) | ::iq_cli::options::Opt::Short(#short)
             },
             (Some(long), None) => quote!{
-                ::gumdrop::Opt::Long(#long)
+                ::iq_cli::options::Opt::Long(#long)
             },
             (None, Some(short)) => quote!{
-                ::gumdrop::Opt::Short(#short)
+                ::iq_cli::options::Opt::Short(#short)
             },
             (None, None) => {
                 panic!("option `{}` has no long or short flags", opt.field);
@@ -379,16 +403,22 @@ fn derive_options_struct(ast: &DeriveInput, fields: &Fields) -> TokenStream {
 
         if let Some(ref long) = opt.long {
             let (pat, handle) = if let Some(n) = opt.action.tuple_len() {
-                (quote!{ ::gumdrop::Opt::LongWithArg(#long, _) },
+                (
+                    quote!{ ::iq_cli::options::Opt::LongWithArg(#long, _) },
                     quote!{ return ::std::result::Result::Err(
-                        ::gumdrop::Error::unexpected_single_argument(_opt, #n)) })
+                    ::iq_cli::options::Error::unexpected_single_argument(_opt, #n)) },
+                )
             } else if opt.action.takes_arg() {
-                (quote!{ ::gumdrop::Opt::LongWithArg(#long, _arg) },
-                    opt.make_action_arg())
+                (
+                    quote!{ ::iq_cli::options::Opt::LongWithArg(#long, _arg) },
+                    opt.make_action_arg(),
+                )
             } else {
-                (quote!{ ::gumdrop::Opt::LongWithArg(#long, _) },
+                (
+                    quote!{ ::iq_cli::options::Opt::LongWithArg(#long, _) },
                     quote!{ return ::std::result::Result::Err(
-                        ::gumdrop::Error::unexpected_argument(_opt)) })
+                    ::iq_cli::options::Error::unexpected_argument(_opt)) },
+                )
             };
 
             pattern.push(pat);
@@ -416,37 +446,40 @@ fn derive_options_struct(ast: &DeriveInput, fields: &Fields) -> TokenStream {
         } else {
             quote!{
                 return ::std::result::Result::Err(
-                    ::gumdrop::Error::unexpected_free(_free))
+                    ::iq_cli::options::Error::unexpected_free(_free))
             }
         };
 
         let num = 0..free.len();
-        let action = free.iter().map(|free| {
-            let field = free.field;
+        let action = free
+            .iter()
+            .map(|free| {
+                let field = free.field;
 
-            let mark_used = free.mark_used();
-            let parse = free.parse.make_parse_action();
+                let mark_used = free.mark_used();
+                let parse = free.parse.make_parse_action();
 
-            let assign = match free.action {
-                FreeAction::Push => quote!{
-                    let _arg = _free;
-                    _result.#field.push(#parse);
-                },
-                FreeAction::SetField => quote!{
-                    let _arg = _free;
-                    _result.#field = #parse;
-                },
-                FreeAction::SetOption => quote!{
-                    let _arg = _free;
-                    _result.#field = ::std::option::Option::Some(#parse);
-                },
-            };
+                let assign = match free.action {
+                    FreeAction::Push => quote!{
+                        let _arg = _free;
+                        _result.#field.push(#parse);
+                    },
+                    FreeAction::SetField => quote!{
+                        let _arg = _free;
+                        _result.#field = #parse;
+                    },
+                    FreeAction::SetOption => quote!{
+                        let _arg = _free;
+                        _result.#field = ::std::option::Option::Some(#parse);
+                    },
+                };
 
-            quote!{
-                #mark_used
-                #assign
-            }
-        }).collect::<Vec<_>>();
+                quote!{
+                    #mark_used
+                    #assign
+                }
+            })
+            .collect::<Vec<_>>();
 
         quote!{
             match _free_counter {
@@ -461,19 +494,19 @@ fn derive_options_struct(ast: &DeriveInput, fields: &Fields) -> TokenStream {
         let mark_used = if command_required {
             quote!{ _used.#ident = true; }
         } else {
-            quote!{ }
+            quote!{}
         };
 
         quote!{
             #mark_used
             _result.#ident = ::std::option::Option::Some(
-                ::gumdrop::Options::parse_command(_free, _parser)?);
+                ::iq_cli::Options::parse_command(_free, _parser)?);
             break;
         }
     } else {
         quote!{
             return ::std::result::Result::Err(
-                ::gumdrop::Error::unexpected_free(_free));
+                ::iq_cli::options::Error::unexpected_free(_free));
         }
     };
 
@@ -482,27 +515,27 @@ fn derive_options_struct(ast: &DeriveInput, fields: &Fields) -> TokenStream {
         Some(ref field) => quote!{
             ::std::option::Option::and_then(
                 ::std::option::Option::as_ref(&self.#field),
-                ::gumdrop::Options::command_name)
-        }
+                ::iq_cli::Options::command_name)
+        },
     };
 
     let command_list = match command_ty {
         Some(ty) => quote!{
             ::std::option::Option::Some(
-                <#ty as ::gumdrop::Options>::usage())
+                <#ty as ::iq_cli::Options>::usage())
         },
         None => quote!{
             ::std::option::Option::None
-        }
+        },
     };
 
     let command_usage = match command_ty {
         Some(ty) => quote!{
-            <#ty as ::gumdrop::Options>::command_usage(_name)
+            <#ty as ::iq_cli::Options>::command_usage(_name)
         },
         None => quote!{
             ::std::option::Option::None
-        }
+        },
     };
 
     let help_requested_impl = match (&help_flag, &command) {
@@ -516,9 +549,9 @@ fn derive_options_struct(ast: &DeriveInput, fields: &Fields) -> TokenStream {
                 #( self.#flags || )*
                 ::std::option::Option::map_or(
                     ::std::option::Option::as_ref(&self.#cmd),
-                    false, ::gumdrop::Options::help_requested)
+                    false, ::iq_cli::Options::help_requested)
             }
-        }
+        },
     };
 
     let required = &required;
@@ -526,10 +559,10 @@ fn derive_options_struct(ast: &DeriveInput, fields: &Fields) -> TokenStream {
     let (impl_generics, ty_generics, where_clause) = ast.generics.split_for_impl();
 
     let expr = quote!{
-        impl #impl_generics ::gumdrop::Options for #name #ty_generics #where_clause {
+        impl #impl_generics ::iq_cli::Options for #name #ty_generics #where_clause {
             fn parse<__S: ::std::convert::AsRef<str>>(
-                    _parser: &mut ::gumdrop::Parser<__S>)
-                    -> ::std::result::Result<Self, ::gumdrop::Error> {
+                    _parser: &mut ::iq_cli::options::Parser<__S>)
+                    -> ::std::result::Result<Self, ::iq_cli::options::Error> {
                 #[derive(Default)]
                 struct _Used {
                     #( #required: bool , )*
@@ -544,12 +577,12 @@ fn derive_options_struct(ast: &DeriveInput, fields: &Fields) -> TokenStream {
                 while let ::std::option::Option::Some(_opt) = _parser.next_opt() {
                     match _opt {
                         #( #pattern => { #handle_opt } )*
-                        ::gumdrop::Opt::Free(_free) => {
+                        ::iq_cli::options::Opt::Free(_free) => {
                             #handle_free
                         }
                         _ => {
                             return ::std::result::Result::Err(
-                                ::gumdrop::Error::unrecognized_option(_opt));
+                                ::iq_cli::options::Error::unrecognized_option(_opt));
                         }
                     }
                 }
@@ -568,10 +601,10 @@ fn derive_options_struct(ast: &DeriveInput, fields: &Fields) -> TokenStream {
             #help_requested_impl
 
             fn parse_command<__S: ::std::convert::AsRef<str>>(name: &str,
-                    _parser: &mut ::gumdrop::Parser<__S>)
-                    -> ::std::result::Result<Self, ::gumdrop::Error> {
+                    _parser: &mut ::iq_cli::options::Parser<__S>)
+                    -> ::std::result::Result<Self, ::iq_cli::options::Error> {
                 ::std::result::Result::Err(
-                    ::gumdrop::Error::unrecognized_command(name))
+                    ::iq_cli::options::Error::unrecognized_command(name))
             }
 
             fn usage() -> &'static str {
@@ -695,7 +728,7 @@ impl Action {
                     "Vec" if param.is_some() => {
                         let tuple_len = tuple_len(param.unwrap());
 
-                        Action::Push(ParseMethod{
+                        Action::Push(ParseMethod {
                             parse_fn: parse.unwrap_or_default(),
                             tuple_len,
                         })
@@ -703,21 +736,21 @@ impl Action {
                     "Option" if param.is_some() => {
                         let tuple_len = tuple_len(param.unwrap());
 
-                        Action::SetOption(ParseMethod{
+                        Action::SetOption(ParseMethod {
                             parse_fn: parse.unwrap_or_default(),
                             tuple_len,
                         })
                     }
-                    _ => Action::SetField(ParseMethod{
+                    _ => Action::SetField(ParseMethod {
                         parse_fn: parse.unwrap_or_default(),
                         tuple_len: tuple_len(ty),
-                    })
+                    }),
                 }
             }
             _ => {
                 let tuple_len = tuple_len(ty);
 
-                Action::SetField(ParseMethod{
+                Action::SetField(ParseMethod {
                     parse_fn: parse.unwrap_or_default(),
                     tuple_len,
                 })
@@ -729,10 +762,8 @@ impl Action {
         use self::Action::*;
 
         match *self {
-            Push(ref meth) |
-            SetField(ref meth) |
-            SetOption(ref meth) => meth.takes_arg(),
-            _ => false
+            Push(ref meth) | SetField(ref meth) | SetOption(ref meth) => meth.takes_arg(),
+            _ => false,
         }
     }
 
@@ -740,40 +771,79 @@ impl Action {
         use self::Action::*;
 
         match *self {
-            Push(ref meth) |
-            SetField(ref meth) |
-            SetOption(ref meth) => meth.tuple_len,
-            _ => None
+            Push(ref meth) | SetField(ref meth) | SetOption(ref meth) => meth.tuple_len,
+            _ => None,
         }
     }
 }
 
 impl AttrOpts {
+    #[allow(unknown_lints, cyclomatic_complexity)]
     fn check(&self) {
         if self.command {
-            if self.free { panic!("`command` and `free` are mutually exclusive"); }
-            if self.default.is_some() { panic!("`command` and `default` are mutually exclusive"); }
-            if self.long.is_some() { panic!("`command` and `long` are mutually exclusive"); }
-            if self.short.is_some() { panic!("`command` and `short` are mutually exclusive"); }
-            if self.count { panic!("`command` and `count` are mutually exclusive"); }
-            if self.help_flag { panic!("`command` and `help_flag` are mutually exclusive"); }
-            if self.no_help_flag { panic!("`command` and `no_help_flag` are mutually exclusive"); }
-            if self.no_short { panic!("`command` and `no_short` are mutually exclusive"); }
-            if self.no_long { panic!("`command` and `no_long` are mutually exclusive"); }
-            if self.help.is_some() { panic!("`command` and `help` are mutually exclusive"); }
-            if self.meta.is_some() { panic!("`command` and `meta` are mutually exclusive"); }
+            if self.free {
+                panic!("`command` and `free` are mutually exclusive");
+            }
+            if self.default.is_some() {
+                panic!("`command` and `default` are mutually exclusive");
+            }
+            if self.long.is_some() {
+                panic!("`command` and `long` are mutually exclusive");
+            }
+            if self.short.is_some() {
+                panic!("`command` and `short` are mutually exclusive");
+            }
+            if self.count {
+                panic!("`command` and `count` are mutually exclusive");
+            }
+            if self.help_flag {
+                panic!("`command` and `help_flag` are mutually exclusive");
+            }
+            if self.no_help_flag {
+                panic!("`command` and `no_help_flag` are mutually exclusive");
+            }
+            if self.no_short {
+                panic!("`command` and `no_short` are mutually exclusive");
+            }
+            if self.no_long {
+                panic!("`command` and `no_long` are mutually exclusive");
+            }
+            if self.help.is_some() {
+                panic!("`command` and `help` are mutually exclusive");
+            }
+            if self.meta.is_some() {
+                panic!("`command` and `meta` are mutually exclusive");
+            }
         }
 
         if self.free {
-            if self.default.is_some() { panic!("`free` and `default` are mutually exclusive"); }
-            if self.long.is_some() { panic!("`free` and `long` are mutually exclusive"); }
-            if self.short.is_some() { panic!("`free` and `short` are mutually exclusive"); }
-            if self.count { panic!("`free` and `count` are mutually exclusive"); }
-            if self.help_flag { panic!("`free` and `help_flag` are mutually exclusive"); }
-            if self.no_help_flag { panic!("`free` and `no_help_flag` are mutually exclusive"); }
-            if self.no_short { panic!("`free` and `no_short` are mutually exclusive"); }
-            if self.no_long { panic!("`free` and `no_long` are mutually exclusive"); }
-            if self.meta.is_some() { panic!("`free` and `meta` are mutually exclusive"); }
+            if self.default.is_some() {
+                panic!("`free` and `default` are mutually exclusive");
+            }
+            if self.long.is_some() {
+                panic!("`free` and `long` are mutually exclusive");
+            }
+            if self.short.is_some() {
+                panic!("`free` and `short` are mutually exclusive");
+            }
+            if self.count {
+                panic!("`free` and `count` are mutually exclusive");
+            }
+            if self.help_flag {
+                panic!("`free` and `help_flag` are mutually exclusive");
+            }
+            if self.no_help_flag {
+                panic!("`free` and `no_help_flag` are mutually exclusive");
+            }
+            if self.no_short {
+                panic!("`free` and `no_short` are mutually exclusive");
+            }
+            if self.no_long {
+                panic!("`free` and `no_long` are mutually exclusive");
+            }
+            if self.meta.is_some() {
+                panic!("`free` and `meta` are mutually exclusive");
+            }
         }
 
         if self.help_flag && self.no_help_flag {
@@ -792,8 +862,8 @@ impl AttrOpts {
             panic!("`required` and `not_required` are mutually exclusive");
         }
 
-        if self.parse.is_some() {
-            if self.count { panic!("`count` and `parse` are mutually exclusive"); }
+        if self.parse.is_some() && self.count {
+            panic!("`count` and `parse` are mutually exclusive");
         }
     }
 
@@ -802,14 +872,13 @@ impl AttrOpts {
 
         for attr in attrs {
             if is_outer(attr.style) && path_eq(&attr.path, "options") {
-                let meta = attr.interpret_meta().unwrap_or_else(
-                    || panic!("invalid attribute: {}", tokens_str(attr)));
+                let meta = attr
+                    .interpret_meta()
+                    .unwrap_or_else(|| panic!("invalid attribute: {}", tokens_str(attr)));
 
                 match meta {
-                    Meta::Word(_) =>
-                        panic!("#[options] is not a valid attribute"),
-                    Meta::NameValue(..) =>
-                        panic!("#[options = ...] is not a valid attribute"),
+                    Meta::Word(_) => panic!("#[options] is not a valid attribute"),
+                    Meta::NameValue(..) => panic!("#[options = ...] is not a valid attribute"),
                     Meta::List(ref items) => {
                         for item in &items.nested {
                             opts.parse_item(item);
@@ -826,46 +895,39 @@ impl AttrOpts {
 
     fn parse_item(&mut self, item: &NestedMeta) {
         match *item {
-            NestedMeta::Literal(_) =>
-                panic!("unexpected meta item `{}`", tokens_str(item)),
-            NestedMeta::Meta(ref item) => {
-                match *item {
-                    Meta::Word(ref w) => match &w.to_string()[..] {
-                        "free" => self.free = true,
-                        "command" => self.command = true,
-                        "count" => self.count = true,
-                        "help_flag" => self.help_flag = true,
-                        "no_help_flag" => self.no_help_flag = true,
-                        "no_short" => self.no_short = true,
-                        "no_long" => self.no_long = true,
-                        "required" => self.required = true,
-                        "not_required" => self.not_required = true,
-                        _ => panic!("unexpected meta item `{}`", tokens_str(item))
-                    },
-                    Meta::List(ref list) => {
-                        match &list.ident.to_string()[..] {
-                            "parse" => {
-                                if list.nested.len() != 1 {
-                                    panic!("unexpected meta item `{}`", tokens_str(item));
-                                }
+            NestedMeta::Literal(_) => panic!("unexpected meta item `{}`", tokens_str(item)),
+            NestedMeta::Meta(ref item) => match *item {
+                Meta::Word(ref w) => match &w.to_string()[..] {
+                    "free" => self.free = true,
+                    "command" => self.command = true,
+                    "count" => self.count = true,
+                    "help_flag" => self.help_flag = true,
+                    "no_help_flag" => self.no_help_flag = true,
+                    "no_short" => self.no_short = true,
+                    "no_long" => self.no_long = true,
+                    "required" => self.required = true,
+                    "not_required" => self.not_required = true,
+                    _ => panic!("unexpected meta item `{}`", tokens_str(item)),
+                },
+                Meta::List(ref list) => match &list.ident.to_string()[..] {
+                    "parse" => {
+                        if list.nested.len() != 1 {
+                            panic!("unexpected meta item `{}`", tokens_str(item));
+                        }
 
-                                self.parse = Some(ParseFn::parse(&list.nested[0]));
-                            }
-                            _ => panic!("unexpected meta item `{}`", tokens_str(item)),
-                        }
+                        self.parse = Some(ParseFn::parse(&list.nested[0]));
                     }
-                    Meta::NameValue(ref nv) => {
-                        match &nv.ident.to_string()[..] {
-                            "default" => self.default = Some(lit_str(&nv.lit)),
-                            "long" => self.long = Some(lit_str(&nv.lit)),
-                            "short" => self.short = Some(lit_char(&nv.lit)),
-                            "help" => self.help = Some(lit_str(&nv.lit)),
-                            "meta" => self.meta = Some(lit_str(&nv.lit)),
-                            _ => panic!("unexpected meta item `{}`", tokens_str(item))
-                        }
-                    }
-                }
-            }
+                    _ => panic!("unexpected meta item `{}`", tokens_str(item)),
+                },
+                Meta::NameValue(ref nv) => match &nv.ident.to_string()[..] {
+                    "default" => self.default = Some(lit_str(&nv.lit)),
+                    "long" => self.long = Some(lit_str(&nv.lit)),
+                    "short" => self.short = Some(lit_char(&nv.lit)),
+                    "help" => self.help = Some(lit_str(&nv.lit)),
+                    "meta" => self.meta = Some(lit_str(&nv.lit)),
+                    _ => panic!("unexpected meta item `{}`", tokens_str(item)),
+                },
+            },
         }
     }
 
@@ -894,32 +956,29 @@ impl CmdOpts {
 
         for attr in attrs {
             if is_outer(attr.style) && path_eq(&attr.path, "options") {
-                let meta = attr.interpret_meta().unwrap_or_else(
-                    || panic!("invalid attribute: {}", tokens_str(attr)));
+                let meta = attr
+                    .interpret_meta()
+                    .unwrap_or_else(|| panic!("invalid attribute: {}", tokens_str(attr)));
 
                 match meta {
-                    Meta::Word(_) =>
-                        panic!("#[options] is not a valid attribute"),
-                    Meta::NameValue(..) =>
-                        panic!("#[options = ...] is not a valid attribute"),
+                    Meta::Word(_) => panic!("#[options] is not a valid attribute"),
+                    Meta::NameValue(..) => panic!("#[options = ...] is not a valid attribute"),
                     Meta::List(ref items) => {
                         for item in &items.nested {
                             match *item {
-                                NestedMeta::Literal(_) =>
-                                    panic!("unexpected meta item `{}`", tokens_str(item)),
-                                NestedMeta::Meta(ref item) => {
-                                    match *item {
-                                        Meta::Word(_) | Meta::List(..) =>
-                                            panic!("unexpected meta item `{}`", tokens_str(item)),
-                                        Meta::NameValue(ref nv) => {
-                                            match &nv.ident.to_string()[..] {
-                                                "name" => opts.name = Some(lit_str(&nv.lit)),
-                                                "help" => opts.help = Some(lit_str(&nv.lit)),
-                                                _ => panic!("unexpected meta item `{}`", tokens_str(item))
-                                            }
-                                        }
-                                    }
+                                NestedMeta::Literal(_) => {
+                                    panic!("unexpected meta item `{}`", tokens_str(item))
                                 }
+                                NestedMeta::Meta(ref item) => match *item {
+                                    Meta::Word(_) | Meta::List(..) => {
+                                        panic!("unexpected meta item `{}`", tokens_str(item))
+                                    }
+                                    Meta::NameValue(ref nv) => match &nv.ident.to_string()[..] {
+                                        "name" => opts.name = Some(lit_str(&nv.lit)),
+                                        "help" => opts.help = Some(lit_str(&nv.lit)),
+                                        _ => panic!("unexpected meta item `{}`", tokens_str(item)),
+                                    },
+                                },
                             }
                         }
                     }
@@ -937,32 +996,31 @@ impl DefaultOpts {
 
         for attr in attrs {
             if is_outer(attr.style) && path_eq(&attr.path, "options") {
-                let meta = attr.interpret_meta().unwrap_or_else(
-                    || panic!("invalid attribute: {}", tokens_str(attr)));
+                let meta = attr
+                    .interpret_meta()
+                    .unwrap_or_else(|| panic!("invalid attribute: {}", tokens_str(attr)));
 
                 match meta {
-                    Meta::Word(_) =>
-                        panic!("#[options] is not a valid attribute"),
-                    Meta::NameValue(..) =>
-                        panic!("#[options = ...] is not a valid attribute"),
+                    Meta::Word(_) => panic!("#[options] is not a valid attribute"),
+                    Meta::NameValue(..) => panic!("#[options = ...] is not a valid attribute"),
                     Meta::List(ref items) => {
                         for item in &items.nested {
                             match *item {
-                                NestedMeta::Literal(_) =>
-                                    panic!("unexpected meta item `{}`", tokens_str(item)),
-                                NestedMeta::Meta(ref item) => {
-                                    match *item {
-                                        Meta::Word(ref w) => match &w.to_string()[..] {
-                                            "no_help_flag" => opts.no_help_flag = true,
-                                            "no_short" => opts.no_short = true,
-                                            "no_long" => opts.no_long = true,
-                                            "required" => opts.required = true,
-                                            _ => panic!("unexpected meta item `{}`", tokens_str(item))
-                                        },
-                                        Meta::List(..) | Meta::NameValue(..) =>
-                                            panic!("unexpected meta item `{}`", tokens_str(item)),
-                                    }
+                                NestedMeta::Literal(_) => {
+                                    panic!("unexpected meta item `{}`", tokens_str(item))
                                 }
+                                NestedMeta::Meta(ref item) => match *item {
+                                    Meta::Word(ref w) => match &w.to_string()[..] {
+                                        "no_help_flag" => opts.no_help_flag = true,
+                                        "no_short" => opts.no_short = true,
+                                        "no_long" => opts.no_long = true,
+                                        "required" => opts.required = true,
+                                        _ => panic!("unexpected meta item `{}`", tokens_str(item)),
+                                    },
+                                    Meta::List(..) | Meta::NameValue(..) => {
+                                        panic!("unexpected meta item `{}`", tokens_str(item))
+                                    }
+                                },
                             }
                         }
                     }
@@ -983,7 +1041,7 @@ impl FreeAction {
                 match &path.ident.to_string()[..] {
                     "Option" => FreeAction::SetOption,
                     "Vec" => FreeAction::Push,
-                    _ => FreeAction::SetField
+                    _ => FreeAction::SetField,
                 }
             }
             _ => FreeAction::SetField,
@@ -997,7 +1055,7 @@ impl<'a> FreeOpt<'a> {
             let field = self.field;
             quote!{ _used.#field = true; }
         } else {
-            quote!{ }
+            quote!{}
         }
     }
 
@@ -1020,7 +1078,7 @@ impl<'a> Opt<'a> {
             let field = self.field;
             quote!{ _used.#field = true; }
         } else {
-            quote!{ }
+            quote!{}
         }
     }
 
@@ -1066,7 +1124,7 @@ impl<'a> Opt<'a> {
             }
             Switch => quote!{
                 _result.#field = true;
-            }
+            },
         };
 
         quote!{
@@ -1103,7 +1161,7 @@ impl<'a> Opt<'a> {
                     _result.#field = ::std::option::Option::Some(#act);
                 }
             }
-            _ => unreachable!()
+            _ => unreachable!(),
         };
 
         quote!{
@@ -1161,35 +1219,31 @@ impl<'a> Opt<'a> {
 impl ParseFn {
     fn parse(item: &NestedMeta) -> ParseFn {
         match *item {
-            NestedMeta::Meta(Meta::Word(ref ident)) => {
-                match &ident.to_string()[..] {
-                    "from_str" => ParseFn::FromStr(None),
-                    "try_from_str" => ParseFn::Default,
-                    _ => panic!("unexpected meta item `{}`", tokens_str(item))
+            NestedMeta::Meta(Meta::Word(ref ident)) => match &ident.to_string()[..] {
+                "from_str" => ParseFn::FromStr(None),
+                "try_from_str" => ParseFn::Default,
+                _ => panic!("unexpected meta item `{}`", tokens_str(item)),
+            },
+            NestedMeta::Meta(Meta::NameValue(ref nv)) => match &nv.ident.to_string()[..] {
+                "from_str" => {
+                    let path = parse_str(&lit_str(&nv.lit)).unwrap();
+                    ParseFn::FromStr(Some(path))
                 }
-            }
-            NestedMeta::Meta(Meta::NameValue(ref nv)) => {
-                match &nv.ident.to_string()[..] {
-                    "from_str" => {
-                        let path = parse_str(&lit_str(&nv.lit)).unwrap();
-                        ParseFn::FromStr(Some(path))
-                    }
-                    "try_from_str" => {
-                        let path = parse_str(&lit_str(&nv.lit)).unwrap();
-                        ParseFn::TryFromStr(path)
-                    }
-                    _ => panic!("unexpected meta item `{}`", tokens_str(item))
+                "try_from_str" => {
+                    let path = parse_str(&lit_str(&nv.lit)).unwrap();
+                    ParseFn::TryFromStr(path)
                 }
-            }
-            _ => panic!("unexpected meta item `{}`", tokens_str(item))
+                _ => panic!("unexpected meta item `{}`", tokens_str(item)),
+            },
+            _ => panic!("unexpected meta item `{}`", tokens_str(item)),
         }
     }
 
     fn make_parse_action(&self) -> TokenStream2 {
-        let res = match *self {
+        match *self {
             ParseFn::Default => quote!{
                 ::std::str::FromStr::from_str(_arg)
-                    .map_err(|e| ::gumdrop::Error::failed_parse(_opt,
+                    .map_err(|e| ::iq_cli::options::Error::failed_parse(_opt,
                         ::std::string::ToString::to_string(&e)))?
             },
             ParseFn::FromStr(None) => quote!{
@@ -1200,19 +1254,17 @@ impl ParseFn {
             },
             ParseFn::TryFromStr(ref fun) => quote!{
                 #fun(_arg)
-                    .map_err(|e| ::gumdrop::Error::failed_parse(_opt,
+                    .map_err(|e| ::iq_cli::options::Error::failed_parse(_opt,
                         ::std::string::ToString::to_string(&e)))?
-            }
-        };
-
-        res
+            },
+        }
     }
 
     fn make_parse_default_action(&self, ident: &Ident, expr: &str) -> TokenStream2 {
-        let res = match *self {
+        match *self {
             ParseFn::Default => quote!{
                 ::std::str::FromStr::from_str(#expr)
-                    .map_err(|e| ::gumdrop::Error::failed_parse_default(
+                    .map_err(|e| ::iq_cli::options::Error::failed_parse_default(
                         stringify!(#ident), #expr,
                         ::std::string::ToString::to_string(&e)))?
             },
@@ -1224,13 +1276,11 @@ impl ParseFn {
             },
             ParseFn::TryFromStr(ref fun) => quote!{
                 #fun(#expr)
-                    .map_err(|e| ::gumdrop::Error::failed_parse_default(
+                    .map_err(|e| ::iq_cli::options::Error::failed_parse_default(
                         stringify!(#ident), #expr,
                         ::std::string::ToString::to_string(&e)))?
-            }
-        };
-
-        res
+            },
+        }
     }
 }
 
@@ -1247,7 +1297,7 @@ impl ParseMethod {
         match self.tuple_len {
             None => quote!{ {
                 let _arg = _parser.next_arg()
-                    .ok_or_else(|| ::gumdrop::Error::missing_argument(_opt))?;
+                    .ok_or_else(|| ::iq_cli::options::Error::missing_argument(_opt))?;
 
                 #parse
             } },
@@ -1260,7 +1310,7 @@ impl ParseMethod {
                     ( #( {
                         let _found = #num;
                         let _arg = _parser.next_arg()
-                            .ok_or_else(|| ::gumdrop::Error::insufficient_arguments(
+                            .ok_or_else(|| ::iq_cli::options::Error::insufficient_arguments(
                                 _opt, #n, _found))?;
 
                         #parse
@@ -1273,13 +1323,13 @@ impl ParseMethod {
     fn make_action_type_arg(&self) -> TokenStream2 {
         match self.tuple_len {
             None => self.parse_fn.make_parse_action(),
-            Some(_) => unreachable!()
+            Some(_) => unreachable!(),
         }
     }
     fn takes_arg(&self) -> bool {
         match self.tuple_len {
             Some(0) => false,
-            _ => true
+            _ => true,
         }
     }
 }
@@ -1290,29 +1340,35 @@ fn first_ty_param(ty: &Type) -> Option<&Type> {
             let path = path.path.segments.last().unwrap().into_value();
 
             match path.arguments {
-                PathArguments::AngleBracketed(ref data) =>
-                    data.args.iter().filter_map(|arg| match arg {
-                        &GenericArgument::Type(ref ty) => Some(ty),
-                        _ => None
-                    }).next(),
-                _ => None
+                PathArguments::AngleBracketed(ref data) => data
+                    .args
+                    .iter()
+                    .filter_map(|arg| {
+                        if let GenericArgument::Type(ref ty) = arg {
+                            Some(ty)
+                        } else {
+                            None
+                        }
+                    })
+                    .next(),
+                _ => None,
             }
         }
-        _ => None
+        _ => None,
     }
 }
 
 fn is_outer(style: AttrStyle) -> bool {
     match style {
         AttrStyle::Outer => true,
-        _ => false
+        _ => false,
     }
 }
 
 fn lit_str(lit: &Lit) -> String {
     match *lit {
         Lit::Str(ref s) => s.value(),
-        _ => panic!("unexpected literal `{}`", tokens_str(lit))
+        _ => panic!("unexpected literal `{}`", tokens_str(lit)),
     }
 }
 
@@ -1331,7 +1387,7 @@ fn lit_char(lit: &Lit) -> char {
             res
         }
         Lit::Char(ref ch) => ch.value(),
-        _ => panic!("unexpected literal `{}`", tokens_str(lit))
+        _ => panic!("unexpected literal `{}`", tokens_str(lit)),
     }
 }
 
@@ -1341,7 +1397,7 @@ fn path_eq(path: &Path, s: &str) -> bool {
 
         match seg.arguments {
             PathArguments::None => seg.ident == s,
-            _ => false
+            _ => false,
         }
     }
 }
@@ -1353,7 +1409,7 @@ fn tokens_str<T: ToTokens>(t: &T) -> String {
 fn tuple_len(ty: &Type) -> Option<usize> {
     match *ty {
         Type::Tuple(ref tup) => Some(tup.elems.len()),
-        _ => None
+        _ => None,
     }
 }
 
@@ -1401,8 +1457,7 @@ fn make_short_name(name: &str, short: &[char]) -> Option<char> {
 }
 
 fn validate_long_name(name: &str, names: &[String]) {
-    if name.is_empty() || name.starts_with('-') ||
-            name.contains(|ch: char| ch.is_whitespace()) {
+    if name.is_empty() || name.starts_with('-') || name.contains(|ch: char| ch.is_whitespace()) {
         panic!("`{}` is not a valid long option", name);
     }
 
@@ -1445,8 +1500,7 @@ fn make_meta(name: &str, action: &Action) -> String {
 fn make_usage(free: &[FreeOpt], opts: &[Opt]) -> String {
     let mut res = String::new();
 
-    let width = max_width(free, |opt| opt.width())
-        .max(max_width(opts, |opt| opt.width()));
+    let width = max_width(free, |opt| opt.width()).max(max_width(opts, |opt| opt.width()));
 
     if !free.is_empty() {
         res.push_str("Positional arguments:\n");
@@ -1493,19 +1547,25 @@ fn make_usage(free: &[FreeOpt], opts: &[Opt]) -> String {
 }
 
 fn max_width<T, F>(items: &[T], f: F) -> usize
-        where F: Fn(&T) -> usize {
+where
+    F: Fn(&T) -> usize,
+{
     const MIN_WIDTH: usize = 8;
     const MAX_WIDTH: usize = 30;
 
-    let width = items.iter().filter_map(|item| {
-        let w = f(item);
+    let width = items
+        .iter()
+        .filter_map(|item| {
+            let w = f(item);
 
-        if w > MAX_WIDTH {
-            None
-        } else {
-            Some(w)
-        }
-    }).max().unwrap_or(0);
+            if w > MAX_WIDTH {
+                None
+            } else {
+                Some(w)
+            }
+        })
+        .max()
+        .unwrap_or(0);
 
     width.max(MIN_WIDTH).min(MAX_WIDTH)
 }
@@ -1513,9 +1573,11 @@ fn max_width<T, F>(items: &[T], f: F) -> usize
 fn make_cmd_usage(cmds: &[Cmd]) -> String {
     let mut res = String::new();
 
-    let width = max_width(cmds,
+    let width = max_width(
+        cmds,
         // Two spaces each, before and after
-        |cmd| cmd.name.len() + 4);
+        |cmd| cmd.name.len() + 4,
+    );
 
     for cmd in cmds {
         let mut line = String::from("  ");

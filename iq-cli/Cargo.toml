@@ -3,12 +3,12 @@ name        = "iq-cli"
 description = "Command-line app microframework with support for Cargo-like status messages"
 version     = "0.1.0" # Also update html_root_url in lib.rs when bumping this
 license     = "Apache-2.0"
-authors     = ["Tony Arcieri <tony@iqlusion.io>"]
+authors     = ["Tony Arcieri <tony@iqlusion.io>", "Murarth <murarth@gmail.com>", "David Tolnay <dtolnay@gmail.com>"]
 homepage    = "https://github.com/iqlusioninc/crates/"
 repository  = "https://github.com/iqlusioninc/crates/tree/master/iq-cli"
 readme      = "README.md"
 categories  = ["command-line-interface"]
-keywords    = ["cli", "color"]
+keywords    = ["args", "command-line", "cli", "color", "option"]
 
 [badges]
 circle-ci = { repository = "iqlusioninc/crates" }
@@ -17,8 +17,16 @@ appveyor  = { repository = "iqlusioninc/crates" }
 [dependencies]
 failure = "0.1"
 failure_derive = "0.1"
+iq-cli-derive = { version = "0", path = "../iq-cli-derive", optional = true }
 lazy_static = "1"
 term = "0.5"
+
+[dev-dependencies]
+assert_matches = "1"
+
+[features]
+default = ["options"]
+options = ["iq-cli-derive"]
 
 [target.'cfg(unix)'.dependencies]
 libc = "0.2"

@@ -3,9 +3,10 @@
 //! # Examples
 //!
 //! ```
-//! #[macro_use] extern crate gumdrop;
+//! extern crate iq_cli;
+//! #[macro_use] extern crate iq_cli_derive;
 //!
-//! use gumdrop::Options;
+//! use iq_cli::Options;
 //!
 //! // Defines options that can be parsed from the command line.
 //! //
@@ -63,9 +64,10 @@
 //! option parser.
 //!
 //! ```
-//! #[macro_use] extern crate gumdrop;
+//! extern crate iq_cli;
+//! #[macro_use] extern crate iq_cli_derive;
 //!
-//! use gumdrop::Options;
+//! use iq_cli::Options;
 //!
 //! // Define options for the program.
 //! #[derive(Debug, Options)]
@@ -136,9 +138,10 @@
 //! A custom parsing function can be supplied for each option field.
 //!
 //! ```
-//! #[macro_use] extern crate gumdrop;
+//! extern crate iq_cli;
+//! #[macro_use] extern crate iq_cli_derive;
 //!
-//! use gumdrop::Options;
+//! use iq_cli::Options;
 //!
 //! #[derive(Debug, Options)]
 //! struct MyOptions {
@@ -164,22 +167,22 @@
 //!     println!("{:#?}", opts);
 //! }
 //! ```
-
-#![deny(missing_docs)]
-
-#[cfg(test)] #[macro_use] extern crate assert_matches;
-
-#[macro_use]
-#[allow(unused_imports)]
-extern crate gumdrop_derive;
+//!
+//! # Notice
+//!
+//! This portion of `iq-cli` functionality is a fork of the `gumdrop` crate:
+//! <https://github.com/murarth/gumdrop>
 
 #[doc(hidden)]
-pub use gumdrop_derive::*;
+pub use iq_cli_derive::*;
 
-use std::error::Error as StdError;
-use std::fmt;
-use std::slice::Iter;
-use std::str::Chars;
+mod error;
+mod opt;
+mod parser;
+
+pub use self::error::Error;
+pub use self::opt::Opt;
+pub use self::parser::{Parser, ParsingStyle};
 
 /// Parses arguments from the command line.
 ///
@@ -221,287 +224,6 @@ pub fn parse_args_default_or_exit<T: Options>() -> T {
     T::parse_args_default_or_exit()
 }
 
-/// Represents an error encountered during argument parsing
-#[derive(Debug)]
-pub struct Error {
-    kind: ErrorKind,
-}
-
-impl Error {
-    /// Returns an error for a failed attempt at parsing an option value.
-    pub fn failed_parse(opt: Opt, err: String) -> Error {
-        Error{kind: ErrorKind::FailedParse(opt.to_string(), err)}
-    }
-
-    /// Returns an error for a failed attempt at parsing an option's default value.
-    pub fn failed_parse_default(option: &'static str,
-            value: &'static str, err: String) -> Error {
-        Error{kind: ErrorKind::FailedParseDefault{option, value, err}}
-    }
-
-    /// Returns an error for an option expecting two or more arguments not
-    /// receiving the expected number of arguments.
-    pub fn insufficient_arguments(opt: Opt, expected: usize, found: usize) -> Error {
-        Error{kind: ErrorKind::InsufficientArguments{
-            option: opt.to_string(),
-            expected: expected,
-            found: found,
-        }}
-    }
-
-    /// Returns an error for an option receiving an unexpected argument value,
-    /// e.g. `--option=value`.
-    pub fn unexpected_argument(opt: Opt) -> Error {
-        Error{kind: ErrorKind::UnexpectedArgument(opt.to_string())}
-    }
-
-    /// Returns an error for an option expecting two or more argument values
-    /// receiving only one in the long form, e.g. `--option=value`.
-    ///
-    /// These options must be passed as, e.g. `--option value second-value [...]`.
-    pub fn unexpected_single_argument(opt: Opt, n: usize) -> Error {
-        Error{kind: ErrorKind::UnexpectedSingleArgument(opt.to_string(), n)}
-    }
-
-    /// Returns an error for a missing required argument.
-    pub fn missing_argument(opt: Opt) -> Error {
-        Error{kind: ErrorKind::MissingArgument(opt.to_string())}
-    }
-
-    /// Returns an error for a missing command name.
-    pub fn missing_command() -> Error {
-        Error{kind: ErrorKind::MissingCommand}
-    }
-
-    /// Returns an error for a missing required option.
-    pub fn missing_required(opt: &str) -> Error {
-        Error{kind: ErrorKind::MissingRequired(opt.to_owned())}
-    }
-
-    /// Returns an error for a missing required command.
-    pub fn missing_required_command() -> Error {
-        Error{kind: ErrorKind::MissingRequiredCommand}
-    }
-
-    /// Returns an error for a missing required free argument.
-    pub fn missing_required_free() -> Error {
-        Error{kind: ErrorKind::MissingRequiredFree}
-    }
-
-    /// Returns an error when a free argument was encountered, but the options
-    /// type does not support free arguments.
-    pub fn unexpected_free(arg: &str) -> Error {
-        Error{kind: ErrorKind::UnexpectedFree(arg.to_owned())}
-    }
-
-    /// Returns an error for an unrecognized command.
-    pub fn unrecognized_command(name: &str) -> Error {
-        Error{kind: ErrorKind::UnrecognizedCommand(name.to_owned())}
-    }
-
-    /// Returns an error for an unrecognized option.
-    pub fn unrecognized_option(opt: Opt) -> Error {
-        match opt {
-            Opt::Short(short) => Error::unrecognized_short(short),
-            Opt::Long(long) | Opt::LongWithArg(long, _) =>
-                Error::unrecognized_long(long),
-            Opt::Free(_) => panic!("`Error::unrecognized_option` called with `Opt::Free` value")
-        }
-    }
-
-    /// Returns an error for an unrecognized long option, e.g. `--option`.
-    pub fn unrecognized_long(opt: &str) -> Error {
-        Error{kind: ErrorKind::UnrecognizedLongOption(opt.to_owned())}
-    }
-
-    /// Returns an error for an unrecognized short option, e.g. `-o`.
-    pub fn unrecognized_short(opt: char) -> Error {
-        Error{kind: ErrorKind::UnrecognizedShortOption(opt)}
-    }
-}
-
-impl fmt::Display for Error {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        use self::ErrorKind::*;
-
-        match self.kind {
-            FailedParse(ref opt, ref arg) => write!(f, "invalid argument to option `{}`: {}", opt, arg),
-            FailedParseDefault{ref option, value, ref err} => write!(f, "invalid default value for `{}` ({:?}): {}", option, value, err),
-            InsufficientArguments{ref option, expected, found} =>
-                write!(f, "insufficient arguments to option `{}`: expected {}; found {}",
-                    option, expected, found),
-            MissingArgument(ref opt) => write!(f, "missing argument to option `{}`", opt),
-            MissingCommand => f.write_str("missing command name"),
-            MissingRequired(ref opt) => write!(f, "missing required option `{}`", opt),
-            MissingRequiredCommand => f.write_str("missing required command"),
-            MissingRequiredFree => f.write_str("missing required free argument"),
-            UnexpectedArgument(ref opt) => write!(f, "option `{}` does not accept an argument", opt),
-            UnexpectedSingleArgument(ref opt, n) =>
-                write!(f, "option `{}` expects {} arguments; found 1", opt, n),
-            UnexpectedFree(ref arg) => write!(f, "unexpected free argument `{}`", arg),
-            UnrecognizedCommand(ref cmd) => write!(f, "unrecognized command `{}`", cmd),
-            UnrecognizedLongOption(ref opt) => write!(f, "unrecognized option `--{}`", opt),
-            UnrecognizedShortOption(opt) => write!(f, "unrecognized option `-{}`", opt),
-        }
-    }
-}
-
-impl StdError for Error {
-    fn description(&self) -> &str {
-        "failed to parse arguments"
-    }
-}
-
-#[derive(Debug)]
-enum ErrorKind {
-    FailedParse(String, String),
-    FailedParseDefault{
-        option: &'static str,
-        value: &'static str,
-        err: String,
-    },
-    InsufficientArguments{
-        option: String,
-        expected: usize,
-        found: usize,
-    },
-    MissingArgument(String),
-    MissingCommand,
-    MissingRequired(String),
-    MissingRequiredCommand,
-    MissingRequiredFree,
-    UnexpectedArgument(String),
-    UnexpectedSingleArgument(String, usize),
-    UnexpectedFree(String),
-    UnrecognizedCommand(String),
-    UnrecognizedLongOption(String),
-    UnrecognizedShortOption(char),
-}
-
-/// Parses options from a series of `&str`-like values.
-pub struct Parser<'a, S: 'a> {
-    args: Iter<'a, S>,
-    cur: Option<Chars<'a>>,
-    style: ParsingStyle,
-    terminated: bool,
-}
-
-impl<'a, S: 'a + AsRef<str>> Parser<'a, S> {
-    /// Returns a new parser for the given series of arguments.
-    ///
-    /// The given slice should **not** contain the program name as its first
-    /// element.
-    pub fn new(args: &'a [S], style: ParsingStyle) -> Parser<'a, S> {
-        Parser{
-            args: args.iter(),
-            cur: None,
-            style: style,
-            terminated: false,
-        }
-    }
-
-    /// Returns the next option or `None` if no options remain.
-    ///
-    /// If the previous option had an explicit argument, e.g. `--option=argument`,
-    /// which was not consumed by a call to `next_arg()`, an error will be
-    /// returned indicating that the argument was ignored.
-    pub fn next_opt(&mut self) -> Option<Opt<'a>> {
-        if let Some(mut cur) = self.cur.take() {
-            if let Some(opt) = cur.next() {
-                self.cur = Some(cur);
-                return Some(Opt::Short(opt));
-            }
-        }
-
-        if self.terminated {
-            return self.args.next().map(|s| Opt::Free(s.as_ref()));
-        }
-
-        match self.args.next().map(|s| s.as_ref()) {
-            Some(arg @ "-") => {
-                if self.style == ParsingStyle::StopAtFirstFree {
-                    self.terminated = true;
-                }
-                Some(Opt::Free(arg))
-            }
-            Some("--") => {
-                self.terminated = true;
-                self.args.next().map(|s| Opt::Free(s.as_ref()))
-            }
-            Some(long) if long.starts_with("--") => {
-                match long.find('=') {
-                    Some(pos) => Some(Opt::LongWithArg(
-                        &long[2..pos], &long[pos + 1..])),
-                    None => Some(Opt::Long(&long[2..]))
-                }
-            }
-            Some(short) if short.starts_with('-') => {
-                let mut chars = short[1..].chars();
-
-                let res = chars.next().map(Opt::Short);
-
-                self.cur = Some(chars);
-                res
-            }
-            Some(free) => {
-                if self.style == ParsingStyle::StopAtFirstFree {
-                    self.terminated = true;
-                }
-                Some(Opt::Free(free))
-            }
-            None => None
-        }
-    }
-
-    /// Returns the next argument to an option or `None` if none remain.
-    pub fn next_arg(&mut self) -> Option<&'a str> {
-        if let Some(cur) = self.cur.take() {
-            let arg = cur.as_str();
-
-            if !arg.is_empty() {
-                return Some(arg);
-            }
-        }
-
-        self.args.next().map(|s| s.as_ref())
-    }
-}
-
-impl<'a, S: 'a> Clone for Parser<'a, S> {
-    fn clone(&self) -> Parser<'a, S> {
-        Parser{
-            args: self.args.clone(),
-            cur: self.cur.clone(),
-            style: self.style,
-            terminated: self.terminated,
-        }
-    }
-}
-
-/// Represents an option parsed from a `Parser`
-#[derive(Copy, Clone, Debug, Eq, PartialEq)]
-pub enum Opt<'a> {
-    /// Short option, e.g. `-o`
-    Short(char),
-    /// Long option, e.g. `--option`
-    Long(&'a str),
-    /// Long option with argument, e.g. `--option=value`
-    LongWithArg(&'a str, &'a str),
-    /// Free argument
-    Free(&'a str),
-}
-
-impl<'a> Opt<'a> {
-    fn to_string(&self) -> String {
-        match *self {
-            Opt::Short(ch) => format!("-{}", ch),
-            Opt::Long(s) => format!("--{}", s),
-            Opt::LongWithArg(opt, _) => format!("--{}", opt),
-            Opt::Free(_) => "free".to_owned()
-        }
-    }
-}
-
 /// Implements a set of options parsed from command line arguments.
 ///
 /// An implementation of this trait can be generated with `#[derive(Options)]`.
@@ -518,13 +240,17 @@ pub trait Options: Sized {
     ///   `#[options(command)]`, this method is called on that value.
     ///   Otherwise, `None` is returned.
     /// * For `enum` types, the name corresponding to the variant is returned.
-    fn command_name(&self) -> Option<&'static str> { None }
+    fn command_name(&self) -> Option<&'static str> {
+        None
+    }
 
     /// Returns whether the user supplied a "help" option to request
     /// usage information about the program or any contained subcommands.
     ///
     /// The default implementation returns `false`.
-    fn help_requested(&self) -> bool { false }
+    fn help_requested(&self) -> bool {
+        false
+    }
 
     /// Parses arguments received from the command line.
     ///
@@ -631,31 +357,24 @@ pub trait Options: Sized {
     fn command_list() -> Option<&'static str>;
 }
 
-/// Controls behavior of free arguments in `Parser`
-#[derive(Copy, Clone, Debug, Eq, PartialEq)]
-pub enum ParsingStyle {
-    /// Process all option arguments that appear
-    AllOptions,
-    /// After the first "free" argument is encountered,
-    /// all remaining arguments will be considered "free" arguments.
-    StopAtFirstFree,
-}
-
-impl Default for ParsingStyle {
-    /// Returns the default parsing style, `AllOptions`.
-    fn default() -> ParsingStyle {
-        ParsingStyle::AllOptions
-    }
-}
-
 #[cfg(test)]
 mod test {
     use super::{Opt, Parser, ParsingStyle};
 
     #[test]
     fn test_parser() {
-        let args = &["-a", "b", "-cde", "arg", "-xfoo", "--long", "--opt=val",
-            "--", "y", "-z"];
+        let args = &[
+            "-a",
+            "b",
+            "-cde",
+            "arg",
+            "-xfoo",
+            "--long",
+            "--opt=val",
+            "--",
+            "y",
+            "-z",
+        ];
 
         let mut p = Parser::new(args, ParsingStyle::AllOptions);
 
