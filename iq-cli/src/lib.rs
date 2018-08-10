@@ -43,9 +43,13 @@ extern crate iq_cli_derive;
 extern crate lazy_static;
 #[cfg(feature = "log")]
 pub extern crate log;
+#[cfg(feature = "config")]
+extern crate serde;
 #[cfg(feature = "simplelog")]
 extern crate simplelog;
 extern crate term;
+#[cfg(feature = "toml")]
+extern crate toml;
 
 #[cfg(all(test, feature = "options"))]
 #[macro_use]
@@ -53,9 +57,10 @@ extern crate assert_matches;
 
 pub use term::color::{self, Color};
 
+#[cfg(feature = "config")]
+pub mod config;
 mod error;
 mod init;
-#[cfg(any(feature = "errors", feature = "status"))]
 pub mod macros;
 #[cfg(feature = "options")]
 pub mod options;

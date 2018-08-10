@@ -1,5 +1,8 @@
 //! Macros defined by this crate
 
+#[cfg(feature = "config")]
+pub mod config;
+
 #[cfg(feature = "errors")]
 pub mod error;
 

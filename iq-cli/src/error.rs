@@ -93,6 +93,10 @@ pub type CliError = Error<CliErrorKind>;
 /// General kinds of CLI errors
 #[derive(Fail, Clone, Debug, Eq, PartialEq)]
 pub enum CliErrorKind {
+    /// Error reading configuration file
+    #[fail(display = "config error")]
+    Config,
+
     /// I/O operation failed
     #[fail(display = "I/O operation failed")]
     Io,

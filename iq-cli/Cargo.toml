@@ -19,13 +19,16 @@ failure = { version = "0.1", default-features = false, features = ["std"] }
 iq-cli-derive = { version = "0", path = "../iq-cli-derive" }
 lazy_static = "1"
 log = { version = "0.4", optional = true }
+serde = { version = "1", optional = true }
 simplelog = { version = "0.5", optional = true }
 term = "0.5"
+toml = { version = "0.4", optional = true }
 
 [dev-dependencies]
 assert_matches = "1"
 
 [features]
+config = ["serde", "status", "toml"]
 default = ["errors", "logging", "options", "status"]
 errors = []
 logging = ["log", "simplelog"]
