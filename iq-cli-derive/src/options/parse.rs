@@ -2,7 +2,7 @@ use proc_macro2::TokenStream as TokenStream2;
 use std::iter::repeat;
 use syn::{parse_str, Ident, Meta, NestedMeta, Path};
 
-use {lit_str, tokens_str};
+use super::{lit_str, tokens_str};
 
 pub enum ParseFn {
     Default,

@@ -1,8 +1,7 @@
 use proc_macro2::TokenStream as TokenStream2;
 use syn::Ident;
 
-use action::FreeAction;
-use parse::ParseFn;
+use options::{action::FreeAction, parse::ParseFn};
 
 pub struct FreeOpt<'a> {
     pub field: &'a Ident,

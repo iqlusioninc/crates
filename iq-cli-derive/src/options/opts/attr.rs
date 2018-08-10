@@ -1,8 +1,7 @@
 use syn::{Attribute, Lit, Meta, NestedMeta};
 
 use super::{default::DefaultOpts, is_outer, path_eq};
-use parse::ParseFn;
-use {lit_str, tokens_str};
+use options::{lit_str, parse::ParseFn, tokens_str};
 
 #[derive(Default)]
 pub struct AttrOpts {

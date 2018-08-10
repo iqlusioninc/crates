@@ -18,6 +18,11 @@ appveyor  = { repository = "iqlusioninc/crates" }
 name = "iq_cli_derive"
 proc-macro = true
 
+[features]
+default = ["errors", "options"]
+errors = []
+options = []
+
 [dependencies]
 proc-macro2 = "0.4"
 quote = "0.6"

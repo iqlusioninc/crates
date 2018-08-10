@@ -1,7 +1,7 @@
 use syn::{Attribute, Ident, Meta, NestedMeta, Type};
 
 use super::{is_outer, path_eq};
-use {lit_str, tokens_str};
+use options::{lit_str, tokens_str};
 
 pub struct Cmd<'a> {
     pub name: String,

@@ -26,8 +26,8 @@ assert_matches = "1"
 
 [features]
 default = ["errors", "options", "status"]
-errors = []
-options = ["iq-cli-derive"]
+errors = ["iq-cli-derive/errors"]
+options = ["iq-cli-derive/options"]
 status = []
 
 [target.'cfg(unix)'.dependencies]
