@@ -41,12 +41,18 @@ extern crate failure;
 extern crate iq_cli_derive;
 #[macro_use]
 extern crate lazy_static;
+#[cfg(feature = "log")]
+pub extern crate log;
+#[cfg(feature = "simplelog")]
+extern crate simplelog;
 extern crate term;
 
 #[cfg(all(test, feature = "options"))]
 #[macro_use]
 extern crate assert_matches;
 
+#[cfg(feature = "simplelog")]
+use simplelog::{CombinedLogger, LevelFilter, TermLogger};
 pub use term::color::{self, Color};
 
 mod error;
@@ -60,3 +66,28 @@ pub use error::Error;
 #[cfg(feature = "options")]
 pub use options::Options;
 pub use shell::{config, status, ColorConfig, Stream};
+
+/// Initialize a command-line app with the given options
+// TODO: better API for this
+#[allow(unused_variables)]
+pub fn init(color_config: ColorConfig, verbose: bool) {
+    config(color_config);
+    #[cfg(feature = "simplelog")]
+    init_logging(verbose);
+}
+
+/// Initialize the logging subsystem (i.e. simplelog)
+#[cfg(feature = "simplelog")]
+fn init_logging(verbose: bool) {
+    let level_filter = if verbose {
+        LevelFilter::Debug
+    } else {
+        LevelFilter::Info
+    };
+
+    let config = simplelog::Config::default();
+
+    if let Some(logger) = TermLogger::new(level_filter, config) {
+        CombinedLogger::init(vec![logger]).unwrap()
+    }
+}

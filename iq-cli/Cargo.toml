@@ -18,14 +18,17 @@ appveyor  = { repository = "iqlusioninc/crates" }
 failure = { version = "0.1", default-features = false, features = ["std"] }
 iq-cli-derive = { version = "0", path = "../iq-cli-derive" }
 lazy_static = "1"
+log = { version = "0.4", optional = true }
+simplelog = { version = "0.5", optional = true }
 term = "0.5"
 
 [dev-dependencies]
 assert_matches = "1"
 
 [features]
-default = ["errors", "options", "status"]
+default = ["errors", "logging", "options", "status"]
 errors = []
+logging = ["log", "simplelog"]
 options = ["iq-cli-derive/options"]
 status = []
 
