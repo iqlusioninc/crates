@@ -51,11 +51,10 @@ extern crate term;
 #[macro_use]
 extern crate assert_matches;
 
-#[cfg(feature = "simplelog")]
-use simplelog::{CombinedLogger, LevelFilter, TermLogger};
 pub use term::color::{self, Color};
 
 mod error;
+mod init;
 #[cfg(any(feature = "errors", feature = "status"))]
 pub mod macros;
 #[cfg(feature = "options")]
@@ -63,31 +62,7 @@ pub mod options;
 mod shell;
 
 pub use error::Error;
+pub use init::{init, InitOpts};
 #[cfg(feature = "options")]
 pub use options::Options;
-pub use shell::{config, status, ColorConfig, Stream};
-
-/// Initialize a command-line app with the given options
-// TODO: better API for this
-#[allow(unused_variables)]
-pub fn init(color_config: ColorConfig, verbose: bool) {
-    config(color_config);
-    #[cfg(feature = "simplelog")]
-    init_logging(verbose);
-}
-
-/// Initialize the logging subsystem (i.e. simplelog)
-#[cfg(feature = "simplelog")]
-fn init_logging(verbose: bool) {
-    let level_filter = if verbose {
-        LevelFilter::Debug
-    } else {
-        LevelFilter::Info
-    };
-
-    let config = simplelog::Config::default();
-
-    if let Some(logger) = TermLogger::new(level_filter, config) {
-        CombinedLogger::init(vec![logger]).unwrap()
-    }
-}
+pub use shell::{status, ColorConfig, Stream};
