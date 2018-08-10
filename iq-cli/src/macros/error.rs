@@ -13,7 +13,7 @@
 macro_rules! err {
     ($kind:path, $msg:expr) => {
         use $crate::error::ToError;
-        $kind.to_error($msg)
+        $kind.to_error(Some($msg))
     };
     ($kind:path, $fmt:expr, $($arg:tt)+) => {
         err!($kind, format!($fmt, $($arg)+))

@@ -42,7 +42,7 @@ impl FromStr for ColorConfig {
             "never" => Ok(ColorConfig::Never),
             other => {
                 let msg = format!("bad color config option: {}", other);
-                Err(CliErrorKind::Parse.to_error(&msg))
+                Err(CliErrorKind::Parse.to_error(Some(&msg)))
             }
         }
     }
