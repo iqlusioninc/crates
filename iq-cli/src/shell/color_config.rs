@@ -1,7 +1,7 @@
 use std::fmt::{self, Display};
 use std::str::FromStr;
 
-use error::{Error, ErrorKind};
+use error::{CliError, CliErrorKind, ToError};
 
 /// Color configuration
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -33,16 +33,16 @@ impl Display for ColorConfig {
 }
 
 impl FromStr for ColorConfig {
-    type Err = Error;
+    type Err = CliError;
 
-    fn from_str(s: &str) -> Result<Self, Error> {
+    fn from_str(s: &str) -> Result<Self, CliError> {
         match s {
             "always" => Ok(ColorConfig::Always),
             "auto" => Ok(ColorConfig::Auto),
             "never" => Ok(ColorConfig::Never),
             other => {
                 let msg = format!("bad color config option: {}", other);
-                Err(ErrorKind::Parse.to_error(&msg))
+                Err(CliErrorKind::Parse.to_error(&msg))
             }
         }
     }
