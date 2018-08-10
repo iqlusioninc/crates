@@ -39,16 +39,28 @@
 extern crate failure;
 #[macro_use]
 extern crate failure_derive;
+#[cfg(feature = "options")]
+#[allow(unknown_lints, unused_imports, useless_attribute)]
+#[macro_use]
+extern crate iq_cli_derive;
 #[macro_use]
 extern crate lazy_static;
 extern crate term;
+
+#[cfg(all(test, feature = "options"))]
+#[macro_use]
+extern crate assert_matches;
 
 pub use term::color;
 pub use term::color::Color;
 
 mod error;
 mod macros;
+#[cfg(feature = "options")]
+pub mod options;
 mod shell;
 
 pub use error::Error;
+#[cfg(feature = "options")]
+pub use options::Options;
 pub use shell::{config, status, ColorConfig, Stream};

@@ -32,6 +32,8 @@ This repository contains the following crates:
   use with cryptographic keys.
 * [iq-cli:](https://github.com/iqlusioninc/crates/tree/master/iq-cli)
   Cargo-like colored command-line interfaces.
+* [iq-cli-derive:](https://github.com/iqlusioninc/crates/tree/master/iq-cli-derive)
+  Custom derive support for the iq-cli microframework.
 * [keyuri:](https://github.com/iqlusioninc/crates/tree/master/keyuri)
   URI-like serialization format for cryptographic keys.
 * [tai64:](https://github.com/iqlusioninc/crates/tree/master/tai64)

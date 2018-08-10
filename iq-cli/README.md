@@ -33,6 +33,7 @@ Parts of this code were taken from the following projects, which have agreed
 to license their code under the Apache License (Version 2.0):
 
 * [Cargo](https://github.com/rust-lang/cargo)
+* [gumdrop](https://github.com/murarth/gumdrop)
 * [isatty](https://github.com/dtolnay/isatty)
 
 See [LICENSE] file in the `iqlusioninc/crates` toplevel directory for more

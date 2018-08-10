@@ -10,4 +10,5 @@ contributions under the terms of the [Apache License, Version 2.0]
 
 * Anthony Arcieri ([@tarcieri](https://github.com/tarcieri))
 * David Tolnay ([@dtolnay](https://github.com/dtolnay))
+* Murarth ([@murarth](https://github.com/murarth))
 * Yin Guanhao ([@sopium](https://github.com/sopium))
