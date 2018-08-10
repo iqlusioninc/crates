@@ -1,7 +1,7 @@
 use syn::{Attribute, Meta, NestedMeta};
 
 use super::{is_outer, path_eq};
-use tokens_str;
+use options::tokens_str;
 
 #[derive(Default)]
 pub struct DefaultOpts {

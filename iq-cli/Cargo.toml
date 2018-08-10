@@ -15,9 +15,8 @@ circle-ci = { repository = "iqlusioninc/crates" }
 appveyor  = { repository = "iqlusioninc/crates" }
 
 [dependencies]
-failure = "0.1"
-failure_derive = "0.1"
-iq-cli-derive = { version = "0", path = "../iq-cli-derive", optional = true }
+failure = { version = "0.1", default-features = false, features = ["std"] }
+iq-cli-derive = { version = "0", path = "../iq-cli-derive" }
 lazy_static = "1"
 term = "0.5"
 
@@ -27,7 +26,7 @@ assert_matches = "1"
 [features]
 default = ["errors", "options", "status"]
 errors = []
-options = ["iq-cli-derive"]
+options = ["iq-cli-derive/options"]
 status = []
 
 [target.'cfg(unix)'.dependencies]

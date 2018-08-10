@@ -2,7 +2,7 @@ use proc_macro2::TokenStream as TokenStream2;
 use std::iter::repeat;
 use syn::Ident;
 
-use action::Action;
+use options::action::Action;
 
 pub struct Opt<'a> {
     pub field: &'a Ident,
@@ -44,7 +44,7 @@ impl<'a> Opt<'a> {
     }
 
     pub fn make_action(&self) -> TokenStream2 {
-        use action::Action::*;
+        use options::action::Action::*;
 
         let field = self.field;
         let mark_used = self.mark_used();
@@ -86,7 +86,7 @@ impl<'a> Opt<'a> {
     }
 
     pub fn make_action_arg(&self) -> TokenStream2 {
-        use action::Action::*;
+        use options::action::Action::*;
 
         let field = self.field;
         let mark_used = self.mark_used();

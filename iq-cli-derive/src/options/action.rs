@@ -1,7 +1,9 @@
 use syn::Type;
 
-use first_ty_param;
-use parse::{ParseFn, ParseMethod};
+use super::{
+    first_ty_param,
+    parse::{ParseFn, ParseMethod},
+};
 
 pub enum Action {
     /// Increase count
