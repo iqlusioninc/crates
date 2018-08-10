@@ -328,7 +328,8 @@ pub fn current_exe() -> Result<CanonicalPathBuf> {
     Ok(CanonicalPathBuf::new(p)?)
 }
 
-#[cfg(test)]
+// TODO: test on Windows
+#[cfg(all(test, not(windows)))]
 mod tests {
     use std::fs::File;
     use std::os::unix::fs;
