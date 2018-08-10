@@ -20,10 +20,16 @@ proc-macro = true
 
 [features]
 default = ["errors", "options"]
-errors = []
+errors = ["failure", "synstructure"]
 options = []
 
 [dependencies]
+failure = { version = "0.1", optional = true }
 proc-macro2 = "0.4"
 quote = "0.6"
 syn = "0.14"
+synstructure = { version = "0.9", optional = true }
+
+[package.metadata.docs.rs] 
+all-features = true
+rustdoc-args = ["--document-private-items"] # Document all modules

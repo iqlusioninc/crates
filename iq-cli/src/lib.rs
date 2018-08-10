@@ -36,9 +36,6 @@
 #![doc(html_root_url = "https://docs.rs/iq-cli/0.1.0")]
 
 extern crate failure;
-#[macro_use]
-extern crate failure_derive;
-#[cfg(feature = "options")]
 #[allow(unknown_lints, unused_imports, useless_attribute)]
 #[macro_use]
 extern crate iq_cli_derive;

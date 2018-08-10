@@ -1,4 +1,4 @@
-//! Provides `derive(Options)` for `iq_cli` crate
+//! Provides `derive(Options)` for the `iq_cli` crate
 //!
 //! # `derive(Options)`
 //!
@@ -50,7 +50,9 @@
 //!
 //! # Notice
 //!
-//! The `iq-cli-derive` crate is a fork of the `gumdrop-derive` crate:
+//! The `options` module of the `iq-cli-derive` crate is a fork of the
+//! `gumdrop_derive` crate:
+//!
 //! <https://github.com/murarth/gumdrop>
 
 use std::iter::repeat;
