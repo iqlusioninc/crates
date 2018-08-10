@@ -7,8 +7,6 @@
 //!  - https://github.com/rust-lang/cargo/blob/099ad28104fe319f493dc42e0c694d468c65767d/src/cargo/lib.rs#L154-L178
 //!  - https://github.com/BurntSushi/ripgrep/issues/94#issuecomment-261761687
 
-#![allow(unsafe_code)]
-
 use super::Stream;
 
 #[cfg(not(any(windows, unix, target_os = "redox")))]
@@ -23,7 +21,10 @@ pub(crate) fn isatty(stream: Stream) -> bool {
         Stream::Stderr => libc::STDERR_FILENO,
     };
 
-    unsafe { libc::isatty(fd) != 0 }
+    #[allow(unsafe_code)]
+    unsafe {
+        libc::isatty(fd) != 0
+    }
 }
 
 #[cfg(windows)]
@@ -41,6 +42,7 @@ mod windows {
             Stream::Stderr => winapi::um::winbase::STD_ERROR_HANDLE,
         };
 
+        #[allow(unsafe_code)]
         unsafe {
             let handle = winapi::um::processenv::GetStdHandle(handle);
 
@@ -67,6 +69,7 @@ mod windows {
         use self::winapi::um::minwinbase::FileNameInfo;
         use self::winapi::um::winbase::GetFileInformationByHandleEx;
 
+        #[allow(unsafe_code)]
         unsafe {
             let size = mem::size_of::<FILE_NAME_INFO>();
             let mut name_info_bytes = vec![0u8; size + MAX_PATH];

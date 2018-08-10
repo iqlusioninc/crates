@@ -1,48 +1,42 @@
-use std::error::Error as StdError;
-use std::fmt::{self, Display};
-
 use super::Opt;
+use error::{self, ToError};
 
-/// Represents an error encountered during argument parsing
-// TODO: derive or implement `Fail`
-#[derive(Debug)]
-pub struct Error {
-    kind: ErrorKind,
-}
+/// Errors encountered during argument parsing
+pub type Error = error::Error<ErrorKind>;
+
+/// `None` with type annotations for `to_error`
+const NO_DESCRIPTION: Option<&String> = None;
 
 impl Error {
     /// Returns an error for a failed attempt at parsing an option value.
     pub fn failed_parse(opt: Opt, err: String) -> Error {
-        Error {
-            kind: ErrorKind::FailedParse(opt.to_string(), err),
-        }
+        ErrorKind::FailedParse {
+            opt: opt.to_string(),
+            err,
+        }.to_error(NO_DESCRIPTION)
     }
 
     /// Returns an error for a failed attempt at parsing an option's default value.
     pub fn failed_parse_default(option: &'static str, value: &'static str, err: String) -> Error {
-        Error {
-            kind: ErrorKind::FailedParseDefault { option, value, err },
-        }
+        ErrorKind::FailedParseDefault { option, value, err }.to_error(NO_DESCRIPTION)
     }
 
     /// Returns an error for an option expecting two or more arguments not
     /// receiving the expected number of arguments.
     pub fn insufficient_arguments(opt: Opt, expected: usize, found: usize) -> Error {
-        let kind = ErrorKind::InsufficientArguments {
+        ErrorKind::InsufficientArguments {
             option: opt.to_string(),
             expected,
             found,
-        };
-
-        Error { kind }
+        }.to_error(NO_DESCRIPTION)
     }
 
     /// Returns an error for an option receiving an unexpected argument value,
     /// e.g. `--option=value`.
     pub fn unexpected_argument(opt: Opt) -> Error {
-        Error {
-            kind: ErrorKind::UnexpectedArgument(opt.to_string()),
-        }
+        ErrorKind::UnexpectedArgument {
+            opt: opt.to_string(),
+        }.to_error(NO_DESCRIPTION)
     }
 
     /// Returns an error for an option expecting two or more argument values
@@ -50,59 +44,54 @@ impl Error {
     ///
     /// These options must be passed as, e.g. `--option value second-value [...]`.
     pub fn unexpected_single_argument(opt: Opt, n: usize) -> Error {
-        Error {
-            kind: ErrorKind::UnexpectedSingleArgument(opt.to_string(), n),
-        }
+        ErrorKind::UnexpectedSingleArgument {
+            opt: opt.to_string(),
+            n,
+        }.to_error(NO_DESCRIPTION)
     }
 
     /// Returns an error for a missing required argument.
     pub fn missing_argument(opt: Opt) -> Error {
-        Error {
-            kind: ErrorKind::MissingArgument(opt.to_string()),
-        }
+        ErrorKind::MissingArgument {
+            opt: opt.to_string(),
+        }.to_error(NO_DESCRIPTION)
     }
 
     /// Returns an error for a missing command name.
     pub fn missing_command() -> Error {
-        Error {
-            kind: ErrorKind::MissingCommand,
-        }
+        ErrorKind::MissingCommand.to_error(NO_DESCRIPTION)
     }
 
     /// Returns an error for a missing required option.
     pub fn missing_required(opt: &str) -> Error {
-        Error {
-            kind: ErrorKind::MissingRequired(opt.to_owned()),
-        }
+        ErrorKind::MissingRequired {
+            opt: opt.to_owned(),
+        }.to_error(NO_DESCRIPTION)
     }
 
     /// Returns an error for a missing required command.
     pub fn missing_required_command() -> Error {
-        Error {
-            kind: ErrorKind::MissingRequiredCommand,
-        }
+        ErrorKind::MissingRequiredCommand.to_error(NO_DESCRIPTION)
     }
 
     /// Returns an error for a missing required free argument.
     pub fn missing_required_free() -> Error {
-        Error {
-            kind: ErrorKind::MissingRequiredFree,
-        }
+        ErrorKind::MissingRequiredFree.to_error(NO_DESCRIPTION)
     }
 
     /// Returns an error when a free argument was encountered, but the options
     /// type does not support free arguments.
     pub fn unexpected_free(arg: &str) -> Error {
-        Error {
-            kind: ErrorKind::UnexpectedFree(arg.to_owned()),
-        }
+        ErrorKind::UnexpectedFree {
+            arg: arg.to_owned(),
+        }.to_error(NO_DESCRIPTION)
     }
 
     /// Returns an error for an unrecognized command.
     pub fn unrecognized_command(name: &str) -> Error {
-        Error {
-            kind: ErrorKind::UnrecognizedCommand(name.to_owned()),
-        }
+        ErrorKind::UnrecognizedCommand {
+            name: name.to_owned(),
+        }.to_error(NO_DESCRIPTION)
     }
 
     /// Returns an error for an unrecognized option.
@@ -116,92 +105,80 @@ impl Error {
 
     /// Returns an error for an unrecognized long option, e.g. `--option`.
     pub fn unrecognized_long(opt: &str) -> Error {
-        Error {
-            kind: ErrorKind::UnrecognizedLongOption(opt.to_owned()),
-        }
+        ErrorKind::UnrecognizedLongOption {
+            opt: opt.to_owned(),
+        }.to_error(NO_DESCRIPTION)
     }
 
     /// Returns an error for an unrecognized short option, e.g. `-o`.
     pub fn unrecognized_short(opt: char) -> Error {
-        Error {
-            kind: ErrorKind::UnrecognizedShortOption(opt),
-        }
+        ErrorKind::UnrecognizedShortOption { opt }.to_error(NO_DESCRIPTION)
     }
 }
 
-impl Display for Error {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        use self::ErrorKind::*;
+#[derive(Clone, Debug, Eq, Fail, PartialEq)]
+pub enum ErrorKind {
+    #[fail(display = "invalid argument to option `{}`: {}", opt, err)]
+    FailedParse { opt: String, err: String },
 
-        match self.kind {
-            FailedParse(ref opt, ref arg) => {
-                write!(f, "invalid argument to option `{}`: {}", opt, arg)
-            }
-            FailedParseDefault {
-                ref option,
-                value,
-                ref err,
-            } => write!(
-                f,
-                "invalid default value for `{}` ({:?}): {}",
-                option, value, err
-            ),
-            InsufficientArguments {
-                ref option,
-                expected,
-                found,
-            } => write!(
-                f,
-                "insufficient arguments to option `{}`: expected {}; found {}",
-                option, expected, found
-            ),
-            MissingArgument(ref opt) => write!(f, "missing argument to option `{}`", opt),
-            MissingCommand => f.write_str("missing command name"),
-            MissingRequired(ref opt) => write!(f, "missing required option `{}`", opt),
-            MissingRequiredCommand => f.write_str("missing required command"),
-            MissingRequiredFree => f.write_str("missing required free argument"),
-            UnexpectedArgument(ref opt) => {
-                write!(f, "option `{}` does not accept an argument", opt)
-            }
-            UnexpectedSingleArgument(ref opt, n) => {
-                write!(f, "option `{}` expects {} arguments; found 1", opt, n)
-            }
-            UnexpectedFree(ref arg) => write!(f, "unexpected free argument `{}`", arg),
-            UnrecognizedCommand(ref cmd) => write!(f, "unrecognized command `{}`", cmd),
-            UnrecognizedLongOption(ref opt) => write!(f, "unrecognized option `--{}`", opt),
-            UnrecognizedShortOption(opt) => write!(f, "unrecognized option `-{}`", opt),
-        }
-    }
-}
-
-impl StdError for Error {
-    fn description(&self) -> &str {
-        "failed to parse arguments"
-    }
-}
-
-#[derive(Debug)]
-enum ErrorKind {
-    FailedParse(String, String),
+    #[fail(
+        display = "invalid default value for `{}` ({:?}): {}",
+        option,
+        value,
+        err
+    )]
     FailedParseDefault {
         option: &'static str,
         value: &'static str,
         err: String,
     },
+
+    #[fail(
+        display = "insufficient arguments to option `{}`: expected {}; found {}",
+        option,
+        expected,
+        found
+    )]
     InsufficientArguments {
         option: String,
         expected: usize,
         found: usize,
     },
-    MissingArgument(String),
+
+    #[fail(display = "missing argument to option `{}`", opt)]
+    MissingArgument { opt: String },
+
+    #[fail(display = "missing command name")]
     MissingCommand,
-    MissingRequired(String),
+
+    #[fail(display = "missing required option `{}`", opt)]
+    MissingRequired { opt: String },
+
+    #[fail(display = "missing required command")]
     MissingRequiredCommand,
+
+    #[fail(display = "missing required free argument")]
     MissingRequiredFree,
-    UnexpectedArgument(String),
-    UnexpectedSingleArgument(String, usize),
-    UnexpectedFree(String),
-    UnrecognizedCommand(String),
-    UnrecognizedLongOption(String),
-    UnrecognizedShortOption(char),
+
+    #[fail(display = "option `{}` does not accept an argument", opt)]
+    UnexpectedArgument { opt: String },
+
+    #[fail(
+        display = "option `{}` expects {} arguments; found 1",
+        opt,
+        n
+    )]
+    UnexpectedSingleArgument { opt: String, n: usize },
+
+    #[fail(display = "unexpected free argument `{}`", arg)]
+    UnexpectedFree { arg: String },
+
+    #[fail(display = "unrecognized command `{}`", name)]
+    UnrecognizedCommand { name: String },
+
+    #[fail(display = "unrecognized option `--{}`", opt)]
+    UnrecognizedLongOption { opt: String },
+
+    #[fail(display = "unrecognized option `-{}`", opt)]
+    UnrecognizedShortOption { opt: char },
 }

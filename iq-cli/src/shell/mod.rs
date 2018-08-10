@@ -13,7 +13,7 @@ use std::{
 use term::{self, terminfo::TermInfo, Attr, Terminal as TermTerminal, TerminfoTerminal};
 
 use super::Color;
-use error::Error;
+use error::CliError;
 
 pub mod color_config;
 mod isatty;
@@ -134,7 +134,7 @@ impl Shell {
         status: T,
         message: U,
         justified: bool,
-    ) -> Result<(), Error>
+    ) -> Result<(), CliError>
     where
         T: Display,
         U: Display,
@@ -162,7 +162,7 @@ impl Shell {
         Ok(())
     }
 
-    fn fg(&mut self, color: Color) -> Result<bool, Error> {
+    fn fg(&mut self, color: Color) -> Result<bool, CliError> {
         if let Terminal::Colored(ref mut c) = self.0 {
             c.fg(color)?;
             Ok(true)
@@ -171,7 +171,7 @@ impl Shell {
         }
     }
 
-    fn attr(&mut self, attr: Attr) -> Result<bool, Error> {
+    fn attr(&mut self, attr: Attr) -> Result<bool, CliError> {
         if let Terminal::Colored(ref mut c) = self.0 {
             c.attr(attr)?;
             Ok(true)
@@ -188,7 +188,7 @@ impl Shell {
         }
     }
 
-    fn reset(&mut self) -> Result<(), Error> {
+    fn reset(&mut self) -> Result<(), CliError> {
         if let Terminal::Colored(ref mut c) = self.0 {
             c.reset()?;
         }

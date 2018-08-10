@@ -1,16 +1,15 @@
 //! Command line application microframework which supports command-line
 //! option parsing, basic terminal management, and Cargo-like status output.
 //!
-//! # Usage
+//! # Option Parser
+//!
+//! Please see the documentation for the `options` module.
+//!
+//! # Status Macros
 //!
 //! ```
 //! # #[macro_use] extern crate iq_cli;
 //! # fn main() {
-//! use iq_cli::{self, ColorConfig};
-//!
-//! // Initialize the terminal (uses autodetection for if colors are supported)
-//! iq_cli::config(ColorConfig::default());
-//!
 //! // Print a Cargo-like justified status to STDOUT
 //! status_ok!("Loaded", "app loaded successfully");
 //!
@@ -51,11 +50,11 @@ extern crate term;
 #[macro_use]
 extern crate assert_matches;
 
-pub use term::color;
-pub use term::color::Color;
+pub use term::color::{self, Color};
 
 mod error;
-mod macros;
+#[cfg(any(feature = "errors", feature = "status"))]
+pub mod macros;
 #[cfg(feature = "options")]
 pub mod options;
 mod shell;
