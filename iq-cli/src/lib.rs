@@ -57,17 +57,24 @@ extern crate assert_matches;
 
 pub use term::color::{self, Color};
 
+// Load macros first
+#[macro_use]
+pub mod macros;
+
 #[cfg(feature = "config")]
 pub mod config;
 mod error;
 mod init;
-pub mod macros;
 #[cfg(feature = "options")]
 pub mod options;
+pub mod secret;
 mod shell;
+pub mod util;
 
+pub use config::{ConfigReader, GlobalConfig};
 pub use error::Error;
 pub use init::{init, InitOpts};
 #[cfg(feature = "options")]
 pub use options::Options;
+pub use secret::Secret;
 pub use shell::{status, ColorConfig, Stream};
