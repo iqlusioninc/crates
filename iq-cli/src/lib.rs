@@ -43,9 +43,13 @@ extern crate iq_cli_derive;
 extern crate lazy_static;
 #[cfg(feature = "log")]
 pub extern crate log;
+#[cfg(feature = "config")]
+extern crate serde;
 #[cfg(feature = "simplelog")]
 extern crate simplelog;
 extern crate term;
+#[cfg(feature = "toml")]
+extern crate toml;
 
 #[cfg(all(test, feature = "options"))]
 #[macro_use]
@@ -53,16 +57,24 @@ extern crate assert_matches;
 
 pub use term::color::{self, Color};
 
+// Load macros first
+#[macro_use]
+pub mod macros;
+
+#[cfg(feature = "config")]
+pub mod config;
 mod error;
 mod init;
-#[cfg(any(feature = "errors", feature = "status"))]
-pub mod macros;
 #[cfg(feature = "options")]
 pub mod options;
+pub mod secret;
 mod shell;
+pub mod util;
 
+pub use config::{ConfigReader, GlobalConfig};
 pub use error::Error;
 pub use init::{init, InitOpts};
 #[cfg(feature = "options")]
 pub use options::Options;
+pub use secret::Secret;
 pub use shell::{status, ColorConfig, Stream};
