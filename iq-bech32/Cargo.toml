@@ -1,6 +1,12 @@
 [package]
 name        = "iq-bech32"
-description = "Bech32 (BIP-173) is a human-friendly base32 encoding format with checksums to prevent transcription errors"
+description = """
+              Hardened Bech32 (BIP-173) implementation: a human-friendly base-32
+              encoding format with checksums to prevent transcription errors.
+              This implementation is hardened for handling Bech32-encoded secret
+              keys by automatically clearing memory containing sensitive data.
+              Coming soon: constant-time encoding/decoding support.
+              """
 version     = "0.0.0" # Also update html_root_url in lib.rs when bumping this
 authors     = ["Tony Arcieri <tony@iqlusion.io>"]
 license     = "Apache-2.0"
@@ -8,7 +14,7 @@ homepage    = "https://github.com/iqlusioninc/crates/"
 repository  = "https://github.com/iqlusioninc/crates/tree/master/iq-bip32"
 readme      = "README.md"
 categories  = ["cryptography", "encoding"]
-keywords    = ["bech32", "cryptography", "security"]
+keywords    = ["bitcoin", "bech32", "cryptography", "keys", "security"]
 
 [badges]
 circle-ci = { repository = "iqlusioninc/crates" }
