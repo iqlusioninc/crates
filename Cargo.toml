@@ -2,8 +2,6 @@
 members = [
     "canonical-path",
     "iq-bech32",
-    "abscissa",
-    "abscissa_derive",
     "keyuri",
     "tai64"
 ]
