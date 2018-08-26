@@ -30,10 +30,6 @@ This repository contains the following crates:
 * [iq-bech32:](https://github.com/iqlusioninc/crates/tree/master/iq-bech32)
   Bech32 (BIP-173) human-friendly base32 encoding for binary data intended for
   use with cryptographic keys.
-* [abscissa:](https://github.com/iqlusioninc/crates/tree/master/abscissa)
-  Cargo-like colored command-line interfaces.
-* [abscissa_derive:](https://github.com/iqlusioninc/crates/tree/master/abscissa_derive)
-  Custom derive support for the abscissa microframework.
 * [keyuri:](https://github.com/iqlusioninc/crates/tree/master/keyuri)
   URI-like serialization format for cryptographic keys.
 * [tai64:](https://github.com/iqlusioninc/crates/tree/master/tai64)
