@@ -7,7 +7,7 @@ description = """
               keys by automatically clearing memory containing sensitive data.
               Coming soon: constant-time encoding/decoding support.
               """
-version     = "0.0.1" # Also update html_root_url in lib.rs when bumping this
+version     = "0.1.0" # Also update html_root_url in lib.rs when bumping this
 authors     = ["Tony Arcieri <tony@iqlusion.io>"]
 license     = "Apache-2.0"
 homepage    = "https://github.com/iqlusioninc/crates/"
