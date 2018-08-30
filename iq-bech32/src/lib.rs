@@ -15,6 +15,8 @@
 extern crate clear_on_drop;
 #[macro_use]
 extern crate failure;
+#[macro_use]
+extern crate lazy_static;
 
 use clear_on_drop::clear::Clear;
 
@@ -26,7 +28,7 @@ mod error;
 use charset::{CHARSET, CHARSET_INVERSE};
 use checksum::{Checksum, CHECKSUM_SIZE};
 
-pub use charset::SEPARATOR;
+pub use charset::DEFAULT_SEPARATOR;
 pub use error::Error;
 
 /// Maximum length of a bech32 string
@@ -41,7 +43,7 @@ pub struct Bech32 {
 impl Default for Bech32 {
     fn default() -> Self {
         Self {
-            separator: SEPARATOR,
+            separator: DEFAULT_SEPARATOR,
         }
     }
 }

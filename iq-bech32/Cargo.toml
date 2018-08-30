@@ -22,3 +22,4 @@ circle-ci = { repository = "iqlusioninc/crates" }
 [dependencies]
 clear_on_drop = "0.2"
 failure = "0.1"
+lazy_static = "1"
