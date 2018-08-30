@@ -57,11 +57,16 @@ pub struct Bech32 {
 
 impl Default for Bech32 {
     fn default() -> Self {
-        Self::new(DEFAULT_CHARSET, DEFAULT_SEPARATOR)
+        Bech32::lower_case()
     }
 }
 
 impl Bech32 {
+    /// Decode lower case Bech32 strings
+    pub fn lower_case() -> Self {
+        Self::new(DEFAULT_CHARSET, DEFAULT_SEPARATOR)
+    }
+
     /// Decode upper case Bech32 strings
     pub fn upper_case() -> Self {
         Self::new(DEFAULT_CHARSET_UPCASE, DEFAULT_SEPARATOR)
