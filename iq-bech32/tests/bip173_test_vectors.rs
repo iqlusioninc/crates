@@ -14,6 +14,9 @@ struct TestVector {
 
     /// Binary data
     bytes: &'static [u8],
+
+    /// Is the test vector upper case?
+    upper_case: bool,
 }
 
 // BIP-173 test vectors
@@ -22,37 +25,44 @@ const VALID_TEST_VECTORS: &[TestVector] = &[
     TestVector {
         encoded: "A12UEL5L",
         hrp: "a",
-        bytes: &[]
+        bytes: &[],
+        upper_case: true
     },
     TestVector {
         encoded: "a12uel5l",
         hrp: "a",
-        bytes: &[]
+        bytes: &[],
+        upper_case: false
     },
     TestVector {
         encoded: "an83characterlonghumanreadablepartthatcontainsthenumber1andtheexcludedcharactersbio1tt5tgs",
         hrp: "an83characterlonghumanreadablepartthatcontainsthenumber1andtheexcludedcharactersbio",
-        bytes: &[]
+        bytes: &[],
+        upper_case: false
     },
     TestVector {
         hrp: "abcdef",
         bytes: &[0, 68, 50, 20, 199, 66, 84, 182, 53, 207, 132, 101, 58, 86, 215, 198, 117, 190, 119, 223],
         encoded: "abcdef1qpzry9x8gf2tvdw0s3jn54khce6mua7lmqqqxw",
+        upper_case: false
     },
     TestVector {
         encoded: "11qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqc8247j",
         hrp: "1",
-        bytes: &[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        bytes: &[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        upper_case: false
     },
     TestVector {
         encoded: "split1checkupstagehandshakeupstreamerranterredcaperred2y9e3w",
         hrp: "split",
-        bytes: &[197, 243, 139, 112, 48, 95, 81, 155, 246, 109, 133, 251, 108, 240, 48, 88, 243, 221, 228, 99, 236, 215, 145, 143, 45, 199, 67, 145, 143, 45]
+        bytes: &[197, 243, 139, 112, 48, 95, 81, 155, 246, 109, 133, 251, 108, 240, 48, 88, 243, 221, 228, 99, 236, 215, 145, 143, 45, 199, 67, 145, 143, 45],
+        upper_case: false
     },
     TestVector {
         encoded: "?1ezyfcl",
         hrp: "?",
-        bytes: &[]
+        bytes: &[],
+        upper_case: false
     },
 ];
 
@@ -67,8 +77,14 @@ fn encode_valid_test_vectors() {
 
 #[test]
 fn decode_valid_test_vectors() {
-    let bech32 = Bech32::default();
     for vector in VALID_TEST_VECTORS {
+        let bech32 = if vector.upper_case {
+            Bech32::upper_case()
+        } else {
+            Bech32::default()
+        };
+
+        println!("decoding vector: {:?}", vector.encoded);
         let (hrp, data) = bech32.decode(vector.encoded).unwrap();
         assert_eq!(hrp, vector.hrp.to_lowercase());
         assert_eq!(data, vector.bytes);
@@ -78,14 +94,8 @@ fn decode_valid_test_vectors() {
 #[test]
 fn hrp_character_out_of_range() {
     let bech32 = Bech32::default();
-    assert_eq!(
-        bech32.decode("\x201nwldj5"),
-        Err(Error::CharInvalid { char: '\x20' })
-    );
-    assert_eq!(
-        bech32.decode("\x7F1axkwrx"),
-        Err(Error::CharInvalid { char: '\x7F' })
-    );
+    assert_eq!(bech32.decode("\x201nwldj5"), Err(Error::EncodingInvalid));
+    assert_eq!(bech32.decode("\x7F1axkwrx"), Err(Error::EncodingInvalid));
 }
 
 #[test]
@@ -119,7 +129,7 @@ fn empty_hrp() {
 fn invalid_data_character() {
     assert_eq!(
         Bech32::default().decode("x1b4n0q5v"),
-        Err(Error::DataInvalid { byte: 98 })
+        Err(Error::EncodingInvalid)
     );
 }
 
@@ -135,14 +145,14 @@ fn checksum_too_short() {
 fn invalid_character_in_checksum() {
     assert_eq!(
         Bech32::default().decode("de1lg7wt\x7F"),
-        Err(Error::CharInvalid { char: '\x7F' })
+        Err(Error::EncodingInvalid)
     );
 }
 
 #[test]
 fn checksum_calculated_with_uppercase_hrp() {
     assert_eq!(
-        Bech32::default().decode("A1G7SGD8"),
+        Bech32::upper_case().decode("A1G7SGD8"),
         Err(Error::ChecksumInvalid)
     );
 }
@@ -152,6 +162,6 @@ fn checksum_calculated_with_uppercase_hrp() {
 fn invalid_mixed_case() {
     assert_eq!(
         Bech32::default().decode("a12UEL5L"),
-        Err(Error::CaseInvalid)
+        Err(Error::EncodingInvalid)
     );
 }
