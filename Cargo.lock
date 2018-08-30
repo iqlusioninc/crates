@@ -137,7 +137,7 @@ dependencies = [
 
 [[package]]
 name = "iq-bech32"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "clear_on_drop 0.2.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "failure 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)",

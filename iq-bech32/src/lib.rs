@@ -10,7 +10,7 @@
     unused_import_braces,
     unused_qualifications
 )]
-#![doc(html_root_url = "https://docs.rs/iq-bech32/0.1.0")]
+#![doc(html_root_url = "https://docs.rs/iq-bech32/0.1.1")]
 
 extern crate clear_on_drop;
 #[macro_use]
