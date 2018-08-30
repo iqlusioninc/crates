@@ -20,7 +20,7 @@ fn convert(data: &[u8], src_base: u32, dst_base: u32) -> Result<Vec<u8>, Error> 
         let v = u32::from(*value);
 
         if (v >> src_base) != 0 {
-            return Err(Error::DataInvalid { byte: v as u8 });
+            return Err(Error::EncodingInvalid);
         }
 
         acc = (acc << src_base) | v;
@@ -72,12 +72,9 @@ mod tests {
 
     #[test]
     fn decode_range_error() {
-        let out_of_range_byte: u8 = 33;
         assert_eq!(
-            Err(Error::DataInvalid {
-                byte: out_of_range_byte
-            }),
-            decode(EXAMPLE_DECODED)
+            Err(Error::EncodingInvalid),
+            decode(EXAMPLE_DECODED) // decode the already decoded data
         );
     }
 }
