@@ -113,9 +113,11 @@ impl Bech32 {
         result.push(self.separator);
 
         let checksum = Checksum::new(hrp.as_ref().as_bytes(), &base32_data);
+
         for byte in base32_data.iter().chain(checksum.as_ref().iter()) {
             let c = self
                 .charset
+                // TODO (constant time): avoid secret-dependent lookups
                 .get(*byte as usize)
                 .expect("out of range character for alphabet");
 
@@ -138,6 +140,7 @@ impl Bech32 {
             return Err(Error::LengthInvalid);
         }
 
+        // TODO (constant time): avoid secret-dependent branches when finding separator
         let pos = encoded_str
             .rfind(self.separator)
             .ok_or_else(|| Error::SeparatorMissing)?;
@@ -171,6 +174,7 @@ impl Bech32 {
         for encoded_byte in encoded_data.bytes() {
             let decoded_byte = self
                 .charset_inverse
+                // TODO (constant time): avoid secret-dependent lookups
                 .get(encoded_byte as usize)
                 .and_then(|byte| *byte)
                 .ok_or_else(|| Error::EncodingInvalid)?;

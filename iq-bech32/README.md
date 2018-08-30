@@ -2,8 +2,8 @@
 
 [![Crate][crate-image]][crate-link]
 [![Docs][docs-image]][docs-link]
-[![Build Status][build-image]][build-link]
 [![Apache 2.0 Licensed][license-image]][license-link]
+[![Build Status][build-image]][build-link]
 
 [crate-image]: https://img.shields.io/crates/v/iq-bech32.svg
 [crate-link]: https://crates.io/crates/iq-bech32

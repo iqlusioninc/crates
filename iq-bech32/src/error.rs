@@ -5,7 +5,7 @@ pub enum Error {
     #[fail(display = "checksum mismatch")]
     ChecksumInvalid,
 
-    /// Data is not valid
+    /// Encoding error (e.g. invalid character or data)
     #[fail(display = "bad encoding")]
     EncodingInvalid,
 
