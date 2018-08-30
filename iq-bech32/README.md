@@ -17,7 +17,7 @@
 Rust crate for encoding/decoding **Bech32** ([BIP-173]): a human-friendly base32
 encoding for binary data intended for use with cryptographic keys.
 
-[Documentation][https://docs.rs/iq-bech32/]
+[Documentation]
 
 ## What is Bech32?
 
@@ -54,4 +54,5 @@ The **iq-bech32** crate is distributed under the terms of the Apache License
 See [LICENSE] file in the `iqlusioninc/crates` toplevel directory for more
 information.
 
+[Documentation]: https://docs.rs/iq-bech32/
 [LICENSE]: https://github.com/iqlusioninc/crates/blob/master/LICENSE
