@@ -3,12 +3,12 @@ version: 2
 jobs:
   build:
     docker:
-      - image: iqlusion/rust-ci:20180905.1 # bump cache keys when modifying this
+      - image: iqlusion/rust-ci:20180905.2 # bump cache keys when modifying this
 
     steps:
       - checkout
       - restore_cache:
-          key: cache-20180905.1 # bump save_cache key below too
+          key: cache-20180905.2 # bump save_cache key below too
       - run:
           name: rustfmt
           command: |
@@ -50,7 +50,7 @@ jobs:
             cargo audit --version
             cargo audit
       - save_cache:
-          key: 20180905.1 # bump restore_cache key above too
+          key: 20180905.2 # bump restore_cache key above too
           paths:
             - "~/.cargo"
             - "./target"

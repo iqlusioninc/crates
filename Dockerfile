@@ -7,7 +7,8 @@ FROM centos:7.5.1804
 # Install/update RPMs
 RUN yum update -y && \
     yum groupinstall -y "Development Tools" && \
-    yum install -y centos-release-scl cmake epel-release libusbx openssl-devel rpm-devel xz-devel && \
+    yum install -y centos-release-scl cmake epel-release libusbx-devel \
+                   openssl-devel rpm-devel xz-devel && \
     yum install -y --enablerepo=epel libsodium-devel && \
     yum install -y --enablerepo=centos-sclo-rh llvm-toolset-7 && \
     yum clean all && \
