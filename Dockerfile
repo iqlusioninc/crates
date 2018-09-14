@@ -41,18 +41,10 @@ RUN curl -O https://storage.googleapis.com/iqlusion-prod-artifacts/rust/$RUSTUP_
     bash -l -c "echo $(rustc --print sysroot)/lib >> /etc/ld.so.conf" && \
     ldconfig
 
-# Rust nightly version to install
-ENV RUST_NIGHTLY_VERSION "nightly-2018-09-05"
-
-# Install Rust nightly
-RUN rustup install $RUST_NIGHTLY_VERSION
-
 # Install rustfmt, clippy, and additional crates
-RUN rustup default $RUST_NIGHTLY_VERSION && \
-    rustup update && \
+RUN rustup update && \
     rustup component add rustfmt-preview && \
     rustup component add clippy-preview && \
-    rustup default stable && \
     cargo install cargo-audit --vers "0.5.2"
 
 # Configure Rust environment variables
