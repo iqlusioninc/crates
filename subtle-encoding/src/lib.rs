@@ -22,11 +22,15 @@
 #[macro_use]
 extern crate std;
 
-#[macro_use]
 extern crate failure;
+#[macro_use]
+extern crate failure_derive;
+
+#[macro_use]
+mod error;
 
 mod encoding;
-mod error;
+mod identity;
 mod prelude;
 
-pub use self::{encoding::Encoding, error::Error};
+pub use self::{encoding::Encoding, error::Error, identity::*};

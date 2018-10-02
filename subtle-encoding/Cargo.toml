@@ -17,6 +17,7 @@ keywords    = ["constant-time", "keys", "secrets", "security"]
 
 [dependencies]
 failure = "0.1"
+failure_derive = "0.1"
 
 [features]
 default = ["std"]
