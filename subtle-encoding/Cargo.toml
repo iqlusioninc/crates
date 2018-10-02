@@ -1,0 +1,19 @@
+[package]
+name        = "subtle-encoding"
+description = """
+              Encoders and decoders for common data encodings (WIP) which avoid
+              branching or performing table lookups based on their inputs
+              (a.k.a. constant time-ish). Useful for encoding/decoding secret
+              values such as cryptographic keys.
+              """
+version     = "0.0.0" # Also update html_root_url in lib.rs when bumping this
+authors     = ["Tony Arcieri <tony@iqlusion.io>"]
+license     = "Apache-2.0 OR MIT"
+homepage    = "https://github.com/iqlusioninc/crates/"
+repository  = "https://github.com/iqlusioninc/crates/tree/master/subtle-encoding"
+readme      = "README.md"
+categories  = ["cryptography", "encoding", "no-std"]
+keywords    = ["constant-time", "keys", "secrets", "security"]
+
+[badges]
+circle-ci = { repository = "iqlusioninc/crates" }

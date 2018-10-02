@@ -3,5 +3,7 @@ members = [
     "canonical-path",
     "iq-bech32",
     "tai64",
-    "zeroize"
+    "subtle-encoding",
+    "tai64",
+    "zeroize",
 ]
