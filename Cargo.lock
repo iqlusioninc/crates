@@ -277,6 +277,9 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 [[package]]
 name = "subtle-encoding"
 version = "0.0.0"
+dependencies = [
+ "failure 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)",
+]
 
 [[package]]
 name = "syn"

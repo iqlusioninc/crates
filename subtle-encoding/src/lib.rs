@@ -4,6 +4,11 @@
 
 #![crate_name = "subtle_encoding"]
 #![crate_type = "rlib"]
+#![no_std]
+#![cfg_attr(
+    all(feature = "nightly", not(feature = "std")),
+    feature(alloc)
+)]
 #![deny(
     warnings,
     missing_docs,
@@ -12,3 +17,16 @@
 )]
 #![forbid(unsafe_code)]
 #![doc(html_root_url = "https://docs.rs/subtle-encoding/0.0.0")]
+
+#[cfg(any(feature = "std", test))]
+#[macro_use]
+extern crate std;
+
+#[macro_use]
+extern crate failure;
+
+mod encoding;
+mod error;
+mod prelude;
+
+pub use self::{encoding::Encoding, error::Error};

@@ -15,5 +15,13 @@ readme      = "README.md"
 categories  = ["cryptography", "encoding", "no-std"]
 keywords    = ["constant-time", "keys", "secrets", "security"]
 
+[dependencies]
+failure = "0.1"
+
+[features]
+default = ["std"]
+alloc = []
+std = ["alloc"]
+
 [badges]
 circle-ci = { repository = "iqlusioninc/crates" }
