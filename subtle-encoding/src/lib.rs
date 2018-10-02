@@ -1,6 +1,6 @@
-//! Encoders and decoders for common data encodings (WIP) which avoid
+//! Encoders and decoders for common data encodings (hex, identity) which avoid
 //! branching or performing table lookups based on their inputs
-//! (a.k.a. constant time-ish).
+//! (a.k.a. "constant time-ish").
 
 #![crate_name = "subtle_encoding"]
 #![crate_type = "rlib"]
@@ -28,9 +28,17 @@ extern crate failure_derive;
 
 #[macro_use]
 mod error;
+#[macro_use]
+mod macros;
 
 mod encoding;
+#[cfg(feature = "hex")]
+mod hex;
 mod identity;
 mod prelude;
 
-pub use self::{encoding::Encoding, error::Error, identity::*};
+pub use encoding::Encoding;
+pub use error::Error;
+#[cfg(feature = "hex")]
+pub use hex::*;
+pub use identity::*;

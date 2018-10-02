@@ -12,22 +12,22 @@ pub const IDENTITY: &Identity = &Identity {};
 
 impl Encoding for Identity {
     fn encode_to_slice(&self, src: &[u8], dst: &mut [u8]) -> Result<usize, Error> {
-        ensure!(self.encoded_length(src) == dst.len(), LengthInvalid);
+        ensure!(self.encoded_len(src) == dst.len(), LengthInvalid);
         dst.copy_from_slice(src);
         Ok(src.len())
     }
 
-    fn encoded_length(&self, bytes: &[u8]) -> usize {
+    fn encoded_len(&self, bytes: &[u8]) -> usize {
         bytes.len()
     }
 
     fn decode_to_slice(&self, src: &[u8], dst: &mut [u8]) -> Result<usize, Error> {
-        ensure!(self.decoded_length(src)? == dst.len(), LengthInvalid);
+        ensure!(self.decoded_len(src)? == dst.len(), LengthInvalid);
         dst.copy_from_slice(src);
         Ok(src.len())
     }
 
-    fn decoded_length(&self, bytes: &[u8]) -> Result<usize, Error> {
+    fn decoded_len(&self, bytes: &[u8]) -> Result<usize, Error> {
         Ok(bytes.len())
     }
 }

@@ -13,9 +13,11 @@
 [build-image]: https://circleci.com/gh/iqlusioninc/crates.svg?style=shield
 [build-link]: https://circleci.com/gh/iqlusioninc/crates
 
-Rust crate for encoding/decoding binary data in (TBD) formats which avoids
-data-dependent branching/table lookups. Useful for encoding/decoding secret
-values such as cryptographic keys.
+Rust crate for encoding/decoding binary data to/from **hex** and **identity**
+encodings while avoiding data-dependent branching/table lookups, and therefore
+providing "best effort" constant-time operation.
+
+Useful for encoding/decoding secret values such as cryptographic keys.
 
 [Documentation]
 
