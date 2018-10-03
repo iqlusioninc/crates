@@ -9,13 +9,24 @@ use super::{
     Encoding,
     Error::{self, EncodingInvalid, LengthInvalid},
 };
+#[cfg(feature = "alloc")]
+use prelude::*;
 
 /// Hexadecimal `Encoding` (a.k.a. Base16)
 #[derive(Copy, Clone, Debug, Default, Eq, Hash, PartialEq, PartialOrd, Ord)]
 pub struct Hex {}
 
-/// Constant `Hex` encoding that can be used in lieu of calling `default()`
-pub const HEX: &Hex = &Hex {};
+/// Encode the given data as hexadecimal, returning a `Vec<u8>`
+#[cfg(feature = "alloc")]
+pub fn encode<B: AsRef<[u8]>>(bytes: B) -> Vec<u8> {
+    Hex::default().encode(bytes)
+}
+
+/// Decode the given data from hexadecimal, returning a `Vec<u8>`
+#[cfg(feature = "alloc")]
+pub fn decode<B: AsRef<[u8]>>(encoded_bytes: B) -> Result<Vec<u8>, Error> {
+    Hex::default().decode(encoded_bytes)
+}
 
 impl Encoding for Hex {
     fn encode_to_slice(&self, src: &[u8], dst: &mut [u8]) -> Result<usize, Error> {
@@ -145,7 +156,9 @@ mod tests {
         for vector in HEX_TEST_VECTORS {
             // 10 is the size of the largest encoded test vector
             let mut out = [0u8; 10];
-            let out_len = HEX.encode_to_slice(vector.raw, &mut out).unwrap();
+            let out_len = Hex::default()
+                .encode_to_slice(vector.raw, &mut out)
+                .unwrap();
             assert_eq!(vector.hex, &out[..out_len]);
         }
     }
@@ -155,7 +168,9 @@ mod tests {
         for vector in HEX_TEST_VECTORS {
             // 5 is the size of the largest decoded test vector
             let mut out = [0u8; 5];
-            let out_len = HEX.decode_to_slice(vector.hex, &mut out).unwrap();
+            let out_len = Hex::default()
+                .decode_to_slice(vector.hex, &mut out)
+                .unwrap();
             assert_eq!(vector.raw, &out[..out_len]);
         }
     }
@@ -165,7 +180,10 @@ mod tests {
         let mut out = [0u8; 3];
         assert_eq!(
             LengthInvalid,
-            HEX.decode_to_slice(b"12345", &mut out).err().unwrap(),
+            Hex::default()
+                .decode_to_slice(b"12345", &mut out)
+                .err()
+                .unwrap(),
         )
     }
 }

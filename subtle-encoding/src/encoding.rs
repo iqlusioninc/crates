@@ -1,3 +1,5 @@
+//! The `Encoding` trait: common operations across all encoders
+
 use super::Error;
 use prelude::*;
 

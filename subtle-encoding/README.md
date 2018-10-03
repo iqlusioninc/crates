@@ -2,28 +2,25 @@
 
 [![Crate][crate-image]][crate-link]
 [![Docs][docs-image]][docs-link]
-![MIT/Apache 2.0 Licensed][license-image]
+![Apache 2.0/MIT Licensed][license-image]
 [![Build Status][build-image]][build-link]
+<img src="https://rustsec.org/assets/img/badges/unsafe/forbidden.svg" height="20" alt="unsafe: forbidden">
 
 [crate-image]: https://img.shields.io/crates/v/subtle-encoding.svg
 [crate-link]: https://crates.io/crates/subtle-encoding
 [docs-image]: https://docs.rs/subtle-encoding/badge.svg
 [docs-link]: https://docs.rs/subtle-encoding/
-[license-image]: https://img.shields.io/badge/license-MIT/Apache2.0-blue.svg
+[license-image]: https://img.shields.io/badge/license-Apache2.0/MIT-blue.svg
 [build-image]: https://circleci.com/gh/iqlusioninc/crates.svg?style=shield
 [build-link]: https://circleci.com/gh/iqlusioninc/crates
 
-Rust crate for encoding/decoding binary data to/from **hex** and **identity**
+Rust crate for encoding/decoding binary data to/from **base64** and **hex**
 encodings while avoiding data-dependent branching/table lookups, and therefore
 providing "best effort" constant-time operation.
 
 Useful for encoding/decoding secret values such as cryptographic keys.
 
 [Documentation]
-
-## Status
-
-Not ready to use.
 
 ## Security Notice
 

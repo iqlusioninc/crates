@@ -1,3 +1,5 @@
+//! Identity `Encoding`: output is identical to input
+
 use super::{
     Encoding,
     Error::{self, LengthInvalid},

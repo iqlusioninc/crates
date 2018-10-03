@@ -30,6 +30,8 @@ This repository contains the following crates:
 * [iq-bech32:](https://github.com/iqlusioninc/crates/tree/master/iq-bech32)
   Bech32 (BIP-173) human-friendly base32 encoding for binary data intended for
   use with cryptographic keys.
+* [subtle-encoding:](https://github.com/iqlusioninc/crates/tree/master/subtle-encoding)
+  Base64 and hexadecimal encoder/decoder with "constant time-ish" implementation.
 * [tai64:](https://github.com/iqlusioninc/crates/tree/master/tai64)
   TAI64(N) timestamp format (Temps Atomique International).
 * [zeroize:](https://github.com/iqlusioninc/crates/tree/master/zeroize)

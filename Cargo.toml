@@ -5,5 +5,5 @@ members = [
     "tai64",
     "subtle-encoding",
     "tai64",
-    "zeroize",
+    "zeroize"
 ]
