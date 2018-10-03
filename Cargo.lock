@@ -397,7 +397,7 @@ dependencies = [
 
 [[package]]
 name = "zeroize"
-version = "0.0.0"
+version = "0.1.0"
 dependencies = [
  "cc 1.0.25 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
