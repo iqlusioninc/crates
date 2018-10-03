@@ -48,10 +48,14 @@ platform (and even most of tier 3!). See below for compatiblity.
 This crate provides wrappers for the following intrinsics:
 
 - `stable` rust: OS intrinsics
-  - [explicit_bzero()]: Linux<sup>‡</sup>, FreeBSD, OpenBSD, DragonflyBSD
-  - [explicit_memset()]: NetBSD
-  - [memset_s()]: Mac OS X/iOS, Solaris
-  - [SecureZeroMemroy()]: Windows
+  - [explicit_bzero():](http://man7.org/linux/man-pages/man3/bzero.3.html)
+    Linux<sup>‡</sup>, FreeBSD, OpenBSD, DragonflyBSD
+  - [explicit_memset():](http://netbsd.gw.com/cgi-bin/man-cgi?explicit_memset+3.i386+NetBSD-8.0)
+    NetBSD
+  - [memset_s():](https://www.unix.com/man-page/osx/3/memset_s/)
+    Mac OS X/iOS, Solaris
+  - [SecureZeroMemory():](https://msdn.microsoft.com/en-us/library/windows/desktop/aa366877(v=vs.85).aspx)
+    Windows
 - `nightly` rust: [volatile_set_memory()] (all platforms)
 
 Notable unsupported platforms at present: Fuchsia, Redox. PRs accepted!
@@ -139,9 +143,6 @@ without any additional terms or conditions.
 [zeroize]: https://en.wikipedia.org/wiki/Zeroisation
 [Documentation]: https://docs.rs/zeroize/
 [Zeroing memory securely is hard]: http://www.daemonology.net/blog/2014-09-04-how-to-zero-a-buffer.html
-[explicit_bzero()]: http://man7.org/linux/man-pages/man3/bzero.3.html
-[explicit_memset()]: http://netbsd.gw.com/cgi-bin/man-cgi?explicit_memset+3.i386+NetBSD-8.0
-[memset_s()]: https://www.unix.com/man-page/osx/3/memset_s/
 [SecureZeroMemory()]: https://msdn.microsoft.com/en-us/library/windows/desktop/aa366877(v=vs.85).aspx
 [volatile_set_memory()]: https://doc.rust-lang.org/std/intrinsics/fn.volatile_set_memory.html
 [pin]: https://github.com/rust-lang/rfcs/blob/master/text/2349-pin.md
