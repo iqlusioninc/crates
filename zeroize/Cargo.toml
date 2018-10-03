@@ -1,7 +1,7 @@
 [package]
 name        = "zeroize"
 description = """
-              (Alpha quality preview) Securely zero out memory while avoiding
+              (Alpha quality preview) Securely zero memory while avoiding
               compiler optimizations: unified 'secure_zero_memory()' wrapper for
               secure intrinsic functions for zeroing memory, using FFI to
               invoke OS intrinsics on stable (with support for Linux, Windows,
@@ -16,7 +16,7 @@ license     = "Apache-2.0 OR MIT"
 homepage    = "https://github.com/iqlusioninc/crates/"
 repository  = "https://github.com/iqlusioninc/crates/tree/master/zeroize"
 readme      = "README.md"
-categories  = ["cryptography", "no-std"]
+categories  = ["cryptography", "memory-management", "no-std", "os"]
 keywords    = ["memory", "memset", "secure", "volatile", "zero"]
 
 [features]
