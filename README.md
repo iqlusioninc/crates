@@ -31,7 +31,9 @@ This repository contains the following crates:
   Bech32 (BIP-173) human-friendly base32 encoding for binary data intended for
   use with cryptographic keys.
 * [tai64:](https://github.com/iqlusioninc/crates/tree/master/tai64)
-  TAI64(N) timestamp format (Temps Atomique International)
+  TAI64(N) timestamp format (Temps Atomique International).
+* [zeroize:](https://github.com/iqlusioninc/crates/tree/master/zeroize)
+   Securely zero memory while avoiding compiler optimizations.
 
 ## License
 
