@@ -16,16 +16,22 @@ use prelude::*;
 #[derive(Copy, Clone, Debug, Default, Eq, Hash, PartialEq, PartialOrd, Ord)]
 pub struct Hex {}
 
+/// Return a default `Hex` encoder
+#[inline]
+pub fn encoder() -> Hex {
+    Hex::default()
+}
+
 /// Encode the given data as hexadecimal, returning a `Vec<u8>`
 #[cfg(feature = "alloc")]
 pub fn encode<B: AsRef<[u8]>>(bytes: B) -> Vec<u8> {
-    Hex::default().encode(bytes)
+    encoder().encode(bytes)
 }
 
 /// Decode the given data from hexadecimal, returning a `Vec<u8>`
 #[cfg(feature = "alloc")]
 pub fn decode<B: AsRef<[u8]>>(encoded_bytes: B) -> Result<Vec<u8>, Error> {
-    Hex::default().decode(encoded_bytes)
+    encoder().decode(encoded_bytes)
 }
 
 impl Encoding for Hex {
@@ -156,9 +162,8 @@ mod tests {
         for vector in HEX_TEST_VECTORS {
             // 10 is the size of the largest encoded test vector
             let mut out = [0u8; 10];
-            let out_len = Hex::default()
-                .encode_to_slice(vector.raw, &mut out)
-                .unwrap();
+            let out_len = encoder().encode_to_slice(vector.raw, &mut out).unwrap();
+
             assert_eq!(vector.hex, &out[..out_len]);
         }
     }
@@ -168,22 +173,32 @@ mod tests {
         for vector in HEX_TEST_VECTORS {
             // 5 is the size of the largest decoded test vector
             let mut out = [0u8; 5];
-            let out_len = Hex::default()
-                .decode_to_slice(vector.hex, &mut out)
-                .unwrap();
+            let out_len = encoder().decode_to_slice(vector.hex, &mut out).unwrap();
+
             assert_eq!(vector.raw, &out[..out_len]);
         }
     }
 
     #[test]
-    fn decode_odd_size_input() {
+    fn reject_odd_size_input() {
         let mut out = [0u8; 3];
         assert_eq!(
             LengthInvalid,
-            Hex::default()
-                .decode_to_slice(b"12345", &mut out)
-                .err()
-                .unwrap(),
+            encoder().decode_to_slice(b"12345", &mut out).err().unwrap(),
         )
+    }
+
+    #[test]
+    fn encode_and_decode_various_lengths() {
+        let data = [b'X'; 64];
+
+        for i in 0..data.len() {
+            let encoded = encoder().encode(&data[..i]);
+
+            // Make sure it round trips
+            let decoded = encoder().decode(encoded).unwrap();
+
+            assert_eq!(decoded.as_slice(), &data[..i]);
+        }
     }
 }

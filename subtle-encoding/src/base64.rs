@@ -19,16 +19,22 @@ use zeroize::secure_zero_memory;
 #[derive(Copy, Clone, Debug, Default, Eq, Hash, PartialEq, PartialOrd, Ord)]
 pub struct Base64 {}
 
+/// Return a `Base64` encoder
+#[inline]
+pub fn encoder() -> Base64 {
+    Base64::default()
+}
+
 /// Encode the given data as Base64, returning a `Vec<u8>`
 #[cfg(feature = "alloc")]
 pub fn encode<B: AsRef<[u8]>>(bytes: B) -> Vec<u8> {
-    Base64::default().encode(bytes)
+    encoder().encode(bytes)
 }
 
 /// Decode the given data from Base64, returning a `Vec<u8>`
 #[cfg(feature = "alloc")]
 pub fn decode<B: AsRef<[u8]>>(encoded_bytes: B) -> Result<Vec<u8>, Error> {
-    Base64::default().decode(encoded_bytes)
+    encoder().decode(encoded_bytes)
 }
 
 impl Encoding for Base64 {
@@ -259,13 +265,11 @@ mod tests {
     #[test]
     fn encode_test_vectors() {
         for vector in BASE64_TEST_VECTORS {
-            let base64 = Base64::default();
-
             // 8 is the size of the largest encoded test vector
             let mut out = [0u8; 8];
-            let out_len = base64.encode_to_slice(vector.raw, &mut out).unwrap();
+            let out_len = encoder().encode_to_slice(vector.raw, &mut out).unwrap();
 
-            assert_eq!(base64.encoded_len(vector.raw), out_len);
+            assert_eq!(encoder().encoded_len(vector.raw), out_len);
             assert_eq!(vector.base64, &out[..out_len]);
         }
     }
@@ -273,14 +277,26 @@ mod tests {
     #[test]
     fn decode_test_vectors() {
         for vector in BASE64_TEST_VECTORS {
-            let base64 = Base64::default();
-
             // 5 is the size of the largest decoded test vector
             let mut out = [0u8; 5];
-            let out_len = base64.decode_to_slice(vector.base64, &mut out).unwrap();
+            let out_len = encoder().decode_to_slice(vector.base64, &mut out).unwrap();
 
-            assert_eq!(base64.decoded_len(vector.base64).unwrap(), out_len);
+            assert_eq!(encoder().decoded_len(vector.base64).unwrap(), out_len);
             assert_eq!(vector.raw, &out[..out_len]);
+        }
+    }
+
+    #[test]
+    fn encode_and_decode_various_lengths() {
+        let data = [b'X'; 64];
+
+        for i in 0..data.len() {
+            let encoded = encoder().encode(&data[..i]);
+
+            // Make sure it round trips
+            let decoded = encoder().decode(encoded).unwrap();
+
+            assert_eq!(decoded.as_slice(), &data[..i]);
         }
     }
 }
