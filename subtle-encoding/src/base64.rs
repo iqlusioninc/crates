@@ -66,8 +66,8 @@ impl Encoding for Base64 {
         Ok(dst_offset)
     }
 
-    fn encoded_len(&self, _bytes: &[u8]) -> usize {
-        panic!("unimplemented");
+    fn encoded_len(&self, bytes: &[u8]) -> usize {
+        add!(div!(mul!(bytes.len(), 4), 3), 3) & !3
     }
 
     fn decode_to_slice(&self, src: &[u8], dst: &mut [u8]) -> Result<usize, Error> {
@@ -92,6 +92,7 @@ impl Encoding for Base64 {
             let mut tmp_out = [0u8; 3];
             let mut tmp_in = [b'A'; 4];
 
+            // TODO: data-dependent!
             while i < src_length && src[add!(src_offset, i)] != b'=' {
                 tmp_in[i] = src[add!(src_offset, i)];
                 i = add!(i, 1);
@@ -118,8 +119,21 @@ impl Encoding for Base64 {
         }
     }
 
-    fn decoded_len(&self, _bytes: &[u8]) -> Result<usize, Error> {
-        panic!("unimplemented");
+    fn decoded_len(&self, bytes: &[u8]) -> Result<usize, Error> {
+        if bytes.is_empty() {
+            return Ok(0);
+        }
+
+        let mut i = sub!(bytes.len(), 1);
+        let mut pad_count: usize = 0;
+
+        // TODO: data-dependent!
+        while i > 0 && bytes[i] == b'=' {
+            pad_count = add!(pad_count, 1);
+            i = sub!(i, 1);
+        }
+
+        Ok(div!(mul!(sub!(bytes.len(), pad_count), 3), 4))
     }
 }
 
@@ -245,11 +259,13 @@ mod tests {
     #[test]
     fn encode_test_vectors() {
         for vector in BASE64_TEST_VECTORS {
+            let base64 = Base64::default();
+
             // 8 is the size of the largest encoded test vector
             let mut out = [0u8; 8];
-            let out_len = Base64::default()
-                .encode_to_slice(vector.raw, &mut out)
-                .unwrap();
+            let out_len = base64.encode_to_slice(vector.raw, &mut out).unwrap();
+
+            assert_eq!(base64.encoded_len(vector.raw), out_len);
             assert_eq!(vector.base64, &out[..out_len]);
         }
     }
@@ -257,11 +273,13 @@ mod tests {
     #[test]
     fn decode_test_vectors() {
         for vector in BASE64_TEST_VECTORS {
+            let base64 = Base64::default();
+
             // 5 is the size of the largest decoded test vector
             let mut out = [0u8; 5];
-            let out_len = Base64::default()
-                .decode_to_slice(vector.base64, &mut out)
-                .unwrap();
+            let out_len = base64.decode_to_slice(vector.base64, &mut out).unwrap();
+
+            assert_eq!(base64.decoded_len(vector.base64).unwrap(), out_len);
             assert_eq!(vector.raw, &out[..out_len]);
         }
     }
