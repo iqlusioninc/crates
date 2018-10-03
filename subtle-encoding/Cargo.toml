@@ -1,0 +1,32 @@
+[package]
+name        = "subtle-encoding"
+description = """
+              Encoders and decoders for common data encodings (base64, hex)
+              which avoid data-dependent branching/table lookups and therefore
+              provide "best effort" constant time. Useful for encoding/decoding
+              secret values such as cryptographic keys.
+              """
+version     = "0.0.0" # Also update html_root_url in lib.rs when bumping this
+authors     = ["Tony Arcieri <tony@iqlusion.io>"]
+license     = "Apache-2.0 OR MIT"
+homepage    = "https://github.com/iqlusioninc/crates/"
+repository  = "https://github.com/iqlusioninc/crates/tree/master/subtle-encoding"
+readme      = "README.md"
+categories  = ["cryptography", "encoding", "no-std"]
+keywords    = ["base64", "constant-time", "hex", "secrets", "security"]
+
+[dependencies]
+failure = "0.1"
+failure_derive = "0.1"
+zeroize = { version = "0.1", optional = true }
+
+[features]
+default = ["base64", "hex", "std"]
+alloc = []
+base64 = ["zeroize"]
+hex = []
+nightly = []
+std = ["alloc", "zeroize"]
+
+[badges]
+circle-ci = { repository = "iqlusioninc/crates" }
