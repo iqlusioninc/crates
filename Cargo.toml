@@ -2,5 +2,6 @@
 members = [
     "canonical-path",
     "iq-bech32",
-    "tai64"
+    "tai64",
+    "zeroize"
 ]

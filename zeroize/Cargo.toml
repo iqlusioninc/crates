@@ -1,0 +1,32 @@
+[package]
+name        = "zeroize"
+description = """
+              (Alpha quality preview) Securely zero out memory while avoiding
+              compiler optimizations: unified 'secure_zero_memory()' wrapper for
+              secure intrinsic functions for zeroing memory, using FFI to
+              invoke OS intrinsics on stable (with support for Linux, Windows,
+              OS X/iOS, FreeBSD, OpenBSD, NetBSD, DragonflyBSD), or the
+              unstable 'volatile_set_memory()` intrinsic on nightly.
+              No insecure fallbacks, no dependencies, no std, no functionality
+              besides securely zeroing memory.
+              """
+version     = "0.0.0" # Also update html_root_url in lib.rs when bumping this
+authors     = ["Tony Arcieri <tony@iqlusion.io>"]
+license     = "Apache-2.0 OR MIT"
+homepage    = "https://github.com/iqlusioninc/crates/"
+repository  = "https://github.com/iqlusioninc/crates/tree/master/zeroize"
+readme      = "README.md"
+categories  = ["cryptography", "no-std"]
+keywords    = ["memory", "memset", "secure", "volatile", "zero"]
+
+[features]
+default = ["linux-backport", "windows"]
+linux-backport = ["cc"] # backport of 'explicit_bzero' (C code) for glibc <2.25
+nightly = []
+windows = ["cc"]
+
+[build-dependencies]
+cc = { version = "1", optional = true }
+
+[badges]
+circle-ci = { repository = "iqlusioninc/crates" }
