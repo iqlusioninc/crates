@@ -12,7 +12,7 @@
     unused_import_braces,
     unused_qualifications
 )]
-#![doc(html_root_url = "https://docs.rs/canonical-path/0.1.1")]
+#![doc(html_root_url = "https://docs.rs/canonical-path/1.0.0")]
 
 use std::borrow::Borrow;
 use std::env;
