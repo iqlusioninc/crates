@@ -1,6 +1,7 @@
 [workspace]
 members = [
     "canonical-path",
+    "gaunt",
     "subtle-encoding",
     "tai64",
     "zeroize"

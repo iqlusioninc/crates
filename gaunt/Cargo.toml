@@ -1,0 +1,18 @@
+[package]
+name        = "gaunt"
+description = """
+              High-level, self-contained, minimalist HTTP toolkit built on top
+              of the `http` crate and `std`. Suitable for use in constrainted
+              environments where `mio` and `futures` are not (yet) available.
+              """
+version     = "0.0.0"
+license     = "Apache-2.0"
+authors     = ["Tony Arcieri <tony@iqlusion.io>"]
+homepage    = "https://github.com/iqlusioninc/crates/"
+readme      = "README.md"
+
+[badges]
+circle-ci = { repository = "iqlusioninc/crates" }
+
+[dependencies]
+http = "0.1"
