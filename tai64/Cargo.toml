@@ -1,8 +1,8 @@
 [package]
 name        = "tai64"
 description = "TAI64 and TAI64N (i.e. Temps Atomique International) timestamp support for Rust"
-version     = "0.2.3" # Also update html_root_url in lib.rs when bumping this
-authors     = ["sopium <sopium@mysterious.site>", "Tony Arcieri <tony@iqlusion.io>"]
+version     = "1.0.0" # Also update html_root_url in lib.rs when bumping this
+authors     = ["Tony Arcieri <tony@iqlusion.io>", "sopium <sopium@mysterious.site>"]
 license     = "Apache-2.0"
 homepage    = "https://github.com/iqlusioninc/crates/"
 repository  = "https://github.com/iqlusioninc/crates/tree/master/tai64"
