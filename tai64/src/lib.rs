@@ -1,9 +1,4 @@
 //! TAI64(N) timestamp generation, parsing and calculation.
-//!
-//! # Limitations
-//!
-//! Does not handle leap seconds. But libtai does not either. So we
-//! should interoperate just fine 😣.
 
 #![crate_name = "tai64"]
 #![crate_type = "rlib"]
@@ -15,7 +10,7 @@
     unused_import_braces,
     unused_qualifications
 )]
-#![doc(html_root_url = "https://docs.rs/tai64/0.2.3")]
+#![doc(html_root_url = "https://docs.rs/tai64/1.0.0")]
 
 extern crate byteorder;
 #[cfg(feature = "chrono")]

@@ -1,3 +1,7 @@
+## 1.0.0 (2018-10-03)
+
+* Initial 1.0 release.
+
 ## 0.2.3 (2018-04-14)
 
 * Fix CI badge location (for crates.io)
