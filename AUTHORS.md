@@ -14,3 +14,4 @@ contributions under the terms of the [Apache License, Version 2.0]
 * David Tolnay ([@dtolnay](https://github.com/dtolnay))
 * Murarth ([@murarth](https://github.com/murarth))
 * Yin Guanhao ([@sopium](https://github.com/sopium))
+* Will Speak ([@iwillspeak](https://github.com/iwillspeak))
