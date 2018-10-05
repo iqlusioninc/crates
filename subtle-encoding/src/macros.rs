@@ -1,7 +1,7 @@
 //! Macros which provide abort-on-overflow/underflow semantics.
 // TODO: replace this with an `AbortOnOverflow<T>` type?
 
-#![allow(unused_macros)]
+#![allow(dead_code, unused_macros)]
 
 /// Message to abort with on overflow
 pub(crate) const OVERFLOW_MSG: &str = "overflow";

@@ -6,12 +6,13 @@ use std::{
     io::{Read, Write},
     path::Path,
 };
-#[cfg(unix)]
+#[cfg(all(unix, feature = "std"))]
 use std::{fs::OpenOptions, os::unix::fs::OpenOptionsExt};
 #[cfg(feature = "std")]
 use zeroize::secure_zero_memory;
 
 use super::Error;
+#[allow(unused_imports)]
 use prelude::*;
 
 /// Mode to use for newly created files
@@ -127,6 +128,7 @@ pub trait Encoding: Send + Sync {
 
     /// Decode the given string-alike type with this `Encoding`, returning the
     /// decoded value or a `Error`.
+    #[cfg(feature = "std")]
     fn decode_from_str<S: AsRef<str>>(&self, encoded: S) -> Result<Vec<u8>, Error> {
         self.decode(encoded.as_ref().as_bytes())
     }
