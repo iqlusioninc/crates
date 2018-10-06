@@ -53,7 +53,7 @@ This crate provides wrappers for the following intrinsics:
   - [explicit_memset():](http://netbsd.gw.com/cgi-bin/man-cgi?explicit_memset+3.i386+NetBSD-8.0)
     NetBSD
   - [memset_s():](https://www.unix.com/man-page/osx/3/memset_s/)
-    Mac OS X/iOS, Solaris
+    macOS/iOS, Solaris
   - [SecureZeroMemory():](https://msdn.microsoft.com/en-us/library/windows/desktop/aa366877(v=vs.85).aspx)
     Windows
 - `nightly` rust: [volatile_set_memory()] (all platforms)
