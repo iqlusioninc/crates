@@ -1,4 +1,8 @@
-## 0.2.0  (2018-10-08)
+## 0.2.1 (2018-10-09)
+
+- Re-export `IDENTITY` from the crate root
+
+## 0.2.0 (2018-10-08)
 
 - hex: support for encoding/decoding upper case
 
