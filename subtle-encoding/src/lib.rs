@@ -47,4 +47,4 @@ pub use encoding::Encoding;
 pub use error::Error;
 #[cfg(feature = "hex")]
 pub use hex::Hex;
-pub use identity::Identity;
+pub use identity::{Identity, IDENTITY};
