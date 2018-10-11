@@ -1,3 +1,8 @@
+## 0.2.0 (2018-10-11)
+
+- [#101](https://github.com/iqlusioninc/crates/pull/101)
+  Add 'Zeroize' trait.
+
 ## 0.1.2 (2018-10-03)
 
 - [#86](https://github.com/iqlusioninc/crates/pull/86)
