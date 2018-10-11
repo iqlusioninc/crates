@@ -99,7 +99,7 @@
     unused_import_braces,
     unused_qualifications,
 )]
-#![doc(html_root_url = "https://docs.rs/zeroize/0.1.2")]
+#![doc(html_root_url = "https://docs.rs/zeroize/0.2.0")]
 
 #[cfg(any(feature = "std", test))]
 #[macro_use]
