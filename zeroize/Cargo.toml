@@ -1,12 +1,12 @@
 [package]
 name        = "zeroize"
 description = """
-              (Alpha quality preview) Securely zero memory while avoiding
-              compiler optimizations: unified 'secure_zero_memory()' wrapper for
-              secure intrinsic functions for zeroing memory, using FFI to
-              invoke OS intrinsics on stable (with support for Linux, Windows,
-              OS X/iOS, FreeBSD, OpenBSD, NetBSD, DragonflyBSD), or the
-              unstable 'volatile_set_memory()` intrinsic on nightly.
+              Securely zero memory while avoiding compiler optimizations:
+              unified 'secure_zero_memory()' wrapper for secure intrinsic
+              functions for zeroing memory, using FFI to invoke OS intrinsics
+              on stable (with support for Linux, Windows, OS X/iOS, FreeBSD,
+              OpenBSD, NetBSD, DragonflyBSD), or the unstable
+              'volatile_set_memory()` intrinsic on nightly.
               No insecure fallbacks, no dependencies, no std, no functionality
               besides securely zeroing memory.
               """
@@ -20,9 +20,16 @@ categories  = ["cryptography", "memory-management", "no-std", "os"]
 keywords    = ["memory", "memset", "secure", "volatile", "zero"]
 
 [features]
+# enable feature detection for all platforms by default
 default = ["linux-backport", "windows"]
-linux-backport = ["cc"] # backport of 'explicit_bzero' (C code) for glibc <2.25
+
+# backport of 'explicit_bzero' (C code) for glibc <2.25
+linux-backport = ["cc"]
+
+# `volatile_set_memory` support on nightly Rust
 nightly = []
+
+# `SecureZeroMemory` shim on Windows
 windows = ["cc"]
 
 [build-dependencies]

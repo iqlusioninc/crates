@@ -13,12 +13,12 @@
 [build-image]: https://circleci.com/gh/iqlusioninc/crates.svg?style=shield
 [build-link]: https://circleci.com/gh/iqlusioninc/crates
 
-*Alpha-quality preview*: Rust crate for securely zeroing memory while
-avoiding compiler optimizations.
+Rust crate for securely zeroing memory while avoiding compiler optimizations.
 
-This crate provides a safe<sup>†</sup>, portable `secure_zero_memory()`
+This crate provides a safe<sup>†</sup>, portable [secure_zero_memory()]
 wrapper function for secure memory zeroing intrinsics which are
-specifically documented as guaranteeing they won't be "optimized away".
+specifically documented as guaranteeing they won't be "optimized away",
+as well as a [`Zeroize` trait] for types which are erased using this function.
 
 [Documentation]
 
@@ -36,12 +36,12 @@ the intrinsic is invoked, memory will be zeroed 100% of the time.
 **No insecure fallbacks. No dependencies<sup>‡</sup>. `#![no_std]`. No
 functionality besides securely zeroing memory.**
 
-This crate has one job and one function: `secure_zero_memory()`, and it
-provides the thinnest portable wrapper for secure zeroing intrinsics.
+This crate provides the thinnest portable wrapper for secure zeroing
+intrinsics available. If it can't find a way to securely zero memory, **it
+will refuse to compile**.
 
-If it can't find a way to securely zero memory, **it will refuse to compile**.
 Don't worry about that though: it supports almost every tier 1 and 2 Rust
-platform (and even most of tier 3!). See below for compatiblity.
+platform (and even most of tier 3!). See below for compatibility.
 
 ## Platform Support / Intrinsics
 
@@ -110,7 +110,7 @@ zeroing crate available.
 † NOTE: When we say "safe", we mean the caller doesn't need to use the
   `unsafe` keyword. 
 
-This crate is presently **alpha quality**.
+This crate is presently **beta quality**.
 
 This crate makes use of `unsafe`, and furthermore, contains FFI bindings for
 operating systems it hasn't been directly tested against. These usages have
@@ -141,6 +141,8 @@ submitted for inclusion in the work by you shall be dual licensed as above,
 without any additional terms or conditions.
 
 [zeroize]: https://en.wikipedia.org/wiki/Zeroisation
+[secure_zero_memory()]: https://docs.rs/zeroize/latest/zeroize/fn.secure_zero_memory.html
+[`Zeroize` trait]: https://docs.rs/zeroize/latest/zeroize/trait.Zeroize.html
 [Documentation]: https://docs.rs/zeroize/
 [Zeroing memory securely is hard]: http://www.daemonology.net/blog/2014-09-04-how-to-zero-a-buffer.html
 [SecureZeroMemory()]: https://msdn.microsoft.com/en-us/library/windows/desktop/aa366877(v=vs.85).aspx
