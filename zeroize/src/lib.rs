@@ -105,6 +105,10 @@
 #[macro_use]
 extern crate std;
 
+/// Zeroization traits
+mod zeroize;
+pub use zeroize::*;
+
 // nightly: use `volatile_set_memory`
 #[cfg(feature = "nightly")]
 mod nightly;
