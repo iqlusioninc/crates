@@ -119,6 +119,7 @@
 #![doc(html_root_url = "https://docs.rs/zeroize/0.3.0")]
 
 #[cfg(any(feature = "std", test))]
+#[allow(unused_imports)]
 #[macro_use]
 extern crate std;
 

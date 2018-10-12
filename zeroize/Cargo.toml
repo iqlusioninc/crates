@@ -20,7 +20,8 @@ keywords    = ["memory", "memset", "secure", "volatile", "zero"]
 
 [features]
 # enable feature detection for all platforms by default
-default = ["linux-backport", "windows"]
+default = ["linux-backport", "std", "windows"]
+std = []
 
 # backport of 'explicit_bzero' (C code) for glibc <2.25
 linux-backport = ["cc"]
