@@ -13,12 +13,13 @@
 [build-image]: https://circleci.com/gh/iqlusioninc/crates.svg?style=shield
 [build-link]: https://circleci.com/gh/iqlusioninc/crates
 
-Rust crate for securely zeroing memory while avoiding compiler optimizations.
+Securely zero memory while avoiding compiler optimizations.
 
-This crate provides a safe<sup>†</sup>, portable [secure_zero_memory()]
-wrapper function for secure memory zeroing intrinsics which are
-specifically documented as guaranteeing they won't be "optimized away",
-as well as a [`Zeroize` trait] for types which are erased using this function.
+This crate provides a safe<sup>†</sup>, portable access to cross-platform
+intrinsics for securely zeroing memory which are specifically documented as
+guaranteeing they won't be "optimized away".
+
+The [`Zeroize` trait] is the crate's primary (and only) API.
 
 [Documentation]
 
@@ -141,7 +142,6 @@ submitted for inclusion in the work by you shall be dual licensed as above,
 without any additional terms or conditions.
 
 [zeroize]: https://en.wikipedia.org/wiki/Zeroisation
-[secure_zero_memory()]: https://docs.rs/zeroize/latest/zeroize/fn.secure_zero_memory.html
 [`Zeroize` trait]: https://docs.rs/zeroize/latest/zeroize/trait.Zeroize.html
 [Documentation]: https://docs.rs/zeroize/
 [Zeroing memory securely is hard]: http://www.daemonology.net/blog/2014-09-04-how-to-zero-a-buffer.html

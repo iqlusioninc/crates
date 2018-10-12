@@ -7,8 +7,8 @@ pub trait Zeroize {
     fn zeroize(&mut self);
 }
 
-// Zeroize implementations for the most common types we might want it for
-
+/// `AsMut<[u8]>` should hopefully most types we want to `Zeroize`
+// TODO: `impl Zeroize` for other types (e.g. integers)?
 impl<T> Zeroize for T
 where
     T: AsMut<[u8]>,
@@ -31,8 +31,8 @@ mod tests {
 
     #[test]
     fn zeroize_vec() {
-        let mut arr = vec![42; 3];
-        arr.zeroize();
-        assert_eq!(arr.as_slice(), [0, 0, 0]);
+        let mut vec = vec![42; 3];
+        vec.zeroize();
+        assert_eq!(vec.as_slice(), [0, 0, 0]);
     }
 }

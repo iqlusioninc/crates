@@ -20,7 +20,7 @@ mod explicit_bzero;
         target_os = "windows"
     )
 )]
-pub use self::explicit_bzero::secure_zero_memory;
+pub(crate) use self::explicit_bzero::secure_zero_memory;
 
 // iOS, Mac OS X, Solaris: use `memset_s()`
 #[cfg(
@@ -38,13 +38,13 @@ mod memset_s;
         target_os = "solaris"
     )
 )]
-pub use self::memset_s::secure_zero_memory;
+pub(crate) use self::memset_s::secure_zero_memory;
 
 // NetBSD: use `explicit_memset()`
 #[cfg(target_os = "netbsd")]
 mod explicit_memset;
 #[cfg(target_os = "netbsd")]
-pub use self::explicit_memset::secure_zero_memory;
+pub(crate) use self::explicit_memset::secure_zero_memory;
 
 #[cfg(
     not(

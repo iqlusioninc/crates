@@ -1,6 +1,22 @@
 //! Securely zero memory using core or OS intrinsics. This crate wraps
 //! facilities specifically designed to securely zero memory in a common,
-//! safe API: `secure_zero_memory()`.
+//! safe API: [Zeroize].
+//!
+//! ## Usage
+//!
+//! ```
+//! extern crate zeroize;
+//! use zeroize::Zeroize;
+//!
+//! fn main() {
+//!     let mut secret = Vec::from("The password to the air shield is 1,2,3,4,5...");
+//!     // [ ... ] open the air shield here
+//!
+//!     // Actual call to zeroize here:
+//!     // `Zeroize` is impl'd for any type which impls `AsMut<[u8]>`
+//!     secret.zeroize();
+//! }
+//! ```
 //!
 //! ## About
 //!
@@ -16,10 +32,10 @@
 //! **No insecure fallbacks. No dependencies. `#![no_std]`. No functionality
 //! besides securely zeroing memory.**
 //!
-//! This crate has one job and one function: `secure_zero_memory()`, and it
-//! provides the thinnest portable wrapper for secure zeroing intrinsics.
+//! This crate provides the thinnest portable wrapper for secure zeroing
+//! intrinsics. If it can't find a way to securely zero memory,
+//! **it will refuse to compile**.
 //!
-//! If it can't find a way to securely zero memory, **it will refuse to compile**.
 //! Don't worry about that though: it supports almost every tier 1 and 2 Rust
 //! platform (and even most of tier 3!). See below for compatiblity.
 //!
@@ -85,6 +101,7 @@
 //! `unsafe` memory protection systems and just trying to make the best memory
 //! zeroing crate available.
 //!
+//! [Zeroize]: https://docs.rs/zeroize/latest/zeroize/trait.Zeroize.html
 //! [Zeroing memory securely is hard]: http://www.daemonology.net/blog/2014-09-04-how-to-zero-a-buffer.html
 //! [volatile_set_memory()]: https://doc.rust-lang.org/std/intrinsics/fn.volatile_set_memory.html
 //! [pin]: https://github.com/rust-lang/rfcs/blob/master/text/2349-pin.md
@@ -113,13 +130,13 @@ pub use zeroize::*;
 #[cfg(feature = "nightly")]
 mod nightly;
 #[cfg(feature = "nightly")]
-pub use nightly::secure_zero_memory;
+pub(crate) use nightly::secure_zero_memory;
 
 // stable: use OS-specific APIs
 #[cfg(not(feature = "nightly"))]
 mod stable;
 #[cfg(not(feature = "nightly"))]
-pub use stable::secure_zero_memory;
+pub(crate) use stable::secure_zero_memory;
 
 #[cfg(test)]
 mod tests {

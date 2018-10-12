@@ -2,11 +2,10 @@
 name        = "zeroize"
 description = """
               Securely zero memory while avoiding compiler optimizations:
-              unified 'secure_zero_memory()' wrapper for secure intrinsic
-              functions for zeroing memory, using FFI to invoke OS intrinsics
-              on stable (with support for Linux, Windows, OS X/iOS, FreeBSD,
-              OpenBSD, NetBSD, DragonflyBSD), or the unstable
-              'volatile_set_memory()` intrinsic on nightly.
+              cross-platform secure intrinsics for zeroing memory, using FFI
+              to invoke OS intrinsics on stable Rust (with support for Linux,
+              Windows, macOS/iOS, FreeBSD, OpenBSD, NetBSD, DragonflyBSD),
+              or the unstable 'volatile_set_memory()` intrinsic on nightly.
               No insecure fallbacks, no dependencies, no std, no functionality
               besides securely zeroing memory.
               """
