@@ -6,7 +6,7 @@ description = """
               provide "best effort" constant time. Useful for encoding/decoding
               secret values such as cryptographic keys.
               """
-version     = "0.2.1" # Also update html_root_url in lib.rs when bumping this
+version     = "0.2.2" # Also update html_root_url in lib.rs when bumping this
 authors     = ["Tony Arcieri <tony@iqlusion.io>"]
 license     = "Apache-2.0 OR MIT"
 homepage    = "https://github.com/iqlusioninc/crates/"
