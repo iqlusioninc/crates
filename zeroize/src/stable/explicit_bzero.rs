@@ -4,7 +4,7 @@
 /// same task as `bzero()`, but differs in that it guarantees that compiler
 /// optimizations will not remove the erase operation if the compiler
 /// deduces that the operation is "unnecessary".
-pub fn secure_zero_memory(bytes: &mut [u8]) {
+pub(crate) fn secure_zero_memory(bytes: &mut [u8]) {
     #[cfg_attr(not(target_os = "windows"), link(name = "c"))]
     extern "C" {
         fn explicit_bzero(dest: *mut u8, n: usize);

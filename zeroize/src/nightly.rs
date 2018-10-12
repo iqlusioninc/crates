@@ -6,6 +6,6 @@ use core::intrinsics::volatile_set_memory;
 ///
 /// The volatile parameter is set to true, so it will not be optimized out
 /// unless size is equal to zero.
-pub fn secure_zero_memory(bytes: &mut [u8]) {
+pub(crate) fn secure_zero_memory(bytes: &mut [u8]) {
     unsafe { volatile_set_memory(bytes.as_mut_ptr(), 0, bytes.len()) }
 }
