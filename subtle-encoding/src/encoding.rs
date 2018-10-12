@@ -9,7 +9,7 @@ use std::{
 #[cfg(all(unix, feature = "std"))]
 use std::{fs::OpenOptions, os::unix::fs::OpenOptionsExt};
 #[cfg(feature = "std")]
-use zeroize::secure_zero_memory;
+use zeroize::Zeroize;
 
 use super::Error;
 #[allow(unused_imports)]
@@ -64,7 +64,7 @@ pub trait Encoding: Send + Sync {
     {
         let mut encoded_bytes = self.encode(bytes);
         writer.write_all(encoded_bytes.as_ref())?;
-        secure_zero_memory(&mut encoded_bytes);
+        encoded_bytes.zeroize();
         Ok(encoded_bytes.len())
     }
 
@@ -140,7 +140,7 @@ pub trait Encoding: Send + Sync {
         let mut bytes = vec![];
         reader.read_to_end(bytes.as_mut())?;
         let result = self.decode(&bytes);
-        secure_zero_memory(&mut bytes);
+        bytes.zeroize();
         result
     }
 
