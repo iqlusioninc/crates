@@ -1,3 +1,7 @@
+## 0.2.2 (2018-10-11)
+
+- Bump zeroize dependency to 0.3
+
 ## 0.2.1 (2018-10-09)
 
 - Re-export `IDENTITY` from the crate root

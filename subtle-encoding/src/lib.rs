@@ -16,7 +16,7 @@
     unused_qualifications,
 )]
 #![forbid(unsafe_code)]
-#![doc(html_root_url = "https://docs.rs/subtle-encoding/0.2.1")]
+#![doc(html_root_url = "https://docs.rs/subtle-encoding/0.2.2")]
 
 #[cfg(any(feature = "std", test))]
 #[macro_use]
