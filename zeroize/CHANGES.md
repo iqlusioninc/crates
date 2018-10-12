@@ -1,3 +1,8 @@
+## 0.4.0 (2018-10-12)
+
+- [#108](https://github.com/iqlusioninc/crates/pull/108)
+  Impl `Zeroize` trait on concrete types.
+
 ## 0.3.0 (2018-10-11)
 
 - [#104](https://github.com/iqlusioninc/crates/pull/104)
