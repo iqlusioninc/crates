@@ -1,7 +1,12 @@
+## 0.3.0 (2018-10-11)
+
+- [#104](https://github.com/iqlusioninc/crates/pull/104)
+  Replace `secure_zero_memory` with `Zeroize`.
+
 ## 0.2.0 (2018-10-11)
 
 - [#101](https://github.com/iqlusioninc/crates/pull/101)
-  Add 'Zeroize' trait.
+  Add `Zeroize` trait.
 
 ## 0.1.2 (2018-10-03)
 
