@@ -11,7 +11,7 @@ use super::{
 };
 #[cfg(feature = "alloc")]
 use prelude::*;
-use zeroize::secure_zero_memory;
+use zeroize::Zeroize;
 
 /// Base64 `Encoding` (traditional non-URL-safe RFC 4648 version)
 ///
@@ -66,7 +66,7 @@ impl Encoding for Base64 {
             }
 
             dst_offset = add!(dst_offset, 4);
-            secure_zero_memory(&mut tmp);
+            tmp.zeroize();
         }
 
         Ok(dst_offset)
@@ -114,8 +114,8 @@ impl Encoding for Base64 {
             dst[dst_offset..add!(dst_offset, src_length)].copy_from_slice(&tmp_out[..src_length]);
             dst_offset = add!(dst_offset, sub!(i, 1));
 
-            secure_zero_memory(&mut tmp_out);
-            secure_zero_memory(&mut tmp_in);
+            tmp_out.zeroize();
+            tmp_in.zeroize();
         }
 
         if err == 0 {

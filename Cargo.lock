@@ -280,7 +280,7 @@ version = "0.2.1"
 dependencies = [
  "failure 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "failure_derive 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)",
- "zeroize 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "zeroize 0.3.0",
 ]
 
 [[package]]
@@ -406,14 +406,6 @@ dependencies = [
 
 [[package]]
 name = "zeroize"
-version = "0.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-dependencies = [
- "cc 1.0.25 (registry+https://github.com/rust-lang/crates.io-index)",
-]
-
-[[package]]
-name = "zeroize"
 version = "0.3.0"
 dependencies = [
  "cc 1.0.25 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -468,4 +460,3 @@ dependencies = [
 "checksum winapi-util 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)" = "afc5508759c5bf4285e61feb862b6083c8480aec864fa17a81fdec6f69b461ab"
 "checksum winapi-x86_64-pc-windows-gnu 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)" = "712e227841d057c1ee1cd2fb22fa7e5a5461ae8e48fa2ca79ec42cfc1931183f"
 "checksum wincolor 1.0.1 (registry+https://github.com/rust-lang/crates.io-index)" = "561ed901ae465d6185fa7864d63fbd5720d0ef718366c9a4dc83cf6170d7e9ba"
-"checksum zeroize 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)" = "556b6cc51a212062e018536a2a5f5ed39b2f2cbf6e7c273221f5c632f4eb0fc3"
