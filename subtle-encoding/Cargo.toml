@@ -18,7 +18,7 @@ keywords    = ["base64", "constant-time", "hex", "secrets", "security"]
 [dependencies]
 failure = "0.1"
 failure_derive = "0.1"
-zeroize = { version = "0.3", optional = true, path = "../zeroize" }
+zeroize = { version = "0.4", optional = true, path = "../zeroize" }
 
 [features]
 default = ["base64", "hex", "std"]

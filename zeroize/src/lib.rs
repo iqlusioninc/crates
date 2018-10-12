@@ -9,11 +9,11 @@
 //! use zeroize::Zeroize;
 //!
 //! fn main() {
-//!     let mut secret = Vec::from("The password to the air shield is 1,2,3,4,5...");
+//!     let mut secret = b"Air shield password: 1,2,3,4,5".clone();
 //!     // [ ... ] open the air shield here
 //!
+//!     // Now that we're done using the secret, we want to zero it out.
 //!     // Actual call to zeroize here:
-//!     // `Zeroize` is impl'd for any type which impls `AsMut<[u8]>`
 //!     secret.zeroize();
 //! }
 //! ```

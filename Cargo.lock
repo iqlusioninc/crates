@@ -280,7 +280,7 @@ version = "0.2.2"
 dependencies = [
  "failure 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "failure_derive 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)",
- "zeroize 0.3.0",
+ "zeroize 0.4.0",
 ]
 
 [[package]]
@@ -406,7 +406,7 @@ dependencies = [
 
 [[package]]
 name = "zeroize"
-version = "0.3.0"
+version = "0.4.0"
 dependencies = [
  "cc 1.0.25 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
