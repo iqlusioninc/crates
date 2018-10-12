@@ -1,3 +1,7 @@
+## 0.2.3 (2018-10-12)
+
+- Bump zeroize dependency to 0.4
+
 ## 0.2.2 (2018-10-11)
 
 - Bump zeroize dependency to 0.3
