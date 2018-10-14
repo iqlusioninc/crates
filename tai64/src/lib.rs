@@ -177,6 +177,7 @@ pub const UNIX_EPOCH_TAI64N: TAI64N = TAI64N(TAI64(10 + (1 << 62)), 0);
 
 impl TAI64N {
     /// Convert `SystemTime` to `TAI64N`.
+    #[allow(trivially_copy_pass_by_ref)]
     pub fn from_system_time(t: &SystemTime) -> Self {
         match t.duration_since(UNIX_EPOCH) {
             Ok(d) => UNIX_EPOCH_TAI64N + d,

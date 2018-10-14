@@ -1,0 +1,50 @@
+language: rust
+cache: cargo
+
+branches:
+  only:
+  - master
+
+rust:
+- stable
+
+os:
+- linux
+- osx
+- windows
+
+matrix:
+  fast_finish: true
+  allow_failures:
+  # We still rely on Appveyor for Windows testing since it's more
+  # reliable and performs better, but this lets us keep an eye on
+  # improvements to Travis Windows support
+  - os: windows
+
+install:
+- rustup component add rustfmt-preview
+- rustup component add clippy-preview
+- command -v cargo-audit >/dev/null 2>&1 || cargo install cargo-audit
+
+script:
+# audit
+- cargo audit
+
+# lint
+- cargo fmt --version
+- cargo fmt --all -- --check
+- cargo clippy --version
+- cargo clippy --all
+
+# build
+- cargo build --all --no-default-features
+- cargo build --all
+
+# test
+- cargo test --all
+
+# crates with non-default features
+- (cd tai64 && cargo test --features=chrono)
+
+# doc build
+- cargo doc --no-deps
