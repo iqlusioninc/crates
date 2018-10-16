@@ -1,6 +1,16 @@
 //! Encoders and decoders for common data encodings (base64, hex) which avoid
 //! branching or performing table lookups based on their inputs
 //! (a.k.a. "constant time-ish").
+//!
+//! ## Supported Encodings
+//!
+//! - [hex]
+//! - [base64]
+//! - [bech32] (WARNING: preview! Not constant time yet)
+//!
+//! [hex]: https://docs.rs/subtle-encoding/latest/subtle_encoding/hex/index.html
+//! [base64]: https://docs.rs/subtle-encoding/latest/subtle_encoding/base64/index.html
+//! [bech32]: https://docs.rs/subtle-encoding/0.2.3/subtle_encoding/bech32/index.html
 
 #![crate_name = "subtle_encoding"]
 #![crate_type = "rlib"]
@@ -35,6 +45,8 @@ mod macros;
 
 #[cfg(feature = "base64")]
 pub mod base64;
+#[cfg(feature = "bech32-preview")]
+pub mod bech32;
 pub mod encoding;
 #[cfg(feature = "hex")]
 pub mod hex;
