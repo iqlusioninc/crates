@@ -1,9 +1,43 @@
+//! Hex encoding/decoding with data-independent constant time(-ish) operation.
+//!
 //! Adapted from this C++ implementation:
 //!
 //! <https://github.com/Sc00bz/ConstTimeEncoding/blob/master/hex.cpp>
 //!
 //! Copyright (c) 2014 Steve "Sc00bz" Thomas (steve at tobtu dot com)
 //! Derived code is dual licensed MIT + Apache 2 (with permission from @Sc00bz)
+//!
+//! ## Usage
+//!
+//! The main API acts as a drop-in replacement for the `hex` crate
+//!
+//! ### Encoding
+//!
+//! Use the [hex::encode] method:
+//!
+//! ```
+//! extern crate subtle_encoding;
+//! use subtle_encoding::hex;
+//!
+//! fn main() {
+//!     let encoded = hex::encode([0, 1, 2, 3, 4, 5]);
+//!
+//!     // Prints the hex encoded version: "000102030405"
+//!     println!("hex encoded: {}", String::from_utf8(encoded).unwrap());
+//! }
+//! ```
+//!
+//! By default hex is encoded in lower-case. To encode upper-case hex, use the
+//! [hex::encode_upper] method.
+//!
+//! ### Decoding
+//!
+//! Use the [hex::decode] method, or [hex::decode_upper] for upper-case hex.
+//!
+//! [hex::encode]: https://docs.rs/subtle-encoding/latest/subtle_encoding/hex/fn.encode.html
+//! [hex::encode_upper]: https://docs.rs/subtle-encoding/latest/subtle_encoding/hex/fn.encode_upper.html
+//! [hex::decode]: https://docs.rs/subtle-encoding/latest/subtle_encoding/hex/fn.decode.html
+//! [hex::decode_upper]: https://docs.rs/subtle-encoding/latest/subtle_encoding/hex/fn.decode_upper.html
 
 use super::{
     Encoding,
@@ -12,6 +46,32 @@ use super::{
 #[cfg(feature = "alloc")]
 use prelude::*;
 
+/// Encode the given data as lower-case hexadecimal, returning a `Vec<u8>`
+#[cfg(feature = "alloc")]
+pub fn encode<B: AsRef<[u8]>>(bytes: B) -> Vec<u8> {
+    Hex::lower_case().encode(bytes)
+}
+
+/// Decode the given data from lower-case hexadecimal, returning a `Vec<u8>`
+/// of the decoded data on success, or an `Error`.
+#[cfg(feature = "alloc")]
+pub fn decode<B: AsRef<[u8]>>(encoded_bytes: B) -> Result<Vec<u8>, Error> {
+    Hex::lower_case().decode(encoded_bytes)
+}
+
+/// Encode the given data as upper-case hexadecimal, returning a `Vec<u8>`
+#[cfg(feature = "alloc")]
+pub fn encode_upper<B: AsRef<[u8]>>(bytes: B) -> Vec<u8> {
+    Hex::upper_case().encode(bytes)
+}
+
+/// Decode the given data from upper-case hexadecimal, returning a `Vec<u8>`
+/// of the decoded data on success, or an `Error`.
+#[cfg(feature = "alloc")]
+pub fn decode_upper<B: AsRef<[u8]>>(encoded_bytes: B) -> Result<Vec<u8>, Error> {
+    Hex::upper_case().decode(encoded_bytes)
+}
+
 /// Hexadecimal `Encoding` (a.k.a. Base16)
 #[derive(Copy, Clone, Debug, Default, Eq, Hash, PartialEq, PartialOrd, Ord)]
 pub struct Hex {
@@ -19,40 +79,14 @@ pub struct Hex {
     case: Case,
 }
 
-/// Encode the given data as lower-case hexadecimal, returning a `Vec<u8>`
-#[cfg(feature = "alloc")]
-pub fn encode<B: AsRef<[u8]>>(bytes: B) -> Vec<u8> {
-    Hex::lower().encode(bytes)
-}
-
-/// Decode the given data from lower-case hexadecimal, returning a `Vec<u8>`
-/// of the decoded data on success, or an `Error`.
-#[cfg(feature = "alloc")]
-pub fn decode<B: AsRef<[u8]>>(encoded_bytes: B) -> Result<Vec<u8>, Error> {
-    Hex::lower().decode(encoded_bytes)
-}
-
-/// Encode the given data as upper-case hexadecimal, returning a `Vec<u8>`
-#[cfg(feature = "alloc")]
-pub fn encode_upper<B: AsRef<[u8]>>(bytes: B) -> Vec<u8> {
-    Hex::upper().encode(bytes)
-}
-
-/// Decode the given data from upper-case hexadecimal, returning a `Vec<u8>`
-/// of the decoded data on success, or an `Error`.
-#[cfg(feature = "alloc")]
-pub fn decode_upper<B: AsRef<[u8]>>(encoded_bytes: B) -> Result<Vec<u8>, Error> {
-    Hex::upper().decode(encoded_bytes)
-}
-
 impl Hex {
     /// Lower case hex: 0-9 a-f
-    pub fn lower() -> Hex {
+    pub fn lower_case() -> Hex {
         Hex { case: Case::Lower }
     }
 
     /// Upper case hex: 0-9 A-F
-    pub fn upper() -> Hex {
+    pub fn upper_case() -> Hex {
         Hex { case: Case::Upper }
     }
 }
@@ -228,7 +262,9 @@ mod tests {
         for vector in HEX_TEST_VECTORS {
             // 10 is the size of the largest encoded test vector
             let mut out = [0u8; 10];
-            let out_len = Hex::lower().encode_to_slice(vector.raw, &mut out).unwrap();
+            let out_len = Hex::lower_case()
+                .encode_to_slice(vector.raw, &mut out)
+                .unwrap();
 
             assert_eq!(vector.hex, &out[..out_len]);
         }
@@ -239,7 +275,9 @@ mod tests {
         for vector in HEX_TEST_VECTORS {
             // 5 is the size of the largest decoded test vector
             let mut out = [0u8; 5];
-            let out_len = Hex::lower().decode_to_slice(vector.hex, &mut out).unwrap();
+            let out_len = Hex::lower_case()
+                .decode_to_slice(vector.hex, &mut out)
+                .unwrap();
 
             assert_eq!(vector.raw, &out[..out_len]);
         }
@@ -250,7 +288,7 @@ mod tests {
         let mut out = [0u8; 3];
         assert_eq!(
             LengthInvalid,
-            Hex::lower()
+            Hex::lower_case()
                 .decode_to_slice(b"12345", &mut out)
                 .err()
                 .unwrap(),
@@ -262,10 +300,10 @@ mod tests {
         let data = [b'X'; 64];
 
         for i in 0..data.len() {
-            let encoded = Hex::lower().encode(&data[..i]);
+            let encoded = Hex::lower_case().encode(&data[..i]);
 
             // Make sure it round trips
-            let decoded = Hex::lower().decode(encoded).unwrap();
+            let decoded = Hex::lower_case().decode(encoded).unwrap();
 
             assert_eq!(decoded.as_slice(), &data[..i]);
         }

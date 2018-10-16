@@ -1,3 +1,5 @@
+use prelude::*;
+
 use super::Error;
 
 /// Encode binary data as base32

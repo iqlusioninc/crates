@@ -44,6 +44,7 @@ script:
 - cargo test --all
 
 # crates with non-default features
+- (cd subtle-encoding && cargo test --features=bech32-preview)
 - (cd tai64 && cargo test --features=chrono)
 
 # doc build

@@ -1,4 +1,4 @@
-use clear_on_drop::clear::Clear;
+use zeroize::Zeroize;
 
 use self::polymod::Polymod;
 use super::Error;
@@ -42,13 +42,11 @@ impl AsRef<[u8]> for Checksum {
 
 impl Drop for Checksum {
     fn drop(&mut self) {
-        self.0.as_mut().clear()
+        self.0.as_mut().zeroize()
     }
 }
 
 mod polymod {
-    use clear_on_drop::clear::Clear;
-
     /// bech32 generator coefficients
     const COEFFICIENTS: [u32; 5] = [
         0x3b6a_57b2,
@@ -109,7 +107,8 @@ mod polymod {
 
     impl Drop for Polymod {
         fn drop(&mut self) {
-            (&mut self.0).clear()
+            // TODO: secure zeroize (integers not yet supported by `zeroize` crate)
+            self.0 = 0;
         }
     }
 }

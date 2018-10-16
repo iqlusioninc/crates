@@ -4,6 +4,10 @@ use std::{io, string::FromUtf8Error};
 /// Error type
 #[derive(Clone, Eq, PartialEq, Debug, Fail)]
 pub enum Error {
+    /// Checksum fdoes not match expected value
+    #[fail(display = "checksum mismatch")]
+    ChecksumInvalid,
+
     /// Data is not encoded correctly
     #[fail(display = "bad encoding")]
     EncodingInvalid,
@@ -16,6 +20,10 @@ pub enum Error {
     /// Input or output buffer is an incorrect length
     #[fail(display = "invalid length")]
     LengthInvalid,
+
+    /// Padding missing/invalid
+    #[fail(display = "padding invalid")]
+    PaddingInvalid,
 }
 
 /// Assert that the provided condition is true, or else return the given error

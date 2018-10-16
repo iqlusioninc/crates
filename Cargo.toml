@@ -1,8 +1,6 @@
 [workspace]
 members = [
     "canonical-path",
-    "iq-bech32",
-    "tai64",
     "subtle-encoding",
     "tai64",
     "zeroize"

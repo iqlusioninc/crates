@@ -1,3 +1,5 @@
+//! Base64 encoding with (almost) data-independent constant time(-ish) operation.
+//!
 //! Adapted from this C++ implementation:
 //!
 //! <https://github.com/Sc00bz/ConstTimeEncoding/blob/master/base64.cpp>
