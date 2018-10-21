@@ -1,0 +1,16 @@
+[package]
+name        = "gaunt"
+description = "High-level, self-contained, minimalist HTTP toolkit"
+version     = "0.0.0"
+license     = "Apache-2.0"
+authors     = ["Tony Arcieri <tony@iqlusion.io>"]
+homepage    = "https://github.com/iqlusioninc/crates/"
+readme      = "README.md"
+
+[badges]
+circle-ci = { repository = "iqlusioninc/crates" }
+
+[dependencies]
+failure = "0.1"
+failure_derive = "0.1"
+log = "0.4"
