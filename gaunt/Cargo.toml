@@ -1,10 +1,11 @@
 [package]
 name        = "gaunt"
 description = "High-level, self-contained, minimalist HTTP toolkit"
-version     = "0.0.0"
+version     = "0.0.1"
 license     = "Apache-2.0"
 authors     = ["Tony Arcieri <tony@iqlusion.io>"]
 homepage    = "https://github.com/iqlusioninc/crates/"
+repository  = "https://github.com/iqlusioninc/crates/tree/master/gaunt"
 readme      = "README.md"
 
 [badges]
