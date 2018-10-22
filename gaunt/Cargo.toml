@@ -7,6 +7,8 @@ authors     = ["Tony Arcieri <tony@iqlusion.io>"]
 homepage    = "https://github.com/iqlusioninc/crates/"
 repository  = "https://github.com/iqlusioninc/crates/tree/master/gaunt"
 readme      = "README.md"
+categories  = ["network-programming"]
+keywords    = ["api", "client", "http", "rest", "server"]
 
 [badges]
 circle-ci = { repository = "iqlusioninc/crates" }
