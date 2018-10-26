@@ -1,0 +1,20 @@
+[package]
+name        = "seckeychain"
+description = "Rust access to macOS keychain"
+version     = "0.0.0" # Also update html_root_url in lib.rs when bumping this
+authors     = ["Tony Arcieri <tony@iqlusion.io>"]
+license     = "Apache-2.0"
+homepage    = "https://github.com/iqlusioninc/crates/"
+repository  = "https://github.com/iqlusioninc/crates/tree/master/seckeychain"
+readme      = "README.md"
+categories  = ["cryptography"]
+keywords    = ["keychain"]
+
+[badges]
+circle-ci = { repository = "iqlusioninc/crates" }
+
+[dependencies]
+core-foundation = "0.6"
+
+[build-dependencies]
+semver = "0.9"
