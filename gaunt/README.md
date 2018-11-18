@@ -1,4 +1,4 @@
-# gaunt.rs
+# <img alt="gaunt.rs" src="https://storage.googleapis.com/iqlusion-production-web/github/gaunt/gaunt-logo.svg" width=400>
 
 [![Crate][crate-image]][crate-link]
 [![Docs][docs-image]][docs-link]
