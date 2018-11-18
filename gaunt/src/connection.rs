@@ -1,5 +1,7 @@
 //! Connections to HTTP servers
 
+#[cfg(feature = "slog")]
+use slog::Logger;
 use std::{
     fmt::Write as FmtWrite,
     io::Write,
@@ -8,13 +10,50 @@ use std::{
     time::{Duration, Instant},
 };
 
-use super::USER_AGENT;
+use super::{HTTP_VERSION, USER_AGENT};
 use error::Error;
 use path::Path;
 use response::ResponseReader;
 
 /// Default timeout in milliseconds (5 seconds)
 const DEFAULT_TIMEOUT_MS: u64 = 5000;
+
+/// Options when building a `Connection`
+pub struct ConnectionOptions {
+    timeout: Duration,
+
+    #[cfg(feature = "slog")]
+    logger: Option<Logger>,
+}
+
+impl ConnectionOptions {
+    /// Get default connection options
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Set the timeout
+    pub fn timeout(&mut self, t: Duration) {
+        self.timeout = t;
+    }
+
+    /// Set the logger
+    #[cfg(feature = "slog")]
+    pub fn logger(&mut self, l: Logger) {
+        self.logger = Some(l)
+    }
+}
+
+impl Default for ConnectionOptions {
+    fn default() -> Self {
+        Self {
+            timeout: Duration::from_millis(DEFAULT_TIMEOUT_MS),
+
+            #[cfg(feature = "slog")]
+            logger: None,
+        }
+    }
+}
 
 /// HTTP connection to a remote host
 pub struct Connection {
@@ -29,15 +68,18 @@ pub struct Connection {
 
     /// Number of requests performed since the connection was opened
     request_count: usize,
+
+    /// Logger for recording request details
+    #[cfg(feature = "slog")]
+    logger: Option<Logger>,
 }
 
 // TODO: use clippy's scoped lints once they work on stable
 #[allow(unknown_lints, renamed_and_removed_lints, write_with_newline)]
 impl Connection {
     /// Create a new connection to an HTTP server
-    pub fn new(addr: &str, port: u16) -> Result<Self, Error> {
+    pub fn new(addr: &str, port: u16, opts: &ConnectionOptions) -> Result<Self, Error> {
         let host = format!("{}:{}", addr, port);
-        let timeout = Duration::from_millis(DEFAULT_TIMEOUT_MS);
 
         let socketaddr = &host.to_socket_addrs()?.next().ok_or_else(|| {
             err!(
@@ -47,15 +89,18 @@ impl Connection {
             )
         })?;
 
-        let socket = TcpStream::connect_timeout(socketaddr, timeout)?;
-        socket.set_read_timeout(Some(timeout))?;
-        socket.set_write_timeout(Some(timeout))?;
+        // TODO: better timeout handling?
+        let socket = TcpStream::connect_timeout(socketaddr, opts.timeout)?;
+        socket.set_read_timeout(Some(opts.timeout))?;
+        socket.set_write_timeout(Some(opts.timeout))?;
 
         Ok(Self {
             host,
             socket: Mutex::new(socket),
             created_at: Instant::now(),
             request_count: 0,
+            #[cfg(feature = "slog")]
+            logger: opts.logger.clone(),
         })
     }
 
@@ -74,27 +119,23 @@ impl Connection {
         let path = into_path.into();
         let mut request = String::new();
 
-        write!(request, "GET {} HTTP/1.1\r\n", path)?;
+        write!(request, "GET {} {}\r\n", path, HTTP_VERSION)?;
         write!(request, "Host: {}\r\n", self.host)?;
         write!(request, "User-Agent: {}\r\n", USER_AGENT)?;
         write!(request, "Content-Length: 0\r\n\r\n")?;
 
-        let mut socket = self.socket.lock().unwrap();
-
+        #[cfg(feature = "slog")]
         let request_start = Instant::now();
+
+        let mut socket = self.socket.lock().unwrap();
         socket.write_all(request.as_bytes())?;
 
-        let response = ResponseReader::new(&mut socket)?;
-        let elapsed_time = Instant::now().duration_since(request_start);
+        let response = ResponseReader::new(&mut socket)?.into();
 
-        debug!(
-            "host={} method=GET path={} t={}ms",
-            &self.host,
-            path,
-            elapsed_time.as_secs() * 1000 + u64::from(elapsed_time.subsec_millis())
-        );
+        #[cfg(feature = "slog")]
+        self.log("GET", &path, request_start);
 
-        Ok(response.into())
+        Ok(response)
     }
 
     /// Make an HTTP POST request to the given path
@@ -102,7 +143,7 @@ impl Connection {
         let path = into_path.into();
         let mut headers = String::new();
 
-        write!(headers, "POST {} HTTP/1.1\r\n", path)?;
+        write!(headers, "POST {} {}\r\n", path, HTTP_VERSION)?;
         write!(headers, "Host: {}\r\n", self.host)?;
         write!(headers, "User-Agent: {}\r\n", USER_AGENT)?;
         write!(headers, "Content-Length: {}\r\n\r\n", body.len())?;
@@ -111,9 +152,35 @@ impl Connection {
         let mut request: Vec<u8> = headers.into();
         request.append(&mut body);
 
+        #[cfg(feature = "slog")]
+        let request_start = Instant::now();
+
         let mut socket = self.socket.lock().unwrap();
         socket.write_all(&request)?;
 
-        Ok(ResponseReader::new(&mut socket)?.into())
+        let response = ResponseReader::new(&mut socket)?.into();
+
+        #[cfg(feature = "slog")]
+        self.log("POST", &path, request_start);
+
+        Ok(response)
+    }
+
+    /// Log information about a request (if `slog` feature is enabled)
+    #[cfg(feature = "slog")]
+    fn log(&self, method: &str, path: &Path, started_at: Instant) {
+        let duration = Instant::now().duration_since(started_at);
+
+        if let Some(log) = self.logger.as_ref() {
+            debug!(
+                log,
+                "{method} {scheme}://{host}{path} ({duration_ms}ms)",
+                method = method,
+                scheme = "http", // TODO: https
+                host = &self.host,
+                path = path.as_ref(),
+                duration_ms = duration.as_secs() * 1000 + u64::from(duration.subsec_millis())
+            );
+        }
     }
 }

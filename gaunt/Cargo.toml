@@ -16,4 +16,4 @@ circle-ci = { repository = "iqlusioninc/crates" }
 [dependencies]
 failure = "0.1"
 failure_derive = "0.1"
-log = "0.4"
+slog = { version = "2", optional = true }
