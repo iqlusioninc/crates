@@ -161,12 +161,12 @@ impl TAI64N {
 impl TAI64 {
     /// Convert unix timestamp to `TAI64`.
     pub fn from_unix(secs: i64) -> Self {
-        TAI64(secs.checked_add(10 + (1 << 62)).unwrap() as u64)
+        TAI64((secs + 10 + (1 << 62)) as u64)
     }
 
     /// Convert `TAI64` to unix timestamp.
     pub fn to_unix(self) -> i64 {
-        (self.0 as i64).checked_sub(10 + (1 << 62)).unwrap()
+        (self.0 as i64) - (10 + (1 << 62))
     }
 }
 

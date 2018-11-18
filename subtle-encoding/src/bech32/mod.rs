@@ -195,7 +195,7 @@ impl Bech32 {
             }
         }
 
-        let encoded_data = &encoded_str[(pos.checked_add(1).unwrap())..];
+        let encoded_data = &encoded_str[(pos + 1)..];
 
         if encoded_data.len() < CHECKSUM_SIZE {
             return Err(Error::LengthInvalid);
@@ -220,8 +220,8 @@ impl Bech32 {
             return Err(e);
         }
 
-        let base32_data_len = base32_data.len().checked_sub(CHECKSUM_SIZE).unwrap();
-        let decode_result = base32::decode(&base32_data[..base32_data_len]);
+        let base32_len = base32_data.len() - CHECKSUM_SIZE;
+        let decode_result = base32::decode(&base32_data[..base32_len]);
 
         // Clear any secrets that might be in data_bytes
         base32_data.as_mut_slice().zeroize();

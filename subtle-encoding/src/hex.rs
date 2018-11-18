@@ -5,7 +5,7 @@
 //! <https://github.com/Sc00bz/ConstTimeEncoding/blob/master/hex.cpp>
 //!
 //! Copyright (c) 2014 Steve "Sc00bz" Thomas (steve at tobtu dot com)
-//! Derived code is dual licensed MIT + Apache 2 (with permission from @Sc00bz)
+//! Derived code is dual licensed MIT + Apache 2.0 (with permission from @Sc00bz)
 //!
 //! ## Usage
 //!
@@ -94,16 +94,15 @@ impl Hex {
 impl Encoding for Hex {
     fn encode_to_slice(&self, src: &[u8], dst: &mut [u8]) -> Result<usize, Error> {
         for (i, src_byte) in src.iter().enumerate() {
-            let offset = mul!(i, 2);
-            dst[offset] = self.case.encode_nibble(shr!(src_byte, 4));
-            dst[add!(offset, 1)] = self.case.encode_nibble(src_byte & 0x0f);
+            let offset = i * 2;
+            dst[offset] = self.case.encode_nibble(src_byte >> 4);
+            dst[offset + 1] = self.case.encode_nibble(src_byte & 0x0f);
         }
-
-        Ok(mul!(src.len(), 2))
+        Ok(src.len() * 2)
     }
 
     fn encoded_len(&self, bytes: &[u8]) -> usize {
-        mul!(bytes.len(), 2)
+        bytes.len() * 2
     }
 
     fn decode_to_slice(&self, src: &[u8], dst: &mut [u8]) -> Result<usize, Error> {
@@ -111,11 +110,12 @@ impl Encoding for Hex {
         ensure!(dst_length <= dst.len(), LengthInvalid);
 
         let mut err: usize = 0;
+
         for (i, dst_byte) in dst.iter_mut().enumerate().take(dst_length) {
-            let src_offset = mul!(i, 2);
-            let byte = shl!(self.case.decode_nibble(src[src_offset]), 4)
-                | self.case.decode_nibble(src[add!(src_offset, 1)]);
-            err |= shr!(byte, 8);
+            let src_offset = i * 2;
+            let byte = (self.case.decode_nibble(src[src_offset]) << 4)
+                | self.case.decode_nibble(src[src_offset + 1]);
+            err |= byte >> 8;
             *dst_byte = byte as u8;
         }
 
@@ -127,15 +127,11 @@ impl Encoding for Hex {
     }
 
     fn decoded_len(&self, bytes: &[u8]) -> Result<usize, Error> {
-        let encoded_length = bytes.len();
-
-        if encoded_length == 0 {
-            return Ok(0);
+        if bytes.len() & 1 == 0 {
+            Ok(bytes.len() >> 1)
         } else {
-            ensure!(encoded_length & 1 == 0, LengthInvalid);
+            Err(LengthInvalid)
         }
-
-        Ok(shr!(encoded_length, 1))
     }
 }
 
@@ -157,27 +153,18 @@ impl Case {
 
         // 0-9  0x30-0x39
         // if (byte > 0x2f && byte < 0x3a) ret += byte - 0x30 + 1; // -47
-        ret = add!(
-            ret,
-            shr!((sub!(0x2fisize, byte) & sub!(byte, 0x3a)), 8) & sub!(byte, 47)
-        );
+        ret += (((0x2fisize - byte) & (byte - 0x3a)) >> 8) & (byte - 47);
 
-        ret = match self {
+        ret += match self {
             Case::Lower => {
                 // a-f  0x61-0x66
                 // if (byte > 0x60 && byte < 0x67) ret += byte - 0x61 + 10 + 1; // -86
-                add!(
-                    ret,
-                    shr!(sub!(0x60isize, byte) & sub!(byte, 0x67), 8) & sub!(byte, 86)
-                )
+                (((0x60isize - byte) & (byte - 0x67)) >> 8) & (byte - 86)
             }
             Case::Upper => {
                 // A-F  0x41-0x46
                 // if (byte > 0x40 && byte < 0x47) ret += byte - 0x41 + 10 + 1; // -54
-                add!(
-                    ret,
-                    shr!(sub!(0x40isize, byte) & sub!(byte, 0x47), 8) & sub!(byte, 54)
-                )
+                (((0x40isize - byte) & (byte - 0x47)) >> 8) & (byte - 54)
             }
         };
 
@@ -187,24 +174,18 @@ impl Case {
     /// Encode a single nibble of hex
     #[inline]
     fn encode_nibble(self, src: u8) -> u8 {
-        let mut ret: isize = src as isize;
+        let mut ret = src as isize + 0x30;
 
-        ret = match self {
+        ret += match self {
             Case::Lower => {
                 // 0-9  0x30-0x39
                 // a-f  0x61-0x66
-                ret = add!(ret, 0x30);
-
-                // if (in > 0x39) in += 0x61 - 0x3a;
-                add!(ret, shr!(sub!(0x39isize, ret), 8) & sub!(0x61isize, 0x3a))
+                ((0x39isize - ret) >> 8) & (0x61isize - 0x3a)
             }
             Case::Upper => {
                 // 0-9  0x30-0x39
                 // A-F  0x41-0x46
-                ret = add!(ret, 0x30);
-
-                // if (in > 0x39) in += 0x41 - 0x3a;
-                add!(ret, shr!(sub!(0x39isize, ret), 8) & sub!(0x41isize, 0x3a))
+                ((0x39isize - ret) >> 8) & (0x41isize - 0x3a)
             }
         };
 
