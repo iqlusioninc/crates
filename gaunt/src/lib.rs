@@ -14,8 +14,9 @@
 extern crate failure;
 #[macro_use]
 extern crate failure_derive;
+#[cfg(feature = "slog")]
 #[macro_use]
-extern crate log;
+extern crate slog;
 
 #[macro_use]
 pub mod error;
@@ -28,6 +29,10 @@ pub use connection::*;
 pub use error::*;
 pub use path::*;
 pub use response::*;
+
+/// Version of HTTP supported by Gaunt.
+/// NOTE: HTTP/2 support is not planned.
+pub const HTTP_VERSION: &str = "HTTP/1.1";
 
 /// Gaunt's default `User-Agent` string
 pub const USER_AGENT: &str = concat!("gaunt.rs ", env!("CARGO_PKG_VERSION"));
