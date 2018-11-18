@@ -1,6 +1,8 @@
 //! Connections to HTTP servers
 
-#[cfg(feature = "slog")]
+use prelude::*;
+
+#[cfg(feature = "logger")]
 use slog::Logger;
 use std::{
     fmt::Write as FmtWrite,
@@ -22,7 +24,7 @@ const DEFAULT_TIMEOUT_MS: u64 = 5000;
 pub struct ConnectionOptions {
     timeout: Duration,
 
-    #[cfg(feature = "slog")]
+    #[cfg(feature = "logger")]
     logger: Option<Logger>,
 }
 
@@ -38,7 +40,7 @@ impl ConnectionOptions {
     }
 
     /// Set the logger
-    #[cfg(feature = "slog")]
+    #[cfg(feature = "logger")]
     pub fn logger(&mut self, l: Logger) {
         self.logger = Some(l)
     }
@@ -49,7 +51,7 @@ impl Default for ConnectionOptions {
         Self {
             timeout: Duration::from_millis(DEFAULT_TIMEOUT_MS),
 
-            #[cfg(feature = "slog")]
+            #[cfg(feature = "logger")]
             logger: None,
         }
     }
@@ -70,7 +72,7 @@ pub struct Connection {
     request_count: usize,
 
     /// Logger for recording request details
-    #[cfg(feature = "slog")]
+    #[cfg(feature = "logger")]
     logger: Option<Logger>,
 }
 
@@ -99,7 +101,7 @@ impl Connection {
             socket: Mutex::new(socket),
             created_at: Instant::now(),
             request_count: 0,
-            #[cfg(feature = "slog")]
+            #[cfg(feature = "logger")]
             logger: opts.logger.clone(),
         })
     }
@@ -124,7 +126,7 @@ impl Connection {
         write!(request, "User-Agent: {}\r\n", USER_AGENT)?;
         write!(request, "Content-Length: 0\r\n\r\n")?;
 
-        #[cfg(feature = "slog")]
+        #[cfg(feature = "logger")]
         let request_start = Instant::now();
 
         let mut socket = self.socket.lock().unwrap();
@@ -132,7 +134,7 @@ impl Connection {
 
         let response = ResponseReader::new(&mut socket)?.into();
 
-        #[cfg(feature = "slog")]
+        #[cfg(feature = "logger")]
         self.log("GET", &path, request_start);
 
         Ok(response)
@@ -152,7 +154,7 @@ impl Connection {
         let mut request: Vec<u8> = headers.into();
         request.append(&mut body);
 
-        #[cfg(feature = "slog")]
+        #[cfg(feature = "logger")]
         let request_start = Instant::now();
 
         let mut socket = self.socket.lock().unwrap();
@@ -160,14 +162,14 @@ impl Connection {
 
         let response = ResponseReader::new(&mut socket)?.into();
 
-        #[cfg(feature = "slog")]
+        #[cfg(feature = "logger")]
         self.log("POST", &path, request_start);
 
         Ok(response)
     }
 
-    /// Log information about a request (if `slog` feature is enabled)
-    #[cfg(feature = "slog")]
+    /// Log information about a request (if `logger` feature is enabled)
+    #[cfg(feature = "logger")]
     fn log(&self, method: &str, path: &Path, started_at: Instant) {
         let duration = Instant::now().duration_since(started_at);
 
