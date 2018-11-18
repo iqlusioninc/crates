@@ -1,14 +1,19 @@
-//! Error types used by Gaunt
+//! Error types used by **gaunt.rs**
 
 #![allow(unused_macros)]
 
+#[cfg(feature = "alloc")]
+use prelude::*;
+
+#[cfg(feature = "alloc")]
+use core::{num::ParseIntError, str::Utf8Error};
 use failure::Context;
+
+#[cfg(feature = "std")]
 use std::{
     error::Error as StdError,
     fmt::{self, Display},
     io,
-    num::ParseIntError,
-    str::Utf8Error,
     string::{FromUtf8Error, String, ToString},
 };
 
@@ -19,6 +24,7 @@ pub struct Error {
     inner: Context<ErrorKind>,
 
     /// Optional description
+    #[cfg(feature = "alloc")]
     description: Option<String>,
 }
 
@@ -26,8 +32,14 @@ impl Error {
     /// Create a new error object with an optional error message
     #[allow(unused_variables)]
     pub fn new(kind: ErrorKind, description: Option<&str>) -> Self {
+        #[cfg_attr(not(feature = "alloc"), allow(unused_mut))]
         let mut err = Self::from(kind);
-        err.description = description.map(|desc| desc.into());
+
+        #[cfg(feature = "alloc")]
+        {
+            err.description = description.map(|desc| desc.into());
+        }
+
         err
     }
 
@@ -37,12 +49,14 @@ impl Error {
     }
 }
 
+#[cfg(feature = "alloc")]
 impl Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         self.description().fmt(f)
     }
 }
 
+#[cfg(feature = "alloc")]
 impl StdError for Error {
     fn description(&self) -> &str {
         if let Some(ref desc) = self.description {
@@ -57,6 +71,7 @@ impl From<ErrorKind> for Error {
     fn from(kind: ErrorKind) -> Error {
         Error {
             inner: Context::new(kind),
+            #[cfg(feature = "alloc")]
             description: None,
         }
     }
@@ -66,6 +81,7 @@ impl From<Context<ErrorKind>> for Error {
     fn from(inner: Context<ErrorKind>) -> Self {
         Self {
             inner,
+            #[cfg(feature = "alloc")]
             description: None,
         }
     }
@@ -130,30 +146,35 @@ macro_rules! ensure {
     };
 }
 
+#[cfg(feature = "alloc")]
 impl From<ParseIntError> for Error {
     fn from(err: ParseIntError) -> Self {
         err!(ParseError, &err.to_string())
     }
 }
 
+#[cfg(feature = "std")]
 impl From<FromUtf8Error> for Error {
     fn from(err: FromUtf8Error) -> Self {
         err!(ParseError, &err.to_string())
     }
 }
 
+#[cfg(feature = "alloc")]
 impl From<Utf8Error> for Error {
     fn from(err: Utf8Error) -> Self {
         err!(ParseError, &err.to_string())
     }
 }
 
+#[cfg(feature = "std")]
 impl From<fmt::Error> for Error {
     fn from(err: fmt::Error) -> Self {
         err!(RequestError, &err.to_string())
     }
 }
 
+#[cfg(feature = "std")]
 impl From<io::Error> for Error {
     fn from(err: io::Error) -> Self {
         err!(IoError, &err.to_string())

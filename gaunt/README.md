@@ -14,11 +14,27 @@
 [build-image]: https://circleci.com/gh/iqlusioninc/crates.svg?style=shield
 [build-link]: https://circleci.com/gh/iqlusioninc/crates
 
-High-level, self-contained, minimalist HTTP toolkit built on top
-of the `http` crate and `std`. Suitable for use in constrainted
-environments where `mio` and `futures` are not (yet) available.
+High-level, (mostly) self-contained, minimalist HTTP toolkit (client-only).
+Suitable for use in constrainted environments where `mio` and `tokio`
+are not (yet) available.
 
-[Documentation](https://bitly.com/98K8eH)
+[Documentation](https://docs.rs/gaunt/)
+
+## About
+
+**gaunt.rs** is a minimalist alternative to `hyper` suitable for use in
+environments where crates like `mio` and `tokio` aren't (yet) available,
+such as Intel SGX or `#![no_std]` environments.
+
+It's presently in an early stage of development and not ready for general
+use, but has the following roadmap:
+
+- Lightweight, `#![no_std]`-friendly core.
+- `std`-based blocking socket I/O backend.
+- `hyper`-based backend to leverage `mio`/`tokio` when available.
+- Leverage `http` and `httparse` crates (`hyper` dependencies)
+  as they are mature and well-tested.
+- Add server support in addition to client support.
 
 ## License
 

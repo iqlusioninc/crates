@@ -1,5 +1,7 @@
 //! HTTP responses
 
+use prelude::*;
+
 use std::{io::Read, net::TcpStream, str};
 
 use error::Error;
