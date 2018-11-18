@@ -146,6 +146,7 @@ impl Bech32 {
 
         let checksum = Checksum::new(hrp.as_ref().as_bytes(), &base32_data);
         for byte in base32_data.iter().chain(checksum.as_ref().iter()) {
+            // TODO: non-constant-time table lookup!
             let c = self
                 .charset
                 .get(*byte as usize)
@@ -173,6 +174,7 @@ impl Bech32 {
             return Err(Error::LengthInvalid);
         }
 
+        // TODO: non-constant-time data-dependent branching!
         let pos = encoded_str
             .rfind(self.separator)
             .ok_or_else(|| Error::EncodingInvalid)?;
@@ -204,6 +206,7 @@ impl Bech32 {
         let mut base32_data = Vec::with_capacity(encoded_data.len());
 
         for encoded_byte in encoded_data.bytes() {
+            // TODO: non-constant-time table lookup!
             let decoded_byte = self
                 .charset_inverse
                 .get(encoded_byte as usize)
@@ -213,7 +216,6 @@ impl Bech32 {
             base32_data.push(decoded_byte);
         }
 
-        // TODO: use catch here?
         if let Err(e) = Checksum::verify(hrp.as_bytes(), &base32_data) {
             // Clear any secrets that might be in base32_data
             base32_data.as_mut_slice().zeroize();
