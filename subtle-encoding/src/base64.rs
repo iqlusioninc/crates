@@ -47,35 +47,35 @@ impl Encoding for Base64 {
 
         while src_length >= 3 {
             encode_3bytes(
-                &src[src_offset..add!(src_offset, 3)],
-                &mut dst[dst_offset..add!(dst_offset, 4)],
+                &src[src_offset..(src_offset + 3)],
+                &mut dst[dst_offset..(dst_offset + 4)],
             );
 
-            src_offset = add!(src_offset, 3);
-            dst_offset = add!(dst_offset, 4);
-            src_length = sub!(src_length, 3);
+            src_offset += 3;
+            dst_offset += 4;
+            src_length -= 3;
         }
 
         if src_length > 0 {
             let mut tmp = [0u8; 3];
-            tmp[..src_length].copy_from_slice(&src[src_offset..add!(src_offset, src_length)]);
-
+            tmp[..src_length].copy_from_slice(&src[src_offset..(src_offset + src_length)]);
             encode_3bytes(&tmp, &mut dst[dst_offset..]);
-            dst[add!(dst_offset, 3)] = b'=';
+            tmp.zeroize();
+
+            dst[dst_offset + 3] = b'=';
 
             if src_length == 1 {
-                dst[add!(dst_offset, 2)] = b'=';
+                dst[dst_offset + 2] = b'=';
             }
 
-            dst_offset = add!(dst_offset, 4);
-            tmp.zeroize();
+            dst_offset += 4;
         }
 
         Ok(dst_offset)
     }
 
     fn encoded_len(&self, bytes: &[u8]) -> usize {
-        add!(div!(mul!(bytes.len(), 4), 3), 3) & !3
+        (((bytes.len() * 4) / 3) + 3) & !3
     }
 
     fn decode_to_slice(&self, src: &[u8], dst: &mut [u8]) -> Result<usize, Error> {
@@ -86,13 +86,12 @@ impl Encoding for Base64 {
 
         while src_length > 4 {
             err |= decode_3bytes(
-                &src[src_offset..add!(src_offset, 4)],
-                &mut dst[dst_offset..add!(dst_offset, 3)],
+                &src[src_offset..(src_offset + 4)],
+                &mut dst[dst_offset..(dst_offset + 3)],
             );
-
-            src_offset = add!(src_offset, 4);
-            dst_offset = add!(dst_offset, 3);
-            src_length = sub!(src_length, 4);
+            src_offset += 4;
+            dst_offset += 3;
+            src_length -= 4;
         }
 
         if src_length > 0 {
@@ -100,24 +99,23 @@ impl Encoding for Base64 {
             let mut tmp_out = [0u8; 3];
             let mut tmp_in = [b'A'; 4];
 
-            // TODO: data-dependent!
-            while i < src_length && src[add!(src_offset, i)] != b'=' {
-                tmp_in[i] = src[add!(src_offset, i)];
-                i = add!(i, 1);
+            while i < src_length && src[src_offset + i] != b'=' {
+                tmp_in[i] = src[src_offset + i];
+                i += 1;
             }
 
             if i < 2 {
                 err = 1;
             }
 
-            src_length = sub!(i, 1);
+            src_length = i - 1;
             err |= decode_3bytes(&tmp_in, &mut tmp_out);
-
-            dst[dst_offset..add!(dst_offset, src_length)].copy_from_slice(&tmp_out[..src_length]);
-            dst_offset = add!(dst_offset, sub!(i, 1));
-
-            tmp_out.zeroize();
             tmp_in.zeroize();
+
+            dst[dst_offset..(dst_offset + src_length)].copy_from_slice(&tmp_out[..src_length]);
+            tmp_out.zeroize();
+
+            dst_offset += i - 1;
         }
 
         if err == 0 {
@@ -132,16 +130,15 @@ impl Encoding for Base64 {
             return Ok(0);
         }
 
-        let mut i = sub!(bytes.len(), 1);
+        let mut i = bytes.len() - 1;
         let mut pad_count: usize = 0;
 
-        // TODO: data-dependent!
         while i > 0 && bytes[i] == b'=' {
-            pad_count = add!(pad_count, 1);
-            i = sub!(i, 1);
+            pad_count += 1;
+            i -= 1;
         }
 
-        Ok(div!(mul!(sub!(bytes.len(), pad_count), 3), 4))
+        Ok(((bytes.len() - pad_count) * 3) / 4)
     }
 }
 
@@ -155,29 +152,29 @@ fn encode_3bytes(src: &[u8], dst: &mut [u8]) {
     let b1 = src[1] as isize;
     let b2 = src[2] as isize;
 
-    dst[0] = encode_6bits(shr!(b0, 2));
-    dst[1] = encode_6bits((shl!(b0, 4) | shr!(b1, 4)) & 63);
-    dst[2] = encode_6bits((shl!(b1, 2) | shr!(b2, 6)) & 63);
+    dst[0] = encode_6bits(b0 >> 2);
+    dst[1] = encode_6bits(((b0 << 4) | (b1 >> 4)) & 63);
+    dst[2] = encode_6bits(((b1 << 2) | (b2 >> 6)) & 63);
     dst[3] = encode_6bits(b2 & 63);
 }
 
 #[inline]
 fn encode_6bits(src: isize) -> u8 {
-    let mut diff: isize = 0x41;
+    let mut diff = 0x41isize;
 
     // if (in > 25) diff += 0x61 - 0x41 - 26; // 6
-    diff = add!(diff, shr!(sub!(25isize, src), 8) & 6);
+    diff += ((25isize - src) >> 8) & 6;
 
     // if (in > 51) diff += 0x30 - 0x61 - 26; // -75
-    diff = sub!(diff, shr!(sub!(51isize, src), 8) & 75);
+    diff -= ((51isize - src) >> 8) & 75;
 
     // if (in > 61) diff += 0x2b - 0x30 - 10; // -15
-    diff = sub!(diff, shr!(sub!(61isize, src), 8) & 15);
+    diff -= ((61isize - src) >> 8) & 15;
 
     // if (in > 62) diff += 0x2f - 0x2b - 1; // 3
-    diff = add!(diff, shr!(sub!(62isize, src), 8) & 3);
+    diff += ((62isize - src) >> 8) & 3;
 
-    add!(src, diff) as u8
+    (src + diff) as u8
 }
 
 #[inline]
@@ -187,11 +184,11 @@ fn decode_3bytes(src: &[u8], dst: &mut [u8]) -> isize {
     let c2 = decode_6bits(src[2]);
     let c3 = decode_6bits(src[3]);
 
-    dst[0] = (shl!(c0, 2) | shr!(c1, 4)) as u8;
-    dst[1] = (shl!(c1, 4) | shr!(c2, 2)) as u8;
-    dst[2] = (shl!(c2, 6) | c3) as u8;
+    dst[0] = ((c0 << 2) | (c1 >> 4)) as u8;
+    dst[1] = ((c1 << 4) | (c2 >> 2)) as u8;
+    dst[2] = ((c2 << 6) | c3) as u8;
 
-    shr!(c0 | c1 | c2 | c3, 8) & 1
+    ((c0 | c1 | c2 | c3) >> 8) & 1
 }
 
 #[inline]
@@ -200,28 +197,19 @@ fn decode_6bits(src: u8) -> isize {
     let mut ret: isize = -1;
 
     // if (ch > 0x40 && ch < 0x5b) ret += ch - 0x41 + 1; // -64
-    ret = add!(
-        ret,
-        shr!(sub!(0x40isize, ch) & sub!(ch, 0x5bisize), 8) & sub!(ch, 64isize)
-    );
+    ret += (((64isize - ch) & (ch - 91isize)) >> 8) & (ch - 64isize);
 
     // if (ch > 0x60 && ch < 0x7b) ret += ch - 0x61 + 26 + 1; // -70
-    ret = add!(
-        ret,
-        shr!(sub!(0x60isize, ch) & sub!(ch, 0x7bisize), 8) & sub!(ch, 70isize)
-    );
+    ret += (((96isize - ch) & (ch - 123isize)) >> 8) & (ch - 70isize);
 
     // if (ch > 0x2f && ch < 0x3a) ret += ch - 0x30 + 52 + 1; // 5
-    ret = add!(
-        ret,
-        shr!(sub!(0x2fisize, ch) & sub!(ch, 0x3aisize), 8) & add!(ch, 5isize)
-    );
+    ret += (((47isize - ch) & (ch - 58isize)) >> 8) & (ch + 5isize);
 
     // if (ch == 0x2b) ret += 62 + 1;
-    ret = add!(ret, shr!(sub!(0x2aisize, ch) & sub!(ch, 0x2cisize), 8) & 63);
+    ret += (((42isize - ch) & (ch - 44isize)) >> 8) & 63;
 
     // if (ch == 0x2f) ret += 63 + 1;
-    add!(ret, shr!(sub!(0x2eisize, ch) & sub!(ch, 0x30isize), 8) & 64)
+    ret + ((((46isize - ch) & (ch - 48isize)) >> 8) & 64)
 }
 
 #[cfg(test)]

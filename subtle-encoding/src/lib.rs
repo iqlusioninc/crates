@@ -40,8 +40,6 @@ extern crate zeroize;
 
 #[macro_use]
 mod error;
-#[macro_use]
-mod macros;
 
 #[cfg(feature = "base64")]
 pub mod base64;
