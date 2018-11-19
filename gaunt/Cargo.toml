@@ -1,7 +1,7 @@
 [package]
 name        = "gaunt"
 description = "Minimalist Rust HTTP toolkit (client-only)."
-version     = "0.0.1"
+version     = "0.1.0"
 license     = "Apache-2.0"
 authors     = ["Tony Arcieri <tony@iqlusion.io>"]
 homepage    = "https://github.com/iqlusioninc/crates/"
