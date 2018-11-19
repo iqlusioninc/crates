@@ -8,6 +8,7 @@ use std::{
     fmt::Write as FmtWrite,
     io::Write,
     net::{TcpStream, ToSocketAddrs},
+    ops::DerefMut,
     sync::Mutex,
     time::{Duration, Instant},
 };
@@ -15,7 +16,8 @@ use std::{
 use super::{HTTP_VERSION, USER_AGENT};
 use error::Error;
 use path::Path;
-use response::ResponseReader;
+use request;
+use response;
 
 /// Default timeout in milliseconds (5 seconds)
 const DEFAULT_TIMEOUT_MS: u64 = 5000;
@@ -76,8 +78,6 @@ pub struct Connection {
     logger: Option<Logger>,
 }
 
-// TODO: use clippy's scoped lints once they work on stable
-#[allow(unknown_lints, renamed_and_removed_lints, write_with_newline)]
 impl Connection {
     /// Create a new connection to an HTTP server
     pub fn new(addr: &str, port: u16, opts: &ConnectionOptions) -> Result<Self, Error> {
@@ -117,14 +117,23 @@ impl Connection {
     }
 
     /// Make an HTTP GET request to the given path
-    pub fn get<P: Into<Path>>(&self, into_path: P) -> Result<Vec<u8>, Error> {
+    pub fn get<P: Into<Path>>(
+        &self,
+        into_path: P,
+        body: &request::Body,
+    ) -> Result<response::Body, Error> {
         let path = into_path.into();
         let mut request = String::new();
 
-        write!(request, "GET {} {}\r\n", path, HTTP_VERSION)?;
-        write!(request, "Host: {}\r\n", self.host)?;
-        write!(request, "User-Agent: {}\r\n", USER_AGENT)?;
-        write!(request, "Content-Length: 0\r\n\r\n")?;
+        if !body.0.is_empty() {
+            panic!("GET request bodies unsupported!");
+        }
+
+        writeln!(request, "GET {} {}\r", path, HTTP_VERSION)?;
+        writeln!(request, "Host: {}\r", self.host)?;
+        writeln!(request, "User-Agent: {}\r", USER_AGENT)?;
+        writeln!(request, "Content-Length: {}\r", body.0.len())?;
+        writeln!(request, "\r")?;
 
         #[cfg(feature = "logger")]
         let request_start = Instant::now();
@@ -132,27 +141,32 @@ impl Connection {
         let mut socket = self.socket.lock().unwrap();
         socket.write_all(request.as_bytes())?;
 
-        let response = ResponseReader::new(&mut socket)?.into();
+        let response_body = response::Reader::new(socket.deref_mut())?.into_body();
 
         #[cfg(feature = "logger")]
         self.log("GET", &path, request_start);
 
-        Ok(response)
+        Ok(response_body)
     }
 
     /// Make an HTTP POST request to the given path
-    pub fn post<P: Into<Path>>(&self, into_path: P, mut body: Vec<u8>) -> Result<Vec<u8>, Error> {
+    pub fn post<P: Into<Path>>(
+        &self,
+        into_path: P,
+        body: &request::Body,
+    ) -> Result<response::Body, Error> {
         let path = into_path.into();
         let mut headers = String::new();
 
-        write!(headers, "POST {} {}\r\n", path, HTTP_VERSION)?;
-        write!(headers, "Host: {}\r\n", self.host)?;
-        write!(headers, "User-Agent: {}\r\n", USER_AGENT)?;
-        write!(headers, "Content-Length: {}\r\n\r\n", body.len())?;
+        writeln!(headers, "POST {} {}\r", path, HTTP_VERSION)?;
+        writeln!(headers, "Host: {}\r", self.host)?;
+        writeln!(headers, "User-Agent: {}\r", USER_AGENT)?;
+        writeln!(headers, "Content-Length: {}\r", body.0.len())?;
+        writeln!(headers, "\r")?;
 
         // Make a Nagle-friendly request by combining headers and body
         let mut request: Vec<u8> = headers.into();
-        request.append(&mut body);
+        request.extend_from_slice(body.0.as_slice());
 
         #[cfg(feature = "logger")]
         let request_start = Instant::now();
@@ -160,12 +174,12 @@ impl Connection {
         let mut socket = self.socket.lock().unwrap();
         socket.write_all(&request)?;
 
-        let response = ResponseReader::new(&mut socket)?.into();
+        let response_body = response::Reader::new(socket.deref_mut())?.into_body();
 
         #[cfg(feature = "logger")]
         self.log("POST", &path, request_start);
 
-        Ok(response)
+        Ok(response_body)
     }
 
     /// Log information about a request (if `logger` feature is enabled)
