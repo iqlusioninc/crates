@@ -1,9 +1,10 @@
-//! HTTP responses
+//! Read HTTP responses from an `io::Read`
 
 use prelude::*;
 
-use std::{io::Read, net::TcpStream, str};
+use std::{io::Read, str};
 
+use super::Body;
 use error::Error;
 
 const TRANSFER_ENCODING_HEADER: &str = "Transfer-Encoding: ";
@@ -11,11 +12,16 @@ const HEADER_DELIMITER: &[u8] = b"\r\n\r\n";
 const HTTP_SUCCESS_STATUS: &str = "HTTP/1.1 200 OK";
 const CONTENT_LENGTH_HEADER: &str = "Content-Length: ";
 
-/// Maximum response size we can handle
-pub const MAX_RESPONSE_SIZE: usize = 65536;
+/// Maximum number of headers we can parse.
+// TODO: we shouldn't have a max, or at least one this small
+//const MAX_HEADERS: usize = 32;
+
+/// Maximum response size we can parse.
+// TODO: we shouldn't have a max, or at least one this small
+const MAX_RESPONSE_SIZE: usize = 65536;
 
 /// Read HTTP responses from the server
-pub struct ResponseReader {
+pub struct Reader {
     /// Internal buffer
     buffer: Vec<u8>,
 
@@ -29,9 +35,9 @@ pub struct ResponseReader {
     content_length: usize,
 }
 
-impl ResponseReader {
-    /// Create a new `ResponseReader` that consumes a response body from a socket
-    pub(crate) fn new(socket: &mut TcpStream) -> Result<Self, Error> {
+impl Reader {
+    /// Create a new `response::Reader` that consumes a response body from a socket
+    pub(crate) fn new(readable: &mut Read) -> Result<Self, Error> {
         // TODO: better buffering
         let mut buffer = Self {
             buffer: vec![0u8; MAX_RESPONSE_SIZE],
@@ -40,25 +46,37 @@ impl ResponseReader {
             content_length: 0,
         };
 
-        buffer.read_headers(socket)?;
-        buffer.read_body(socket)?;
+        buffer.read_headers(readable)?;
+        buffer.read_body(readable)?;
 
         Ok(buffer)
     }
 
+    /// Convert this `response::Reader` into a `response::Body`
+    pub(crate) fn into_body(self) -> Body {
+        let body_offset = self
+            .body_offset
+            .expect("we should've already read the body");
+
+        Body(Vec::from(&self.buffer[body_offset..self.pos]))
+    }
+
     /// Fill the internal buffer with data from the socket
-    fn fill_buffer(&mut self, socket: &mut TcpStream) -> Result<usize, Error> {
-        let nbytes = socket.read(self.buffer.as_mut())?;
+    fn fill_buffer(&mut self, readable: &mut Read) -> Result<usize, Error> {
+        let nbytes = readable.read(self.buffer.as_mut())?;
         self.pos += nbytes;
         Ok(nbytes)
     }
 
     /// Read the response headers
-    fn read_headers(&mut self, socket: &mut TcpStream) -> Result<(), Error> {
+    fn read_headers(&mut self, readable: &mut Read) -> Result<(), Error> {
         assert!(self.body_offset.is_none(), "already read headers!");
 
+        //let mut headers = [httparse::EMPTY_HEADER; MAX_HEADERS];
+        //let mut parser = httparse::Response::new(&mut headers);
+
         loop {
-            self.fill_buffer(socket)?;
+            self.fill_buffer(readable)?;
 
             // Scan for the header delimiter
             // TODO: real parser
@@ -129,24 +147,14 @@ impl ResponseReader {
     }
 
     /// Read the response body into the internal buffer
-    fn read_body(&mut self, socket: &mut TcpStream) -> Result<(), Error> {
+    fn read_body(&mut self, readable: &mut Read) -> Result<(), Error> {
         let body_end =
             self.content_length + self.body_offset.expect("not ready to read the body yet");
 
         while self.pos < body_end {
-            self.fill_buffer(socket)?;
+            self.fill_buffer(readable)?;
         }
 
         Ok(())
-    }
-}
-
-impl Into<Vec<u8>> for ResponseReader {
-    fn into(self) -> Vec<u8> {
-        let body_offset = self
-            .body_offset
-            .expect("we should've already read the body");
-
-        Vec::from(&self.buffer[body_offset..self.pos])
     }
 }

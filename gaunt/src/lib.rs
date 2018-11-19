@@ -34,15 +34,15 @@ pub mod error;
 pub mod connection;
 pub mod path;
 pub mod prelude;
-#[cfg(feature = "std")]
+#[cfg(feature = "alloc")]
+pub mod request;
+#[cfg(feature = "alloc")]
 pub mod response;
 
 #[cfg(feature = "std")]
 pub use connection::*;
 pub use error::*;
 pub use path::*;
-#[cfg(feature = "std")]
-pub use response::*;
 
 /// Version of HTTP supported by Gaunt.
 /// NOTE: HTTP/2 support is not planned.
