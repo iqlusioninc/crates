@@ -14,7 +14,10 @@
     feature(alloc)
 )]
 #![forbid(unsafe_code)]
-#![doc(html_root_url = "https://docs.rs/gaunt/0.0.1")]
+#![doc(
+    html_logo_url = "https://storage.googleapis.com/iqlusion-production-web/github/gaunt/gaunt-logo.svg",
+    html_root_url = "https://docs.rs/gaunt/0.1.0"
+)]
 
 #[cfg(any(feature = "std", test))]
 #[macro_use]
