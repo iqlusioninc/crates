@@ -1,3 +1,8 @@
+## 0.3.0 (2018-11-25)
+
+- Fix critical encode/decode bug in `release` builds (#126)
+- Non-constant-time Bech32 implementation via `bech32-preview` feature (#113)
+
 ## 0.2.3 (2018-10-12)
 
 - Bump zeroize dependency to 0.4
