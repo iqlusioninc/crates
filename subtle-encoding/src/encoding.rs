@@ -34,15 +34,13 @@ pub trait Encoding: Send + Sync {
     /// Encode the given buffer, returning a `Vec<u8>`
     #[cfg(feature = "alloc")]
     fn encode<B: AsRef<[u8]>>(&self, bytes: B) -> Vec<u8> {
-        let length = self.encoded_len(bytes.as_ref());
-        let mut result = vec![0u8; length];
+        let expected_length = self.encoded_len(bytes.as_ref());
+        let mut encoded = vec![0u8; expected_length];
 
-        debug_assert_eq!(
-            self.encode_to_slice(bytes.as_ref(), &mut result),
-            Ok(length)
-        );
+        let actual_length = self.encode_to_slice(bytes.as_ref(), &mut encoded).unwrap();
+        debug_assert_eq!(expected_length, actual_length);
 
-        result
+        encoded
     }
 
     /// Encode the given slice to a `String` with this `Encoding`.
@@ -115,15 +113,13 @@ pub trait Encoding: Send + Sync {
     /// Decode the given buffer, returning a `Vec<u8>`
     #[cfg(feature = "alloc")]
     fn decode<B: AsRef<[u8]>>(&self, encoded_bytes: B) -> Result<Vec<u8>, Error> {
-        let length = self.decoded_len(encoded_bytes.as_ref())?;
-        let mut result = vec![0u8; length];
+        let expected_length = self.decoded_len(encoded_bytes.as_ref())?;
+        let mut decoded = vec![0u8; expected_length];
 
-        debug_assert_eq!(
-            self.decode_to_slice(encoded_bytes.as_ref(), &mut result),
-            Ok(length)
-        );
+        let actual_length = self.decode_to_slice(encoded_bytes.as_ref(), &mut decoded)?;
+        debug_assert_eq!(expected_length, actual_length);
 
-        Ok(result)
+        Ok(decoded)
     }
 
     /// Decode the given string-alike type with this `Encoding`, returning the
