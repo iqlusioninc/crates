@@ -8,7 +8,7 @@ members = [
 ]
 
 # Enable integer overflow checks in release builds
-# WARNING: DO NOT REMOVE THIS! We rely on this for abort-on-overflow semantics
+# WARNING: DO NOT REMOVE THIS! We rely on this for panic-on-overflow semantics
 # in the event of integer arithmetic bugs.
 [profile.release]
 overflow-checks = true
