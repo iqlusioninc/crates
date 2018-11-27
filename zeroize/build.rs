@@ -43,7 +43,17 @@ mod linux {
             .unwrap();
 
         if !output.status.success() {
-            panic!("/usr/bin/ldd --version exited with error: {:?}", output);
+            let stderr = String::from_utf8(output.stderr).unwrap();
+            let libc_info = stderr.split('\n').collect::<Vec<&str>>()[0];
+            let libc_name = libc_info.split(' ').collect::<Vec<&str>>()[0];
+
+            if libc_name != "musl" {
+                panic!("/usr/bin/ldd --version exited with error: {:?}", output);
+            }
+
+            // Return a version less than the least glibc version to support explicit_bzero
+            // to force compilation of our backport.
+            return "2.24".to_owned();
         }
 
         let stdout = String::from_utf8(output.stdout).unwrap();
