@@ -27,7 +27,9 @@ mod linux {
         let glibc_version = get_glibc_version();
 
         // Hax: this probably isn't the best use of floats
-        if glibc_version.parse::<f32>().unwrap() < GLIBC_WITH_EXPLICIT_BZERO.parse::<f32>().unwrap()
+        if glibc_version.is_none()
+            || glibc_version.unwrap().parse::<f32>().unwrap()
+                < GLIBC_WITH_EXPLICIT_BZERO.parse::<f32>().unwrap()
         {
             cc::Build::new()
                 .file("src/os/linux/explicit_bzero_backport.c")
@@ -36,7 +38,7 @@ mod linux {
     }
 
     /// Get the current glibc version (vicariously by querying `/usr/bin/ldd`)
-    fn get_glibc_version() -> String {
+    fn get_glibc_version() -> Option<String> {
         let output = Command::new("/usr/bin/ldd")
             .arg("--version")
             .output()
@@ -51,14 +53,13 @@ mod linux {
                 panic!("/usr/bin/ldd --version exited with error: {:?}", output);
             }
 
-            // Return a version less than the least glibc version to support explicit_bzero
-            // to force compilation of our backport.
-            return "2.24".to_owned();
+            return None;
         }
 
         let stdout = String::from_utf8(output.stdout).unwrap();
         let info = stdout.split('\n').next().unwrap();
-        info.split(' ').last().unwrap().to_owned()
+
+        Some(info.split(' ').last().unwrap().to_owned())
     }
 }
 
