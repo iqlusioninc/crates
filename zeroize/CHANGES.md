@@ -1,3 +1,8 @@
+## 0.4.1 (2018-10-12)
+
+- [#131](https://github.com/iqlusioninc/crates/pull/131)
+  Support musl-libc.
+  
 ## 0.4.0 (2018-10-12)
 
 - [#108](https://github.com/iqlusioninc/crates/pull/108)
