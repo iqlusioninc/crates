@@ -40,6 +40,15 @@ mod linux {
     }
 
     impl StdLibrary {
+        /// Build backports if necessary
+        fn should_build(&self) -> Option<bool> {
+            match self {
+                StdLibrary::GNU(ver) => Some(ver < &Version::parse(GLIBC_WITH_EXPLICIT_BZERO).unwrap()),
+                StdLibrary::Musl(ver) => Some(ver < &Version::parse(MUSL_WITH_EXPLICIT_BZERO).unwrap()),
+                StdLibrary::Unsupported => None,
+            }
+        }
+
         /// Resolve the version of the installed C standard library
         fn resolve() -> Self {
             let output = Command::new("/usr/bin/ldd")
@@ -103,26 +112,15 @@ mod linux {
 
     /// Build `src/os/linux/explicit_bzero_backport.c` using the `cc` crate
     pub fn build_explicit_bzero_backport() {
-        match StdLibrary::resolve() {
-            StdLibrary::GNU(ver) => {
-                if ver < Version::parse(GLIBC_WITH_EXPLICIT_BZERO).unwrap() {
-                    cc::Build::new()
-                        .file("src/os/linux/explicit_bzero_backport.c")
-                        .compile("explicit_bzero");
-                }
-            }
+        let stdlib = StdLibrary::resolve();
 
-            StdLibrary::Musl(ver) => {
-                if ver < Version::parse(MUSL_WITH_EXPLICIT_BZERO).unwrap() {
-                    cc::Build::new()
-                        .file("src/os/linux/explicit_bzero_backport.c")
-                        .compile("explicit_bzero");
-                }
-            }
-
-            StdLibrary::Unsupported => {
-                panic!("unsupported standard library");
-            }
+        match stdlib.should_build() {
+            Some(should_build) => if should_build {
+                cc::Build::new()
+                    .file("src/os/linux/explicit_bzero_backport.c")
+                    .compile("explicit_bzero");
+            },
+            None => panic!("unsupported standard library"),
         }
     }
 }
