@@ -9,6 +9,7 @@ contributions under the terms of the [Apache License, Version 2.0]
 [LICENSE]: https://github.com/iqlusioninc/crates/blob/master/LICENSE
 
 * Anthony Arcieri ([@tarcieri](https://github.com/tarcieri))
+* Amr Ali ([@amrali](https://github.com/amrali))
 * Armin Ronacher ([@mitsuhiko](https://github.com/mitsuhiko))
 * Boats ([@withoutboats](https://github.com/withoutboats))
 * David Tolnay ([@dtolnay](https://github.com/dtolnay))
