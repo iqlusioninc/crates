@@ -1,3 +1,7 @@
+## [0.4.2] (2018-10-12)
+
+- Fix ldd scraper for older glibc versions ([#134])
+
 ## 0.4.1 (2018-10-12)
 
 - Support musl-libc ([#131])
@@ -26,6 +30,8 @@
 
 - Initial release
 
+[0.4.2]: https://github.com/iqlusioninc/crates/pull/136
+[#134]: https://github.com/iqlusioninc/crates/pull/134
 [#131]: https://github.com/iqlusioninc/crates/pull/131
 [#108]: https://github.com/iqlusioninc/crates/pull/108
 [#104]: https://github.com/iqlusioninc/crates/pull/104
