@@ -28,6 +28,17 @@ mod linux {
     /// First version of musl-libc to support `explicit_bzero()`
     const MUSL_WITH_EXPLICIT_BZERO: &str = "1.1.20";
 
+    struct LddVersion {
+        /// Whether version command was successful.
+        success: bool,
+
+        /// Standard output of the version command.
+        stdout: String,
+
+        /// Standard error of the version command,
+        stderr: String,
+    }
+
     enum StdLibrary {
         /// GNU C standard library
         GNU(Version),
@@ -48,47 +59,48 @@ mod linux {
                 StdLibrary::Unsupported => None,
             }
         }
+    }
 
-        /// Resolve the version of the installed C standard library
-        fn resolve() -> Self {
+    impl LddVersion {
+        /// Initialize LddVersion with the version command output
+        fn new() -> Self {
             let output = Command::new("/usr/bin/ldd")
                 .arg("--version")
                 .output()
                 .unwrap();
 
-            let stdout = String::from_utf8(output.stdout)
-                .unwrap()
-                .to_ascii_lowercase();
-            let stderr = String::from_utf8(output.stderr)
-                .unwrap()
-                .to_ascii_lowercase();
+            Self {
+                success: output.status.success(),
+                stdout: String::from_utf8(output.stdout).unwrap(),
+                stderr: String::from_utf8(output.stderr).unwrap(),
+            }
+        }
+
+        /// Resolve the version of the installed C standard library
+        fn resolve(&self) -> StdLibrary {
+            let stdout = self.stdout.to_ascii_lowercase();
+            let stderr = self.stderr.to_ascii_lowercase();
 
             // Check if this is GNU C standard library
             if stdout.find("glibc").is_some() || stderr.find("glibc").is_some() {
-                return Self::get_glibc_version();
+                return self.get_glibc_version();
             }
 
             // Check if this is musl-libc
             if stdout.find("musl").is_some() || stderr.find("musl").is_some() {
-                return Self::get_musl_version();
+                return self.get_musl_version();
             }
 
             StdLibrary::Unsupported
         }
 
         /// Get the version of the GNU C standard library
-        fn get_glibc_version() -> Self {
-            let output = Command::new("/usr/bin/ldd")
-                .arg("--version")
-                .output()
-                .unwrap();
-
-            if !output.status.success() {
-                panic!("/usr/bin/ldd --version exited with error: {:?}", output);
+        fn get_glibc_version(&self) -> StdLibrary {
+            if !self.success {
+                panic!("/usr/bin/ldd --version exited with error: {:?}", self.stderr);
             }
 
-            let stdout = String::from_utf8(output.stdout).unwrap();
-            let info = stdout.split('\n').next().unwrap();
+            let info = self.stdout.split('\n').next().unwrap();
             let version =
                 Version::parse(&(info.split(' ').last().unwrap().to_owned() + ".0")).unwrap();
 
@@ -96,14 +108,8 @@ mod linux {
         }
 
         /// Get the version of the Musl C standard library
-        fn get_musl_version() -> Self {
-            let output = Command::new("/usr/bin/ldd")
-                .arg("--version")
-                .output()
-                .unwrap();
-
-            let stderr = String::from_utf8(output.stderr).unwrap();
-            let info = stderr.split('\n').collect::<Vec<&str>>()[1];
+        fn get_musl_version(&self) -> StdLibrary {
+            let info = self.stderr.split('\n').collect::<Vec<&str>>()[1];
             let version = Version::parse(info.split(' ').collect::<Vec<&str>>()[1]).unwrap();
 
             StdLibrary::Musl(version)
@@ -112,7 +118,8 @@ mod linux {
 
     /// Build `src/os/linux/explicit_bzero_backport.c` using the `cc` crate
     pub fn build_explicit_bzero_backport() {
-        let stdlib = StdLibrary::resolve();
+        let ldd_version = LddVersion::new();
+        let stdlib = ldd_version.resolve();
 
         match stdlib.should_build_explicit_bzero() {
             Some(should_build) => if should_build {
