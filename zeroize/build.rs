@@ -86,8 +86,10 @@ mod linux {
             let stderr = self.stderr.to_ascii_lowercase();
 
             // Check if this is GNU C standard library
-            if stdout.find("glibc").is_some() || stderr.find("glibc").is_some() {
-                return self.get_glibc_version();
+            for glibc_str in &["glibc", "gnu libc"] {
+                if stdout.find(glibc_str).is_some() || stderr.find(glibc_str).is_some() {
+                    return self.get_glibc_version();
+                }
             }
 
             // Check if this is musl-libc
