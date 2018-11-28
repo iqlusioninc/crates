@@ -54,8 +54,12 @@ mod linux {
         /// Build backports if necessary
         fn should_build_explicit_bzero(&self) -> Option<bool> {
             match self {
-                StdLibrary::GNU(ver) => Some(ver < &Version::parse(GLIBC_WITH_EXPLICIT_BZERO).unwrap()),
-                StdLibrary::Musl(ver) => Some(ver < &Version::parse(MUSL_WITH_EXPLICIT_BZERO).unwrap()),
+                StdLibrary::GNU(ver) => {
+                    Some(ver < &Version::parse(GLIBC_WITH_EXPLICIT_BZERO).unwrap())
+                }
+                StdLibrary::Musl(ver) => {
+                    Some(ver < &Version::parse(MUSL_WITH_EXPLICIT_BZERO).unwrap())
+                }
                 StdLibrary::Unsupported => None,
             }
         }
@@ -97,7 +101,10 @@ mod linux {
         /// Get the version of the GNU C standard library
         fn get_glibc_version(&self) -> StdLibrary {
             if !self.success {
-                panic!("/usr/bin/ldd --version exited with error: {:?}", self.stderr);
+                panic!(
+                    "/usr/bin/ldd --version exited with error: {:?}",
+                    self.stderr
+                );
             }
 
             let info = self.stdout.split('\n').next().unwrap();
