@@ -41,7 +41,7 @@ mod linux {
 
     impl StdLibrary {
         /// Build backports if necessary
-        fn should_build(&self) -> Option<bool> {
+        fn should_build_explicit_bzero(&self) -> Option<bool> {
             match self {
                 StdLibrary::GNU(ver) => Some(ver < &Version::parse(GLIBC_WITH_EXPLICIT_BZERO).unwrap()),
                 StdLibrary::Musl(ver) => Some(ver < &Version::parse(MUSL_WITH_EXPLICIT_BZERO).unwrap()),
@@ -114,7 +114,7 @@ mod linux {
     pub fn build_explicit_bzero_backport() {
         let stdlib = StdLibrary::resolve();
 
-        match stdlib.should_build() {
+        match stdlib.should_build_explicit_bzero() {
             Some(should_build) => if should_build {
                 cc::Build::new()
                     .file("src/os/linux/explicit_bzero_backport.c")
