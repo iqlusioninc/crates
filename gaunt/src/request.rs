@@ -6,8 +6,15 @@ use crate::prelude::*;
 #[derive(Debug, Default)]
 pub struct Body(pub(crate) Vec<u8>);
 
-impl<'a> From<&'a [u8]> for Body {
-    fn from(bytes: &[u8]) -> Body {
-        Body(Vec::from(bytes))
+impl Body {
+    /// Create a new `Body` from the given byte slice
+    pub fn new(bytes: &[u8]) -> Body {
+        Body(bytes.into())
+    }
+}
+
+impl From<Vec<u8>> for Body {
+    fn from(bytes: Vec<u8>) -> Body {
+        Body(bytes)
     }
 }

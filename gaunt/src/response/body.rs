@@ -13,3 +13,9 @@ impl Body {
         self.0
     }
 }
+
+impl From<Body> for Vec<u8> {
+    fn from(body: Body) -> Vec<u8> {
+        body.into_vec()
+    }
+}
