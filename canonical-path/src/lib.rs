@@ -6,12 +6,7 @@
 
 #![crate_name = "canonical_path"]
 #![crate_type = "rlib"]
-#![deny(
-    warnings,
-    missing_docs,
-    unused_import_braces,
-    unused_qualifications
-)]
+#![deny(warnings, missing_docs, unused_import_braces, unused_qualifications)]
 #![doc(html_root_url = "https://docs.rs/canonical-path/1.0.0")]
 
 use std::borrow::Borrow;
@@ -179,6 +174,8 @@ impl CanonicalPathBuf {
     }
 
     /// Create a canonical path, returning error if the supplied path is not canonical.
+    // TODO: rename this to `from_path` or `try_new` to satisfy clippy? (breaking API change)
+    #[allow(clippy::new_ret_no_self)]
     pub fn new<P>(path: P) -> Result<Self>
     where
         P: AsRef<Path>,
@@ -263,6 +260,8 @@ pub struct CanonicalPath(Path);
 
 impl CanonicalPath {
     /// Create a canonical path, returning error if the supplied path is not canonical
+    // TODO: rename this to `from_path` or `try_new` to satisfy clippy? (breaking API change)
+    #[allow(clippy::new_ret_no_self)]
     pub fn new<P>(path: &P) -> Result<&Self>
     where
         P: AsRef<Path> + ?Sized,

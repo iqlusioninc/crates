@@ -27,9 +27,8 @@ This repository contains the following crates:
 
 * [canonical-path:](https://github.com/iqlusioninc/crates/tree/master/canonical-path)
   `Path` and `PathBuf`-like types for representing canonical filesystem paths.
-* [iq-bech32:](https://github.com/iqlusioninc/crates/tree/master/iq-bech32)
-  Bech32 (BIP-173) human-friendly base32 encoding for binary data intended for
-  use with cryptographic keys.
+* [gaunt:](https://github.com/iqlusioninc/crates/tree/master/gaunt)
+  Minimalist Rust HTTP library (with optional `hyper` backend coming soon)
 * [subtle-encoding:](https://github.com/iqlusioninc/crates/tree/master/subtle-encoding)
   Base64 and hexadecimal encoder/decoder with "constant time-ish" implementation.
 * [tai64:](https://github.com/iqlusioninc/crates/tree/master/tai64)

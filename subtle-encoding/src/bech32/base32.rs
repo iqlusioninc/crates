@@ -1,4 +1,4 @@
-use prelude::*;
+use crate::prelude::*;
 
 use super::Error;
 
@@ -48,7 +48,7 @@ fn convert(data: &[u8], src_base: u32, dst_base: u32) -> Result<Vec<u8>, Error> 
 #[cfg(test)]
 mod tests {
     use super::{decode, encode};
-    use error::Error;
+    use crate::error::Error;
 
     const EXAMPLE_ENCODED: &[u8] = &[0, 4, 1, 0, 6, 1, 8, 9, 2, 4, 16, 20, 3, 0, 8];
     const EXAMPLE_DECODED: &[u8] = &[1, 2, 3, 5, 9, 17, 33, 65, 129];

@@ -44,7 +44,7 @@ use super::{
     Error::{self, EncodingInvalid, LengthInvalid},
 };
 #[cfg(feature = "alloc")]
-use prelude::*;
+use crate::prelude::*;
 
 /// Encode the given data as lower-case hexadecimal, returning a `Vec<u8>`
 #[cfg(feature = "alloc")]
@@ -203,7 +203,7 @@ impl Default for Case {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use error::Error::*;
+    use crate::error::Error::*;
 
     /// Hexadecimal test vectors
     struct HexVector {

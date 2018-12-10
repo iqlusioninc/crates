@@ -1,6 +1,6 @@
 //! HTTP request types
 
-use prelude::*;
+use crate::prelude::*;
 
 /// Request bodies
 #[derive(Debug, Default)]

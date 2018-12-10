@@ -131,11 +131,13 @@ mod linux {
         let stdlib = ldd_version.resolve();
 
         match stdlib.should_build_explicit_bzero() {
-            Some(should_build) => if should_build {
-                cc::Build::new()
-                    .file("src/os/linux/explicit_bzero_backport.c")
-                    .compile("explicit_bzero");
-            },
+            Some(should_build) => {
+                if should_build {
+                    cc::Build::new()
+                        .file("src/os/linux/explicit_bzero_backport.c")
+                        .compile("explicit_bzero");
+                }
+            }
             None => panic!("unsupported standard library"),
         }
     }

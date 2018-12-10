@@ -2,7 +2,6 @@
 
 #![crate_name = "tai64"]
 #![crate_type = "rlib"]
-#![allow(unknown_lints, suspicious_arithmetic_impl)]
 #![deny(
     warnings,
     missing_docs,
@@ -107,16 +106,19 @@ impl Sub<u64> for TAI64 {
     }
 }
 
+#[allow(clippy::suspicious_arithmetic_impl)]
 impl Add<Duration> for TAI64N {
     type Output = TAI64N;
 
     fn add(self, d: Duration) -> TAI64N {
         let n = self.1 + d.subsec_nanos();
+
         let (carry, n) = if n >= NANOSECONDS_PER_SECOND {
             (1, n - NANOSECONDS_PER_SECOND)
         } else {
             (0, n)
         };
+
         TAI64N(self.0 + d.as_secs() + carry, n)
     }
 }
@@ -177,7 +179,6 @@ pub const UNIX_EPOCH_TAI64N: TAI64N = TAI64N(TAI64(10 + (1 << 62)), 0);
 
 impl TAI64N {
     /// Convert `SystemTime` to `TAI64N`.
-    #[allow(trivially_copy_pass_by_ref)]
     pub fn from_system_time(t: &SystemTime) -> Self {
         match t.duration_since(UNIX_EPOCH) {
             Ok(d) => UNIX_EPOCH_TAI64N + d,
@@ -306,7 +307,7 @@ mod tests {
         }
     }
 
-    quickcheck!{
+    quickcheck! {
         // XXX: overflow?
         fn tai64n_add_sub(x: TAI64N, y: Duration) -> bool {
             x + y - y == x

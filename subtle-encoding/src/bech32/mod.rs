@@ -12,8 +12,8 @@ mod base32;
 mod checksum;
 
 use self::checksum::{Checksum, CHECKSUM_SIZE};
-use error::Error;
-use prelude::*;
+use crate::error::Error;
+use crate::prelude::*;
 
 /// Default separator character
 pub const DEFAULT_SEPARATOR: char = '1';

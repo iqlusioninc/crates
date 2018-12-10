@@ -3,7 +3,7 @@
 #![allow(unused_macros)]
 
 #[cfg(feature = "alloc")]
-use prelude::*;
+use crate::prelude::*;
 
 #[cfg(feature = "alloc")]
 use core::{num::ParseIntError, str::Utf8Error};
@@ -114,8 +114,8 @@ pub enum ErrorKind {
 /// Create a new error (of a given enum variant) with a formatted message
 macro_rules! err {
     ($variant:ident, $msg:expr) => {
-        ::error::Error::new(
-            ::error::ErrorKind::$variant,
+        crate::error::Error::new(
+            crate::error::ErrorKind::$variant,
             Some($msg)
         )
     };
