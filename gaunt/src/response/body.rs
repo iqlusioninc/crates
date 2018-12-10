@@ -1,7 +1,7 @@
 //! Response body types.
 // TODO: support for streaming response bodies
 
-use prelude::*;
+use crate::prelude::*;
 
 /// Response body
 #[derive(Debug)]

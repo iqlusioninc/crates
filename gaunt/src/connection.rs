@@ -1,6 +1,6 @@
 //! Connections to HTTP servers
 
-use prelude::*;
+use crate::prelude::*;
 
 #[cfg(feature = "logger")]
 use slog::Logger;
@@ -14,10 +14,10 @@ use std::{
 };
 
 use super::{HTTP_VERSION, USER_AGENT};
-use error::Error;
-use path::Path;
-use request;
-use response;
+use crate::error::Error;
+use crate::path::PathBuf;
+use crate::request;
+use crate::response;
 
 /// Default timeout in milliseconds (5 seconds)
 const DEFAULT_TIMEOUT_MS: u64 = 5000;
@@ -80,7 +80,7 @@ pub struct Connection {
 
 impl Connection {
     /// Create a new connection to an HTTP server
-    pub fn new(addr: &str, port: u16, opts: &ConnectionOptions) -> Result<Self, Error> {
+    pub fn open(addr: &str, port: u16, opts: &ConnectionOptions) -> Result<Self, Error> {
         let host = format!("{}:{}", addr, port);
 
         let socketaddr = &host.to_socket_addrs()?.next().ok_or_else(|| {
@@ -117,7 +117,7 @@ impl Connection {
     }
 
     /// Make an HTTP GET request to the given path
-    pub fn get<P: Into<Path>>(
+    pub fn get<P: Into<PathBuf>>(
         &self,
         into_path: P,
         body: &request::Body,
@@ -150,7 +150,7 @@ impl Connection {
     }
 
     /// Make an HTTP POST request to the given path
-    pub fn post<P: Into<Path>>(
+    pub fn post<P: Into<PathBuf>>(
         &self,
         into_path: P,
         body: &request::Body,
@@ -184,7 +184,7 @@ impl Connection {
 
     /// Log information about a request (if `logger` feature is enabled)
     #[cfg(feature = "logger")]
-    fn log(&self, method: &str, path: &Path, started_at: Instant) {
+    fn log(&self, method: &str, path: &PathBuf, started_at: Instant) {
         let duration = Instant::now().duration_since(started_at);
 
         if let Some(log) = self.logger.as_ref() {

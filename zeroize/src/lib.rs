@@ -110,12 +110,7 @@
 #![crate_name = "zeroize"]
 #![crate_type = "rlib"]
 #![no_std]
-#![deny(
-    warnings,
-    missing_docs,
-    unused_import_braces,
-    unused_qualifications,
-)]
+#![deny(warnings, missing_docs, unused_import_braces, unused_qualifications)]
 #![doc(html_root_url = "https://docs.rs/zeroize/0.4.2")]
 
 #[cfg(any(feature = "std", test))]
@@ -125,7 +120,7 @@ extern crate std;
 
 /// Zeroization traits
 mod zeroize;
-pub use zeroize::*;
+pub use crate::zeroize::*;
 
 // nightly: use `volatile_set_memory`
 #[cfg(feature = "nightly")]
@@ -137,7 +132,7 @@ pub(crate) use nightly::secure_zero_memory;
 #[cfg(not(feature = "nightly"))]
 mod stable;
 #[cfg(not(feature = "nightly"))]
-pub(crate) use stable::secure_zero_memory;
+pub(crate) use crate::stable::secure_zero_memory;
 
 #[cfg(test)]
 mod tests {

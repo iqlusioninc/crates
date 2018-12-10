@@ -4,6 +4,7 @@ description = "TAI64 and TAI64N (i.e. Temps Atomique International) timestamp su
 version     = "1.0.0" # Also update html_root_url in lib.rs when bumping this
 authors     = ["Tony Arcieri <tony@iqlusion.io>", "sopium <sopium@mysterious.site>"]
 license     = "Apache-2.0"
+edition     = "2018"
 homepage    = "https://github.com/iqlusioninc/crates/"
 repository  = "https://github.com/iqlusioninc/crates/tree/master/tai64"
 readme      = "README.md"

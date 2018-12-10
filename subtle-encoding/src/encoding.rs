@@ -13,7 +13,7 @@ use zeroize::Zeroize;
 
 use super::Error;
 #[allow(unused_imports)]
-use prelude::*;
+use crate::prelude::*;
 
 /// Mode to use for newly created files
 // TODO: make this configurable?

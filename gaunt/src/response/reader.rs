@@ -1,20 +1,16 @@
 //! Read HTTP responses from an `io::Read`
 
-use prelude::*;
+use crate::prelude::*;
 
 use std::{io::Read, str};
 
 use super::Body;
-use error::Error;
+use crate::error::Error;
 
 const TRANSFER_ENCODING_HEADER: &str = "Transfer-Encoding: ";
 const HEADER_DELIMITER: &[u8] = b"\r\n\r\n";
 const HTTP_SUCCESS_STATUS: &str = "HTTP/1.1 200 OK";
 const CONTENT_LENGTH_HEADER: &str = "Content-Length: ";
-
-/// Maximum number of headers we can parse.
-// TODO: we shouldn't have a max, or at least one this small
-//const MAX_HEADERS: usize = 32;
 
 /// Maximum response size we can parse.
 // TODO: we shouldn't have a max, or at least one this small
@@ -37,6 +33,7 @@ pub struct Reader {
 
 impl Reader {
     /// Create a new `response::Reader` that consumes a response body from a socket
+    #[allow(clippy::new_ret_no_self)]
     pub(crate) fn new(readable: &mut Read) -> Result<Self, Error> {
         // TODO: better buffering
         let mut buffer = Self {
@@ -71,9 +68,6 @@ impl Reader {
     /// Read the response headers
     fn read_headers(&mut self, readable: &mut Read) -> Result<(), Error> {
         assert!(self.body_offset.is_none(), "already read headers!");
-
-        //let mut headers = [httparse::EMPTY_HEADER; MAX_HEADERS];
-        //let mut parser = httparse::Response::new(&mut headers);
 
         loop {
             self.fill_buffer(readable)?;

@@ -2,17 +2,9 @@
 
 #![crate_name = "gaunt"]
 #![crate_type = "rlib"]
-#![deny(
-    warnings,
-    missing_docs,
-    unused_import_braces,
-    unused_qualifications,
-)]
+#![deny(warnings, missing_docs, unused_import_braces, unused_qualifications)]
 #![no_std]
-#![cfg_attr(
-    all(feature = "nightly", not(feature = "std")),
-    feature(alloc)
-)]
+#![cfg_attr(all(feature = "nightly", not(feature = "std")), feature(alloc))]
 #![forbid(unsafe_code)]
 #![doc(
     html_logo_url = "https://storage.googleapis.com/iqlusion-production-web/github/gaunt/gaunt-logo.svg",
@@ -43,9 +35,9 @@ pub mod request;
 pub mod response;
 
 #[cfg(feature = "std")]
-pub use connection::*;
-pub use error::*;
-pub use path::*;
+pub use crate::connection::*;
+pub use crate::error::*;
+pub use crate::path::*;
 
 /// Version of HTTP supported by Gaunt.
 /// NOTE: HTTP/2 support is not planned.

@@ -1,44 +1,47 @@
 //! Remote paths on HTTP servers
 
 #[cfg(feature = "alloc")]
-use prelude::*;
+use {
+    crate::{error::Error, prelude::*},
+    core::{
+        fmt::{self, Display},
+        str::FromStr,
+    },
+};
+
+/// Paths to HTTP resources (owned buffer)
+// TODO: corresponding borrowed `Path` type
+#[cfg(feature = "alloc")]
+pub struct PathBuf(String);
 
 #[cfg(feature = "alloc")]
-use core::fmt::{self, Display};
+impl FromStr for PathBuf {
+    type Err = Error;
 
-#[cfg(feature = "alloc")]
-use error::Error;
-
-/// Paths requested via HTTP
-#[cfg(feature = "alloc")]
-pub struct Path(String);
-
-#[cfg(feature = "alloc")]
-impl Path {
     /// Create a path from the given string
-    pub fn new(path: &str) -> Result<Self, Error> {
+    fn from_str(path: &str) -> Result<Self, Error> {
         // TODO: validate path
-        Ok(Path(path.to_owned()))
+        Ok(PathBuf(path.to_owned()))
     }
 }
 
 #[cfg(feature = "alloc")]
-impl AsRef<str> for Path {
+impl AsRef<str> for PathBuf {
     fn as_ref(&self) -> &str {
         self.0.as_ref()
     }
 }
 
 #[cfg(feature = "alloc")]
-impl Display for Path {
+impl Display for PathBuf {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         self.0.fmt(f)
     }
 }
 
 #[cfg(feature = "alloc")]
-impl<'a> From<&'a str> for Path {
+impl<'a> From<&'a str> for PathBuf {
     fn from(path: &str) -> Self {
-        Self::new(path).unwrap()
+        Self::from_str(path).unwrap()
     }
 }

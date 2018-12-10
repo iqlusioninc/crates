@@ -15,16 +15,8 @@
 #![crate_name = "subtle_encoding"]
 #![crate_type = "rlib"]
 #![no_std]
-#![cfg_attr(
-    all(feature = "nightly", not(feature = "std")),
-    feature(alloc)
-)]
-#![deny(
-    warnings,
-    missing_docs,
-    unused_import_braces,
-    unused_qualifications,
-)]
+#![cfg_attr(all(feature = "nightly", not(feature = "std")), feature(alloc))]
+#![deny(warnings, missing_docs, unused_import_braces, unused_qualifications)]
 #![forbid(unsafe_code)]
 #![doc(html_root_url = "https://docs.rs/subtle-encoding/0.3.0")]
 
@@ -52,9 +44,9 @@ pub mod identity;
 mod prelude;
 
 #[cfg(feature = "base64")]
-pub use base64::Base64;
-pub use encoding::Encoding;
-pub use error::Error;
+pub use crate::base64::Base64;
+pub use crate::encoding::Encoding;
+pub use crate::error::Error;
 #[cfg(feature = "hex")]
-pub use hex::Hex;
-pub use identity::{Identity, IDENTITY};
+pub use crate::hex::Hex;
+pub use crate::identity::{Identity, IDENTITY};

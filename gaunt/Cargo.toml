@@ -4,6 +4,7 @@ description = "Minimalist Rust HTTP toolkit (client-only)."
 version     = "0.1.0"
 license     = "Apache-2.0"
 authors     = ["Tony Arcieri <tony@iqlusion.io>"]
+edition     = "2018"
 homepage    = "https://github.com/iqlusioninc/crates/"
 repository  = "https://github.com/iqlusioninc/crates/tree/master/gaunt"
 readme      = "README.md"
