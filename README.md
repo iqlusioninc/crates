@@ -6,9 +6,9 @@
 
 [license-image]: https://img.shields.io/badge/license-Apache2.0-blue.svg
 [license-link]: https://github.com/iqlusioninc/crates/blob/master/LICENSE
-[build-image]: https://circleci.com/gh/iqlusioninc/crates.svg?style=shield
-[build-link]: https://circleci.com/gh/iqlusioninc/crates
-[appveyor-image]: https://ci.appveyor.com/api/projects/status/1ua33q2njho24e9h?svg=true
+[build-image]: https://travis-ci.org/iqlusioninc/crates.svg?branch=master
+[build-link]: https://travis-ci.org/iqlusioninc/crates/
+[appveyor-image]: https://ci.appveyor.com/api/projects/status/qslcjs7e1rn4a2w9?svg=true
 [appveyor-link]: https://ci.appveyor.com/project/tony-iqlusion/crates
 
 This repository contains a set of Apache 2.0-licensed packages (a.k.a.  "crates")
