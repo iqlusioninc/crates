@@ -73,7 +73,10 @@
 //! separately from this crate), it comes with some onerous API requirements:
 //! it means any data that we might ever desire to zero is owned by a
 //! `VolatileCell`. However, this does not make it possible for this crate
-//! to act on references, which severely limits its applicability.
+//! to act on references, which severely limits its applicability. In fact
+//! a `VolatileCell` can only act on values, i.e. to read a value from it,
+//! we'd need to make a copy of it, and that's literally the opposite of
+//! what we want.
 //!
 //! It's worth asking what the precise semantics of mixing volatile and
 //! non-volatile reads actually are, and whether a less obtrusive API which
@@ -162,13 +165,18 @@
 
 #![no_std]
 #![deny(warnings, missing_docs, unused_import_braces, unused_qualifications)]
+#![cfg_attr(all(feature = "nightly", not(feature = "std")), feature(alloc))]
 #![doc(html_root_url = "https://docs.rs/zeroize/0.4.2")]
 
-#[cfg(test)]
-#[macro_use]
+#[cfg(any(feature = "std", test))]
+#[cfg_attr(test, macro_use)]
 extern crate std;
 
+#[cfg(all(feature = "alloc", not(feature = "std")))]
+pub use alloc::prelude::*;
 use core::{ptr, slice::IterMut};
+#[cfg(feature = "std")]
+pub use std::prelude::v1::*;
 
 /// Trait for securely erasing types from memory
 pub trait Zeroize {
@@ -211,12 +219,31 @@ where
     }
 }
 
-impl<'a, Z> Zeroize for [Z]
+impl<Z> Zeroize for [Z]
 where
     Z: Zeroize,
 {
     fn zeroize(&mut self) {
         self.iter_mut().zeroize()
+    }
+}
+
+#[cfg(feature = "alloc")]
+impl<Z> Zeroize for Vec<Z>
+where
+    Z: Zeroize,
+{
+    fn zeroize(&mut self) {
+        self.iter_mut().zeroize();
+        self.clear();
+    }
+}
+
+#[cfg(feature = "alloc")]
+impl Zeroize for String {
+    fn zeroize(&mut self) {
+        unsafe { self.as_bytes_mut() }.zeroize();
+        self.clear();
     }
 }
 
@@ -234,9 +261,16 @@ mod tests {
 
     #[test]
     fn zeroize_vec() {
-        let mut vec = vec![42u8; 3];
+        let mut vec = vec![42; 3];
         vec.zeroize();
-        assert!(vec.as_slice().iter().all(|b| *b == 0));
+        assert!(vec.is_empty());
+    }
+
+    #[test]
+    fn zeroize_string() {
+        let mut string = String::from("Hello, world!");
+        string.zeroize();
+        assert!(string.is_empty());
     }
 
     #[test]
