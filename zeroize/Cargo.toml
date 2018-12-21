@@ -8,7 +8,7 @@ description = """
               just a trait implemented for all of Rust's core scalar types
               and slices/iterators thereof for securely zeroing memory.
               """
-version     = "0.4.2" # Also update html_root_url in lib.rs when bumping this
+version     = "0.5.0" # Also update html_root_url in lib.rs when bumping this
 authors     = ["Tony Arcieri <tony@iqlusion.io>"]
 license     = "Apache-2.0 OR MIT"
 edition     = "2018"
