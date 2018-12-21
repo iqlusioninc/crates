@@ -3,49 +3,54 @@ cache: cargo
 
 branches:
   only:
-  - master
+    - master
 
 rust:
-- stable
+  - stable
 
 os:
-- linux
-- osx
-- windows
+  - linux
+  - osx
+  - windows
 
 matrix:
   fast_finish: true
   allow_failures:
-  # We still rely on Appveyor for Windows testing since it's more
-  # reliable and performs better, but this lets us keep an eye on
-  # improvements to Travis Windows support
-  - os: windows
+    # We still rely on Appveyor for Windows testing since it's more
+    # reliable and performs better, but this lets us keep an eye on
+    # improvements to Travis Windows support
+    - os: windows
+  include:
+    - name: "Rust: stable (wasm32)"
+      rust: stable
+      script: cargo build --all --target wasm32-unknown-unknown
 
 install:
-- rustup component add rustfmt
-- rustup component add clippy
-- command -v cargo-audit >/dev/null 2>&1 || cargo install cargo-audit
+  - rustup component add rustfmt
+  - rustup component add clippy
+  - rustup target add wasm32-unknown-unknown
+  - command -v cargo-audit >/dev/null 2>&1 || cargo install cargo-audit
 
 script:
-# audit
-- cargo audit
+  # audit
+  - cargo audit
 
-# lint
-- cargo fmt --version
-- cargo fmt --all -- --check
-- cargo clippy --version
-- cargo clippy --all
+  # lint
+  - cargo fmt --version
+  - cargo fmt --all -- --check
+  - cargo clippy --version
+  - cargo clippy --all
 
-# ensure crates build without default features
-- cargo build --all --no-default-features
+  # ensure crates build without default features
+  - cargo build --all --no-default-features
 
-# test
-- cargo test --all --release
+  # test
+  - cargo test --all --release
 
-# crates with non-default features
-- (cd gaunt && cargo test --release --features=logger)
-- (cd subtle-encoding && cargo test --release --features=bech32-preview)
-- (cd tai64 && cargo test --release --features=chrono)
+  # crates with non-default features
+  - (cd gaunt && cargo test --release --features=logger)
+  - (cd subtle-encoding && cargo test --release --features=bech32-preview)
+  - (cd tai64 && cargo test --release --features=chrono)
 
-# doc build
-- cargo doc --no-deps
+  # doc build
+  - cargo doc --no-deps
