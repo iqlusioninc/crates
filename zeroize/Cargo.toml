@@ -19,3 +19,9 @@ keywords    = ["memory", "memset", "secure", "volatile", "zero"]
 
 [badges]
 circle-ci = { repository = "iqlusioninc/crates" }
+
+[features]
+default = ["std"]
+alloc = []
+nightly = []
+std = ["alloc"]
