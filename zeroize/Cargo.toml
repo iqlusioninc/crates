@@ -1,13 +1,11 @@
 [package]
 name        = "zeroize"
 description = """
-              Securely zero memory while avoiding compiler optimizations:
-              cross-platform secure intrinsics for zeroing memory, using FFI
-              to invoke OS intrinsics on stable Rust (with support for Linux,
-              Windows, macOS/iOS, FreeBSD, OpenBSD, NetBSD, DragonflyBSD),
-              or the unstable 'volatile_set_memory()` intrinsic on nightly.
-              No insecure fallbacks, no dependencies, no std, no functionality
-              besides securely zeroing memory.
+              Securely zero memory with using a simple trait built on stable
+              Rust primitives which guarantee they will not be 'optimized away'
+              by leveraging LLVM's volatile write semantics. No weird tricks,
+              no insecure fallbacks, no dependencies, no std, just a single
+              trait with a single method for securely zeroing memory.
               """
 version     = "0.4.2" # Also update html_root_url in lib.rs when bumping this
 authors     = ["Tony Arcieri <tony@iqlusion.io>"]
@@ -18,24 +16,6 @@ repository  = "https://github.com/iqlusioninc/crates/tree/master/zeroize"
 readme      = "README.md"
 categories  = ["cryptography", "memory-management", "no-std", "os"]
 keywords    = ["memory", "memset", "secure", "volatile", "zero"]
-
-[features]
-# enable feature detection for all platforms by default
-default = ["linux-backport", "std", "windows"]
-std = []
-
-# backport of 'explicit_bzero' (C code) for glibc <2.25 or musl <1.1.20
-linux-backport = ["cc", "semver"]
-
-# `volatile_set_memory` support on nightly Rust
-nightly = []
-
-# `SecureZeroMemory` shim on Windows
-windows = ["cc"]
-
-[build-dependencies]
-cc = { version = "1", optional = true }
-semver = { version = "0.9", optional = true }
 
 [badges]
 circle-ci = { repository = "iqlusioninc/crates" }
