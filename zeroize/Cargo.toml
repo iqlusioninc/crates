@@ -3,9 +3,10 @@ name        = "zeroize"
 description = """
               Securely zero memory with using a simple trait built on stable
               Rust primitives which guarantee they will not be 'optimized away'
-              by leveraging LLVM's volatile write semantics. No weird tricks,
-              no insecure fallbacks, no dependencies, no std, just a single
-              trait with a single method for securely zeroing memory.
+              by leveraging LLVM's volatile write semantics and memory fences.
+              No weird tricks, no insecure fallbacks, no dependencies, no std,
+              just a trait implemented for all of Rust's core scalar types
+              and slices/iterators thereof for securely zeroing memory.
               """
 version     = "0.4.2" # Also update html_root_url in lib.rs when bumping this
 authors     = ["Tony Arcieri <tony@iqlusion.io>"]
@@ -18,7 +19,7 @@ categories  = ["cryptography", "memory-management", "no-std", "os"]
 keywords    = ["memory", "memset", "secure", "volatile", "zero"]
 
 [badges]
-circle-ci = { repository = "iqlusioninc/crates" }
+travis-ci = { repository = "iqlusioninc/crates" }
 
 [features]
 default = ["std"]

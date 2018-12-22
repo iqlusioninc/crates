@@ -9,14 +9,29 @@
 //! use zeroize::Zeroize;
 //!
 //! fn main() {
-//!     let mut secret = b"Air shield password: 1,2,3,4,5".clone();
+//!     // Protip: don't embed secrets in your source code.
+//!     // This is just an example.
+//!     let mut secret = b"Air shield password: 1,2,3,4,5".to_vec();
 //!     // [ ... ] open the air shield here
 //!
-//!     // Now that we're done using the secret, we want to zero it out.
-//!     // Actual call to zeroize here:
+//!     // Now that we're done using the secret, zero it out.
 //!     secret.zeroize();
 //! }
 //! ```
+//!
+//! The [Zeroize] trait is impl'd on all of Rust's core scalar types including
+//! integers, floats, `bool`, and `char`.
+//!
+//! Additionally, it's implemented on slices and `IterMut`s of the above types.
+//!
+//! When the `std` feature is enabled (which it is by default), it's also impl'd
+//! for `Vec`s of the above types as well as `String`, where it provides
+//! [Vec::clear()] / [String::clear()]-like behavior (truncating to zero-length)
+//! but ensures the backing memory is securely zeroed.
+//!
+//! The [ZeroizeWithDefault] marker trait can be impl'd on types which also
+//! impl [Default], which implements [Zeroize] by overwriting a value with
+//! the default value.
 //!
 //! ## About
 //!
@@ -25,13 +40,14 @@
 //! many documented "tricks" to attempt to avoid these optimizations and ensure
 //! that a zeroing routine is performed reliably.
 //!
-//! This crate isn't about tricks: it builds on the [std::ptr::write_volatile()]
-//! function available in `stable` Rust (since 1.0.9) to provide easy-to-use,
-//! portable zeroing behavior which works on all of Rust's core number types and
-//! slices thereof.
+//! This crate isn't about tricks: it uses [core::ptr::write_volatile]
+//! and [core::sync::atomic] memory fences to provide easy-to-use, portable
+//! zeroing behavior which works on all of Rust's core number types and slices
+//! thereof, implemented in pure Rust with no usage of FFI or assembly.
 //!
 //! - **No insecure fallbacks!**
 //! - **No dependencies!**
+//! - **No FFI or inline assembly!**
 //! - `#![no_std]` **i.e. embedded-friendly**!
 //! - **No functionality besides securely zeroing memory!**
 //!
@@ -51,7 +67,7 @@
 //! to zeroization. However, this is not a guarantee, but rather an LLVM
 //! implementation detail.
 //!
-//! For more background, we can look to the [std::ptr::write_volatile()]
+//! For more background, we can look to the [core::ptr::write_volatile]
 //! documentation:
 //!
 //! > Volatile operations are intended to act on I/O memory, and are guaranteed
@@ -62,7 +78,7 @@
 //! > accessed with non-volatile operations.
 //!
 //! Uhoh! This crate does not guarantee all reads to the memory it operates on
-//! are volatile, and the documentation for [std::ptr::write_volatile()]
+//! are volatile, and the documentation for [core::ptr::write_volatile]
 //! explicitly warns against mixing volatile and non-volatile operations.
 //! Perhaps we'd be better off with something like a `VolatileCell`
 //! type which owns the associated data and ensures all reads and writes are
@@ -107,18 +123,37 @@
 //!   versions of Rust and/or LLVM from changing that.
 //!
 //! To help mitigate concerns about reordering potentially exposing secrets
-//! after they have been zeroed, this crate leverages the `core::sync::atomic`
-//! memory fence functions including `compiler_fence` and `fence` (which uses
+//! after they have been zeroed, this crate leverages the [core::sync::atomic]
+//! memory fence functions including [compiler_fence] and [fence] (which uses
 //! the CPU's native fence instructions). These fences are leveraged with the
-//! strictest ordering guarantees, `Ordering::SeqCst`, which ensures no
+//! strictest ordering guarantees, [Ordering::SeqCst], which ensures no
 //! accesses are reordered. Without a formally defined memory model we can't
 //! guarantee these will be effective, but we hope they will cover most cases.
 //!
+//! Concretely the threat of leaking "zeroized" secrets (via reordering by
+//! LLVM and/or the CPU via out-of-order or speculative execution) would
+//! require a non-volatile access to be reordered ahead of the following:
+//!
+//! 1. before an [Ordering::SeqCst] compiler fence
+//! 2. before an [Ordering::SeqCst] runtime fence
+//! 3. before a volatile write
+//!
+//! This seems unlikely, but our usage of mixed non-volatile and volatile
+//! accesses is technically undefined behavior, at least until guarantees
+//! about this particular mixture of operations is formally defined in a
+//! Rust memory model.
+//!
+//! Furthermore, given the recent history of microarchitectural attacks
+//! (Spectre, Meltdown, etc), there is also potential for "zeroized" secrets
+//! to be leaked through covert channels (e.g. memory fences have been used
+//! as a covert channel), so we are wary to make guarantees unless they can
+//! be made firmly in terms of both a formal Rust memory model and the
+//! generated code for a particular CPU architecture.
+//!
 //! In conclusion, this crate guarantees the zeroize operation will not be
-//! elided or "optimized away", but **cannot** guarantee that in future
-//! versions of Rust and/or LLVM that all subsequent non-volatile reads will
-//! see zeroes instead of the original data (though that appears to be the
-//! case today).
+//! elided or "optimized away", makes a "best effort" to ensure that
+//! memory accesses will not be reordered ahead of the "zeroize" operation,
+//! but **cannot** yet guarantee that such reordering will not occur.
 //!
 //! ## Stack/Heap Zeroing Notes
 //!
@@ -153,7 +188,15 @@
 //!
 //! [Zeroize]: https://docs.rs/zeroize/latest/zeroize/trait.Zeroize.html
 //! [Zeroing memory securely is hard]: http://www.daemonology.net/blog/2014-09-04-how-to-zero-a-buffer.html
-//! [std::ptr::write_volatile()]: https://doc.rust-lang.org/std/ptr/fn.write_volatile.html
+//! [Vec::clear()]: https://doc.rust-lang.org/std/vec/struct.Vec.html#method.clear
+//! [String::clear()]: https://doc.rust-lang.org/std/string/struct.String.html#method.clear
+//! [ZeroizeWithDefault]: https://docs.rs/zeroize/latest/zeroize/trait.ZeroizeWithDefault.html
+//! [Default]: https://doc.rust-lang.org/std/default/trait.Default.html
+//! [core::ptr::write_volatile]: https://doc.rust-lang.org/core/ptr/fn.write_volatile.html
+//! [core::sync::atomic]: https://doc.rust-lang.org/stable/core/sync/atomic/index.html
+//! [Ordering::SeqCst]: https://doc.rust-lang.org/std/sync/atomic/enum.Ordering.html#variant.SeqCst
+//! [compiler_fence]: https://doc.rust-lang.org/stable/core/sync/atomic/fn.compiler_fence.html
+//! [fence]: https://doc.rust-lang.org/stable/core/sync/atomic/fn.fence.html
 //! [memory-model]: https://github.com/nikomatsakis/rust-memory-model
 //! [pin]: https://github.com/rust-lang/rfcs/blob/master/text/2349-pin.md
 //! [good cryptographic hygiene]: https://cryptocoding.net/index.php/Coding_rules#Clean_memory_of_secret_data
@@ -182,7 +225,7 @@ pub trait Zeroize {
 }
 
 /// Marker trait for types which can be zeroized with the `Default` value
-pub trait ZeroizeWithDefault: Default {}
+pub trait ZeroizeWithDefault: Copy + Default + Sized {}
 
 impl<Z> Zeroize for Z
 where
@@ -223,9 +266,12 @@ where
     Z: ZeroizeWithDefault,
 {
     fn zeroize(&mut self) {
+        let default = Z::default();
+
         for elem in self {
-            volatile_set(elem, Z::default());
+            volatile_set(elem, default);
         }
+
         atomic_fence();
     }
 }
@@ -302,7 +348,7 @@ fn atomic_fence() {
 
 /// Set a mutable reference to a value to the given replacement
 #[inline]
-fn volatile_set<T>(dst: &mut T, src: T) {
+fn volatile_set<T: Copy + Sized>(dst: &mut T, src: T) {
     unsafe { ptr::write_volatile(dst, src) }
 }
 
