@@ -106,24 +106,19 @@
 //!   for both points #1 and #2 above, but there is nothing preventing future
 //!   versions of Rust and/or LLVM from changing that.
 //!
-//! In conclusion, this crate guarantees the zeroization operation will not be
+//! To help mitigate concerns about reordering potentially exposing secrets
+//! after they have been zeroed, this crate leverages the `core::sync::atomic`
+//! memory fence functions including `compiler_fence` and `fence` (which uses
+//! the CPU's native fence instructions). These fences are leveraged with the
+//! strictest ordering guarantees, `Ordering::SeqCst`, which ensures no
+//! accesses are reordered. Without a formally defined memory model we can't
+//! guarantee these will be effective, but we hope they will cover most cases.
+//!
+//! In conclusion, this crate guarantees the zeroize operation will not be
 //! elided or "optimized away", but **cannot** guarantee that in future
 //! versions of Rust and/or LLVM that all subsequent non-volatile reads will
 //! see zeroes instead of the original data (though that appears to be the
 //! case today).
-//!
-//! Whether or not this is satisfactory for your use cases will depend on what
-//! they are. Notably it may be insufficient to pass rigorous cryptographic
-//! audits where precise zeroization semantics are mandatory (e.g. FIPS).
-//!
-//! All that said, just by using this crate you can keep track of what memory
-//! needs to be zeroed, and in the meantime, the implementation of [Zeroize]
-//! can evolve into something that could potentially guarantee *all* subsequent
-//! reads will be zeroes. For example, `core::sync::atomic` contains the
-//! `compiler_fence` and `fence` functions which may be suitable to guarantee
-//! the ordering via a combination of compile-time and runtime memory fences.
-//! This approach warrants further investigation, and could potentially lead
-//! to a sound solution for #2 with guaranteed semantics.
 //!
 //! ## Stack/Heap Zeroing Notes
 //!
@@ -166,6 +161,7 @@
 #![no_std]
 #![deny(warnings, missing_docs, unused_import_braces, unused_qualifications)]
 #![cfg_attr(all(feature = "nightly", not(feature = "std")), feature(alloc))]
+#![cfg_attr(feature = "nightly", feature(core_intrinsics))]
 #![doc(html_root_url = "https://docs.rs/zeroize/0.4.2")]
 
 #[cfg(any(feature = "std", test))]
@@ -174,7 +170,7 @@ extern crate std;
 
 #[cfg(all(feature = "alloc", not(feature = "std")))]
 pub use alloc::prelude::*;
-use core::{ptr, slice::IterMut};
+use core::{ptr, slice::IterMut, sync::atomic};
 #[cfg(feature = "std")]
 pub use std::prelude::v1::*;
 
@@ -185,56 +181,82 @@ pub trait Zeroize {
     fn zeroize(&mut self);
 }
 
-macro_rules! impl_zeroize_for_num_types {
+/// Marker trait for types which can be zeroized with the `Default` value
+pub trait ZeroizeWithDefault: Default {}
+
+impl<Z> Zeroize for Z
+where
+    Z: ZeroizeWithDefault,
+{
+    fn zeroize(&mut self) {
+        volatile_set(self, Z::default());
+        atomic_fence();
+    }
+}
+
+macro_rules! impl_zeroize_with_default {
     ($($type:ty),+) => {
-        $(
-            impl Zeroize for $type {
-                #[allow(clippy::cast_lossless)]
-                fn zeroize(&mut self) {
-                    unsafe { ptr::write_volatile(self, 0 as $type) }
-                }
-            }
-        )+
+        $(impl ZeroizeWithDefault for $type {})+
      };
 }
 
-impl_zeroize_for_num_types!(i8, i16, i32, i64, i128, isize);
-impl_zeroize_for_num_types!(u8, u16, u32, u64, u128, usize);
-impl_zeroize_for_num_types!(f32, f64, char);
+impl_zeroize_with_default!(i8, i16, i32, i64, i128, isize);
+impl_zeroize_with_default!(u16, u32, u64, u128, usize);
+impl_zeroize_with_default!(f32, f64, char, bool);
 
-impl Zeroize for bool {
+/// On non-nightly targets, avoid special-casing u8
+#[cfg(not(feature = "nightly"))]
+impl_zeroize_with_default!(u8);
+
+/// On nightly targets, don't implement `ZeroizeWithDefault` so we can special
+/// case using batch set operations.
+#[cfg(feature = "nightly")]
+impl Zeroize for u8 {
     fn zeroize(&mut self) {
-        unsafe { ptr::write_volatile(self, false) }
+        volatile_set(self, 0);
+        atomic_fence();
     }
 }
 
 impl<'a, Z> Zeroize for IterMut<'a, Z>
 where
-    Z: Zeroize,
+    Z: ZeroizeWithDefault,
 {
     fn zeroize(&mut self) {
         for elem in self {
-            elem.zeroize()
+            volatile_set(elem, Z::default());
         }
+        atomic_fence();
     }
 }
 
+/// Implement zeroize on all types that can be zeroized with the zero value
 impl<Z> Zeroize for [Z]
 where
-    Z: Zeroize,
+    Z: ZeroizeWithDefault,
 {
     fn zeroize(&mut self) {
-        self.iter_mut().zeroize()
+        // TODO: batch volatile set operation?
+        self.iter_mut().zeroize();
+    }
+}
+
+/// On `nightly` Rust, `volatile_set_memory` provides fast byte slice zeroing
+#[cfg(feature = "nightly")]
+impl Zeroize for [u8] {
+    fn zeroize(&mut self) {
+        volatile_zero_bytes(self);
+        atomic_fence();
     }
 }
 
 #[cfg(feature = "alloc")]
 impl<Z> Zeroize for Vec<Z>
 where
-    Z: Zeroize,
+    Z: ZeroizeWithDefault,
 {
     fn zeroize(&mut self) {
-        self.iter_mut().zeroize();
+        self.as_mut_slice().zeroize();
         self.clear();
     }
 }
@@ -245,6 +267,49 @@ impl Zeroize for String {
         unsafe { self.as_bytes_mut() }.zeroize();
         self.clear();
     }
+}
+
+/// On `nightly` Rust, `volatile_set_memory` provides fast byte array zeroing
+#[cfg(feature = "nightly")]
+macro_rules! impl_zeroize_for_byte_array {
+    ($($size:expr),+) => {
+        $(
+            impl Zeroize for [u8; $size] {
+                fn zeroize(&mut self) {
+                    volatile_zero_bytes(self.as_mut());
+                    atomic_fence();
+                }
+            }
+        )+
+     };
+}
+
+#[cfg(feature = "nightly")]
+impl_zeroize_for_byte_array!(
+    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26,
+    27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50,
+    51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64
+);
+
+/// Use fences to prevent accesses from being reordered before this
+/// point, which should hopefully help ensure that all accessors
+/// see zeroes after this point.
+#[inline]
+fn atomic_fence() {
+    atomic::fence(atomic::Ordering::SeqCst);
+    atomic::compiler_fence(atomic::Ordering::SeqCst);
+}
+
+/// Set a mutable reference to a value to the given replacement
+#[inline]
+fn volatile_set<T>(dst: &mut T, src: T) {
+    unsafe { ptr::write_volatile(dst, src) }
+}
+
+#[cfg(feature = "nightly")]
+#[inline]
+fn volatile_zero_bytes(dst: &mut [u8]) {
+    unsafe { core::intrinsics::volatile_set_memory(dst.as_mut_ptr(), 0, dst.len()) }
 }
 
 #[cfg(test)]
