@@ -30,15 +30,20 @@ in doing so they love to "optimize away" unnecessary zeroing calls. There are
 many documented "tricks" to attempt to avoid these optimizations and ensure
 that a zeroing routine is performed reliably.
 
-This crate isn't about tricks: it builds on the [std::ptr::write_volatile()]
-function available in `stable` Rust (since 1.0.9) to provide easy-to-use,
-portable zeroing behavior which works on all of Rust's core number types and
-slices thereof.
+This crate isn't about tricks: it uses [core::ptr::write_volatile]
+and [core::sync::atomic] memory fences to provide easy-to-use, portable
+zeroing behavior which works on all of Rust's core number types and slices
+thereof, implemented in pure Rust with no usage of FFI or assembly.
 
 - **No insecure fallbacks!**
 - **No dependencies!**
+- **No FFI or inline assembly!**
 - `#![no_std]` **i.e. embedded-friendly**!
 - **No functionality besides securely zeroing memory!**
+
+## Requirements
+
+- Rust 1.31+
 
 ## License
 
@@ -58,7 +63,8 @@ without any additional terms or conditions.
 [`Zeroize` trait]: https://docs.rs/zeroize/latest/zeroize/trait.Zeroize.html
 [Documentation]: https://docs.rs/zeroize/
 [Zeroing memory securely is hard]: http://www.daemonology.net/blog/2014-09-04-how-to-zero-a-buffer.html
-[std::ptr::write_volatile()]: https://doc.rust-lang.org/std/ptr/fn.write_volatile.html
+[core::ptr::write_volatile]: https://doc.rust-lang.org/core/ptr/fn.write_volatile.html
+[core::sync::atomic]: https://doc.rust-lang.org/stable/core/sync/atomic/index.html
 [pin]: https://github.com/rust-lang/rfcs/blob/master/text/2349-pin.md
 [good cryptographic hygiene]: https://cryptocoding.net/index.php/Coding_rules#Clean_memory_of_secret_data
 [LICENSE]: https://github.com/iqlusioninc/crates/blob/master/LICENSE
