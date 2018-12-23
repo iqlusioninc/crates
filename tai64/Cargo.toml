@@ -12,7 +12,7 @@ categories  = ["date-and-time", "internationalization", "network-programming", "
 keywords    = ["tai64", "time", "timestamps", "chrono"]
 
 [badges]
-circle-ci = { repository = "iqlusioninc/crates" }
+travis-ci = { repository = "iqlusioninc/crates" }
 
 [dependencies]
 byteorder = "1.0"

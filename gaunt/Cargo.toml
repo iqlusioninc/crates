@@ -12,7 +12,7 @@ categories  = ["network-programming", "no-std", "web-programming::http-client"]
 keywords    = ["api", "client", "http", "rest", "web"]
 
 [badges]
-circle-ci = { repository = "iqlusioninc/crates" }
+travis-ci = { repository = "iqlusioninc/crates" }
 
 [dependencies]
 failure = { version = "0.1", default-features = false }

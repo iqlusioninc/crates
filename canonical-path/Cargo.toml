@@ -12,7 +12,7 @@ categories  = ["filesystem"]
 keywords    = ["filesystem", "path", "canonicalization"]
 
 [badges]
-circle-ci = { repository = "iqlusioninc/crates" }
+travis-ci = { repository = "iqlusioninc/crates" }
 
 [dev-dependencies]
 tempdir = "0.3"
