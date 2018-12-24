@@ -205,7 +205,7 @@
 #![deny(warnings, missing_docs, unused_import_braces, unused_qualifications)]
 #![cfg_attr(all(feature = "nightly", not(feature = "std")), feature(alloc))]
 #![cfg_attr(feature = "nightly", feature(core_intrinsics))]
-#![doc(html_root_url = "https://docs.rs/zeroize/0.5.0")]
+#![doc(html_root_url = "https://docs.rs/zeroize/0.5.1")]
 
 #[cfg(any(feature = "std", test))]
 #[cfg_attr(test, macro_use)]
