@@ -114,12 +114,11 @@
 //!   the behavior of the optimizer, and is therefore a bit different from the
 //!   typical C notion of "volatile".
 //! - As mentioned earlier, LLVM does not presently contain optimizations which
-//!   would reorder a non-volatile read to occurs before a volatile write if
-//!   it is written with the opposite ordering in the original code. However,
-//!   there is nothing precluding such optimizations from being added. The
-//!   current implementation presently appears to exhibit the desired behavior
-//!   for both points #1 and #2 above, but there is nothing preventing future
-//!   versions of Rust and/or LLVM from changing that.
+//!   would reorder a non-volatile read to occur before a volatile write.
+//!   However, there is nothing precluding such optimizations from being added.
+//!   LLVM presently appears to exhibit the desired behavior for both points
+//!   #1 and #2 above, but there is nothing preventing future versions of Rust
+//!   and/or LLVM from changing that.
 //!
 //! To help mitigate concerns about reordering potentially exposing secrets
 //! after they have been zeroed, this crate leverages the [core::sync::atomic]

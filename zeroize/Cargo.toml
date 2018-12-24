@@ -1,13 +1,14 @@
 [package]
 name        = "zeroize"
 description = """
-              Securely zero memory with a simple trait built on stable Rust
-              primitives which guarantee the operation will not be
-              'optimized away' by the compiler. Uses a portable implementation
-              that leverages LLVM's volatile write semantics and memory fences.
-              No weird tricks, no insecure fallbacks, no dependencies, no std,
-              just a trait implemented for all of Rust's core scalar types
-              and slices/iterators thereof for securely zeroing memory.
+              Securely clear secrets from memory with a simple trait built on
+              stable Rust primitives which guarantee they will be zeroed out
+              using an operation will not be 'optimized away' by the compiler.
+              Uses a portable implementation that leverages LLVM's volatile
+              write semantics and memory fences. No weird tricks, no FFI/ASM,
+              no insecure fallbacks, no dependencies, no std, just a trait
+              implemented for all of Rust's core scalar types and
+              slices/iterators thereof for securely zeroing memory.
               """
 version     = "0.5.1" # Also update html_root_url in lib.rs when bumping this
 authors     = ["Tony Arcieri <tony@iqlusion.io>"]
