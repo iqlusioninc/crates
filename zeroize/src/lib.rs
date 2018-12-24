@@ -211,11 +211,12 @@
 #[cfg_attr(test, macro_use)]
 extern crate std;
 
-#[cfg(all(feature = "alloc", not(feature = "std")))]
-pub use alloc::prelude::*;
 use core::{ptr, slice::IterMut, sync::atomic};
+
+#[cfg(all(feature = "alloc", not(feature = "std")))]
+use alloc::prelude::*;
 #[cfg(feature = "std")]
-pub use std::prelude::v1::*;
+use std::prelude::v1::*;
 
 /// Trait for securely erasing types from memory
 pub trait Zeroize {
