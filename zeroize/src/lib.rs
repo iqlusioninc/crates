@@ -1,6 +1,5 @@
-//! Securely zero memory using core or OS intrinsics. This crate wraps
-//! facilities specifically designed to securely zero memory in a common,
-//! safe API: [Zeroize].
+//! Securely zero memory with a simple trait ([Zeroize]) built on stable Rust
+//! primitives which guarantee the operation will not be 'optimized away'.
 //!
 //! ## Usage
 //!
