@@ -1,3 +1,7 @@
+## [0.5.1] (2018-12-24)
+
+- zeroize: Avoid re-exporting the whole prelude ([#150])
+
 ## [0.5.0] (2018-12-24)
 
 This release is a rewrite which replaces FFI bindings to OS-specific APIs with
@@ -39,6 +43,8 @@ a pure Rust solution.
 
 - Initial release
 
+[0.5.1]: https://github.com/iqlusioninc/crates/pull/151
+[#150]: https://github.com/iqlusioninc/crates/pull/150
 [0.5.0]: https://github.com/iqlusioninc/crates/pull/149
 [#146]: https://github.com/iqlusioninc/crates/pull/146
 [#143]: https://github.com/iqlusioninc/crates/pull/143
