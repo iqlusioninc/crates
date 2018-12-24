@@ -1,3 +1,12 @@
+## [0.5.0] (2018-12-24)
+
+This release is a rewrite which replaces FFI bindings to OS-specific APIs with
+a pure Rust solution.
+
+- Use `core::sync::atomic` fences ([#146])
+- Test wasm target ([#143])
+- Rewrite using `core::ptr::write_volatile` ([#142])
+
 ## [0.4.2] (2018-10-12)
 
 - Fix ldd scraper for older glibc versions ([#134])
@@ -30,6 +39,10 @@
 
 - Initial release
 
+[0.5.0]: https://github.com/iqlusioninc/crates/pull/149
+[#146]: https://github.com/iqlusioninc/crates/pull/146
+[#143]: https://github.com/iqlusioninc/crates/pull/143
+[#142]: https://github.com/iqlusioninc/crates/pull/142
 [0.4.2]: https://github.com/iqlusioninc/crates/pull/136
 [#134]: https://github.com/iqlusioninc/crates/pull/134
 [#131]: https://github.com/iqlusioninc/crates/pull/131
