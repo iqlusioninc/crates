@@ -12,13 +12,11 @@
 //! [base64]: https://docs.rs/subtle-encoding/latest/subtle_encoding/base64/index.html
 //! [bech32]: https://docs.rs/subtle-encoding/0.2.3/subtle_encoding/bech32/index.html
 
-#![crate_name = "subtle_encoding"]
-#![crate_type = "rlib"]
 #![no_std]
 #![cfg_attr(all(feature = "nightly", not(feature = "std")), feature(alloc))]
 #![deny(warnings, missing_docs, unused_import_braces, unused_qualifications)]
 #![forbid(unsafe_code)]
-#![doc(html_root_url = "https://docs.rs/subtle-encoding/0.3.0")]
+#![doc(html_root_url = "https://docs.rs/subtle-encoding/0.3.1")]
 
 #[cfg(any(feature = "std", test))]
 #[macro_use]

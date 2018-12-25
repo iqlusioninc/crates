@@ -1,4 +1,8 @@
-## 0.3.0 (2018-11-25)
+## [0.3.1] (2018-12-25)
+
+- Update to zeroize 0.5 ([#149])
+
+## [0.3.0] (2018-11-25)
 
 - Fix critical encode/decode bug in `release` builds ([#126])
 - Non-constant-time Bech32 implementation via `bech32-preview` feature ([#113])
@@ -27,5 +31,8 @@
 
 - Initial release
 
+[0.3.1]: https://github.com/iqlusioninc/crates/pull/155
+[#149]: https://github.com/iqlusioninc/crates/pull/149
+[0.3.0]: https://github.com/iqlusioninc/crates/pull/129
 [#126]: https://github.com/iqlusioninc/crates/pull/126
 [#113]: https://github.com/iqlusioninc/crates/pull/113
