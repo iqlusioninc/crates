@@ -1,6 +1,10 @@
+## [0.5.2] (2018-12-25)
+
+- Add `debug_assert!` to ensure string interiors are zeroized ([#156])
+
 ## [0.5.1] (2018-12-24)
 
-- zeroize: Avoid re-exporting the whole prelude ([#150])
+- Avoid re-exporting the whole prelude ([#150])
 
 ## [0.5.0] (2018-12-24)
 
@@ -43,6 +47,8 @@ a pure Rust solution.
 
 - Initial release
 
+[0.5.2]: https://github.com/iqlusioninc/crates/pull/157
+[#156]: https://github.com/iqlusioninc/crates/pull/157
 [0.5.1]: https://github.com/iqlusioninc/crates/pull/151
 [#150]: https://github.com/iqlusioninc/crates/pull/150
 [0.5.0]: https://github.com/iqlusioninc/crates/pull/149
