@@ -17,17 +17,17 @@ categories  = ["cryptography", "encoding", "no-std"]
 keywords    = ["base64", "bech32", "constant-time", "hex", "security"]
 
 [dependencies]
-failure = "0.1"
+failure = { version = "0.1", default-features = false }
 failure_derive = "0.1"
-zeroize = { version = "0.5", optional = true, path = "../zeroize" }
+zeroize = { version = "0.5", default-features = false, optional = true, path = "../zeroize" }
 
 [features]
 default = ["base64", "hex", "std"]
 alloc = []
 base64 = ["zeroize"]
-bech32-preview = ["alloc"]
+bech32-preview = ["alloc", "zeroize"]
 hex = []
-nightly = []
+nightly = ["zeroize/nightly"]
 std = ["alloc", "zeroize"]
 
 [badges]
