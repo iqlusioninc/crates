@@ -1,3 +1,7 @@
+## [0.3.2] (2018-12-25)
+
+- Fix `#![no_std]` support ([#158])
+
 ## [0.3.1] (2018-12-25)
 
 - Update to zeroize 0.5 ([#149])
@@ -31,6 +35,8 @@
 
 - Initial release
 
+[0.3.2]: https://github.com/iqlusioninc/crates/pull/160
+[#158]: https://github.com/iqlusioninc/crates/pull/158
 [0.3.1]: https://github.com/iqlusioninc/crates/pull/155
 [#149]: https://github.com/iqlusioninc/crates/pull/149
 [0.3.0]: https://github.com/iqlusioninc/crates/pull/129
