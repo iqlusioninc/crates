@@ -310,6 +310,7 @@ where
 impl Zeroize for String {
     fn zeroize(&mut self) {
         unsafe { self.as_bytes_mut() }.zeroize();
+        debug_assert!(self.as_bytes().iter().all(|b| *b == 0));
         self.clear();
     }
 }
