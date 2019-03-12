@@ -41,7 +41,7 @@
 
 use super::{
     Encoding,
-    Error::{self, EncodingInvalid, LengthInvalid},
+    Error::{self, *},
 };
 #[cfg(feature = "alloc")]
 use crate::prelude::*;
@@ -93,11 +93,16 @@ impl Hex {
 
 impl Encoding for Hex {
     fn encode_to_slice(&self, src: &[u8], dst: &mut [u8]) -> Result<usize, Error> {
+        if self.encoded_len(src) > dst.len() {
+            return Err(LengthInvalid);
+        }
+
         for (i, src_byte) in src.iter().enumerate() {
             let offset = i * 2;
             dst[offset] = self.case.encode_nibble(src_byte >> 4);
             dst[offset + 1] = self.case.encode_nibble(src_byte & 0x0f);
         }
+
         Ok(src.len() * 2)
     }
 
@@ -106,6 +111,11 @@ impl Encoding for Hex {
     }
 
     fn decode_to_slice(&self, src: &[u8], dst: &mut [u8]) -> Result<usize, Error> {
+        // TODO: constant-time whitespace tolerance
+        if !src.is_empty() && char::from(src[src.len() - 1]).is_whitespace() {
+            return Err(TrailingWhitespace);
+        }
+
         let dst_length = self.decoded_len(src)?;
         ensure!(dst_length <= dst.len(), LengthInvalid);
 

@@ -24,6 +24,11 @@ pub enum Error {
     /// Padding missing/invalid
     #[fail(display = "padding invalid")]
     PaddingInvalid,
+
+    /// Trailing whitespace detected
+    // TODO: handle trailing whitespace?
+    #[fail(display = "trailing whitespace")]
+    TrailingWhitespace,
 }
 
 /// Assert that the provided condition is true, or else return the given error

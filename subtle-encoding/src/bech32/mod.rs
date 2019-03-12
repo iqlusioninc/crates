@@ -12,8 +12,10 @@ mod base32;
 mod checksum;
 
 use self::checksum::{Checksum, CHECKSUM_SIZE};
-use crate::error::Error;
-use crate::prelude::*;
+use crate::{
+    error::Error::{self, *},
+    prelude::*,
+};
 
 /// Default separator character
 pub const DEFAULT_SEPARATOR: char = '1';
@@ -168,37 +170,45 @@ impl Bech32 {
         let encoded_str = encoded.as_ref();
         let encoded_len: usize = encoded_str.len();
 
-        // TODO: support for longer strings
-        if encoded_len > MAX_LENGTH {
-            return Err(Error::LengthInvalid);
+        // TODO: constant-time whitespace tolerance
+        if encoded_str
+            .chars()
+            .last()
+            .map(|c| c.is_whitespace())
+            .unwrap_or(false)
+        {
+            return Err(TrailingWhitespace);
         }
+
+        // TODO: support for longer strings
+        ensure!(encoded_len <= MAX_LENGTH, LengthInvalid);
 
         let pos = encoded_str
             .rfind(self.separator)
-            .ok_or_else(|| Error::EncodingInvalid)?;
+            .ok_or_else(|| EncodingInvalid)?;
 
         if pos == encoded_str.len() {
-            return Err(Error::EncodingInvalid);
+            return Err(EncodingInvalid);
         }
 
         let hrp = encoded_str[..pos].to_lowercase();
 
         if hrp.is_empty() {
-            return Err(Error::EncodingInvalid);
+            return Err(EncodingInvalid);
         }
 
         // Ensure all characters in the human readable part are in a valid range
         for c in hrp.chars() {
             match c {
                 '!'...'@' | 'A'...'Z' | '['...'`' | 'a'...'z' | '{'...'~' => (),
-                _ => return Err(Error::EncodingInvalid),
+                _ => return Err(EncodingInvalid),
             }
         }
 
         let encoded_data = &encoded_str[(pos + 1)..];
 
         if encoded_data.len() < CHECKSUM_SIZE {
-            return Err(Error::LengthInvalid);
+            return Err(LengthInvalid);
         }
 
         let mut base32_data = Vec::with_capacity(encoded_data.len());
@@ -208,7 +218,7 @@ impl Bech32 {
                 .charset_inverse
                 .get(encoded_byte as usize)
                 .and_then(|byte| *byte)
-                .ok_or_else(|| Error::EncodingInvalid)?;
+                .ok_or_else(|| EncodingInvalid)?;
 
             base32_data.push(decoded_byte);
         }
@@ -323,24 +333,21 @@ mod tests {
     #[test]
     fn hrp_character_out_of_range() {
         let bech32 = Bech32::default();
-        assert_eq!(bech32.decode("\x201nwldj5"), Err(Error::EncodingInvalid));
-        assert_eq!(bech32.decode("\x7F1axkwrx"), Err(Error::EncodingInvalid));
+        assert_eq!(bech32.decode("\x201nwldj5"), Err(EncodingInvalid));
+        assert_eq!(bech32.decode("\x7F1axkwrx"), Err(EncodingInvalid));
     }
 
     #[test]
     fn overall_max_length_exceeded() {
         let too_long: &str = "an84characterslonghumanreadablepartthatcontainsthenumber1andtheexcludedcharactersbio1569pvx";
-        assert_eq!(
-            Bech32::default().decode(too_long),
-            Err(Error::LengthInvalid)
-        );
+        assert_eq!(Bech32::default().decode(too_long), Err(LengthInvalid));
     }
 
     #[test]
     fn no_separator_character() {
         assert_eq!(
             Bech32::default().decode("pzry9x0s0muk"),
-            Err(Error::EncodingInvalid)
+            Err(EncodingInvalid)
         );
     }
 
@@ -349,32 +356,26 @@ mod tests {
         for empty_hrp_str in &["1pzry9x0s0muk", "10a06t8", "1qzzfhee"] {
             assert_eq!(
                 Bech32::default().decode(empty_hrp_str),
-                Err(Error::EncodingInvalid)
+                Err(EncodingInvalid)
             );
         }
     }
 
     #[test]
     fn invalid_data_character() {
-        assert_eq!(
-            Bech32::default().decode("x1b4n0q5v"),
-            Err(Error::EncodingInvalid)
-        );
+        assert_eq!(Bech32::default().decode("x1b4n0q5v"), Err(EncodingInvalid));
     }
 
     #[test]
     fn checksum_too_short() {
-        assert_eq!(
-            Bech32::default().decode("li1dgmt3"),
-            Err(Error::LengthInvalid)
-        );
+        assert_eq!(Bech32::default().decode("li1dgmt3"), Err(LengthInvalid));
     }
 
     #[test]
     fn invalid_character_in_checksum() {
         assert_eq!(
             Bech32::default().decode("de1lg7wt\x7F"),
-            Err(Error::EncodingInvalid)
+            Err(EncodingInvalid)
         );
     }
 
@@ -382,16 +383,13 @@ mod tests {
     fn checksum_calculated_with_uppercase_hrp() {
         assert_eq!(
             Bech32::upper_case().decode("A1G7SGD8"),
-            Err(Error::ChecksumInvalid)
+            Err(ChecksumInvalid)
         );
     }
 
     // NOTE: not in test vectors but worth testing for anyway
     #[test]
     fn invalid_mixed_case() {
-        assert_eq!(
-            Bech32::default().decode("a12UEL5L"),
-            Err(Error::EncodingInvalid)
-        );
+        assert_eq!(Bech32::default().decode("a12UEL5L"), Err(EncodingInvalid));
     }
 }
