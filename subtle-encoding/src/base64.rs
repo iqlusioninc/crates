@@ -9,7 +9,7 @@
 
 use super::{
     Encoding,
-    Error::{self, EncodingInvalid},
+    Error::{self, *},
 };
 #[cfg(feature = "alloc")]
 use crate::prelude::*;
@@ -41,6 +41,10 @@ pub fn decode<B: AsRef<[u8]>>(encoded_bytes: B) -> Result<Vec<u8>, Error> {
 
 impl Encoding for Base64 {
     fn encode_to_slice(&self, src: &[u8], dst: &mut [u8]) -> Result<usize, Error> {
+        if self.encoded_len(src) > dst.len() {
+            return Err(LengthInvalid);
+        }
+
         let mut src_offset: usize = 0;
         let mut dst_offset: usize = 0;
         let mut src_length: usize = src.len();
@@ -79,6 +83,13 @@ impl Encoding for Base64 {
     }
 
     fn decode_to_slice(&self, src: &[u8], dst: &mut [u8]) -> Result<usize, Error> {
+        // TODO: constant-time whitespace tolerance
+        if !src.is_empty() && char::from(src[src.len() - 1]).is_whitespace() {
+            return Err(TrailingWhitespace);
+        }
+
+        ensure!(self.decoded_len(src)? <= dst.len(), LengthInvalid);
+
         let mut src_offset: usize = 0;
         let mut dst_offset: usize = 0;
         let mut src_length: usize = src.len();
@@ -250,29 +261,28 @@ mod tests {
             raw: b"\xFF\xFF\xFF\xFF\xFF",
             base64: b"//////8=",
         },
+        Base64Vector {
+            raw: b"\x40\xC1\x3F\xBD\x05\x4C\x72\x2A\xA3\xC2\xF2\x11\x73\xC0\x69\xEA\
+                   \x49\x7D\x35\x29\x6B\xCC\x24\x65\xF6\xF9\xD0\x41\x08\x7B\xD7\xA9",
+            base64: b"QME/vQVMciqjwvIRc8Bp6kl9NSlrzCRl9vnQQQh716k=",
+        },
     ];
 
     #[test]
     fn encode_test_vectors() {
         for vector in BASE64_TEST_VECTORS {
-            // 8 is the size of the largest encoded test vector
-            let mut out = [0u8; 8];
-            let out_len = encoder().encode_to_slice(vector.raw, &mut out).unwrap();
-
-            assert_eq!(encoder().encoded_len(vector.raw), out_len);
-            assert_eq!(vector.base64, &out[..out_len]);
+            let out = encoder().encode(vector.raw);
+            assert_eq!(encoder().encoded_len(vector.raw), out.len());
+            assert_eq!(vector.base64, &out[..]);
         }
     }
 
     #[test]
     fn decode_test_vectors() {
         for vector in BASE64_TEST_VECTORS {
-            // 5 is the size of the largest decoded test vector
-            let mut out = [0u8; 5];
-            let out_len = encoder().decode_to_slice(vector.base64, &mut out).unwrap();
-
-            assert_eq!(encoder().decoded_len(vector.base64).unwrap(), out_len);
-            assert_eq!(vector.raw, &out[..out_len]);
+            let out = encoder().decode(vector.base64).unwrap();
+            assert_eq!(encoder().decoded_len(vector.base64).unwrap(), out.len());
+            assert_eq!(vector.raw, &out[..]);
         }
     }
 
@@ -288,5 +298,13 @@ mod tests {
 
             assert_eq!(decoded.as_slice(), &data[..i]);
         }
+    }
+
+    #[test]
+    fn trailing_whitespace() {
+        assert_eq!(
+            encoder().decode(&b"QME/vQVMciqjwvIRc8Bp6kl9NSlrzCRl9vnQQQh716k=\n"[..]),
+            Err(TrailingWhitespace)
+        );
     }
 }
