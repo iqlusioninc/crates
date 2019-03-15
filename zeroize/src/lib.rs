@@ -28,7 +28,7 @@
 //! [Vec::clear()] / [String::clear()]-like behavior (truncating to zero-length)
 //! but ensures the backing memory is securely zeroed.
 //!
-//! The [ZeroizeWithDefault] marker trait can be impl'd on types which also
+//! The [DefaultIsZeroes] marker trait can be impl'd on types which also
 //! impl [Default], which implements [Zeroize] by overwriting a value with
 //! the default value.
 //!
@@ -188,7 +188,7 @@
 //! [Zeroing memory securely is hard]: http://www.daemonology.net/blog/2014-09-04-how-to-zero-a-buffer.html
 //! [Vec::clear()]: https://doc.rust-lang.org/std/vec/struct.Vec.html#method.clear
 //! [String::clear()]: https://doc.rust-lang.org/std/string/struct.String.html#method.clear
-//! [ZeroizeWithDefault]: https://docs.rs/zeroize/latest/zeroize/trait.ZeroizeWithDefault.html
+//! [DefaultIsZeroes]: https://docs.rs/zeroize/latest/zeroize/trait.DefaultIsZeroes.html
 //! [Default]: https://doc.rust-lang.org/std/default/trait.Default.html
 //! [core::ptr::write_volatile]: https://doc.rust-lang.org/core/ptr/fn.write_volatile.html
 //! [core::sync::atomic]: https://doc.rust-lang.org/stable/core/sync/atomic/index.html
@@ -224,11 +224,11 @@ pub trait Zeroize {
 }
 
 /// Marker trait for types which can be zeroized with the `Default` value
-pub trait ZeroizeWithDefault: Copy + Default + Sized {}
+pub trait DefaultIsZeroes: Copy + Default + Sized {}
 
 impl<Z> Zeroize for Z
 where
-    Z: ZeroizeWithDefault,
+    Z: DefaultIsZeroes,
 {
     fn zeroize(&mut self) {
         volatile_set(self, Z::default());
@@ -238,7 +238,7 @@ where
 
 macro_rules! impl_zeroize_with_default {
     ($($type:ty),+) => {
-        $(impl ZeroizeWithDefault for $type {})+
+        $(impl DefaultIsZeroes for $type {})+
      };
 }
 
@@ -250,7 +250,7 @@ impl_zeroize_with_default!(f32, f64, char, bool);
 #[cfg(not(feature = "nightly"))]
 impl_zeroize_with_default!(u8);
 
-/// On nightly targets, don't implement `ZeroizeWithDefault` so we can special
+/// On nightly targets, don't implement `DefaultIsZeroes` so we can special
 /// case using batch set operations.
 #[cfg(feature = "nightly")]
 impl Zeroize for u8 {
@@ -262,7 +262,7 @@ impl Zeroize for u8 {
 
 impl<'a, Z> Zeroize for IterMut<'a, Z>
 where
-    Z: ZeroizeWithDefault,
+    Z: DefaultIsZeroes,
 {
     fn zeroize(&mut self) {
         let default = Z::default();
@@ -278,7 +278,7 @@ where
 /// Implement zeroize on all types that can be zeroized with the zero value
 impl<Z> Zeroize for [Z]
 where
-    Z: ZeroizeWithDefault,
+    Z: DefaultIsZeroes,
 {
     fn zeroize(&mut self) {
         // TODO: batch volatile set operation?
@@ -298,7 +298,7 @@ impl Zeroize for [u8] {
 #[cfg(feature = "alloc")]
 impl<Z> Zeroize for Vec<Z>
 where
-    Z: ZeroizeWithDefault,
+    Z: DefaultIsZeroes,
 {
     fn zeroize(&mut self) {
         self.as_mut_slice().zeroize();
