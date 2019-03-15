@@ -76,13 +76,13 @@ where
 /// Bech32 encoder/decoder
 pub struct Bech32 {
     /// Encoding character set
-    pub charset: [char; 32],
+    charset: [char; 32],
 
     /// Inverse alphabet used to decode
-    pub charset_inverse: [Option<u8>; 128],
+    charset_inverse: [Option<u8>; 128],
 
     /// Separator between the human readable and base32-encoded parts of a Bech32 string
-    pub separator: char,
+    separator: char,
 }
 
 impl Default for Bech32 {
