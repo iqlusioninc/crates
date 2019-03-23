@@ -401,6 +401,18 @@ dependencies = [
 [[package]]
 name = "zeroize"
 version = "0.5.2"
+dependencies = [
+ "zeroize_derive 0.0.0",
+]
+
+[[package]]
+name = "zeroize_derive"
+version = "0.0.0"
+dependencies = [
+ "proc-macro2 0.4.24 (registry+https://github.com/rust-lang/crates.io-index)",
+ "quote 0.6.10 (registry+https://github.com/rust-lang/crates.io-index)",
+ "syn 0.15.21 (registry+https://github.com/rust-lang/crates.io-index)",
+]
 
 [metadata]
 "checksum aho-corasick 0.6.9 (registry+https://github.com/rust-lang/crates.io-index)" = "1e9a933f4e58658d7b12defcf96dc5c720f20832deebe3e0a19efd3b6aaeeb9e"

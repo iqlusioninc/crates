@@ -4,7 +4,8 @@ members = [
     "gaunt",
     "subtle-encoding",
     "tai64",
-    "zeroize"
+    "zeroize",
+    "zeroize_derive"
 ]
 
 # Enable integer overflow checks in release builds
