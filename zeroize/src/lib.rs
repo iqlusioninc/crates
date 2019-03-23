@@ -4,7 +4,6 @@
 //! ## Usage
 //!
 //! ```
-//! extern crate zeroize;
 //! use zeroize::Zeroize;
 //!
 //! fn main() {
@@ -31,6 +30,33 @@
 //! The [DefaultIsZeroes] marker trait can be impl'd on types which also
 //! impl [Default], which implements [Zeroize] by overwriting a value with
 //! the default value.
+//!
+//! ## Custom Derive Support
+//!
+//! This crate has custom derive support for the `Zeroize` trait, which
+//! automatically calls `zeroize()` on all members of a struct or tuple struct:
+//!
+//! ```
+//! // Ensure you import the crate with `macro_use`:
+//! // #[macro_use]
+//! // extern crate zeroize;
+//!
+//! use zeroize::Zeroize;
+//!
+//! #[derive(Zeroize)]
+//! struct MyStruct([u8; 64]);
+//! ```
+//!
+//! Additionally, you can derive `ZeroizeOnDrop`, which will automatically
+//! derive a `Drop` handler that calls `zeroize()`:
+//!
+//! ```
+//! use zeroize::{Zeroize, ZeroizeOnDrop};
+//!
+//! // This struct will be zeroized on drop
+//! #[derive(Zeroize, ZeroizeOnDrop)]
+//! struct MyStruct([u8; 64]);
+//! ```
 //!
 //! ## About
 //!
@@ -234,6 +260,13 @@ pub trait Zeroize {
 
 /// Marker trait for types whose `Default` is the desired zeroization result
 pub trait DefaultIsZeroes: Copy + Default + Sized {}
+
+/// Marker trait intended for use with `zeroize_derive` which indicates that
+/// a type should have a drop handler which calls Zeroize.
+///
+/// Use `#[derive(ZeroizeOnDrop)]` to automatically impl this trait and an
+/// associated drop handler.
+pub trait ZeroizeOnDrop: Zeroize + Drop {}
 
 impl<Z> Zeroize for Z
 where
