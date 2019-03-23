@@ -402,12 +402,12 @@ dependencies = [
 name = "zeroize"
 version = "0.5.2"
 dependencies = [
- "zeroize_derive 0.0.0",
+ "zeroize_derive 0.1.0",
 ]
 
 [[package]]
 name = "zeroize_derive"
-version = "0.0.0"
+version = "0.1.0"
 dependencies = [
  "proc-macro2 0.4.24 (registry+https://github.com/rust-lang/crates.io-index)",
  "quote 0.6.10 (registry+https://github.com/rust-lang/crates.io-index)",
