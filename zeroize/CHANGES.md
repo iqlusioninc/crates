@@ -1,3 +1,9 @@
+## [0.6.0] (2018-03-23)
+
+- Add ZeroizeOnDrop marker trait + custom derive ([#168])
+- Custom derive support for `Zeroize` ([#167])
+- Rename `ZeroizeWithDefault` to `DefaultIsZeroes` ([#166])
+
 ## [0.5.2] (2018-12-25)
 
 - Add `debug_assert!` to ensure string interiors are zeroized ([#156])
@@ -47,8 +53,12 @@ a pure Rust solution.
 
 - Initial release
 
+[0.6.0]: https://github.com/iqlusioninc/crates/pull/170
+[#168]: https://github.com/iqlusioninc/crates/pull/168
+[#167]: https://github.com/iqlusioninc/crates/pull/167
+[#166]: https://github.com/iqlusioninc/crates/pull/166
 [0.5.2]: https://github.com/iqlusioninc/crates/pull/157
-[#156]: https://github.com/iqlusioninc/crates/pull/157
+[#156]: https://github.com/iqlusioninc/crates/pull/156
 [0.5.1]: https://github.com/iqlusioninc/crates/pull/151
 [#150]: https://github.com/iqlusioninc/crates/pull/150
 [0.5.0]: https://github.com/iqlusioninc/crates/pull/149
