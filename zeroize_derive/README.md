@@ -1,4 +1,4 @@
-# [zeroize_derive] 🄌 <a href="https://www.iqlusion.io"><img src="https://storage.googleapis.com/iqlusion-prod-web-assets/img/logo/iqlusion-rings-sm.png" alt="iqlusion" width="24" height="24"></a>
+# zeroize_derive 🄌 <a href="https://www.iqlusion.io"><img src="https://storage.googleapis.com/iqlusion-prod-web-assets/img/logo/iqlusion-rings-sm.png" alt="iqlusion" width="24" height="24"></a>
 
 [![Crate][crate-image]][crate-link]
 [![Docs][docs-image]][docs-link]

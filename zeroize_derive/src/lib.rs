@@ -1,6 +1,8 @@
 //! Custom derive support for `zeroize`
 
 #![crate_type = "proc-macro"]
+#![deny(warnings, unused_import_braces, unused_qualifications)]
+#![forbid(unsafe_code)]
 
 extern crate proc_macro;
 #[macro_use]
