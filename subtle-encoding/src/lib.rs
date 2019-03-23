@@ -16,7 +16,7 @@
 #![cfg_attr(all(feature = "nightly", not(feature = "std")), feature(alloc))]
 #![deny(warnings, missing_docs, unused_import_braces, unused_qualifications)]
 #![forbid(unsafe_code)]
-#![doc(html_root_url = "https://docs.rs/subtle-encoding/0.3.3")]
+#![doc(html_root_url = "https://docs.rs/subtle-encoding/0.3.4")]
 
 #[cfg(any(feature = "std", test))]
 #[macro_use]
