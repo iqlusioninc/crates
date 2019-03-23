@@ -209,6 +209,15 @@
 #[cfg_attr(test, macro_use)]
 extern crate std;
 
+#[cfg(feature = "zeroize_derive")]
+#[allow(unused_imports)]
+#[macro_use]
+extern crate zeroize_derive;
+
+#[cfg(feature = "zeroize_derive")]
+#[doc(hidden)]
+pub use zeroize_derive::*;
+
 use core::{ptr, slice::IterMut, sync::atomic};
 
 #[cfg(all(feature = "alloc", not(feature = "std")))]
@@ -223,7 +232,7 @@ pub trait Zeroize {
     fn zeroize(&mut self);
 }
 
-/// Marker trait for types which can be zeroized with the `Default` value
+/// Marker trait for types whose `Default` is the desired zeroization result
 pub trait DefaultIsZeroes: Copy + Default + Sized {}
 
 impl<Z> Zeroize for Z
@@ -389,5 +398,48 @@ mod tests {
         let mut boxed_arr = Box::new([42u8; 3]);
         boxed_arr.zeroize();
         assert_eq!(boxed_arr.as_ref(), &[0u8; 3]);
+    }
+
+    #[cfg(feature = "zeroize_derive")]
+    mod derive {
+        use super::*;
+
+        #[derive(Zeroize)]
+        struct ZeroizableTupleStruct([u8; 3]);
+
+        #[test]
+        fn derive_tuple_struct_test() {
+            let mut value = ZeroizableTupleStruct([1, 2, 3]);
+            value.zeroize();
+            assert_eq!(&value.0, &[0, 0, 0])
+        }
+
+        #[derive(Zeroize)]
+        struct ZeroizableStruct {
+            string: String,
+            vec: Vec<u8>,
+            bytearray: [u8; 3],
+            number: usize,
+            boolean: bool,
+        }
+
+        #[test]
+        fn derive_struct_test() {
+            let mut value = ZeroizableStruct {
+                string: "Hello, world!".to_owned(),
+                vec: vec![1, 2, 3],
+                bytearray: [4, 5, 6],
+                number: 42,
+                boolean: true,
+            };
+
+            value.zeroize();
+
+            assert!(value.string.is_empty());
+            assert!(value.vec.is_empty());
+            assert_eq!(&value.bytearray, &[0, 0, 0]);
+            assert_eq!(value.number, 0);
+            assert!(!value.boolean);
+        }
     }
 }
