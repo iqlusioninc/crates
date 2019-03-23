@@ -1,3 +1,8 @@
+## [0.3.4] (2019-03-23)
+
+- `zeroize` v0.6.0 ([#170])
+- Make internals of Bech32 type private ([#165])
+
 ## [0.3.3] (2019-03-12)
 
 - Return errors for undersize decode buffers and trailing whitespace ([#163])
@@ -39,6 +44,9 @@
 
 - Initial release
 
+[0.3.4]: https://github.com/iqlusioninc/crates/pull/171
+[#170]: https://github.com/iqlusioninc/crates/pull/170
+[#165]: https://github.com/iqlusioninc/crates/pull/165
 [0.3.3]: https://github.com/iqlusioninc/crates/pull/164
 [#163]: https://github.com/iqlusioninc/crates/pull/163
 [0.3.2]: https://github.com/iqlusioninc/crates/pull/160
