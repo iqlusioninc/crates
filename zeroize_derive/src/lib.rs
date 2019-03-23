@@ -15,7 +15,7 @@ macro_rules! q {
 }
 
 #[proc_macro_derive(Zeroize)]
-pub fn derive(input: TokenStream) -> TokenStream {
+pub fn derive_zeroize(input: TokenStream) -> TokenStream {
     let ast: syn::DeriveInput = syn::parse(input).unwrap();
 
     let zeroizers = match ast.data {
@@ -36,6 +36,25 @@ pub fn derive(input: TokenStream) -> TokenStream {
     };
 
     zeroize_impl.into()
+}
+
+#[proc_macro_derive(ZeroizeOnDrop)]
+pub fn derive_zeroize_on_drop(input: TokenStream) -> TokenStream {
+    let ast: syn::DeriveInput = syn::parse(input).unwrap();
+    let name = &ast.ident;
+    let (impl_generics, ty_generics, where_clause) = ast.generics.split_for_impl();
+
+    let zeroize_on_drop_impl = q! {
+        impl #impl_generics Drop for #name #ty_generics #where_clause {
+            fn drop(&mut self) {
+                self.zeroize();
+            }
+        }
+
+        impl #impl_generics ZeroizeOnDrop for #name #ty_generics #where_clause {}
+    };
+
+    zeroize_on_drop_impl.into()
 }
 
 fn derive_struct_zeroizers(fields: &syn::Fields) -> proc_macro2::TokenStream {
