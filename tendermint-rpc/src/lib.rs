@@ -8,8 +8,5 @@
 #[macro_use]
 extern crate serde_derive;
 
-pub mod address;
 pub mod endpoints;
 pub mod jsonrpc;
-
-pub use address::Address;
