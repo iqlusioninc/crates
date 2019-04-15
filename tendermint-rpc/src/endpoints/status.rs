@@ -1,11 +1,7 @@
 //! RPC wrapper for `/status` endpoint
 
-use crate::address::Address;
 use serde::{de::Error as _, Deserialize, Deserializer, Serialize, Serializer};
-use std::{
-    fmt::{self, Display},
-    ops::Deref,
-};
+use std::fmt::{self, Display};
 
 /// Status responses
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -27,10 +23,10 @@ pub struct NodeInfo {
     pub protocol_version: ProtocolVersionInfo,
 
     /// Node ID
-    pub id: NodeId,
+    pub id: tendermint::node::Id,
 
     /// Listen address
-    pub listen_addr: Address,
+    pub listen_addr: tendermint::Address,
 
     /// Tendermint network / chain ID,
     pub network: tendermint::chain::Id,
@@ -42,8 +38,7 @@ pub struct NodeInfo {
     pub channels: Channels,
 
     /// Moniker
-    // TODO(tarcieri): get this into the `tendermint` crate?
-    pub moniker: Moniker,
+    pub moniker: tendermint::Moniker,
 
     /// Other status information
     pub other: OtherInfo,
@@ -53,13 +48,13 @@ pub struct NodeInfo {
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct SyncInfo {
     /// Latest block hash
-    pub latest_block_hash: Hash,
+    pub latest_block_hash: tendermint::Hash,
 
     /// Latest app hash
-    pub latest_app_hash: Hash,
+    pub latest_app_hash: tendermint::Hash,
 
     /// Latest block height
-    pub latest_block_height: BlockHeight,
+    pub latest_block_height: tendermint::block::Height,
 
     /// Latest block time
     pub latest_block_time: tendermint::Timestamp,
@@ -72,10 +67,10 @@ pub struct SyncInfo {
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct ValidatorInfo {
     /// Validator account address
-    pub address: AccountAddr,
+    pub address: tendermint::account::Id,
 
     /// Validator public key
-    pub pub_key: PublicKey,
+    pub pub_key: tendermint::PublicKey,
 
     /// Validator voting power
     pub voting_power: VotingPower,
@@ -96,16 +91,29 @@ pub struct ProtocolVersionInfo {
 
 /// Version value for versions in `ProtocolVersionInfo`
 // TODO(tarcieri): separate types for different kinds of versions?
-#[derive(Clone, Debug, Deserialize, Serialize)]
-pub struct ProtocolVersion(String);
+/// Voting power
+#[derive(Copy, Clone, Debug, Eq, PartialEq, PartialOrd, Ord)]
+pub struct ProtocolVersion(usize);
 
-/// Node ID
-#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
-pub struct NodeId(String);
+impl From<ProtocolVersion> for usize {
+    fn from(power: ProtocolVersion) -> usize {
+        power.0
+    }
+}
 
-impl Display for NodeId {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self.0)
+impl<'de> Deserialize<'de> for ProtocolVersion {
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        Ok(ProtocolVersion(
+            String::deserialize(deserializer)?
+                .parse()
+                .map_err(|e| D::Error::custom(format!("{}", e)))?,
+        ))
+    }
+}
+
+impl Serialize for ProtocolVersion {
+    fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
+        self.0.to_string().serialize(serializer)
     }
 }
 
@@ -119,57 +127,6 @@ impl Display for Channels {
     }
 }
 
-/// Moniker
-// TODO(tarcieri): use an upstream type from the `tendermint` crate
-#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
-pub struct Moniker(String);
-
-impl Display for Moniker {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self.0)
-    }
-}
-
-/// Hashes
-// TODO(tarcieri): use upstream `tendermint::hash::Hash` type
-#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
-pub struct Hash(String);
-
-impl Display for Hash {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self.0)
-    }
-}
-
-/// Block height wrapper type
-// TODO(tarcieri): serde deserialize impl for `tendermint::block::Height`
-#[derive(Clone, Debug)]
-pub struct BlockHeight(tendermint::block::Height);
-
-impl Deref for BlockHeight {
-    type Target = tendermint::block::Height;
-
-    fn deref(&self) -> &tendermint::block::Height {
-        &self.0
-    }
-}
-
-impl<'de> Deserialize<'de> for BlockHeight {
-    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
-        let height = String::deserialize(deserializer)?
-            .parse::<u64>()
-            .map_err(|e| D::Error::custom(format!("{}", e)))?;
-
-        Ok(BlockHeight(tendermint::block::Height::from(height)))
-    }
-}
-
-impl Serialize for BlockHeight {
-    fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
-        self.value().to_string().serialize(serializer)
-    }
-}
-
 /// Other information
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct OtherInfo {
@@ -177,7 +134,7 @@ pub struct OtherInfo {
     pub tx_index: TxIndexStatus,
 
     /// RPC address
-    pub rpc_address: Address,
+    pub rpc_address: tendermint::Address,
 }
 
 /// Transaction index status
@@ -201,38 +158,20 @@ impl From<TxIndexStatus> for bool {
     }
 }
 
-/// Hashes
-// TODO(tarcieri): use upstream `tendermint` crate type
-#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
-pub struct AccountAddr(String);
-
-impl Display for AccountAddr {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self.0)
-    }
-}
-
-/// Public keys allowed in Tendermint protocols
-/// TODO(tarcieri): use upstream `tendermint::public_keys::PublicKey` type
-#[derive(Clone, Debug, Deserialize, Hash, Eq, PartialEq, Serialize)]
-#[serde(tag = "type", content = "value")]
-pub enum PublicKey {
-    /// Ed25519 keys
-    #[serde(rename = "tendermint/PubKeyEd25519")]
-    Ed25519(String),
-
-    /// Secp256k1 keys
-    #[serde(rename = "tendermint/PubKeySecp256k1")]
-    Secp256k1(String),
-}
-
 /// Voting power
 #[derive(Copy, Clone, Debug, Eq, PartialEq, PartialOrd, Ord)]
 pub struct VotingPower(usize);
 
+impl VotingPower {
+    /// Get the current voting power as an integer
+    pub fn value(self) -> usize {
+        self.0
+    }
+}
+
 impl From<VotingPower> for usize {
     fn from(power: VotingPower) -> usize {
-        power.0
+        power.value()
     }
 }
 
