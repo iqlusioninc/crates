@@ -23,7 +23,10 @@ matrix:
   include:
     - name: "Rust: stable (wasm32)"
       rust: stable
-      script: cargo build --all --target wasm32-unknown-unknown
+      script:
+      - cargo build --package subtle-encoding --target wasm32-unknown-unknown
+      - cargo build --package tai64 --target wasm32-unknown-unknown
+      - cargo build --package zeroize --target wasm32-unknown-unknown
 
 install:
   - rustup component add rustfmt
