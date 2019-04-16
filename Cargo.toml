@@ -14,6 +14,3 @@ members = [
 # in the event of integer arithmetic bugs.
 [profile.release]
 overflow-checks = true
-
-[patch.crates-io]
-tendermint = { git = "https://github.com/tendermint/kms", rev = "tendermint-rs/updates-and-cleanups" }
