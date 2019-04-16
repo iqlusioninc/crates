@@ -23,4 +23,4 @@ semver = { version = "0.9", features = ["serde"] }
 serde = "1"
 serde_derive = "1"
 serde_json = "1"
-tendermint = "0.5"
+tendermint = "0.6"
