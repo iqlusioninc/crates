@@ -1,7 +1,20 @@
 //! RPC wrapper for `/status` endpoint
 
+use crate::jsonrpc;
 use serde::{de::Error as _, Deserialize, Deserializer, Serialize, Serializer};
 use std::fmt::{self, Display};
+
+/// Request the status of the node
+#[derive(Default)]
+pub struct Status;
+
+impl jsonrpc::Request for Status {
+    type Response = StatusResponse;
+
+    fn path(&self) -> gaunt::Path {
+        "/status".into()
+    }
+}
 
 /// Status responses
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -15,6 +28,8 @@ pub struct StatusResponse {
     /// Validator information
     pub validator_info: ValidatorInfo,
 }
+
+impl jsonrpc::Response for StatusResponse {}
 
 /// Node information
 #[derive(Clone, Debug, Deserialize, Serialize)]

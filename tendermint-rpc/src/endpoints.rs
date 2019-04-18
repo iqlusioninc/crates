@@ -2,4 +2,4 @@
 
 mod status;
 
-pub use self::status::StatusResponse;
+pub use self::status::{Status, StatusResponse};
