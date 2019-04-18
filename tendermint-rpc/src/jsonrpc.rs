@@ -2,19 +2,57 @@
 
 use failure::{format_err, Error};
 use serde::{de::DeserializeOwned, Serialize};
-use std::fmt::{self, Debug, Display};
+use std::fmt::{self, Display};
+use tendermint::Address;
 
-/// Parse a JSONRPC response
-pub fn parse_response<T>(response: &str) -> Result<ResponseWrapper<T>, Error>
-where
-    T: Debug + DeserializeOwned + Serialize,
-{
-    serde_json::from_str(response).map_err(|e| format_err!("error parsing JSON: {}", e))
+/// JSONRPC requests
+pub trait Request {
+    /// Response type for this command
+    type Response: Response;
+
+    /// Perform this request against the given RPC endpoint
+    fn perform(&self, rpc_addr: &Address) -> Result<Self::Response, Error> {
+        let (host, port) = match rpc_addr {
+            Address::Tcp { host, port, .. } => (host, *port),
+            Address::Unix { .. } => panic!("UNIX sockets presently unsupported"),
+        };
+
+        // TODO(tarcieri): persistent clients
+        let http = gaunt::Connection::new(host, port, &Default::default())
+            .map_err(|e| format_err!("error connecting to RPC service: {}", e))?;
+
+        let response = http
+            .get(self.path(), &self.body())
+            .map_err(|e| format_err!("RPC HTTP error: {}", e))?
+            .into_vec();
+
+        Self::Response::from_json(&String::from_utf8(response)?)
+    }
+
+    /// Path for this request
+    fn path(&self) -> gaunt::Path;
+
+    /// HTTP request body for this request
+    fn body(&self) -> gaunt::request::Body {
+        gaunt::request::Body::from(b"".as_ref())
+    }
+}
+
+/// JSONRPC responses
+pub trait Response: Serialize + DeserializeOwned + Sized {
+    /// Parse a JSONRPC response from a JSON string
+    fn from_json(response: &str) -> Result<Self, Error> {
+        let wrapper: ResponseWrapper<Self> =
+            serde_json::from_str(response).map_err(|e| format_err!("error parsing JSON: {}", e))?;
+
+        // TODO(tarcieri): check JSONRPC version/ID?
+        Ok(wrapper.result)
+    }
 }
 
 /// Wrapper for all JSONRPC responses
 #[derive(Debug, Deserialize, Serialize)]
-pub struct ResponseWrapper<T> {
+pub struct ResponseWrapper<R> {
     /// JSONRPC version
     pub jsonrpc: Version,
 
@@ -22,7 +60,7 @@ pub struct ResponseWrapper<T> {
     pub id: Id,
 
     /// Result
-    pub result: T,
+    pub result: R,
 }
 
 /// JSONRPC version
