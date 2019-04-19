@@ -1,7 +1,10 @@
 //! JSONRPC types
 
 use failure::{format_err, Error};
-use serde::{de::DeserializeOwned, Serialize};
+use serde::{
+    de::{DeserializeOwned, Error as DeError},
+    Deserialize, Deserializer, Serialize, Serializer,
+};
 use std::fmt::{self, Display};
 use tendermint::Address;
 
@@ -81,4 +84,23 @@ impl AsRef<str> for Id {
     fn as_ref(&self) -> &str {
         self.0.as_ref()
     }
+}
+
+/// Serialize a u64 value as a JSON string
+#[allow(clippy::trivially_copy_pass_by_ref)]
+pub(crate) fn serialize_u64_string<S>(value: &u64, serializer: S) -> Result<S::Ok, S::Error>
+where
+    S: Serializer,
+{
+    format!("{}", value).serialize(serializer)
+}
+
+/// Deserialize a `u64` from a string containing a nanosecond count
+pub(crate) fn deserialize_u64_string<'de, D>(deserializer: D) -> Result<u64, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    String::deserialize(deserializer)?
+        .parse::<u64>()
+        .map_err(|e| D::Error::custom(format!("{}", e)))
 }
