@@ -343,6 +343,7 @@ where
     Z: DefaultIsZeroes,
 {
     fn zeroize(&mut self) {
+        self.resize(self.capacity(), Default::default());
         self.as_mut_slice().zeroize();
         self.clear();
     }
@@ -417,6 +418,31 @@ mod tests {
         let mut vec = vec![42; 3];
         vec.zeroize();
         assert!(vec.is_empty());
+    }
+
+    #[test]
+    fn zeroize_vec_past_len() {
+        let mut vec = Vec::with_capacity(5);
+        for i in 0..4 {
+            vec.push(10 + i);
+        }
+        vec.clear();
+
+        // safe if: new_len <= capacity AND elements "were initialised"
+        unsafe {
+            vec.set_len(1);
+        }
+        assert_eq!(10, vec[0], "clear() hasn't erased our push()es");
+
+        vec.clear();
+        vec.zeroize();
+
+        unsafe {
+            vec.set_len(4);
+        }
+        for i in 0..4 {
+            assert_eq!(0, vec[i], "it's been zero'd");
+        }
     }
 
     #[test]
