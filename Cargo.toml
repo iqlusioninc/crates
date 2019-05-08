@@ -4,7 +4,6 @@ members = [
     "gaunt",
     "subtle-encoding",
     "tai64",
-    "tendermint-rpc",
     "zeroize",
     "zeroize_derive"
 ]
