@@ -281,7 +281,7 @@ where
 macro_rules! impl_zeroize_with_default {
     ($($type:ty),+) => {
         $(impl DefaultIsZeroes for $type {})+
-     };
+    };
 }
 
 impl_zeroize_with_default!(i8, i16, i32, i64, i128, isize);
