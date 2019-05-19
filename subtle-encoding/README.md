@@ -42,5 +42,5 @@ See [LICENSE] (Apache License, Version 2.0) file in the `iqlusioninc/crates`
 toplevel directory of this repository or [LICENSE-MIT] for details.
 
 [Documentation]: https://docs.rs/subtle-encoding/
-[LICENSE]: https://github.com/iqlusioninc/crates/blob/master/LICENSE
-[LICENSE-MIT]: https://github.com/iqlusioninc/crates/blob/master/subtle-encoding/LICENSE-MIT
+[LICENSE]: https://github.com/iqlusioninc/crates/blob/develop/LICENSE
+[LICENSE-MIT]: https://github.com/iqlusioninc/crates/blob/develop/subtle-encoding/LICENSE-MIT

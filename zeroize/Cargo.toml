@@ -12,13 +12,13 @@ authors     = ["Tony Arcieri <tony@iqlusion.io>"]
 license     = "Apache-2.0 OR MIT"
 edition     = "2018"
 homepage    = "https://github.com/iqlusioninc/crates/"
-repository  = "https://github.com/iqlusioninc/crates/tree/master/zeroize"
+repository  = "https://github.com/iqlusioninc/crates/tree/develop/zeroize"
 readme      = "README.md"
 categories  = ["cryptography", "memory-management", "no-std", "os"]
 keywords    = ["memory", "memset", "secure", "volatile", "zero"]
 
 [badges]
-travis-ci = { repository = "iqlusioninc/crates" }
+travis-ci = { repository = "iqlusioninc/crates", branch = "develop" }
 
 [dependencies]
 zeroize_derive = { version = "0.1", path = "../zeroize_derive", optional = true }
@@ -26,5 +26,4 @@ zeroize_derive = { version = "0.1", path = "../zeroize_derive", optional = true 
 [features]
 default = ["std", "zeroize_derive"]
 alloc = []
-nightly = []
 std = ["alloc"]
