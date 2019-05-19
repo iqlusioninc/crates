@@ -218,7 +218,7 @@
 //! - Heap reallocation when using `Vec` and `String`
 //! - Borrowers of a reference making copies of the data
 //!
-//! [`Pin` RFC][pin] can be leveraged in conjunction with this crate to ensure
+//! [`Pin`][pin] can be leveraged in conjunction with this crate to ensure
 //! data kept on the stack isn't moved.
 //!
 //! The `Zeroize` impls for `Vec` and `String` zeroize the entire capacity of
@@ -282,7 +282,7 @@
     unused_import_braces,
     unused_qualifications
 )]
-#![doc(html_root_url = "https://docs.rs/zeroize/0.6.0")]
+#![doc(html_root_url = "https://docs.rs/zeroize/0.7.0")]
 
 #[cfg(any(feature = "std", test))]
 #[cfg_attr(test, macro_use)]

@@ -1,8 +1,8 @@
 //! Integration tests for `zeroize_derive` proc macros
 
-use zeroize::Zeroize;
+use zeroize::{Zeroize, ZeroizeOnDrop};
 
-#[derive(Zeroize)]
+#[derive(Zeroize, ZeroizeOnDrop)]
 struct ZeroizableTupleStruct([u8; 3]);
 
 #[test]
@@ -12,7 +12,7 @@ fn derive_tuple_struct_test() {
     assert_eq!(&value.0, &[0, 0, 0])
 }
 
-#[derive(Zeroize)]
+#[derive(Zeroize, ZeroizeOnDrop)]
 struct ZeroizableStruct {
     string: String,
     vec: Vec<u8>,
