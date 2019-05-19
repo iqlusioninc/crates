@@ -1,6 +1,24 @@
 //! Securely zero memory with a simple trait ([Zeroize]) built on stable Rust
 //! primitives which guarantee the operation will not be 'optimized away'.
 //!
+//! ## About
+//!
+//! [Zeroing memory securely is hard] - compilers optimize for performance, and
+//! in doing so they love to "optimize away" unnecessary zeroing calls. There are
+//! many documented "tricks" to attempt to avoid these optimizations and ensure
+//! that a zeroing routine is performed reliably.
+//!
+//! This crate isn't about tricks: it uses [core::ptr::write_volatile]
+//! and [core::sync::atomic] memory fences to provide easy-to-use, portable
+//! zeroing behavior which works on all of Rust's core number types and slices
+//! thereof, implemented in pure Rust with no usage of FFI or assembly.
+//!
+//! - **No insecure fallbacks!**
+//! - **No dependencies!**
+//! - **No FFI or inline assembly! WASM friendly (and tested)!**
+//! - `#![no_std]` **i.e. embedded-friendly**!
+//! - **No functionality besides securely zeroing memory!**
+//!
 //! ## Usage
 //!
 //! ```
@@ -37,10 +55,6 @@
 //! automatically calls `zeroize()` on all members of a struct or tuple struct:
 //!
 //! ```
-//! // Ensure you import the crate with `macro_use`:
-//! // #[macro_use]
-//! // extern crate zeroize;
-//!
 //! use zeroize::Zeroize;
 //!
 //! #[derive(Zeroize)]
@@ -58,23 +72,28 @@
 //! struct MyStruct([u8; 64]);
 //! ```
 //!
-//! ## About
+//! ## `Zeroizing<Z>`: wrapper for zeroizing arbitrary values on drop
 //!
-//! [Zeroing memory securely is hard] - compilers optimize for performance, and
-//! in doing so they love to "optimize away" unnecessary zeroing calls. There are
-//! many documented "tricks" to attempt to avoid these optimizations and ensure
-//! that a zeroing routine is performed reliably.
+//! The `Zeroizing<Z: Zeroize>` type provides a wrapper type that impls `Deref`
+//! and `DerefMut`, allowing access to an inner value of type `Z`, and also
+//! impls a `Drop` handler which calls `zeroize()` on its contents:
 //!
-//! This crate isn't about tricks: it uses [core::ptr::write_volatile]
-//! and [core::sync::atomic] memory fences to provide easy-to-use, portable
-//! zeroing behavior which works on all of Rust's core number types and slices
-//! thereof, implemented in pure Rust with no usage of FFI or assembly.
+//! TODO(tarcieri): fix zeroize array impls and remove `text` from below example
 //!
-//! - **No insecure fallbacks!**
-//! - **No dependencies!**
-//! - **No FFI or inline assembly!**
-//! - `#![no_std]` **i.e. embedded-friendly**!
-//! - **No functionality besides securely zeroing memory!**
+//! ```text
+//! use zeroize::Zeroizing;
+//!
+//! fn main() {
+//!     let mut secret = Zeroizing::new([0u8; 5]);
+//!
+//!     // Set the air shield password
+//!     // Protip (again): don't embed secrets in your source code.
+//!     secret.copy_from_slice(&[1, 2, 3, 4, 5]);
+//!     assert_eq!(&secret, &[1, 2, 3, 4, 5]);
+//!
+//!     // The contents of `secret` will be automatically zeroized on drop
+//! }
+//! ```
 //!
 //! ## What guarantees does this crate provide?
 //!
@@ -183,11 +202,29 @@
 //!
 //! This crate can be used to zero values from either the stack or the heap.
 //!
-//! However, be aware that Rust's current memory semantics (e.g. `Copy` types)
-//! can leave copies of data in memory, and there isn't presently a good solution
-//! for ensuring all copies of data on the stack are properly cleared.
+//! However, be aware several operations in Rust can unintentionally leave
+//! copies of data in memory. This includes but is not limited to:
 //!
-//! The [`Pin` RFC][pin] proposes a method for avoiding this.
+//! - Moves and `Copy`
+//! - Heap reallocation when using `Vec` and `String`
+//! - Borrowers of a reference making copies of the data
+//!
+//! [`Pin` RFC][pin] can be leveraged in conjunction with this crate to ensure
+//! data kept on the stack isn't moved.
+//!
+//! The `Zeroize` impls for `Vec` and `String` zeroize the entire capacity of
+//! their backing buffer, but cannot guarantee copies of the data were not
+//! previously made by buffer reallocation. It's therefore important when
+//! attempting to zeroize such buffers to initialize them to the correct
+//! capacity, and take care to prevent subsequent reallocation.
+//!
+//! This crate does not intend to implement higher-level abstractions to
+//! eliminate these risks, instead it merely makes a best effort to clear the
+//! memory it's aware of.
+//!
+//! Crates which are built on `zeroize` and provide higher-level abstractions
+//! for strategically avoiding these problems would certainly be interesting!
+//! (and something we may consider developing in the future)
 //!
 //! ## What about: clearing registers, mlock, mprotect, etc?
 //!
@@ -222,7 +259,7 @@
 //! [compiler_fence]: https://doc.rust-lang.org/stable/core/sync/atomic/fn.compiler_fence.html
 //! [fence]: https://doc.rust-lang.org/stable/core/sync/atomic/fn.fence.html
 //! [memory-model]: https://github.com/nikomatsakis/rust-memory-model
-//! [pin]: https://github.com/rust-lang/rfcs/blob/master/text/2349-pin.md
+//! [pin]: https://doc.rust-lang.org/std/pin/struct.Pin.html
 //! [good cryptographic hygiene]: https://cryptocoding.net/index.php/Coding_rules#Clean_memory_of_secret_data
 
 #![no_std]
@@ -244,7 +281,7 @@ extern crate zeroize_derive;
 #[doc(hidden)]
 pub use zeroize_derive::*;
 
-use core::{ptr, slice::IterMut, sync::atomic};
+use core::{ops, ptr, slice::IterMut, sync::atomic};
 
 #[cfg(all(feature = "alloc", not(feature = "std")))]
 use alloc::prelude::*;
@@ -379,6 +416,64 @@ impl_zeroize_for_byte_array!(
     27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50,
     51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64
 );
+
+/// `Zeroizing` is a a wrapper for any `Z: Zeroize` type which implements a
+/// `Drop` handler which zeroizes dropped values.
+pub struct Zeroizing<Z: Zeroize>(Z);
+
+impl<Z> Zeroizing<Z>
+where
+    Z: Zeroize,
+{
+    /// Wrap a value in `Zeroizing`, ensuring it's zeroized on drop.
+    pub fn new(value: Z) -> Self {
+        Zeroizing(value)
+    }
+}
+
+impl<Z> ops::Deref for Zeroizing<Z>
+where
+    Z: Zeroize,
+{
+    type Target = Z;
+
+    fn deref(&self) -> &Z {
+        &self.0
+    }
+}
+
+impl<Z> ops::DerefMut for Zeroizing<Z>
+where
+    Z: Zeroize,
+{
+    fn deref_mut(&mut self) -> &mut Z {
+        &mut self.0
+    }
+}
+
+impl<Z> Zeroize for Zeroizing<Z>
+where
+    Z: Zeroize,
+{
+    fn zeroize(&mut self) {
+        self.0.zeroize();
+    }
+}
+
+// We could `derive(ZeroizeOnDrop)` for this, but doing it manually allows
+// `Zeroizing` to function regardless of whether the `zeroize_derive` feature
+// is enabled or not.
+impl<Z> Drop for Zeroizing<Z>
+where
+    Z: Zeroize,
+{
+    fn drop(&mut self) {
+        self.0.zeroize()
+    }
+}
+
+// This doesn't really do anything, but merely marks this type with the trait
+impl<Z: Zeroize> ZeroizeOnDrop for Zeroizing<Z> {}
 
 /// Use fences to prevent accesses from being reordered before this
 /// point, which should hopefully help ensure that all accessors
