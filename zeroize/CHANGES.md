@@ -1,4 +1,11 @@
-## [0.6.0] (2018-03-23)
+## [0.7.0] (2019-05-19)
+
+- Use synstructure for custom derive ([#185])
+- Add explicit array impls for `DefaultIsZeroes` ([#184])
+- Remove `nightly` feature ([#183])
+- Add `Zeroizing<Z>` to zeroize values on drop ([#182])
+
+## [0.6.0] (2019-03-23)
 
 - Add ZeroizeOnDrop marker trait + custom derive ([#168])
 - Custom derive support for `Zeroize` ([#167])
@@ -53,6 +60,11 @@ a pure Rust solution.
 
 - Initial release
 
+[0.7.0]: https://github.com/iqlusioninc/crates/pull/186
+[#185]: https://github.com/iqlusioninc/crates/pull/185
+[#184]: https://github.com/iqlusioninc/crates/pull/184
+[#183]: https://github.com/iqlusioninc/crates/pull/183
+[#182]: https://github.com/iqlusioninc/crates/pull/182
 [0.6.0]: https://github.com/iqlusioninc/crates/pull/170
 [#168]: https://github.com/iqlusioninc/crates/pull/168
 [#167]: https://github.com/iqlusioninc/crates/pull/167

@@ -7,6 +7,7 @@
 Custom derive support for [zeroize]: a crate for securely zeroing memory
 while avoiding compiler optimizations.
 
+This crate isn't intended to be used directly.
 See [zeroize] crate for documentation.
 
 ## Requirements
