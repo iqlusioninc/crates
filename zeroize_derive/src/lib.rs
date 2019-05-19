@@ -5,102 +5,118 @@
 #![forbid(unsafe_code)]
 
 extern crate proc_macro;
-#[macro_use]
-extern crate quote;
-#[macro_use]
-extern crate syn;
 
-use proc_macro::TokenStream;
+use quote::quote;
+use synstructure::{decl_derive, BindStyle};
 
-macro_rules! q {
-    ($($t:tt)*) => (quote_spanned!(proc_macro2::Span::call_site() => $($t)*))
-}
+/// Custom derive for `Zeroize`
+fn zeroize_derive(mut s: synstructure::Structure) -> proc_macro2::TokenStream {
+    s.bind_with(|_| BindStyle::RefMut);
 
-#[proc_macro_derive(Zeroize)]
-pub fn derive_zeroize(input: TokenStream) -> TokenStream {
-    let ast: syn::DeriveInput = syn::parse(input).unwrap();
+    let body = s.each(|bi| quote! { #bi.zeroize(); });
 
-    let zeroizers = match ast.data {
-        syn::Data::Struct(ref s) => derive_struct_zeroizers(&s.fields),
-        syn::Data::Enum(_) => panic!("support for deriving Zeroize on enums not yet unimplemented"),
-        syn::Data::Union(_) => panic!("can't derive Zeroize on union types"),
-    };
-
-    let name = &ast.ident;
-    let (impl_generics, ty_generics, where_clause) = ast.generics.split_for_impl();
-
-    let zeroize_impl = q! {
-        impl #impl_generics Zeroize for #name #ty_generics #where_clause {
+    s.bound_impl(
+        quote!(zeroize::Zeroize),
+        quote! {
             fn zeroize(&mut self) {
-                #zeroizers
+                match self {
+                    #body
+                }
             }
-        }
-    };
-
-    zeroize_impl.into()
+        },
+    )
 }
+decl_derive!([Zeroize] => zeroize_derive);
 
-#[proc_macro_derive(ZeroizeOnDrop)]
-pub fn derive_zeroize_on_drop(input: TokenStream) -> TokenStream {
-    let ast: syn::DeriveInput = syn::parse(input).unwrap();
-    let name = &ast.ident;
-    let (impl_generics, ty_generics, where_clause) = ast.generics.split_for_impl();
-
-    let zeroize_on_drop_impl = q! {
-        impl #impl_generics Drop for #name #ty_generics #where_clause {
+/// Custom derive for `ZeroizeOnDrop`
+fn zeroize_on_drop_derive(s: synstructure::Structure) -> proc_macro2::TokenStream {
+    let drop_impl = s.gen_impl(quote! {
+        gen impl Drop for @Self {
             fn drop(&mut self) {
                 self.zeroize();
             }
         }
-
-        impl #impl_generics ZeroizeOnDrop for #name #ty_generics #where_clause {}
-    };
-
-    zeroize_on_drop_impl.into()
-}
-
-fn derive_struct_zeroizers(fields: &syn::Fields) -> proc_macro2::TokenStream {
-    let self_ident = syn::Ident::new("self", proc_macro2::Span::call_site());
-
-    match *fields {
-        syn::Fields::Named(ref fields) => {
-            derive_field_zeroizers(&self_ident, Some(&fields.named), true)
-        }
-        syn::Fields::Unnamed(ref fields) => {
-            derive_field_zeroizers(&self_ident, Some(&fields.unnamed), false)
-        }
-        syn::Fields::Unit => panic!("can't derive Zeroize on unit structs"),
-    }
-}
-
-fn derive_field_zeroizers(
-    target: &syn::Ident,
-    fields: Option<&syn::punctuated::Punctuated<syn::Field, Token![,]>>,
-    named: bool,
-) -> proc_macro2::TokenStream {
-    let empty = Default::default();
-    let zeroizers = fields.unwrap_or(&empty).iter().enumerate().map(|(i, f)| {
-        let is_phantom_data = match f.ty {
-            syn::Type::Path(syn::TypePath {
-                qself: None,
-                ref path,
-            }) => path
-                .segments
-                .last()
-                .map(|x| x.value().ident == "PhantomData")
-                .unwrap_or(false),
-            _ => false,
-        };
-
-        if is_phantom_data {
-            q!()
-        } else if named {
-            let ident = f.ident.clone().unwrap();
-            q!(#target.#ident.zeroize())
-        } else {
-            q!(#target.#i.zeroize())
-        }
     });
 
-    q!(#(#zeroizers);*)
+    let zeroize_on_drop_impl = s.bound_impl(quote!(zeroize::ZeroizeOnDrop), quote!());
+
+    quote! {
+        #[doc(hidden)]
+        #drop_impl
+        #zeroize_on_drop_impl
+    }
+}
+decl_derive!([ZeroizeOnDrop] => zeroize_on_drop_derive);
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use synstructure::test_derive;
+
+    #[test]
+    fn zeroize() {
+        test_derive! {
+            zeroize_derive {
+                struct Z {
+                    a: String,
+                    b: Vec<u8>,
+                    c: [u8; 3],
+                }
+            }
+            expands to {
+                #[allow(non_upper_case_globals)]
+                #[doc(hidden)]
+                const _DERIVE_zeroize_Zeroize_FOR_Z: () = {
+                    extern crate zeroize;
+                    impl zeroize::Zeroize for Z {
+                        fn zeroize(&mut self) {
+                            match self {
+                                Z {
+                                    a: ref mut __binding_0,
+                                    b: ref mut __binding_1,
+                                    c: ref mut __binding_2,
+                                } => {
+                                    { __binding_0.zeroize(); }
+                                    { __binding_1.zeroize(); }
+                                    { __binding_2.zeroize(); }
+                                }
+                            }
+                        }
+                    }
+                };
+            }
+            no_build // tests the code compiles are in the `zeroize` crate
+        }
+    }
+
+    #[test]
+    fn zeroize_on_drop() {
+        test_derive! {
+            zeroize_on_drop_derive {
+                struct Z {
+                    a: String,
+                    b: Vec<u8>,
+                    c: [u8; 3],
+                }
+            }
+            expands to {
+                #[doc(hidden)]
+                #[allow(non_upper_case_globals)]
+                const _DERIVE_Drop_FOR_Z: () = {
+                    impl Drop for Z {
+                        fn drop(&mut self) {
+                            self.zeroize();
+                        }
+                    }
+                };
+                #[allow(non_upper_case_globals)]
+                #[doc(hidden)]
+                const _DERIVE_zeroize_ZeroizeOnDrop_FOR_Z : () = {
+                    extern crate zeroize;
+                    impl zeroize :: ZeroizeOnDrop for Z {}
+                };
+            }
+            no_build // tests the code compiles are in the `zeroize` crate
+        }
+    }
 }
