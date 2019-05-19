@@ -18,6 +18,10 @@ proc-macro = true
 proc-macro2 = "0.4"
 quote = "0.6"
 syn = "0.15"
+synstructure = "0.10"
 
 [badges]
 travis-ci = { repository = "iqlusioninc/crates", branch = "develop" }
+
+[package.metadata.docs.rs]
+rustdoc-args = ["--document-private-items"]
