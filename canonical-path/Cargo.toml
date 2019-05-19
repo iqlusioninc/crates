@@ -6,13 +6,14 @@ authors     = ["Tony Arcieri <tony@iqlusion.io>"]
 license     = "Apache-2.0"
 edition     = "2018"
 homepage    = "https://github.com/iqlusioninc/crates/"
-repository  = "https://github.com/iqlusioninc/crates/tree/master/canonical-path"
+repository  = "https://github.com/iqlusioninc/crates/tree/develop/canonical-path"
 readme      = "README.md"
 categories  = ["filesystem"]
 keywords    = ["filesystem", "path", "canonicalization"]
 
 [badges]
-travis-ci = { repository = "iqlusioninc/crates" }
+maintenance = { status = "passively-maintained" }
+travis-ci = { repository = "iqlusioninc/crates", branch = "develop" }
 
 [dev-dependencies]
 tempdir = "0.3"

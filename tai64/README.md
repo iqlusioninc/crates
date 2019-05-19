@@ -12,7 +12,7 @@
 [build-image]: https://circleci.com/gh/iqlusioninc/crates.svg?style=shield
 [build-link]: https://circleci.com/gh/iqlusioninc/crates
 [license-image]: https://img.shields.io/badge/license-Apache2.0-blue.svg
-[license-link]: https://github.com/iqlusioninc/crates/blob/master/LICENSE
+[license-link]: https://github.com/iqlusioninc/crates/blob/develop/LICENSE
 
 An implementation of the [TAI64(N)] (*Temps Atomique International*) timestamp
 format in Rust.
@@ -35,4 +35,4 @@ The **tai64** crate is distributed under the terms of the Apache License
 See [LICENSE] file in the `iqlusioninc/crates` toplevel directory for more
 information.
 
-[LICENSE]: https://github.com/iqlusioninc/crates/blob/master/LICENSE
+[LICENSE]: https://github.com/iqlusioninc/crates/blob/develop/LICENSE

@@ -32,6 +32,6 @@ without any additional terms or conditions.
 [license-image]: https://img.shields.io/badge/license-Apache2.0/MIT-blue.svg
 [build-image]: https://circleci.com/gh/iqlusioninc/crates.svg?style=shield
 [build-link]: https://circleci.com/gh/iqlusioninc/crates
-[zeroize]: https://github.com/iqlusioninc/crates/tree/master/zeroize
-[LICENSE]: https://github.com/iqlusioninc/crates/blob/master/LICENSE
-[LICENSE-MIT]: https://github.com/iqlusioninc/crates/blob/master/zeroize/LICENSE-MIT
+[zeroize]: https://github.com/iqlusioninc/crates/tree/develop/zeroize
+[LICENSE]: https://github.com/iqlusioninc/crates/blob/develop/LICENSE
+[LICENSE-MIT]: https://github.com/iqlusioninc/crates/blob/develop/zeroize/LICENSE-MIT

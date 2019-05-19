@@ -10,7 +10,7 @@
 [docs-image]: https://docs.rs/gaunt/badge.svg
 [docs-link]: https://docs.rs/gaunt/
 [license-image]: https://img.shields.io/badge/license-Apache2.0-blue.svg
-[license-link]: https://github.com/iqlusioninc/crates/blob/master/LICENSE
+[license-link]: https://github.com/iqlusioninc/crates/blob/develop/LICENSE
 [build-image]: https://circleci.com/gh/iqlusioninc/crates.svg?style=shield
 [build-link]: https://circleci.com/gh/iqlusioninc/crates
 

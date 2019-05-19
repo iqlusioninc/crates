@@ -12,7 +12,7 @@
 [build-image]: https://circleci.com/gh/iqlusioninc/crates.svg?style=shield
 [build-link]: https://circleci.com/gh/iqlusioninc/crates
 [license-image]: https://img.shields.io/badge/license-Apache2.0-blue.svg
-[license-link]: https://github.com/iqlusioninc/crates/blob/master/LICENSE
+[license-link]: https://github.com/iqlusioninc/crates/blob/develop/LICENSE
 
 `std::fs::Path` and `PathBuf`-like types for representing canonical
 filesystem paths.
@@ -31,4 +31,4 @@ Apache License (Version 2.0).
 See [LICENSE] file in the `iqlusioninc/crates` toplevel directory for more
 information.
 
-[LICENSE]: https://github.com/iqlusioninc/crates/blob/master/LICENSE
+[LICENSE]: https://github.com/iqlusioninc/crates/blob/develop/LICENSE

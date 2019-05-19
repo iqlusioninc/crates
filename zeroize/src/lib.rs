@@ -263,9 +263,14 @@
 //! [good cryptographic hygiene]: https://cryptocoding.net/index.php/Coding_rules#Clean_memory_of_secret_data
 
 #![no_std]
-#![deny(warnings, missing_docs, unused_import_braces, unused_qualifications)]
-#![cfg_attr(all(feature = "nightly", not(feature = "std")), feature(alloc))]
-#![cfg_attr(feature = "nightly", feature(core_intrinsics))]
+#![deny(
+    warnings,
+    missing_docs,
+    trivial_casts,
+    trivial_numeric_casts,
+    unused_import_braces,
+    unused_qualifications
+)]
 #![doc(html_root_url = "https://docs.rs/zeroize/0.6.0")]
 
 #[cfg(any(feature = "std", test))]
@@ -284,9 +289,9 @@ pub use zeroize_derive::*;
 use core::{ops, ptr, slice::IterMut, sync::atomic};
 
 #[cfg(all(feature = "alloc", not(feature = "std")))]
-use alloc::prelude::*;
+use alloc::{string::String, vec::Vec};
 #[cfg(feature = "std")]
-use std::prelude::v1::*;
+use std::{string::String, vec::Vec};
 
 /// Trait for securely erasing types from memory
 pub trait Zeroize {
@@ -322,22 +327,8 @@ macro_rules! impl_zeroize_with_default {
 }
 
 impl_zeroize_with_default!(i8, i16, i32, i64, i128, isize);
-impl_zeroize_with_default!(u16, u32, u64, u128, usize);
+impl_zeroize_with_default!(u8, u16, u32, u64, u128, usize);
 impl_zeroize_with_default!(f32, f64, char, bool);
-
-/// On non-nightly targets, avoid special-casing u8
-#[cfg(not(feature = "nightly"))]
-impl_zeroize_with_default!(u8);
-
-/// On nightly targets, don't implement `DefaultIsZeroes` so we can special
-/// case using batch set operations.
-#[cfg(feature = "nightly")]
-impl Zeroize for u8 {
-    fn zeroize(&mut self) {
-        volatile_set(self, 0);
-        atomic_fence();
-    }
-}
 
 impl<'a, Z> Zeroize for IterMut<'a, Z>
 where
@@ -365,15 +356,6 @@ where
     }
 }
 
-/// On `nightly` Rust, `volatile_set_memory` provides fast byte slice zeroing
-#[cfg(feature = "nightly")]
-impl Zeroize for [u8] {
-    fn zeroize(&mut self) {
-        volatile_zero_bytes(self);
-        atomic_fence();
-    }
-}
-
 #[cfg(feature = "alloc")]
 impl<Z> Zeroize for Vec<Z>
 where
@@ -394,28 +376,6 @@ impl Zeroize for String {
         self.clear();
     }
 }
-
-/// On `nightly` Rust, `volatile_set_memory` provides fast byte array zeroing
-#[cfg(feature = "nightly")]
-macro_rules! impl_zeroize_for_byte_array {
-    ($($size:expr),+) => {
-        $(
-            impl Zeroize for [u8; $size] {
-                fn zeroize(&mut self) {
-                    volatile_zero_bytes(self.as_mut());
-                    atomic_fence();
-                }
-            }
-        )+
-     };
-}
-
-#[cfg(feature = "nightly")]
-impl_zeroize_for_byte_array!(
-    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26,
-    27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50,
-    51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64
-);
 
 /// `Zeroizing` is a a wrapper for any `Z: Zeroize` type which implements a
 /// `Drop` handler which zeroizes dropped values.
@@ -485,21 +445,19 @@ fn atomic_fence() {
 }
 
 /// Set a mutable reference to a value to the given replacement
+// TODO(tarcieri): replace this with atomic writes when they're stable
 #[inline]
 fn volatile_set<T: Copy + Sized>(dst: &mut T, src: T) {
     unsafe { ptr::write_volatile(dst, src) }
 }
 
-#[cfg(feature = "nightly")]
-#[inline]
-fn volatile_zero_bytes(dst: &mut [u8]) {
-    unsafe { core::intrinsics::volatile_set_memory(dst.as_mut_ptr(), 0, dst.len()) }
-}
-
 #[cfg(test)]
 mod tests {
-    use super::Zeroize;
-    use std::prelude::v1::*;
+    use super::*;
+    #[cfg(all(feature = "alloc", not(feature = "std")))]
+    use alloc::boxed::Box;
+    #[cfg(feature = "std")]
+    use std::boxed::Box;
 
     #[test]
     fn zeroize_byte_arrays() {
@@ -508,6 +466,7 @@ mod tests {
         assert_eq!(arr.as_ref(), [0u8; 64].as_ref());
     }
 
+    #[cfg(feature = "alloc")]
     #[test]
     fn zeroize_vec() {
         let mut vec = vec![42; 3];
@@ -515,6 +474,7 @@ mod tests {
         assert!(vec.is_empty());
     }
 
+    #[cfg(feature = "alloc")]
     #[test]
     fn zeroize_vec_past_len() {
         let mut vec = Vec::with_capacity(5);
@@ -540,6 +500,7 @@ mod tests {
         }
     }
 
+    #[cfg(feature = "alloc")]
     #[test]
     fn zeroize_string() {
         let mut string = String::from("Hello, world!");
@@ -547,6 +508,7 @@ mod tests {
         assert!(string.is_empty());
     }
 
+    #[cfg(feature = "alloc")]
     #[test]
     fn zeroize_box() {
         let mut boxed_arr = Box::new([42u8; 3]);
@@ -580,7 +542,7 @@ mod tests {
         #[test]
         fn derive_struct_test() {
             let mut value = ZeroizableStruct {
-                string: "Hello, world!".to_owned(),
+                string: String::from("Hello, world!"),
                 vec: vec![1, 2, 3],
                 bytearray: [4, 5, 6],
                 number: 42,

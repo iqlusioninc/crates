@@ -11,8 +11,8 @@ To contribute to this repository, here is all you need to do:
 3. Create one or more additional commits including your contributions, then open
    a [pull request] along with the commit adding yourself to [AUTHORS.md].
 
-[CODE_OF_CONDUCT.md]: https://github.com/iqlusioninc/crates/blob/master/CODE_OF_CONDUCT.md
-[AUTHORS.md]: https://github.com/iqlusioninc/crates/blob/master/AUTHORS.md
+[CODE_OF_CONDUCT.md]: https://github.com/iqlusioninc/crates/blob/develop/CODE_OF_CONDUCT.md
+[AUTHORS.md]: https://github.com/iqlusioninc/crates/blob/develop/AUTHORS.md
 [pull request]: https://help.github.com/articles/about-pull-requests/
 
 ## Code of Conduct
@@ -34,7 +34,7 @@ the terms of the [Apache License, Version 2.0] (included in this repository in
 the toplevel [LICENSE] file).
 
 [Apache License, Version 2.0]: https://www.apache.org/licenses/LICENSE-2.0
-[LICENSE]: https://github.com/iqlusioninc/crates/blob/master/LICENSE
+[LICENSE]: https://github.com/iqlusioninc/crates/blob/develop/LICENSE
 
 To do this, edit the [AUTHORS.md] file, inserting your name in the list of
 contributors (in rougly alphabetical order by last name, preferably) along with

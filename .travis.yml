@@ -3,7 +3,7 @@ cache: cargo
 
 branches:
   only:
-    - master
+    - develop
 
 rust:
   - stable
@@ -54,6 +54,7 @@ script:
   - (cd gaunt && cargo test --release --features=logger)
   - (cd subtle-encoding && cargo test --release --features=bech32-preview)
   - (cd tai64 && cargo test --release --features=chrono)
+  - (cd zeroize && cargo test --no-default-features --lib)
 
   # doc build
   - cargo doc --no-deps

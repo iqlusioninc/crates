@@ -5,8 +5,8 @@
 [![Appveyor Status][appveyor-image]][appveyor-link]
 
 [license-image]: https://img.shields.io/badge/license-Apache2.0-blue.svg
-[license-link]: https://github.com/iqlusioninc/crates/blob/master/LICENSE
-[build-image]: https://travis-ci.org/iqlusioninc/crates.svg?branch=master
+[license-link]: https://github.com/iqlusioninc/crates/blob/develop/LICENSE
+[build-image]: https://travis-ci.org/iqlusioninc/crates.svg?branch=develop
 [build-link]: https://travis-ci.org/iqlusioninc/crates/
 [appveyor-image]: https://ci.appveyor.com/api/projects/status/qslcjs7e1rn4a2w9?svg=true
 [appveyor-link]: https://ci.appveyor.com/project/tony-iqlusion/crates
@@ -18,22 +18,32 @@ to the community by [iqlusion](https://www.iqlusion.io).
 If you are interested in contributing to this repository, please make sure to
 read the [CONTRIBUTING.md] and [CODE_OF_CONDUCT.md] files first.
 
-[CONTRIBUTING.md]: https://github.com/iqlusioninc/crates/blob/master/CONTRIBUTING.md
-[CODE_OF_CONDUCT.md]: https://github.com/iqlusioninc/crates/blob/master/CODE_OF_CONDUCT.md
+[CONTRIBUTING.md]: https://github.com/iqlusioninc/crates/blob/develop/CONTRIBUTING.md
+[CODE_OF_CONDUCT.md]: https://github.com/iqlusioninc/crates/blob/develop/CODE_OF_CONDUCT.md
+
+## Requirements
+
+All crates require Rust 2018 edition and are tested on the following channels:
+
+- `1.34.0` (minimum supported)
+- `stable`
+
+Crates may work on slightly earlier 2018 edition-supporting versions of Rust
+(i.e. 1.31.0+) but are not tested on these releases or guaranteed to work.
 
 ## Crate Descriptions
 
 This repository contains the following crates:
 
-* [canonical-path:](https://github.com/iqlusioninc/crates/tree/master/canonical-path)
+* [canonical-path:](https://github.com/iqlusioninc/crates/tree/develop/canonical-path)
   `Path` and `PathBuf`-like types for representing canonical filesystem paths.
-* [gaunt:](https://github.com/iqlusioninc/crates/tree/master/gaunt)
+* [gaunt:](https://github.com/iqlusioninc/crates/tree/develop/gaunt)
   Minimalist Rust HTTP library (with optional `hyper` backend coming soon)
-* [subtle-encoding:](https://github.com/iqlusioninc/crates/tree/master/subtle-encoding)
+* [subtle-encoding:](https://github.com/iqlusioninc/crates/tree/develop/subtle-encoding)
   Base64 and hexadecimal encoder/decoder with "constant time-ish" implementation.
-* [tai64:](https://github.com/iqlusioninc/crates/tree/master/tai64)
+* [tai64:](https://github.com/iqlusioninc/crates/tree/develop/tai64)
   TAI64(N) timestamp format (Temps Atomique International).
-* [zeroize:](https://github.com/iqlusioninc/crates/tree/master/zeroize)
+* [zeroize:](https://github.com/iqlusioninc/crates/tree/develop/zeroize)
    Securely zero memory while avoiding compiler optimizations.
 
 ## License

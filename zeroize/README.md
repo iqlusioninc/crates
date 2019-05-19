@@ -65,7 +65,6 @@ without any additional terms or conditions.
 [Zeroing memory securely is hard]: http://www.daemonology.net/blog/2014-09-04-how-to-zero-a-buffer.html
 [core::ptr::write_volatile]: https://doc.rust-lang.org/core/ptr/fn.write_volatile.html
 [core::sync::atomic]: https://doc.rust-lang.org/stable/core/sync/atomic/index.html
-[pin]: https://github.com/rust-lang/rfcs/blob/master/text/2349-pin.md
 [good cryptographic hygiene]: https://cryptocoding.net/index.php/Coding_rules#Clean_memory_of_secret_data
-[LICENSE]: https://github.com/iqlusioninc/crates/blob/master/LICENSE
-[LICENSE-MIT]: https://github.com/iqlusioninc/crates/blob/master/zeroize/LICENSE-MIT
+[LICENSE]: https://github.com/iqlusioninc/crates/blob/develop/LICENSE
+[LICENSE-MIT]: https://github.com/iqlusioninc/crates/blob/develop/zeroize/LICENSE-MIT
