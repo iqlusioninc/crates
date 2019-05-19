@@ -1,5 +1,5 @@
 //! Securely zero memory with a simple trait ([Zeroize]) built on stable Rust
-//! primitives which guarantee the operation will not be 'optimized away'.
+//! primitives which guarantee the operation will not be "optimized away".
 //!
 //! ## About
 //!
@@ -13,11 +13,11 @@
 //! zeroing behavior which works on all of Rust's core number types and slices
 //! thereof, implemented in pure Rust with no usage of FFI or assembly.
 //!
-//! - **No insecure fallbacks!**
-//! - **No dependencies!**
-//! - **No FFI or inline assembly! WASM friendly (and tested)!**
-//! - `#![no_std]` **i.e. embedded-friendly**!
-//! - **No functionality besides securely zeroing memory!**
+//! - No insecure fallbacks!
+//! - No dependencies!
+//! - No FFI or inline assembly! **WASM friendly** (and tested)!
+//! - `#![no_std]` i.e. **embedded-friendly**!
+//! - No functionality besides securely zeroing memory!
 //!
 //! ## Usage
 //!
@@ -43,7 +43,8 @@
 //! When the `std` feature is enabled (which it is by default), it's also impl'd
 //! for `Vec`s of the above types as well as `String`, where it provides
 //! [Vec::clear()] / [String::clear()]-like behavior (truncating to zero-length)
-//! but ensures the backing memory is securely zeroed.
+//! but ensures the backing memory is securely zeroed with some caveats.
+//! (NOTE: see "Stack/Heap Zeroing Notes" for important `Vec`/`String` details)
 //!
 //! The [DefaultIsZeroes] marker trait can be impl'd on types which also
 //! impl [Default], which implements [Zeroize] by overwriting a value with
@@ -74,13 +75,11 @@
 //!
 //! ## `Zeroizing<Z>`: wrapper for zeroizing arbitrary values on drop
 //!
-//! The `Zeroizing<Z: Zeroize>` type provides a wrapper type that impls `Deref`
+//! `Zeroizing<Z: Zeroize>` is a generic wrapper type that impls `Deref`
 //! and `DerefMut`, allowing access to an inner value of type `Z`, and also
 //! impls a `Drop` handler which calls `zeroize()` on its contents:
 //!
-//! TODO(tarcieri): fix zeroize array impls and remove `text` from below example
-//!
-//! ```text
+//! ```
 //! use zeroize::Zeroizing;
 //!
 //! fn main() {
@@ -89,7 +88,7 @@
 //!     // Set the air shield password
 //!     // Protip (again): don't embed secrets in your source code.
 //!     secret.copy_from_slice(&[1, 2, 3, 4, 5]);
-//!     assert_eq!(&secret, &[1, 2, 3, 4, 5]);
+//!     assert_eq!(secret.as_ref(), &[1, 2, 3, 4, 5]);
 //!
 //!     // The contents of `secret` will be automatically zeroized on drop
 //! }
@@ -105,11 +104,14 @@
 //!
 //! This crate guarantees #1 is true: LLVM's volatile semantics ensure it.
 //!
-//! The story around #2 is much more complicated. In brief, it should be true that
-//! LLVM's current implementation does not attempt to perform optimizations which
-//! would allow a subsequent (non-volatile) read to see the original value prior
-//! to zeroization. However, this is not a guarantee, but rather an LLVM
-//! implementation detail.
+//! The story around #2 is much more complicated. In brief, it should be true
+//! that LLVM's current implementation does not attempt to perform
+//! optimizations which would allow a subsequent (non-volatile) read to see the
+//! original value prior to zeroization. However, this is not a guarantee, but
+//! rather an LLVM implementation detail, a.k.a. *undefined behavior*.
+//! It provides what we believe to be the best implementation possible on
+//! stable Rust, but we cannot yet make guarantees it will work reliably
+//! 100% of the time (particularly on exotic CPU architectures).
 //!
 //! For more background, we can look to the [core::ptr::write_volatile]
 //! documentation:
@@ -161,11 +163,11 @@
 //! - As mentioned earlier, LLVM does not presently contain optimizations which
 //!   would reorder a non-volatile read to occur before a volatile write.
 //!   However, there is nothing precluding such optimizations from being added.
-//!   LLVM presently appears to exhibit the desired behavior for both points
-//!   #1 and #2 above, but there is nothing preventing future versions of Rust
+//!   LLVM presently appears to exhibit the desired behavior for point
+//!   #2 above, but there is nothing preventing future versions of Rust
 //!   and/or LLVM from changing that.
 //!
-//! To help mitigate concerns about reordering potentially exposing secrets
+//! To help mitigate concerns about reordering potentially exposing values
 //! after they have been zeroed, this crate leverages the [core::sync::atomic]
 //! memory fence functions including [compiler_fence] and [fence] (which uses
 //! the CPU's native fence instructions). These fences are leveraged with the
@@ -197,6 +199,13 @@
 //! elided or "optimized away", makes a "best effort" to ensure that
 //! memory accesses will not be reordered ahead of the "zeroize" operation,
 //! but **cannot** yet guarantee that such reordering will not occur.
+//!
+//! In the future it might be possible to guarantee such behavior using
+//! [LLVM's "unordered" atomic mode][unordered], which is documented as
+//! being free of undefined behavior. There's an open issue to
+//! [expose atomic memcpy/memset in core/std][llvm-atomic]
+//! in which case this crate could leverage them to provide well-defined
+//! guarantees that zeroization will always occur.
 //!
 //! ## Stack/Heap Zeroing Notes
 //!
@@ -259,6 +268,8 @@
 //! [compiler_fence]: https://doc.rust-lang.org/stable/core/sync/atomic/fn.compiler_fence.html
 //! [fence]: https://doc.rust-lang.org/stable/core/sync/atomic/fn.fence.html
 //! [memory-model]: https://github.com/nikomatsakis/rust-memory-model
+//! [unordered]: https://llvm.org/docs/Atomics.html#unordered
+//! [llvm-atomic]: https://github.com/rust-lang/rust/issues/58599
 //! [pin]: https://doc.rust-lang.org/std/pin/struct.Pin.html
 //! [good cryptographic hygiene]: https://cryptocoding.net/index.php/Coding_rules#Clean_memory_of_secret_data
 
@@ -315,7 +326,7 @@ where
     Z: DefaultIsZeroes,
 {
     fn zeroize(&mut self) {
-        volatile_set(self, Z::default());
+        volatile_write(self, Z::default());
         atomic_fence();
     }
 }
@@ -330,29 +341,60 @@ impl_zeroize_with_default!(i8, i16, i32, i64, i128, isize);
 impl_zeroize_with_default!(u8, u16, u32, u64, u128, usize);
 impl_zeroize_with_default!(f32, f64, char, bool);
 
+/// Implement `Zeroize` on arrays of types that can be zeroized with `Default`.
+///
+/// This impl can eventually be optimized using an atomic memset intrinsic.
+/// See notes for the blanket impl of `Zeroize` on `[Z]`.
+macro_rules! impl_zeroize_for_array {
+    ($($size:expr),+) => {
+        $(
+            impl<Z> Zeroize for [Z; $size]
+            where
+                Z: DefaultIsZeroes
+            {
+                fn zeroize(&mut self) {
+                    self.as_mut().zeroize();
+                }
+            }
+        )+
+     };
+}
+
+// TODO(tarcieri): const generics
+impl_zeroize_for_array!(
+    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26,
+    27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50,
+    51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64
+);
+
 impl<'a, Z> Zeroize for IterMut<'a, Z>
 where
-    Z: DefaultIsZeroes,
+    Z: Zeroize,
 {
     fn zeroize(&mut self) {
-        let default = Z::default();
-
         for elem in self {
-            volatile_set(elem, default);
+            elem.zeroize();
         }
-
-        atomic_fence();
     }
 }
 
-/// Implement zeroize on all types that can be zeroized with the zero value
+/// Implement `Zeroize` on slices of types that can be zeroized with `Default`.
+///
+/// This impl can eventually be optimized using an atomic memset intrinsic,
+/// such as `llvm.memset.element.unordered.atomic`. For that reason the blanket
+/// impl on slices is bounded by `DefaultIsZeroes`. See:
+///
+/// <https://github.com/rust-lang/rust/issues/58599>
+///
+/// To zeroize a mut slice of `Z: Zeroize` which does not impl
+/// `DefaultIsZeroes`, call `iter_mut().zeroize()`.
 impl<Z> Zeroize for [Z]
 where
     Z: DefaultIsZeroes,
 {
     fn zeroize(&mut self) {
-        // TODO: batch volatile set operation?
-        self.iter_mut().zeroize();
+        volatile_set(self, Z::default());
+        atomic_fence();
     }
 }
 
@@ -444,11 +486,22 @@ fn atomic_fence() {
     atomic::compiler_fence(atomic::Ordering::SeqCst);
 }
 
-/// Set a mutable reference to a value to the given replacement
+/// Perform a volatile write to the destination
 // TODO(tarcieri): replace this with atomic writes when they're stable
 #[inline]
-fn volatile_set<T: Copy + Sized>(dst: &mut T, src: T) {
+fn volatile_write<T: Copy + Sized>(dst: &mut T, src: T) {
     unsafe { ptr::write_volatile(dst, src) }
+}
+
+/// Perform a volatile `memset` operation which fills a slice with a value
+// TODO(tarcieri): use `llvm.memset.element.unordered.atomic`
+// See: https://github.com/rust-lang/rust/issues/58599
+#[inline]
+fn volatile_set<T: Copy + Sized>(dst: &mut [T], src: T) {
+    // TODO(tarcieri): use `volatile_set_memory` on nightly?
+    for elem in dst {
+        volatile_write(elem, src);
+    }
 }
 
 #[cfg(test)]
