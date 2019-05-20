@@ -1,11 +1,13 @@
 # iqlusion crates <a href="https://www.iqlusion.io"><img src="https://storage.googleapis.com/iqlusion-prod-web-assets/img/logo/iqlusion-rings-sm.png" alt="iqlusion" width="24" height="24"></a> <a href="https://crates.io">📦</a>
 
 [![Apache 2.0 Licensed][license-image]][license-link]
+![Rust 1.34+][rustc-image]
 [![Build Status][build-image]][build-link]
 [![Appveyor Status][appveyor-image]][appveyor-link]
 
 [license-image]: https://img.shields.io/badge/license-Apache2.0-blue.svg
 [license-link]: https://github.com/iqlusioninc/crates/blob/develop/LICENSE
+[rustc-image]: https://img.shields.io/badge/rustc-1.34+-blue.svg
 [build-image]: https://travis-ci.org/iqlusioninc/crates.svg?branch=develop
 [build-link]: https://travis-ci.org/iqlusioninc/crates/
 [appveyor-image]: https://ci.appveyor.com/api/projects/status/qslcjs7e1rn4a2w9?svg=true
@@ -30,6 +32,12 @@ All crates require Rust 2018 edition and are tested on the following channels:
 
 Crates may work on slightly earlier 2018 edition-supporting versions of Rust
 (i.e. 1.31.0+) but are not tested on these releases or guaranteed to work.
+
+All crates in CI with the above channels on the following operating systems:
+
+- Linux
+- macOS
+- Windows
 
 ## Crate Descriptions
 

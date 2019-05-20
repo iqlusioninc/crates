@@ -2,17 +2,19 @@
 
 [![Crate][crate-image]][crate-link]
 [![Docs][docs-image]][docs-link]
-[![Build Status][build-image]][build-link]
 [![Apache 2.0 Licensed][license-image]][license-link]
+![Rust 1.31+][rustc-image]
+[![Build Status][build-image]][build-link]
 
 [crate-image]: https://img.shields.io/crates/v/canonical-path.svg
 [crate-link]: https://crates.io/crates/canonical-path
 [docs-image]: https://docs.rs/canonical-path/badge.svg
 [docs-link]: https://docs.rs/canonical-path/
-[build-image]: https://circleci.com/gh/iqlusioninc/crates.svg?style=shield
-[build-link]: https://circleci.com/gh/iqlusioninc/crates
 [license-image]: https://img.shields.io/badge/license-Apache2.0-blue.svg
 [license-link]: https://github.com/iqlusioninc/crates/blob/develop/LICENSE
+[rustc-image]: https://img.shields.io/badge/rustc-1.31+-blue.svg
+[build-image]: https://circleci.com/gh/iqlusioninc/crates.svg?style=shield
+[build-link]: https://circleci.com/gh/iqlusioninc/crates
 
 `std::fs::Path` and `PathBuf`-like types for representing canonical
 filesystem paths.
