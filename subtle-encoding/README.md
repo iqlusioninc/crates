@@ -3,14 +3,15 @@
 [![Crate][crate-image]][crate-link]
 [![Docs][docs-image]][docs-link]
 ![Apache 2.0/MIT Licensed][license-image]
+![Rust 1.31+][rustc-image]
 [![Build Status][build-image]][build-link]
-<img src="https://rustsec.org/assets/img/badges/unsafe/forbidden.svg" height="20" alt="unsafe: forbidden">
 
 [crate-image]: https://img.shields.io/crates/v/subtle-encoding.svg
 [crate-link]: https://crates.io/crates/subtle-encoding
 [docs-image]: https://docs.rs/subtle-encoding/badge.svg
 [docs-link]: https://docs.rs/subtle-encoding/
 [license-image]: https://img.shields.io/badge/license-Apache2.0/MIT-blue.svg
+[rustc-image]: https://img.shields.io/badge/rustc-1.31+-blue.svg
 [build-image]: https://circleci.com/gh/iqlusioninc/crates.svg?style=shield
 [build-link]: https://circleci.com/gh/iqlusioninc/crates
 
