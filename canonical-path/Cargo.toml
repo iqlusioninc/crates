@@ -16,4 +16,4 @@ maintenance = { status = "passively-maintained" }
 travis-ci = { repository = "iqlusioninc/crates", branch = "develop" }
 
 [dev-dependencies]
-tempdir = "0.3"
+tempfile = "3"

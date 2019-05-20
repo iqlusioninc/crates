@@ -4,17 +4,23 @@
 //! `CanonicalPath` and `CanonicalPathBuf` guarantee that the paths they represent
 //! are canonical, or at least, were canonical at the time they were created.
 
-#![crate_name = "canonical_path"]
-#![crate_type = "rlib"]
-#![deny(warnings, missing_docs, unused_import_braces, unused_qualifications)]
+#![deny(
+    warnings,
+    missing_docs,
+    trivial_numeric_casts,
+    unused_import_braces,
+    unused_qualifications
+)]
 #![doc(html_root_url = "https://docs.rs/canonical-path/1.0.0")]
 
-use std::borrow::Borrow;
-use std::env;
-use std::ffi::{OsStr, OsString};
-use std::fs::{Metadata, ReadDir};
-use std::io::{Error, ErrorKind, Result};
-use std::path::{Components, Display, Iter, Path, PathBuf};
+use std::{
+    borrow::Borrow,
+    env,
+    ffi::{OsStr, OsString},
+    fs::{Metadata, ReadDir},
+    io::{Error, ErrorKind, Result},
+    path::{Components, Display, Iter, Path, PathBuf},
+};
 
 /// Common methods of `CanonicalPath` and `CanonicalPathBuf`
 macro_rules! impl_path {
@@ -335,9 +341,7 @@ mod tests {
     use std::path::PathBuf;
 
     use super::{CanonicalPath, CanonicalPathBuf};
-
-    extern crate tempdir;
-    use self::tempdir::TempDir;
+    use tempfile::TempDir;
 
     // We create a test file with this name
     const CANONICAL_FILENAME: &str = "canonical-file";
@@ -362,7 +366,7 @@ mod tests {
 
     impl TestFixtureDir {
         pub fn new() -> Self {
-            let tempdir = TempDir::new("canonical-path-tests").unwrap();
+            let tempdir = TempDir::new().unwrap();
             let base_path = tempdir.path().canonicalize().unwrap();
 
             let canonical_path = base_path.join(CANONICAL_FILENAME);
