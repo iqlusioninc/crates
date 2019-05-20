@@ -1,3 +1,7 @@
+//! Error type
+
+#[cfg(all(feature = "alloc", not(feature = "std")))]
+use alloc::string::FromUtf8Error;
 #[cfg(feature = "std")]
 use std::{io, string::FromUtf8Error};
 
@@ -48,7 +52,7 @@ impl From<io::Error> for Error {
     }
 }
 
-#[cfg(feature = "std")]
+#[cfg(feature = "alloc")]
 impl From<FromUtf8Error> for Error {
     fn from(_err: FromUtf8Error) -> Error {
         // TODO: preserve cause or error message?
