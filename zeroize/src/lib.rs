@@ -53,23 +53,40 @@
 //! ## Custom Derive Support
 //!
 //! This crate has custom derive support for the `Zeroize` trait, which
-//! automatically calls `zeroize()` on all members of a struct or tuple struct:
+//! automatically calls `zeroize()` on all members of a struct or tuple struct,
+//! and adds a `Drop` impl which calls `zeroize()` when the item is dropped:
 //!
 //! ```
 //! use zeroize::Zeroize;
 //!
+//! // This struct will be zeroized on drop
 //! #[derive(Zeroize)]
 //! struct MyStruct([u8; 64]);
 //! ```
 //!
-//! Additionally, you can derive `ZeroizeOnDrop`, which will automatically
-//! derive a `Drop` handler that calls `zeroize()`:
+//! If, for some reason, you only want `Zeroize` to be derived but *don't*
+//! want an automatic `Drop` impl, you can add the `zeroize(no_drop)`
+//! attribute:
 //!
 //! ```
-//! use zeroize::{Zeroize, ZeroizeOnDrop};
+//! use zeroize::Zeroize;
+//!
+//! // This struct will *NOT* be zeroized on drop
+//! #[derive(Zeroize)]
+//! #[zeroize(no_drop)]
+//! struct MyStruct([u8; 64]);
+//! ```
+//!
+//! If you prefer explicitness, you can add the `#[zeroize(drop)]`
+//! attribute to signal intent to zeroize values on `Drop`. However note this
+//! syntax is not necessary as the `Drop` handler is added by default:
+//!
+//! ```
+//! use zeroize::Zeroize;
 //!
 //! // This struct will be zeroized on drop
-//! #[derive(Zeroize, ZeroizeOnDrop)]
+//! #[derive(Zeroize)]
+//! #[zeroize(drop)]
 //! struct MyStruct([u8; 64]);
 //! ```
 //!
@@ -314,13 +331,6 @@ pub trait Zeroize {
 /// Marker trait for types whose `Default` is the desired zeroization result
 pub trait DefaultIsZeroes: Copy + Default + Sized {}
 
-/// Marker trait intended for use with `zeroize_derive` which indicates that
-/// a type should have a drop handler which calls Zeroize.
-///
-/// Use `#[derive(ZeroizeOnDrop)]` to automatically impl this trait and an
-/// associated drop handler.
-pub trait ZeroizeOnDrop: Zeroize + Drop {}
-
 impl<Z> Zeroize for Z
 where
     Z: DefaultIsZeroes,
@@ -462,9 +472,9 @@ where
     }
 }
 
-// We could `derive(ZeroizeOnDrop)` for this, but doing it manually allows
-// `Zeroizing` to function regardless of whether the `zeroize_derive` feature
-// is enabled or not.
+// We could `derive(Zeroize)` for this, but doing it by hand allows `Zeroizing`
+// to function regardless of whether the `zeroize_derive` feature is enabled
+// or not.
 impl<Z> Drop for Zeroizing<Z>
 where
     Z: Zeroize,
@@ -473,9 +483,6 @@ where
         self.0.zeroize()
     }
 }
-
-// This doesn't really do anything, but merely marks this type with the trait
-impl<Z: Zeroize> ZeroizeOnDrop for Zeroizing<Z> {}
 
 /// Use fences to prevent accesses from being reordered before this
 /// point, which should hopefully help ensure that all accessors

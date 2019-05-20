@@ -1,8 +1,8 @@
 //! Integration tests for `zeroize_derive` proc macros
 
-use zeroize::{Zeroize, ZeroizeOnDrop};
+use zeroize::Zeroize;
 
-#[derive(Zeroize, ZeroizeOnDrop)]
+#[derive(Zeroize)]
 struct ZeroizableTupleStruct([u8; 3]);
 
 #[test]
@@ -12,7 +12,7 @@ fn derive_tuple_struct_test() {
     assert_eq!(&value.0, &[0, 0, 0])
 }
 
-#[derive(Zeroize, ZeroizeOnDrop)]
+#[derive(Zeroize)]
 struct ZeroizableStruct {
     string: String,
     vec: Vec<u8>,
@@ -38,4 +38,19 @@ fn derive_struct_test() {
     assert_eq!(&value.bytearray, &[0, 0, 0]);
     assert_eq!(value.number, 0);
     assert!(!value.boolean);
+}
+
+/// Test that the custom macro actually derived `Drop` for `ZeroizableStruct`
+trait Droppable: Drop {}
+impl Droppable for ZeroizableStruct {}
+
+/// Test that this successfully disables deriving a drop handler by defining
+/// a custom one which should conflict if the custom derive did too
+#[allow(dead_code)]
+#[derive(Zeroize)]
+#[zeroize(no_drop)]
+struct ZeroizeNoDropStruct([u8; 3]);
+
+impl Drop for ZeroizeNoDropStruct {
+    fn drop(&mut self) {}
 }

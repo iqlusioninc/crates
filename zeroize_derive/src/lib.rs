@@ -6,30 +6,36 @@
 
 extern crate proc_macro;
 
+use proc_macro2::TokenStream;
 use quote::quote;
 use synstructure::{decl_derive, BindStyle};
 
+/// Name of zeroize-related attributes
+const ZEROIZE_ATTR: &str = "zeroize";
+
 /// Custom derive for `Zeroize`
-fn zeroize_derive(mut s: synstructure::Structure) -> proc_macro2::TokenStream {
+fn zeroize_derive(mut s: synstructure::Structure) -> TokenStream {
     s.bind_with(|_| BindStyle::RefMut);
 
-    let body = s.each(|bi| quote! { #bi.zeroize(); });
+    let attributes = ZeroizeDeriveAttrs::parse(&s);
 
-    s.bound_impl(
+    let zeroizers = s.each(|bi| quote! { #bi.zeroize(); });
+
+    let zeroize_impl = s.bound_impl(
         quote!(zeroize::Zeroize),
         quote! {
             fn zeroize(&mut self) {
                 match self {
-                    #body
+                    #zeroizers
                 }
             }
         },
-    )
-}
-decl_derive!([Zeroize] => zeroize_derive);
+    );
 
-/// Custom derive for `ZeroizeOnDrop`
-fn zeroize_on_drop_derive(s: synstructure::Structure) -> proc_macro2::TokenStream {
+    if attributes.no_drop {
+        return zeroize_impl;
+    }
+
     let drop_impl = s.gen_impl(quote! {
         gen impl Drop for @Self {
             fn drop(&mut self) {
@@ -38,15 +44,48 @@ fn zeroize_on_drop_derive(s: synstructure::Structure) -> proc_macro2::TokenStrea
         }
     });
 
-    let zeroize_on_drop_impl = s.bound_impl(quote!(zeroize::ZeroizeOnDrop), quote!());
-
     quote! {
+        #zeroize_impl
+
         #[doc(hidden)]
         #drop_impl
-        #zeroize_on_drop_impl
     }
 }
-decl_derive!([ZeroizeOnDrop] => zeroize_on_drop_derive);
+decl_derive!([Zeroize, attributes(zeroize)] => zeroize_derive);
+
+/// Custom derive attributes for `Zeroize`
+struct ZeroizeDeriveAttrs {
+    /// Disable the on-by-default `Drop` derive
+    no_drop: bool,
+}
+
+impl Default for ZeroizeDeriveAttrs {
+    fn default() -> Self {
+        Self { no_drop: false }
+    }
+}
+
+impl ZeroizeDeriveAttrs {
+    /// Parse attributes from the incoming AST
+    fn parse(s: &synstructure::Structure) -> Self {
+        let mut result = Self::default();
+
+        for v in s.variants().iter() {
+            for attr in v.ast().attrs.iter() {
+                if attr.path.is_ident(ZEROIZE_ATTR) {
+                    // TODO(tarcieri): hax, but probably good enough for now
+                    match attr.tts.to_string().as_ref() {
+                        "( drop )" => (), // enabled by default
+                        "( no_drop )" => result.no_drop = true,
+                        other => panic!("unknown zeroize attribute: {}", other),
+                    }
+                }
+            }
+        }
+
+        result
+    }
+}
 
 #[cfg(test)]
 mod tests {
@@ -84,22 +123,6 @@ mod tests {
                         }
                     }
                 };
-            }
-            no_build // tests the code compiles are in the `zeroize` crate
-        }
-    }
-
-    #[test]
-    fn zeroize_on_drop() {
-        test_derive! {
-            zeroize_on_drop_derive {
-                struct Z {
-                    a: String,
-                    b: Vec<u8>,
-                    c: [u8; 3],
-                }
-            }
-            expands to {
                 #[doc(hidden)]
                 #[allow(non_upper_case_globals)]
                 const _DERIVE_Drop_FOR_Z: () = {
@@ -108,12 +131,6 @@ mod tests {
                             self.zeroize();
                         }
                     }
-                };
-                #[allow(non_upper_case_globals)]
-                #[doc(hidden)]
-                const _DERIVE_zeroize_ZeroizeOnDrop_FOR_Z : () = {
-                    extern crate zeroize;
-                    impl zeroize :: ZeroizeOnDrop for Z {}
                 };
             }
             no_build // tests the code compiles are in the `zeroize` crate
