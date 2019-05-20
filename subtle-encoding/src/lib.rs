@@ -15,7 +15,7 @@
 #![no_std]
 #![deny(warnings, missing_docs, unused_import_braces, unused_qualifications)]
 #![forbid(unsafe_code)]
-#![doc(html_root_url = "https://docs.rs/subtle-encoding/0.3.5")]
+#![doc(html_root_url = "https://docs.rs/subtle-encoding/0.3.6")]
 
 #[cfg(all(feature = "alloc", not(feature = "std")))]
 #[allow(unused_imports)] // rustc bug?
