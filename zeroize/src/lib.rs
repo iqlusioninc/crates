@@ -301,6 +301,11 @@
 )]
 #![doc(html_root_url = "https://docs.rs/zeroize/0.7.0")]
 
+#[cfg(all(feature = "alloc", not(feature = "std")))]
+#[allow(unused_imports)] // rustc bug?
+#[macro_use]
+extern crate alloc;
+
 #[cfg(any(feature = "std", test))]
 #[cfg_attr(test, macro_use)]
 extern crate std;
