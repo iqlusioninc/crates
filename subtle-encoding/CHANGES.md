@@ -1,3 +1,7 @@
+## [0.3.5] (2019-05-19)
+
+- `zeroize` v0.7.0 ([#186])
+
 ## [0.3.4] (2019-03-23)
 
 - `zeroize` v0.6.0 ([#170])
@@ -44,6 +48,8 @@
 
 - Initial release
 
+[0.3.5]: https://github.com/iqlusioninc/crates/pull/187
+[#186]: https://github.com/iqlusioninc/crates/pull/186
 [0.3.4]: https://github.com/iqlusioninc/crates/pull/171
 [#170]: https://github.com/iqlusioninc/crates/pull/170
 [#165]: https://github.com/iqlusioninc/crates/pull/165

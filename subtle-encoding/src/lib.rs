@@ -13,10 +13,14 @@
 //! [bech32]: https://docs.rs/subtle-encoding/0.2.3/subtle_encoding/bech32/index.html
 
 #![no_std]
-#![cfg_attr(all(feature = "nightly", not(feature = "std")), feature(alloc))]
 #![deny(warnings, missing_docs, unused_import_braces, unused_qualifications)]
 #![forbid(unsafe_code)]
-#![doc(html_root_url = "https://docs.rs/subtle-encoding/0.3.4")]
+#![doc(html_root_url = "https://docs.rs/subtle-encoding/0.3.5")]
+
+#[cfg(all(feature = "alloc", not(feature = "std")))]
+#[allow(unused_imports)] // rustc bug?
+#[macro_use]
+extern crate alloc;
 
 #[cfg(any(feature = "std", test))]
 #[macro_use]
