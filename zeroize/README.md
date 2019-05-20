@@ -2,7 +2,8 @@
 
 [![Crate][crate-image]][crate-link]
 [![Docs][docs-image]][docs-link]
-![MIT/Apache 2.0 Licensed][license-image]
+![Apache 2.0/MIT Licensed][license-image]
+![Rust 1.31+][rustc-image]
 [![Build Status][build-image]][build-link]
 
 [crate-image]: https://img.shields.io/crates/v/zeroize.svg
@@ -10,6 +11,7 @@
 [docs-image]: https://docs.rs/zeroize/badge.svg
 [docs-link]: https://docs.rs/zeroize/
 [license-image]: https://img.shields.io/badge/license-Apache2.0/MIT-blue.svg
+[rustc-image]: https://img.shields.io/badge/rustc-1.31+-blue.svg
 [build-image]: https://circleci.com/gh/iqlusioninc/crates.svg?style=shield
 [build-link]: https://circleci.com/gh/iqlusioninc/crates
 

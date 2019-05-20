@@ -48,7 +48,7 @@ script:
   - cargo build --all --no-default-features
 
   # test
-  - cargo test --all --release
+  - cargo test --all --all-features --release
 
   # crates with non-default features
   - (cd gaunt && cargo test --release --features=logger)
