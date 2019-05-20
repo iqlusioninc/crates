@@ -1,3 +1,7 @@
+## [0.8.0] (2019-05-20)
+
+- Impl `Drop` by default when deriving `Zeroize` ([#188])
+
 ## [0.7.0] (2019-05-19)
 
 - Use synstructure for custom derive ([#185])
@@ -60,6 +64,8 @@ a pure Rust solution.
 
 - Initial release
 
+[0.8.0]: https://github.com/iqlusioninc/crates/pull/189
+[#188]: https://github.com/iqlusioninc/crates/pull/188
 [0.7.0]: https://github.com/iqlusioninc/crates/pull/186
 [#185]: https://github.com/iqlusioninc/crates/pull/185
 [#184]: https://github.com/iqlusioninc/crates/pull/184
