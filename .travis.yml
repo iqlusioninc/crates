@@ -44,7 +44,7 @@ script:
   - cargo clippy --version
   - cargo clippy --all
 
-  # ensure crates build without default features
+  # ensure all crates build without default features
   - cargo build --all --no-default-features
 
   # test
@@ -52,8 +52,8 @@ script:
 
   # crates with non-default features
   - (cd gaunt && cargo test --release --features=logger)
-  - (cd subtle-encoding && cargo test --release --features=bech32-preview)
-  - (cd tai64 && cargo test --release --features=chrono)
+  - (cd subtle-encoding && cargo test --release --all-features)
+  - (cd tai64 && cargo test --release --all-features)
   - (cd zeroize && cargo test --no-default-features --lib)
 
   # doc build

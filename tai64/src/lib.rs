@@ -1,5 +1,6 @@
 //! TAI64(N) timestamp generation, parsing and calculation.
 
+#![no_std]
 #![deny(
     warnings,
     missing_docs,
@@ -11,12 +12,14 @@
 
 #[cfg(feature = "chrono")]
 use chrono::{DateTime, NaiveDateTime, Utc};
+use core::{convert::TryFrom, ops, time::Duration};
 use failure::Fail;
-use std::{
-    convert::TryFrom,
-    ops,
-    time::{Duration, SystemTime, UNIX_EPOCH},
-};
+
+#[cfg(feature = "std")]
+extern crate std;
+
+#[cfg(feature = "std")]
+use std::time::{SystemTime, UNIX_EPOCH};
 
 /// Unix epoch in TAI64: 1970-01-01 00:00:10 TAI.
 pub const UNIX_EPOCH_TAI64: TAI64 = TAI64(10 + (1 << 62));
@@ -39,6 +42,7 @@ pub struct TAI64(pub u64);
 
 impl TAI64 {
     /// Get `TAI64N` timestamp according to system clock.
+    #[cfg(feature = "std")]
     pub fn now() -> TAI64 {
         TAI64N::now().into()
     }
@@ -115,6 +119,7 @@ pub struct TAI64N(pub TAI64, pub u32);
 
 impl TAI64N {
     /// Get `TAI64N` timestamp according to system clock.
+    #[cfg(feature = "std")]
     pub fn now() -> TAI64N {
         TAI64N::from_system_time(&SystemTime::now())
     }
@@ -156,6 +161,7 @@ impl TAI64N {
 
     /// Convert `SystemTime` to `TAI64N`.
     #[allow(clippy::trivially_copy_pass_by_ref)]
+    #[cfg(feature = "std")]
     pub fn from_system_time(t: &SystemTime) -> Self {
         match t.duration_since(UNIX_EPOCH) {
             Ok(d) => UNIX_EPOCH_TAI64N + d,
@@ -164,6 +170,7 @@ impl TAI64N {
     }
 
     /// Convert `TAI64N`to `SystemTime`.
+    #[cfg(feature = "std")]
     pub fn to_system_time(&self) -> SystemTime {
         match self.duration_since(&UNIX_EPOCH_TAI64N) {
             Ok(d) => UNIX_EPOCH + d,
@@ -237,6 +244,7 @@ impl From<TAI64N> for [u8; TAI64N_LEN] {
     }
 }
 
+#[cfg(feature = "std")]
 impl From<SystemTime> for TAI64N {
     fn from(t: SystemTime) -> TAI64N {
         TAI64N::from_system_time(&t)
@@ -292,13 +300,12 @@ pub enum Error {
     NanosInvalid,
 }
 
-#[cfg(test)]
+#[cfg(all(test, feature = "std"))]
 mod tests {
     use super::*;
     #[cfg(feature = "chrono")]
     use chrono::prelude::*;
     use quickcheck::{quickcheck, Arbitrary, Gen};
-    use std::time::{Duration, UNIX_EPOCH};
 
     #[cfg(feature = "chrono")]
     #[test]
