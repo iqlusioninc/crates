@@ -1,7 +1,5 @@
 //! TAI64(N) timestamp generation, parsing and calculation.
 
-#![crate_name = "tai64"]
-#![crate_type = "rlib"]
 #![deny(
     warnings,
     missing_docs,
@@ -11,157 +9,57 @@
 )]
 #![doc(html_root_url = "https://docs.rs/tai64/1.0.0")]
 
-extern crate byteorder;
-#[cfg(feature = "chrono")]
-extern crate chrono;
-
-use byteorder::{BigEndian, ByteOrder};
-
 #[cfg(feature = "chrono")]
 use chrono::{DateTime, NaiveDateTime, Utc};
+use failure::Fail;
+use std::{
+    convert::TryFrom,
+    ops,
+    time::{Duration, SystemTime, UNIX_EPOCH},
+};
 
-use std::ops::{Add, Sub};
-use std::time::{Duration, SystemTime, UNIX_EPOCH};
+/// Unix epoch in TAI64: 1970-01-01 00:00:10 TAI.
+pub const UNIX_EPOCH_TAI64: TAI64 = TAI64(10 + (1 << 62));
+
+/// Unix EPOCH in TAI64N: 1970-01-01 00:00:10 TAI.
+pub const UNIX_EPOCH_TAI64N: TAI64N = TAI64N(UNIX_EPOCH_TAI64, 0);
+
+/// Length of serialized TAI64
+const TAI64_LEN: usize = 8;
+
+/// Length of serialized TAI64N
+const TAI64N_LEN: usize = 12;
+
+/// Number of nanoseconds in a second
+const NANOS_PER_SECOND: u32 = 1_000_000_000;
 
 /// A `TAI64` label.
-#[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Copy, Clone, Hash)]
+#[derive(Copy, Clone, Debug, Eq, Hash, PartialEq, PartialOrd, Ord)]
 pub struct TAI64(pub u64);
 
-/// A `TAI64N` timestamp.
-///
-/// Invariant: The nanosecond part <= 999999999.
-#[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Copy, Clone, Hash)]
-pub struct TAI64N(pub TAI64, pub u32);
-
-// To and from external representation.
-
 impl TAI64 {
-    /// Convert `TAI64` to external representation.
-    pub fn to_external(self) -> [u8; 8] {
-        let mut result = [0u8; 8];
-        BigEndian::write_u64(&mut result, self.0);
-        result
-    }
-
-    /// Parse `TAI64` from external representation.
-    pub fn from_external(ext: &[u8]) -> Option<Self> {
-        if ext.len() != 8 {
-            None
-        } else {
-            Some(TAI64(BigEndian::read_u64(ext)))
-        }
-    }
-}
-
-impl TAI64N {
-    /// Convert `TAI64N` to external representation.
-    pub fn to_external(&self) -> [u8; 12] {
-        let mut result = [0u8; 12];
-        result[..8].copy_from_slice(&self.0.to_external());
-        BigEndian::write_u32(&mut result[8..], self.1);
-        result
-    }
-
-    /// Parse `TAI64N` from external representation.
-    pub fn from_external(ext: &[u8]) -> Option<Self> {
-        if ext.len() != 12 {
-            return None;
-        }
-
-        let s = TAI64::from_external(&ext[..8]).unwrap();
-        let n = BigEndian::read_u32(&ext[8..]);
-
-        if n <= 999_999_999 {
-            Some(TAI64N(s, n))
-        } else {
-            None
-        }
-    }
-}
-
-impl TAI64N {
     /// Get `TAI64N` timestamp according to system clock.
-    pub fn now() -> TAI64N {
-        TAI64N::from_system_time(&SystemTime::now())
+    pub fn now() -> TAI64 {
+        TAI64N::now().into()
     }
-}
 
-// Operators.
-
-const NANOSECONDS_PER_SECOND: u32 = 1_000_000_000;
-
-impl Add<u64> for TAI64 {
-    type Output = TAI64;
-
-    fn add(self, x: u64) -> TAI64 {
-        TAI64(self.0 + x)
-    }
-}
-
-impl Sub<u64> for TAI64 {
-    type Output = TAI64;
-
-    fn sub(self, x: u64) -> TAI64 {
-        TAI64(self.0 - x)
-    }
-}
-
-#[allow(clippy::suspicious_arithmetic_impl)]
-impl Add<Duration> for TAI64N {
-    type Output = TAI64N;
-
-    fn add(self, d: Duration) -> TAI64N {
-        let n = self.1 + d.subsec_nanos();
-
-        let (carry, n) = if n >= NANOSECONDS_PER_SECOND {
-            (1, n - NANOSECONDS_PER_SECOND)
+    /// Parse TAI64 from a byte slice
+    pub fn from_slice(slice: &[u8]) -> Result<TAI64, Error> {
+        if slice.len() == TAI64_LEN {
+            let mut bytes = [0u8; TAI64_LEN];
+            bytes.copy_from_slice(slice);
+            Ok(bytes.into())
         } else {
-            (0, n)
-        };
-
-        TAI64N(self.0 + d.as_secs() + carry, n)
-    }
-}
-
-impl Sub<Duration> for TAI64N {
-    type Output = TAI64N;
-
-    fn sub(self, d: Duration) -> TAI64N {
-        let (carry, n) = if self.1 >= d.subsec_nanos() {
-            (0, self.1 - d.subsec_nanos())
-        } else {
-            (1, NANOSECONDS_PER_SECOND + self.1 - d.subsec_nanos())
-        };
-        TAI64N(self.0 - carry - d.as_secs(), n)
-    }
-}
-
-impl TAI64N {
-    /// Calculate how much time passes since the `other` timestamp.
-    ///
-    /// Returns `Ok(Duration)` if `other` is ealier than `self`,
-    /// `Err(Duration)` otherwise.
-    pub fn duration_since(&self, other: &TAI64N) -> Result<Duration, Duration> {
-        if self >= other {
-            let (carry, n) = if self.1 >= other.1 {
-                (0, self.1 - other.1)
-            } else {
-                (1, NANOSECONDS_PER_SECOND + self.1 - other.1)
-            };
-            let s = (self.0).0 - carry - (other.0).0;
-            Ok(Duration::new(s, n))
-        } else {
-            Err(other.duration_since(self).unwrap())
+            Err(Error::LengthInvalid)
         }
     }
-}
 
-// To and From unix timestamp.
+    /// Serialize TAI64 as bytes
+    pub fn to_bytes(self) -> [u8; TAI64_LEN] {
+        self.into()
+    }
 
-// Unix epoch is 1970-01-01 00:00:10 TAI.
-
-impl TAI64 {
-    /// Convert unix timestamp to `TAI64`.
+    /// Convert Unix timestamp to `TAI64`.
     pub fn from_unix(secs: i64) -> Self {
         TAI64((secs + 10 + (1 << 62)) as u64)
     }
@@ -172,12 +70,90 @@ impl TAI64 {
     }
 }
 
-// To and from SystemTime.
+impl From<TAI64N> for TAI64 {
+    /// Remove the nanosecond component from a TAI64N value
+    fn from(other: TAI64N) -> TAI64 {
+        other.0
+    }
+}
 
-/// Unix EPOCH in TAI64N.
-pub const UNIX_EPOCH_TAI64N: TAI64N = TAI64N(TAI64(10 + (1 << 62)), 0);
+impl From<[u8; TAI64_LEN]> for TAI64 {
+    /// Parse TAI64 from external representation
+    fn from(bytes: [u8; TAI64_LEN]) -> TAI64 {
+        TAI64(u64::from_be_bytes(bytes))
+    }
+}
+
+impl From<TAI64> for [u8; 8] {
+    /// Serialize TAI64 to external representation
+    fn from(tai: TAI64) -> [u8; 8] {
+        tai.0.to_be_bytes()
+    }
+}
+
+impl ops::Add<u64> for TAI64 {
+    type Output = TAI64;
+
+    fn add(self, x: u64) -> TAI64 {
+        TAI64(self.0 + x)
+    }
+}
+
+impl ops::Sub<u64> for TAI64 {
+    type Output = TAI64;
+
+    fn sub(self, x: u64) -> TAI64 {
+        TAI64(self.0 - x)
+    }
+}
+
+/// A `TAI64N` timestamp.
+///
+/// Invariant: The nanosecond part <= 999999999.
+#[derive(Copy, Clone, Debug, Eq, Hash, PartialEq, PartialOrd, Ord)]
+pub struct TAI64N(pub TAI64, pub u32);
 
 impl TAI64N {
+    /// Get `TAI64N` timestamp according to system clock.
+    pub fn now() -> TAI64N {
+        TAI64N::from_system_time(&SystemTime::now())
+    }
+
+    /// Parse TAI64N from a byte slice
+    pub fn from_slice(slice: &[u8]) -> Result<TAI64N, Error> {
+        if slice.len() == TAI64N_LEN {
+            let mut bytes = [0u8; TAI64N_LEN];
+            bytes.copy_from_slice(slice);
+            TAI64N::try_from(bytes)
+        } else {
+            Err(Error::LengthInvalid)
+        }
+    }
+
+    /// Serialize TAI64N as bytes
+    pub fn to_bytes(self) -> [u8; TAI64N_LEN] {
+        self.into()
+    }
+
+    /// Calculate how much time passes since the `other` timestamp.
+    ///
+    /// Returns `Ok(Duration)` if `other` is earlier than `self`,
+    /// `Err(Duration)` otherwise.
+    pub fn duration_since(&self, other: &TAI64N) -> Result<Duration, Duration> {
+        if self >= other {
+            let (carry, n) = if self.1 >= other.1 {
+                (0, self.1 - other.1)
+            } else {
+                (1, NANOS_PER_SECOND + self.1 - other.1)
+            };
+
+            let s = (self.0).0 - carry - (other.0).0;
+            Ok(Duration::new(s, n))
+        } else {
+            Err(other.duration_since(self).unwrap())
+        }
+    }
+
     /// Convert `SystemTime` to `TAI64N`.
     #[allow(clippy::trivially_copy_pass_by_ref)]
     pub fn from_system_time(t: &SystemTime) -> Self {
@@ -194,19 +170,9 @@ impl TAI64N {
             Err(d) => UNIX_EPOCH - d,
         }
     }
-}
 
-impl From<SystemTime> for TAI64N {
-    fn from(t: SystemTime) -> TAI64N {
-        TAI64N::from_system_time(&t)
-    }
-}
-
-// To and from chrono::DateTime<Utc>
-
-#[cfg(feature = "chrono")]
-impl TAI64N {
     /// Convert `chrono::DateTime<Utc>` to `TAI64N`
+    #[cfg(feature = "chrono")]
     pub fn from_datetime_utc(t: &DateTime<Utc>) -> Self {
         let unix_epoch: DateTime<Utc> =
             DateTime::from_utc(NaiveDateTime::from_timestamp(0, 0), Utc);
@@ -221,6 +187,7 @@ impl TAI64N {
     }
 
     /// Convert `TAI64N` to `chrono::DateTime<Utc>`
+    #[cfg(feature = "chrono")]
     pub fn to_datetime_utc(&self) -> DateTime<Utc> {
         let (secs, nanos) = match self.to_system_time().duration_since(UNIX_EPOCH) {
             Ok(duration) => (duration.as_secs() as i64, duration.subsec_nanos()),
@@ -234,6 +201,48 @@ impl TAI64N {
     }
 }
 
+impl From<TAI64> for TAI64N {
+    /// Remove the nanosecond component from a TAI64N value
+    fn from(other: TAI64) -> TAI64N {
+        TAI64N(other, 0)
+    }
+}
+
+impl TryFrom<[u8; TAI64N_LEN]> for TAI64N {
+    type Error = Error;
+
+    /// Parse TAI64 from external representation
+    fn try_from(bytes: [u8; TAI64N_LEN]) -> Result<TAI64N, Error> {
+        let secs = TAI64::from_slice(&bytes[..TAI64_LEN])?;
+
+        let mut nano_bytes = [0u8; 4];
+        nano_bytes.copy_from_slice(&bytes[TAI64_LEN..]);
+        let nanos = u32::from_be_bytes(nano_bytes);
+
+        if nanos < NANOS_PER_SECOND {
+            Ok(TAI64N(secs, nanos))
+        } else {
+            Err(Error::NanosInvalid)
+        }
+    }
+}
+
+impl From<TAI64N> for [u8; TAI64N_LEN] {
+    /// Serialize TAI64 to external representation
+    fn from(tai: TAI64N) -> [u8; TAI64N_LEN] {
+        let mut result = [0u8; TAI64N_LEN];
+        result[..TAI64_LEN].copy_from_slice(&tai.0.to_bytes());
+        result[TAI64_LEN..].copy_from_slice(&tai.1.to_be_bytes());
+        result
+    }
+}
+
+impl From<SystemTime> for TAI64N {
+    fn from(t: SystemTime) -> TAI64N {
+        TAI64N::from_system_time(&t)
+    }
+}
+
 #[cfg(feature = "chrono")]
 impl From<DateTime<Utc>> for TAI64N {
     fn from(t: DateTime<Utc>) -> TAI64N {
@@ -241,23 +250,55 @@ impl From<DateTime<Utc>> for TAI64N {
     }
 }
 
-#[cfg(test)]
-#[macro_use]
-extern crate quickcheck;
+#[allow(clippy::suspicious_arithmetic_impl)]
+impl ops::Add<Duration> for TAI64N {
+    type Output = TAI64N;
+
+    fn add(self, d: Duration) -> TAI64N {
+        let n = self.1 + d.subsec_nanos();
+
+        let (carry, n) = if n >= NANOS_PER_SECOND {
+            (1, n - NANOS_PER_SECOND)
+        } else {
+            (0, n)
+        };
+
+        TAI64N(self.0 + d.as_secs() + carry, n)
+    }
+}
+
+impl ops::Sub<Duration> for TAI64N {
+    type Output = TAI64N;
+
+    fn sub(self, d: Duration) -> TAI64N {
+        let (carry, n) = if self.1 >= d.subsec_nanos() {
+            (0, self.1 - d.subsec_nanos())
+        } else {
+            (1, NANOS_PER_SECOND + self.1 - d.subsec_nanos())
+        };
+        TAI64N(self.0 - carry - d.as_secs(), n)
+    }
+}
+
+/// TAI64 errors
+#[derive(Copy, Clone, Debug, Eq, Fail, PartialEq)]
+pub enum Error {
+    /// Invalid length
+    #[fail(display = "length invalid")]
+    LengthInvalid,
+
+    /// Nanosecond part must be <= 999999999.
+    #[fail(display = "invalid number of nanoseconds")]
+    NanosInvalid,
+}
 
 #[cfg(test)]
 mod tests {
-    #[cfg(feature = "chrono")]
-    extern crate chrono;
-
     use super::*;
-
-    use std::time::{Duration, UNIX_EPOCH};
-
     #[cfg(feature = "chrono")]
-    use self::chrono::prelude::*;
-
-    use quickcheck::{Arbitrary, Gen};
+    use chrono::prelude::*;
+    use quickcheck::{quickcheck, Arbitrary, Gen};
+    use std::time::{Duration, UNIX_EPOCH};
 
     #[cfg(feature = "chrono")]
     #[test]
@@ -273,10 +314,7 @@ mod tests {
         let tai64 = TAI64::from_unix(unix_secs);
 
         assert_eq!(tai64.0, 0x400000002a2b2c2d);
-        assert_eq!(
-            &tai64.to_external(),
-            &[0x40, 0, 0, 0, 0x2a, 0x2b, 0x2c, 0x2d]
-        );
+        assert_eq!(&tai64.to_bytes(), &[0x40, 0, 0, 0, 0x2a, 0x2b, 0x2c, 0x2d]);
     }
 
     #[test]
@@ -303,7 +341,7 @@ mod tests {
     impl Arbitrary for TAI64N {
         fn arbitrary<G: Gen>(g: &mut G) -> Self {
             let s = u64::arbitrary(g);
-            let n = u32::arbitrary(g) % NANOSECONDS_PER_SECOND;
+            let n = u32::arbitrary(g) % NANOS_PER_SECOND;
             TAI64N(TAI64(s), n)
         }
     }
