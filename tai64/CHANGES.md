@@ -1,3 +1,13 @@
+## [2.0.0] (2019-05-20)
+
+- `no_std` support ([#196])
+- Cleanups and modernization ([#195])
+  - `to_external` and `from_external` replaced with `From`/`TryFrom`
+  - `byteorder` crate replaced with `from_be_bytes` / `to_be_bytes`
+  - `Error` type
+  - Update `quickcheck` to `0.8`
+- Update to Rust 2018 edition ([#138])
+
 ## 1.0.0 (2018-10-03)
 
 - Initial 1.0 release.
@@ -22,6 +32,9 @@
 
 - Initial release
 
+[2.0.0]: https://github.com/iqlusioninc/crates/pull/197
+[#196]: https://github.com/iqlusioninc/crates/pull/196
+[#195]: https://github.com/iqlusioninc/crates/pull/195
 [#138]: https://github.com/iqlusioninc/crates/pull/138
 [#7]: https://github.com/iqlusioninc/crates/pull/7
 [#2]: https://github.com/iqlusioninc/crates/pull/2
