@@ -8,7 +8,7 @@
     unused_import_braces,
     unused_qualifications
 )]
-#![doc(html_root_url = "https://docs.rs/tai64/1.0.0")]
+#![doc(html_root_url = "https://docs.rs/tai64/2.0.0")]
 
 #[cfg(feature = "chrono")]
 use chrono::{DateTime, NaiveDateTime, Utc};
