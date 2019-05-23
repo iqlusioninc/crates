@@ -45,8 +45,8 @@ toplevel directory of this repository or [LICENSE-MIT] for details.
 [license-image]: https://img.shields.io/badge/license-Apache2.0/MIT-blue.svg
 [rustc-image]: https://img.shields.io/badge/rustc-1.31+-blue.svg
 [unsafe-image]: https://img.shields.io/badge/unsafe-forbidden-success.svg
-[build-image]: https://circleci.com/gh/iqlusioninc/crates.svg?style=shield
-[build-link]: https://circleci.com/gh/iqlusioninc/crates
+[build-image]: https://travis-ci.com/iqlusioninc/crates.svg?branch=develop
+[build-link]: https://travis-ci.com/iqlusioninc/crates/
 
 [//]: # (general links)
 

@@ -36,5 +36,5 @@ information.
 [license-image]: https://img.shields.io/badge/license-Apache2.0-blue.svg
 [license-link]: https://github.com/iqlusioninc/crates/blob/develop/LICENSE
 [rustc-image]: https://img.shields.io/badge/rustc-1.31+-blue.svg
-[build-image]: https://circleci.com/gh/iqlusioninc/crates.svg?style=shield
-[build-link]: https://circleci.com/gh/iqlusioninc/crates
+[build-image]: https://travis-ci.com/iqlusioninc/crates.svg?branch=develop
+[build-link]: https://travis-ci.com/iqlusioninc/crates/
