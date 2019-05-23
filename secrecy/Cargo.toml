@@ -6,9 +6,9 @@ description = """
               (as much as possible), and also ensure secrets are securely wiped
               from memory when dropped.
               """
-version     = "0.0.0" # Also update html_root_url in lib.rs when bumping this
+version     = "0.1.0" # Also update html_root_url in lib.rs when bumping this
 authors     = ["Tony Arcieri <tony@iqlusion.io>"]
-license     = "Apache-2.0"
+license     = "Apache-2.0 OR MIT"
 edition     = "2018"
 homepage    = "https://github.com/iqlusioninc/crates/"
 repository  = "https://github.com/iqlusioninc/crates/tree/master/secrecy"

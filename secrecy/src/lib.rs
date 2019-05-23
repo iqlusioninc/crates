@@ -1,6 +1,18 @@
 //! `Secret<T>` wrapper type for more carefully handling secret values
 //! (e.g. passwords, cryptographic keys, access tokens or other credentials)
 
+#![no_std]
+#![deny(
+    warnings,
+    missing_docs,
+    trivial_casts,
+    trivial_numeric_casts,
+    unused_import_braces,
+    unused_qualifications
+)]
+#![forbid(unsafe_code)]
+#![doc(html_root_url = "https://docs.rs/secrecy/0.1.0")]
+
 use core::fmt::{self, Debug};
 #[cfg(feature = "serde")]
 use serde::de::{Deserialize, DeserializeOwned, Deserializer};
