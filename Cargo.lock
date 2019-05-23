@@ -323,7 +323,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "secrecy"
-version = "0.0.0"
+version = "0.1.0"
 dependencies = [
  "serde 1.0.91 (registry+https://github.com/rust-lang/crates.io-index)",
  "zeroize 0.8.0",
