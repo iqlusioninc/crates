@@ -24,6 +24,7 @@ matrix:
     - name: "Rust: stable (wasm32)"
       rust: stable
       script:
+      - cargo build --package secrecy --target wasm32-unknown-unknown
       - cargo build --package subtle-encoding --target wasm32-unknown-unknown
       - cargo build --package tai64 --target wasm32-unknown-unknown
       - cargo build --package zeroize --target wasm32-unknown-unknown
@@ -44,17 +45,14 @@ script:
   - cargo clippy --version
   - cargo clippy --all
 
-  # ensure all crates build without default features
-  - cargo build --all --no-default-features
+  # test without default features
+  - cargo test --all --no-default-features --release
 
-  # test
+  # test with default features
+  - cargo test --all --release
+
+  # test with all features
   - cargo test --all --all-features --release
-
-  # crates with non-default features
-  - (cd gaunt && cargo test --release --features=logger)
-  - (cd subtle-encoding && cargo test --release --all-features)
-  - (cd tai64 && cargo test --release --all-features)
-  - (cd zeroize && cargo test --no-default-features --lib)
 
   # doc build
   - cargo doc --no-deps

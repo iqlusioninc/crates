@@ -43,16 +43,24 @@ All crates in CI with the above channels on the following operating systems:
 
 This repository contains the following crates:
 
-* [canonical-path:](https://github.com/iqlusioninc/crates/tree/develop/canonical-path)
+- [canonical-path:](https://github.com/iqlusioninc/crates/tree/develop/canonical-path)
+  ![crates.io](https://img.shields.io/crates/v/canonical-path.svg) -
   `Path` and `PathBuf`-like types for representing canonical filesystem paths.
-* [gaunt:](https://github.com/iqlusioninc/crates/tree/develop/gaunt)
+- [gaunt:](https://github.com/iqlusioninc/crates/tree/develop/gaunt)
+  ![crates.io](https://img.shields.io/crates/v/gaunt.svg) -
   Minimalist Rust HTTP library (with optional `hyper` backend coming soon)
-* [subtle-encoding:](https://github.com/iqlusioninc/crates/tree/develop/subtle-encoding)
+- [secrecy:](https://github.com/iqlusioninc/crates/tree/develop/secrecy)
+  ![crates.io](https://img.shields.io/crates/v/secrecy.svg) -
+  A simple secret-keeping library for Rust.
+- [subtle-encoding:](https://github.com/iqlusioninc/crates/tree/develop/subtle-encoding)
+  ![crates.io](https://img.shields.io/crates/v/subtle-encoding.svg) -
   Base64 and hexadecimal encoder/decoder with "constant time-ish" implementation.
-* [tai64:](https://github.com/iqlusioninc/crates/tree/develop/tai64)
+- [tai64:](https://github.com/iqlusioninc/crates/tree/develop/tai64)
+  ![crates.io](https://img.shields.io/crates/v/tai64.svg) -
   TAI64(N) timestamp format (Temps Atomique International).
-* [zeroize:](https://github.com/iqlusioninc/crates/tree/develop/zeroize)
-   Securely zero memory while avoiding compiler optimizations.
+- [zeroize:](https://github.com/iqlusioninc/crates/tree/develop/zeroize)
+  ![crates.io](https://img.shields.io/crates/v/zeroize.svg)
+  Securely zero memory while avoiding compiler optimizations.
 
 ## License
 

@@ -27,6 +27,8 @@ are canonical, or at least, were canonical at the time they were created.
 
 ## License
 
+Copyright © 2018-2019 iqlusion
+
 The **canonical-path** crate is distributed under the terms of the
 Apache License (Version 2.0).
 

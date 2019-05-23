@@ -6,15 +6,6 @@
 ![Rust 1.31+][rustc-image]
 [![Build Status][build-image]][build-link]
 
-[crate-image]: https://img.shields.io/crates/v/zeroize.svg
-[crate-link]: https://crates.io/crates/zeroize
-[docs-image]: https://docs.rs/zeroize/badge.svg
-[docs-link]: https://docs.rs/zeroize/
-[license-image]: https://img.shields.io/badge/license-Apache2.0/MIT-blue.svg
-[rustc-image]: https://img.shields.io/badge/rustc-1.31+-blue.svg
-[build-image]: https://circleci.com/gh/iqlusioninc/crates.svg?style=shield
-[build-link]: https://circleci.com/gh/iqlusioninc/crates
-
 Securely zero memory while avoiding compiler optimizations.
 
 This crate provides a safe<sup>†</sup>, portable access to cross-platform
@@ -60,6 +51,19 @@ toplevel directory of this repository or [LICENSE-MIT] for details.
 Unless you explicitly state otherwise, any contribution intentionally
 submitted for inclusion in the work by you shall be dual licensed as above,
 without any additional terms or conditions.
+
+[//]: # (badges)
+
+[crate-image]: https://img.shields.io/crates/v/zeroize.svg
+[crate-link]: https://crates.io/crates/zeroize
+[docs-image]: https://docs.rs/zeroize/badge.svg
+[docs-link]: https://docs.rs/zeroize/
+[license-image]: https://img.shields.io/badge/license-Apache2.0/MIT-blue.svg
+[rustc-image]: https://img.shields.io/badge/rustc-1.31+-blue.svg
+[build-image]: https://circleci.com/gh/iqlusioninc/crates.svg?style=shield
+[build-link]: https://circleci.com/gh/iqlusioninc/crates
+
+[//]: # (general links)
 
 [zeroize]: https://en.wikipedia.org/wiki/Zeroisation
 [`Zeroize` trait]: https://docs.rs/zeroize/latest/zeroize/trait.Zeroize.html
