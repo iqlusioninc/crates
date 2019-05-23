@@ -4,6 +4,7 @@
 [![Docs][docs-image]][docs-link]
 ![Apache 2.0/MIT Licensed][license-image]
 ![Rust 1.34+][rustc-image]
+![forbid(unsafe_code)][unsafe-image]
 [![Build Status][build-image]][build-link]
 
 A simple secret-keeping library for Rust.
@@ -62,6 +63,7 @@ without any additional terms or conditions.
 [docs-link]: https://docs.rs/secrecy/
 [license-image]: https://img.shields.io/badge/license-Apache2.0/MIT-blue.svg
 [rustc-image]: https://img.shields.io/badge/rustc-1.34+-blue.svg
+[unsafe-image]: https://img.shields.io/badge/unsafe-forbidden-success.svg
 [build-image]: https://circleci.com/gh/iqlusioninc/crates.svg?style=shield
 [build-link]: https://circleci.com/gh/iqlusioninc/crates
 

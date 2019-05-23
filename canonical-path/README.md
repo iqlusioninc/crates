@@ -6,16 +6,6 @@
 ![Rust 1.31+][rustc-image]
 [![Build Status][build-image]][build-link]
 
-[crate-image]: https://img.shields.io/crates/v/canonical-path.svg
-[crate-link]: https://crates.io/crates/canonical-path
-[docs-image]: https://docs.rs/canonical-path/badge.svg
-[docs-link]: https://docs.rs/canonical-path/
-[license-image]: https://img.shields.io/badge/license-Apache2.0-blue.svg
-[license-link]: https://github.com/iqlusioninc/crates/blob/develop/LICENSE
-[rustc-image]: https://img.shields.io/badge/rustc-1.31+-blue.svg
-[build-image]: https://circleci.com/gh/iqlusioninc/crates.svg?style=shield
-[build-link]: https://circleci.com/gh/iqlusioninc/crates
-
 `std::fs::Path` and `PathBuf`-like types for representing canonical
 filesystem paths.
 
@@ -36,3 +26,15 @@ See [LICENSE] file in the `iqlusioninc/crates` toplevel directory for more
 information.
 
 [LICENSE]: https://github.com/iqlusioninc/crates/blob/develop/LICENSE
+
+[//]: # (badges)
+
+[crate-image]: https://img.shields.io/crates/v/canonical-path.svg
+[crate-link]: https://crates.io/crates/canonical-path
+[docs-image]: https://docs.rs/canonical-path/badge.svg
+[docs-link]: https://docs.rs/canonical-path/
+[license-image]: https://img.shields.io/badge/license-Apache2.0-blue.svg
+[license-link]: https://github.com/iqlusioninc/crates/blob/develop/LICENSE
+[rustc-image]: https://img.shields.io/badge/rustc-1.31+-blue.svg
+[build-image]: https://circleci.com/gh/iqlusioninc/crates.svg?style=shield
+[build-link]: https://circleci.com/gh/iqlusioninc/crates
