@@ -4,16 +4,8 @@
 [![Docs][docs-image]][docs-link]
 ![Apache 2.0/MIT Licensed][license-image]
 ![Rust 1.31+][rustc-image]
+![forbid(unsafe_code)][unsafe-image]
 [![Build Status][build-image]][build-link]
-
-[crate-image]: https://img.shields.io/crates/v/subtle-encoding.svg
-[crate-link]: https://crates.io/crates/subtle-encoding
-[docs-image]: https://docs.rs/subtle-encoding/badge.svg
-[docs-link]: https://docs.rs/subtle-encoding/
-[license-image]: https://img.shields.io/badge/license-Apache2.0/MIT-blue.svg
-[rustc-image]: https://img.shields.io/badge/rustc-1.31+-blue.svg
-[build-image]: https://circleci.com/gh/iqlusioninc/crates.svg?style=shield
-[build-link]: https://circleci.com/gh/iqlusioninc/crates
 
 Rust crate for encoding/decoding binary data to/from **base64** and **hex**
 encodings while avoiding data-dependent branching/table lookups, and therefore
@@ -43,6 +35,20 @@ or the Apache License (Version 2.0), at your option.
 
 See [LICENSE] (Apache License, Version 2.0) file in the `iqlusioninc/crates`
 toplevel directory of this repository or [LICENSE-MIT] for details.
+
+[//]: # (badges)
+
+[crate-image]: https://img.shields.io/crates/v/subtle-encoding.svg
+[crate-link]: https://crates.io/crates/subtle-encoding
+[docs-image]: https://docs.rs/subtle-encoding/badge.svg
+[docs-link]: https://docs.rs/subtle-encoding/
+[license-image]: https://img.shields.io/badge/license-Apache2.0/MIT-blue.svg
+[rustc-image]: https://img.shields.io/badge/rustc-1.31+-blue.svg
+[unsafe-image]: https://img.shields.io/badge/unsafe-forbidden-success.svg
+[build-image]: https://circleci.com/gh/iqlusioninc/crates.svg?style=shield
+[build-link]: https://circleci.com/gh/iqlusioninc/crates
+
+[//]: # (general links)
 
 [Documentation]: https://docs.rs/subtle-encoding/
 [LICENSE]: https://github.com/iqlusioninc/crates/blob/develop/LICENSE

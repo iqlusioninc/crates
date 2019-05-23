@@ -4,23 +4,14 @@
 [![Docs][docs-image]][docs-link]
 [![Apache 2.0 Licensed][license-image]][license-link]
 ![Rust 1.31+][rustc-image]
+![forbid(unsafe_code)][unsafe-image]
 [![Build Status][build-image]][build-link]
-
-[crate-image]: https://img.shields.io/crates/v/gaunt.svg
-[crate-link]: https://crates.io/crates/gaunt
-[docs-image]: https://docs.rs/gaunt/badge.svg
-[docs-link]: https://docs.rs/gaunt/
-[license-image]: https://img.shields.io/badge/license-Apache2.0-blue.svg
-[license-link]: https://github.com/iqlusioninc/crates/blob/develop/LICENSE
-[rustc-image]: https://img.shields.io/badge/rustc-1.31+-blue.svg
-[build-image]: https://circleci.com/gh/iqlusioninc/crates.svg?style=shield
-[build-link]: https://circleci.com/gh/iqlusioninc/crates
 
 High-level, (mostly) self-contained, minimalist HTTP toolkit (client-only).
 Suitable for use in constrainted environments where `mio` and `tokio`
 are not (yet) available.
 
-[Documentation](https://docs.rs/gaunt/)
+[Documentation][docs-link]
 
 ## About
 
@@ -53,3 +44,16 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
+
+[//]: # (badges)
+
+[crate-image]: https://img.shields.io/crates/v/gaunt.svg
+[crate-link]: https://crates.io/crates/gaunt
+[docs-image]: https://docs.rs/gaunt/badge.svg
+[docs-link]: https://docs.rs/gaunt/
+[license-image]: https://img.shields.io/badge/license-Apache2.0-blue.svg
+[license-link]: https://github.com/iqlusioninc/crates/blob/develop/LICENSE
+[rustc-image]: https://img.shields.io/badge/rustc-1.31+-blue.svg
+[unsafe-image]: https://img.shields.io/badge/unsafe-forbidden-success.svg
+[build-image]: https://circleci.com/gh/iqlusioninc/crates.svg?style=shield
+[build-link]: https://circleci.com/gh/iqlusioninc/crates
