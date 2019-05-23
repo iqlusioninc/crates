@@ -1,4 +1,8 @@
-## [2.0.0] (2018-05-20)
+## [2.0.1] (2019-05-22)
+
+- Canonicalize `current_exe()` ([#198])
+
+## [2.0.0] (2019-05-20)
 
 - Clean up and modernize ([#193])
 - Update to 2018 edition ([#138])
@@ -15,6 +19,8 @@
 
 - Initial release
 
+[2.0.1]: https://github.com/iqlusioninc/crates/pull/199
+[#198]: https://github.com/iqlusioninc/crates/pull/198
 [2.0.0]: https://github.com/iqlusioninc/crates/pull/194
 [#193]: https://github.com/iqlusioninc/crates/pull/193
 [#138]: https://github.com/iqlusioninc/crates/pull/138
