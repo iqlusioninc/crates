@@ -2,6 +2,7 @@
 members = [
     "canonical-path",
     "gaunt",
+    "secrecy",
     "subtle-encoding",
     "tai64",
     "zeroize",
