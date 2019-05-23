@@ -266,8 +266,6 @@ pub struct CanonicalPath(Path);
 
 impl CanonicalPath {
     /// Create a canonical path, returning error if the supplied path is not canonical
-    // TODO: rename this to `from_path` or `try_new` to satisfy clippy? (breaking API change)
-    #[allow(clippy::new_ret_no_self)]
     pub fn new<P>(path: &P) -> Result<&Self>
     where
         P: AsRef<Path> + ?Sized,
@@ -294,7 +292,7 @@ impl CanonicalPath {
 
     /// Create a canonical path from a path, skipping the canonicalization check
     ///
-    /// We utilize the same unsafe reference conversion tricks as `std` to
+    /// This uses the same unsafe reference conversion tricks as `std` to
     /// convert from `AsRef<Path>` to `AsRef<CanonicalPath>`, i.e. `&CanonicalPath`
     /// is a newtype for `&Path` in the same way `&Path` is a newtype for `&OsStr`.
     pub unsafe fn from_path_unchecked<P>(path: &P) -> &Self
@@ -330,7 +328,7 @@ impl ToOwned for CanonicalPath {
 /// executable.
 pub fn current_exe() -> Result<CanonicalPathBuf> {
     let p = env::current_exe()?;
-    Ok(CanonicalPathBuf::new(p)?)
+    Ok(CanonicalPathBuf::canonicalize(p)?)
 }
 
 // TODO: test on Windows
