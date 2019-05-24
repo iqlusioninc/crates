@@ -4,7 +4,7 @@
 [![Docs][docs-image]][docs-link]
 ![Apache 2.0/MIT Licensed][license-image]
 ![Rust 1.31+][rustc-image]
-![forbid(unsafe_code)][unsafe-image]
+[![forbid(unsafe_code)][unsafe-image]][unsafe-link]
 [![Build Status][build-image]][build-link]
 
 Rust crate for encoding/decoding binary data to/from **base64** and **hex**
@@ -45,6 +45,7 @@ toplevel directory of this repository or [LICENSE-MIT] for details.
 [license-image]: https://img.shields.io/badge/license-Apache2.0/MIT-blue.svg
 [rustc-image]: https://img.shields.io/badge/rustc-1.31+-blue.svg
 [unsafe-image]: https://img.shields.io/badge/unsafe-forbidden-success.svg
+[unsafe-link]: https://internals.rust-lang.org/t/disabling-unsafe-by-default/7988
 [build-image]: https://travis-ci.com/iqlusioninc/crates.svg?branch=develop
 [build-link]: https://travis-ci.com/iqlusioninc/crates/
 
