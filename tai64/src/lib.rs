@@ -3,7 +3,7 @@
 #![no_std]
 #![deny(warnings, missing_docs, unused_import_braces, unused_qualifications)]
 #![forbid(unsafe_code)]
-#![doc(html_root_url = "https://docs.rs/tai64/2.0.0")]
+#![doc(html_root_url = "https://docs.rs/tai64/2.0.1")]
 
 #[cfg(feature = "chrono")]
 use chrono::{DateTime, NaiveDateTime, Utc};
