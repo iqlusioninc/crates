@@ -1,3 +1,7 @@
+## [2.0.2] (2019-05-24)
+
+- Test all crates on Rust 1.35.0 ([#206])
+
 ## [2.0.1] (2019-05-22)
 
 - Canonicalize `current_exe()` ([#198])
@@ -19,6 +23,8 @@
 
 - Initial release
 
+[2.0.2]: https://github.com/iqlusioninc/crates/pull/207
+[#206]: https://github.com/iqlusioninc/crates/pull/206
 [2.0.1]: https://github.com/iqlusioninc/crates/pull/199
 [#198]: https://github.com/iqlusioninc/crates/pull/198
 [2.0.0]: https://github.com/iqlusioninc/crates/pull/194

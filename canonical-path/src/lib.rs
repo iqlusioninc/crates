@@ -11,7 +11,7 @@
     unused_import_braces,
     unused_qualifications
 )]
-#![doc(html_root_url = "https://docs.rs/canonical-path/2.0.0")]
+#![doc(html_root_url = "https://docs.rs/canonical-path/2.0.2")]
 
 use std::{
     borrow::Borrow,
