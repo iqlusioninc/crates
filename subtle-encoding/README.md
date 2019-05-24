@@ -3,7 +3,7 @@
 [![Crate][crate-image]][crate-link]
 [![Docs][docs-image]][docs-link]
 ![Apache 2.0/MIT Licensed][license-image]
-![Rust 1.31+][rustc-image]
+![Rust 1.35+][rustc-image]
 [![forbid(unsafe_code)][unsafe-image]][unsafe-link]
 [![Build Status][build-image]][build-link]
 
@@ -14,6 +14,10 @@ providing "best effort" constant-time operation.
 Useful for encoding/decoding secret values such as cryptographic keys.
 
 [Documentation]
+
+## Requirements
+
+- Rust 1.35+
 
 ## Security Notice
 
@@ -43,7 +47,7 @@ toplevel directory of this repository or [LICENSE-MIT] for details.
 [docs-image]: https://docs.rs/subtle-encoding/badge.svg
 [docs-link]: https://docs.rs/subtle-encoding/
 [license-image]: https://img.shields.io/badge/license-Apache2.0/MIT-blue.svg
-[rustc-image]: https://img.shields.io/badge/rustc-1.31+-blue.svg
+[rustc-image]: https://img.shields.io/badge/rustc-1.35+-blue.svg
 [unsafe-image]: https://img.shields.io/badge/unsafe-forbidden-success.svg
 [unsafe-link]: https://internals.rust-lang.org/t/disabling-unsafe-by-default/7988
 [build-image]: https://travis-ci.com/iqlusioninc/crates.svg?branch=develop

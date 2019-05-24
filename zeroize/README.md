@@ -3,7 +3,7 @@
 [![Crate][crate-image]][crate-link]
 [![Docs][docs-image]][docs-link]
 ![Apache 2.0/MIT Licensed][license-image]
-![Rust 1.31+][rustc-image]
+![Rust 1.35+][rustc-image]
 [![Build Status][build-image]][build-link]
 
 Securely zero memory while avoiding compiler optimizations.
@@ -36,7 +36,7 @@ thereof, implemented in pure Rust with no usage of FFI or assembly.
 
 ## Requirements
 
-- Rust 1.31+
+- Rust 1.35+
 
 ## License
 
@@ -59,7 +59,7 @@ without any additional terms or conditions.
 [docs-image]: https://docs.rs/zeroize/badge.svg
 [docs-link]: https://docs.rs/zeroize/
 [license-image]: https://img.shields.io/badge/license-Apache2.0/MIT-blue.svg
-[rustc-image]: https://img.shields.io/badge/rustc-1.31+-blue.svg
+[rustc-image]: https://img.shields.io/badge/rustc-1.35+-blue.svg
 [build-image]: https://travis-ci.com/iqlusioninc/crates.svg?branch=develop
 [build-link]: https://travis-ci.com/iqlusioninc/crates/
 
