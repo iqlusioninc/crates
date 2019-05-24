@@ -31,7 +31,7 @@ use, but has the following roadmap:
 
 ## License
 
-Copyright © 2018 iqlusion
+Copyright © 2019 iqlusion
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -44,6 +44,12 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
+
+## Contribution
+
+Unless you explicitly state otherwise, any contribution intentionally
+submitted for inclusion in the work by you shall be dual licensed as above,
+without any additional terms or conditions.
 
 [//]: # (badges)
 
