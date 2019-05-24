@@ -80,7 +80,7 @@ without any additional terms or conditions.
 
 [license-image]: https://img.shields.io/badge/license-Apache2.0-blue.svg
 [license-link]: https://github.com/iqlusioninc/crates/blob/develop/LICENSE
-[rustc-image]: https://img.shields.io/badge/rustc-1.34+-blue.svg
+[rustc-image]: https://img.shields.io/badge/rustc-1.35+-blue.svg
 [build-image]: https://travis-ci.com/iqlusioninc/crates.svg?branch=develop
 [build-link]: https://travis-ci.com/iqlusioninc/crates/
 [appveyor-image]: https://ci.appveyor.com/api/projects/status/qslcjs7e1rn4a2w9?svg=true

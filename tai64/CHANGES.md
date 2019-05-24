@@ -1,3 +1,7 @@
+## [2.0.1] (2019-05-24)
+
+- Test all crates on Rust 1.35.0 ([#206])
+
 ## [2.0.0] (2019-05-20)
 
 - `no_std` support ([#196])
@@ -32,6 +36,8 @@
 
 - Initial release
 
+[2.0.1]: https://github.com/iqlusioninc/crates/pull/208
+[#206]: https://github.com/iqlusioninc/crates/pull/206
 [2.0.0]: https://github.com/iqlusioninc/crates/pull/197
 [#196]: https://github.com/iqlusioninc/crates/pull/196
 [#195]: https://github.com/iqlusioninc/crates/pull/195
