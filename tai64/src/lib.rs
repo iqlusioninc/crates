@@ -1,13 +1,8 @@
 //! TAI64(N) timestamp generation, parsing and calculation.
 
 #![no_std]
-#![deny(
-    warnings,
-    missing_docs,
-    unsafe_code,
-    unused_import_braces,
-    unused_qualifications
-)]
+#![deny(warnings, missing_docs, unused_import_braces, unused_qualifications)]
+#![forbid(unsafe_code)]
 #![doc(html_root_url = "https://docs.rs/tai64/2.0.0")]
 
 #[cfg(feature = "chrono")]
