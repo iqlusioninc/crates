@@ -22,6 +22,10 @@ This helps to ensure secrets aren't accidentally copied, logged, or otherwise
 exposed (as much as possible), and also ensures secrets are securely wiped
 from memory when dropped.
 
+## Requirements
+
+- Rust 1.35+
+
 ### serde support
 
 Optional `serde` support for parsing owned secret values is available, gated

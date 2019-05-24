@@ -3,7 +3,7 @@
 [![Crate][crate-image]][crate-link]
 [![Docs][docs-image]][docs-link]
 [![Apache 2.0 Licensed][license-image]][license-link]
-![Rust 1.34+][rustc-image]
+![Rust 1.35+][rustc-image]
 [![forbid(unsafe_code)][unsafe-image]][unsafe-link]
 [![Build Status][build-image]][build-link]
 
@@ -17,7 +17,7 @@ Supports converting to/from Rust's built-in [SystemTime] type and optionally to
 
 ## Requirements
 
-- Rust 1.34+
+- Rust 1.35+
 
 ## License
 
@@ -47,7 +47,7 @@ without any additional terms or conditions.
 [docs-link]: https://docs.rs/tai64/
 [license-image]: https://img.shields.io/badge/license-Apache2.0-blue.svg
 [license-link]: https://github.com/iqlusioninc/crates/blob/develop/LICENSE
-[rustc-image]: https://img.shields.io/badge/rustc-1.34+-blue.svg
+[rustc-image]: https://img.shields.io/badge/rustc-1.35+-blue.svg
 [unsafe-image]: https://img.shields.io/badge/unsafe-forbidden-success.svg
 [unsafe-link]: https://internals.rust-lang.org/t/disabling-unsafe-by-default/7988
 [build-image]: https://travis-ci.com/iqlusioninc/crates.svg?branch=develop
