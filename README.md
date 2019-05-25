@@ -31,28 +31,18 @@ All crates in CI with the above channels on the following operating systems:
 - macOS
 - Windows
 
-## Crate Descriptions
+## Crates
 
 This repository contains the following crates:
 
-- [canonical-path:](https://github.com/iqlusioninc/crates/tree/develop/canonical-path)
-  ![crates.io](https://img.shields.io/crates/v/canonical-path.svg) -
-  `Path` and `PathBuf`-like types for representing canonical filesystem paths.
-- [gaunt:](https://github.com/iqlusioninc/crates/tree/develop/gaunt)
-  ![crates.io](https://img.shields.io/crates/v/gaunt.svg) -
-  Minimalist Rust HTTP library (with optional `hyper` backend coming soon)
-- [secrecy:](https://github.com/iqlusioninc/crates/tree/develop/secrecy)
-  ![crates.io](https://img.shields.io/crates/v/secrecy.svg) -
-  A simple secret-keeping library for Rust.
-- [subtle-encoding:](https://github.com/iqlusioninc/crates/tree/develop/subtle-encoding)
-  ![crates.io](https://img.shields.io/crates/v/subtle-encoding.svg) -
-  Base64 and hexadecimal encoder/decoder with "constant time-ish" implementation.
-- [tai64:](https://github.com/iqlusioninc/crates/tree/develop/tai64)
-  ![crates.io](https://img.shields.io/crates/v/tai64.svg) -
-  TAI64(N) timestamp format (Temps Atomique International).
-- [zeroize:](https://github.com/iqlusioninc/crates/tree/develop/zeroize)
-  ![crates.io](https://img.shields.io/crates/v/zeroize.svg)
-  Securely zero memory while avoiding compiler optimizations.
+| Name              | Version                    | Description |
+|-------------------|----------------------------|-------------|
+| [canonical-path]  | ![][canonical-path-crate]  | Canonical filesystem path support |
+| [gaunt]           | ![][gaunt-crate]           | Minimalist HTTP library |
+| [secrecy]         | ![][secrecy-crate]         | Simple secret-keeping library |
+| [subtle-encoding] | ![][subtle-encoding-crate] | Hex, Bech32, and Base64 in constant-time(ish) |
+| [tai64]           | ![][tai64-crate]           | TAI64(N) timestamp format |
+| [zeroize]         | ![][zeroize-crate]         | Securely zero memory |
 
 ## License
 
@@ -73,7 +63,7 @@ limitations under the License.
 ## Contribution
 
 Unless you explicitly state otherwise, any contribution intentionally
-submitted for inclusion in the work by you shall be dual licensed as above,
+submitted for inclusion in the work by you shall be licensed as above,
 without any additional terms or conditions.
 
 [//]: # (badges)
@@ -85,3 +75,18 @@ without any additional terms or conditions.
 [build-link]: https://travis-ci.com/iqlusioninc/crates/
 [appveyor-image]: https://ci.appveyor.com/api/projects/status/qslcjs7e1rn4a2w9?svg=true
 [appveyor-link]: https://ci.appveyor.com/project/tony-iqlusion/crates
+
+[//]: # (crates)
+
+[canonical-path]: https://github.com/iqlusioninc/crates/tree/develop/canonical-path
+[canonical-path-crate]: https://img.shields.io/crates/v/canonical-path.svg
+[gaunt]: https://github.com/iqlusioninc/crates/tree/develop/gaunt
+[gaunt-crate]: https://img.shields.io/crates/v/gaunt.svg
+[secrecy]: https://github.com/iqlusioninc/crates/tree/develop/secrecy
+[secrecy-crate]: https://img.shields.io/crates/v/secrecy.svg
+[subtle-encoding]: https://github.com/iqlusioninc/crates/tree/develop/subtle-encoding
+[subtle-encoding-crate]: https://img.shields.io/crates/v/subtle-encoding.svg
+[tai64]: https://github.com/iqlusioninc/crates/tree/develop/tai64
+[tai64-crate]: https://img.shields.io/crates/v/tai64.svg
+[zeroize]: https://github.com/iqlusioninc/crates/tree/develop/zeroize
+[zeroize-crate]: https://img.shields.io/crates/v/zeroize.svg
