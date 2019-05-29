@@ -11,7 +11,7 @@
     unused_qualifications
 )]
 #![forbid(unsafe_code)]
-#![doc(html_root_url = "https://docs.rs/secrecy/0.1.0")]
+#![doc(html_root_url = "https://docs.rs/secrecy/0.2.0")]
 
 use core::fmt::{self, Debug};
 #[cfg(feature = "serde")]
