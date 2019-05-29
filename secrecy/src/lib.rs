@@ -54,6 +54,17 @@ where
     }
 }
 
+impl<S> Clone for Secret<S>
+where
+    S: CloneableSecret,
+{
+    fn clone(&self) -> Self {
+        Secret {
+            inner_secret: self.inner_secret.clone(),
+        }
+    }
+}
+
 impl<S> Debug for Secret<S>
 where
     S: Zeroize + DebugSecret,
@@ -85,6 +96,9 @@ where
         self.inner_secret.zeroize();
     }
 }
+
+/// Marker trait for secrets which are allowed to be cloned
+pub trait CloneableSecret: Clone + Zeroize {}
 
 /// Expose a reference to an inner secret
 pub trait ExposeSecret<S> {
