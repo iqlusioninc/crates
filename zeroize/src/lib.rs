@@ -352,19 +352,16 @@ impl_zeroize_with_default!(i8, i16, i32, i64, i128, isize);
 impl_zeroize_with_default!(u8, u16, u32, u64, u128, usize);
 impl_zeroize_with_default!(f32, f64, char, bool);
 
-/// Implement `Zeroize` on arrays of types that can be zeroized with `Default`.
-///
-/// This impl can eventually be optimized using an atomic memset intrinsic.
-/// See notes for the blanket impl of `Zeroize` on `[Z]`.
+/// Implement `Zeroize` on arrays of types that impl `Zeroize`
 macro_rules! impl_zeroize_for_array {
     ($($size:expr),+) => {
         $(
             impl<Z> Zeroize for [Z; $size]
             where
-                Z: DefaultIsZeroes
+                Z: Zeroize
             {
                 fn zeroize(&mut self) {
-                    self.as_mut().zeroize();
+                    self.iter_mut().zeroize();
                 }
             }
         )+
@@ -495,15 +492,12 @@ fn atomic_fence() {
 }
 
 /// Perform a volatile write to the destination
-// TODO(tarcieri): replace this with atomic writes when they're stable
 #[inline]
 fn volatile_write<T: Copy + Sized>(dst: &mut T, src: T) {
     unsafe { ptr::write_volatile(dst, src) }
 }
 
 /// Perform a volatile `memset` operation which fills a slice with a value
-// TODO(tarcieri): use `llvm.memset.element.unordered.atomic`
-// See: https://github.com/rust-lang/rust/issues/58599
 #[inline]
 fn volatile_set<T: Copy + Sized>(dst: &mut [T], src: T) {
     // TODO(tarcieri): use `volatile_set_memory` on nightly?
