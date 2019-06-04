@@ -192,9 +192,6 @@
 //! [core::sync::atomic]: https://doc.rust-lang.org/stable/core/sync/atomic/index.html
 //! [Ordering::SeqCst]: https://doc.rust-lang.org/std/sync/atomic/enum.Ordering.html#variant.SeqCst
 //! [compiler_fence]: https://doc.rust-lang.org/stable/core/sync/atomic/fn.compiler_fence.html
-//! [memory-model]: https://github.com/nikomatsakis/rust-memory-model
-//! [unordered]: https://llvm.org/docs/Atomics.html#unordered
-//! [llvm-atomic]: https://github.com/rust-lang/rust/issues/58599
 //! [pin]: https://doc.rust-lang.org/std/pin/struct.Pin.html
 //! [good cryptographic hygiene]: https://cryptocoding.net/index.php/Coding_rules#Clean_memory_of_secret_data
 
@@ -207,7 +204,7 @@
     unused_import_braces,
     unused_qualifications
 )]
-#![doc(html_root_url = "https://docs.rs/zeroize/0.7.0")]
+#![doc(html_root_url = "https://docs.rs/zeroize/0.9.0")]
 
 #[cfg(all(feature = "alloc", not(feature = "std")))]
 #[allow(unused_imports)] // rustc bug?

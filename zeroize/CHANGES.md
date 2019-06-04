@@ -1,3 +1,17 @@
+## [0.9.0] (2019-06-04)
+
+**NOTICE**: This release changes the default behavior of `derive(Zeroize)`
+to no longer derive a `Drop` impl. If you wish to derive `Drop`, you must
+now explicitly add a `#[zeroize(drop)]` attribute on the type for which you
+are deriving `Zeroize`.
+
+- Remove CPU fences ([#216])
+- Remove scary language about undefined behavior ([#214])
+- Bound blanket array impls on `Zeroize` instead of `DefaultIsZeroes` ([#213])
+- Require `zeroize(drop)` or `zeroize(no_drop)` attributes when deriving
+  `Zeroize` ([#212]).
+- Support stablized 'alloc' crate ([#192])
+
 ## [0.8.0] (2019-05-20)
 
 - Impl `Drop` by default when deriving `Zeroize` ([#188])
@@ -64,6 +78,12 @@ a pure Rust solution.
 
 - Initial release
 
+[0.9.0]: https://github.com/iqlusioninc/crates/pull/215
+[#216]: https://github.com/iqlusioninc/crates/pull/216
+[#214]: https://github.com/iqlusioninc/crates/pull/214
+[#213]: https://github.com/iqlusioninc/crates/pull/213
+[#212]: https://github.com/iqlusioninc/crates/pull/212
+[#192]: https://github.com/iqlusioninc/crates/pull/192
 [0.8.0]: https://github.com/iqlusioninc/crates/pull/189
 [#188]: https://github.com/iqlusioninc/crates/pull/188
 [0.7.0]: https://github.com/iqlusioninc/crates/pull/186
