@@ -124,19 +124,15 @@
 //! [these remarks have been removed] and the specific usage pattern in this
 //! crate is considered to be well-defined.
 //!
-//! To help mitigate concerns about reordering of operations executed by the
-//! CPU potentially exposing values after they have been zeroed, this crate
-//! leverages the [core::sync::atomic] memory fence functions including
-//! [compiler_fence] and [fence] (which uses the CPU's native fence
-//! instructions). These fences are leveraged with the strictest ordering
-//! guarantees, [Ordering::SeqCst], which ensures no accesses are reordered.
+//! Additionally this crate leverages [compiler_fence] from
+//! [core::sync::atomic] with the strictest ordering ([Ordering::SeqCst])
+//! as a precaution to help ensure reads are not reordered before memory has
+//! been zeroed.
 //!
 //! All of that said, there is still potential for microarchitectural attacks
-//! (ala Spectre/Meltdown) to leak "zeroized" secrets through covert channels
-//! (e.g. the memory fences mentioned above have previously been used as a
-//! covert channel in the Foreshadow attack). This crate makes no guarantees
-//! that zeroized values cannot be leaked through such channels, as they
-//! represent flaws in the underlying hardware.
+//! (ala Spectre/Meltdown) to leak "zeroized" secrets through covert channels.
+//! This crate makes no guarantees that zeroized values cannot be leaked
+//! through such channels, as they represent flaws in the underlying hardware.
 //!
 //! ## Stack/Heap Zeroing Notes
 //!
@@ -196,7 +192,6 @@
 //! [core::sync::atomic]: https://doc.rust-lang.org/stable/core/sync/atomic/index.html
 //! [Ordering::SeqCst]: https://doc.rust-lang.org/std/sync/atomic/enum.Ordering.html#variant.SeqCst
 //! [compiler_fence]: https://doc.rust-lang.org/stable/core/sync/atomic/fn.compiler_fence.html
-//! [fence]: https://doc.rust-lang.org/stable/core/sync/atomic/fn.fence.html
 //! [memory-model]: https://github.com/nikomatsakis/rust-memory-model
 //! [unordered]: https://llvm.org/docs/Atomics.html#unordered
 //! [llvm-atomic]: https://github.com/rust-lang/rust/issues/58599
@@ -305,11 +300,9 @@ where
 
 /// Implement `Zeroize` on slices of types that can be zeroized with `Default`.
 ///
-/// This impl can eventually be optimized using an atomic memset intrinsic,
-/// such as `llvm.memset.element.unordered.atomic`. For that reason the blanket
-/// impl on slices is bounded by `DefaultIsZeroes`. See:
-///
-/// <https://github.com/rust-lang/rust/issues/58599>
+/// This impl can eventually be optimized using an memset intrinsic,
+/// such as `core::intrinsics::volatile_set_memory`. For that reason the blanket
+/// impl on slices is bounded by `DefaultIsZeroes`.
 ///
 /// To zeroize a mut slice of `Z: Zeroize` which does not impl
 /// `DefaultIsZeroes`, call `iter_mut().zeroize()`.
@@ -404,7 +397,6 @@ where
 /// see zeroes after this point.
 #[inline]
 fn atomic_fence() {
-    atomic::fence(atomic::Ordering::SeqCst);
     atomic::compiler_fence(atomic::Ordering::SeqCst);
 }
 
