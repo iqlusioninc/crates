@@ -109,116 +109,34 @@
 //!
 //! ## What guarantees does this crate provide?
 //!
-//! Ideally a secure memory-zeroing function would guarantee the following:
+//! This crate guarantees the following:
 //!
-//! 1. Ensure the zeroing operation can't be "optimized away" by the compiler.
-//! 2. Ensure all subsequent reads to the memory following the zeroing operation
-//!    will always see zeroes.
+//! 1. The zeroing operation can't be "optimized away" by the compiler.
+//! 2. All subsequent reads to memory will see "zeroized" values.
 //!
-//! This crate guarantees #1 is true: LLVM's volatile semantics ensure it.
+//! LLVM's volatile semantics ensure #1 is true.
 //!
-//! The story around #2 is much more complicated. In brief, it should be true
-//! that LLVM's current implementation does not attempt to perform
-//! optimizations which would allow a subsequent (non-volatile) read to see the
-//! original value prior to zeroization. However, this is not a guarantee, but
-//! rather an LLVM implementation detail, a.k.a. *undefined behavior*.
-//! It provides what we believe to be the best implementation possible on
-//! stable Rust, but we cannot yet make guarantees it will work reliably
-//! 100% of the time (particularly on exotic CPU architectures).
+//! Additionally, thanks to work by the [Unsafe Code Guidelines Working Group],
+//! we can now fairly confidently say #2 is true as well. Previously there were
+//! worries that the approach used by this crate (mixing volatile and
+//! non-volatile accesses) was undefined behavior due to language contained
+//! in the documentation for `write_volatile`, however after some discussion
+//! [these remarks have been removed] and the specific usage pattern in this
+//! crate is considered to be well-defined.
 //!
-//! For more background, we can look to the [core::ptr::write_volatile]
-//! documentation:
+//! To help mitigate concerns about reordering of operations executed by the
+//! CPU potentially exposing values after they have been zeroed, this crate
+//! leverages the [core::sync::atomic] memory fence functions including
+//! [compiler_fence] and [fence] (which uses the CPU's native fence
+//! instructions). These fences are leveraged with the strictest ordering
+//! guarantees, [Ordering::SeqCst], which ensures no accesses are reordered.
 //!
-//! > Volatile operations are intended to act on I/O memory, and are guaranteed
-//! > to not be elided or reordered by the compiler across other volatile
-//! > operations.
-//! >
-//! > Memory accessed with `read_volatile` or `write_volatile` should not be
-//! > accessed with non-volatile operations.
-//!
-//! Uhoh! This crate does not guarantee all reads to the memory it operates on
-//! are volatile, and the documentation for [core::ptr::write_volatile]
-//! explicitly warns against mixing volatile and non-volatile operations.
-//! Perhaps we'd be better off with something like a `VolatileCell`
-//! type which owns the associated data and ensures all reads and writes are
-//! volatile so we don't have to worry about the semantics of mixing volatile and
-//! non-volatile accesses.
-//!
-//! While that's a strategy worth pursuing (and something we may investigate
-//! separately from this crate), it comes with some onerous API requirements:
-//! it means any data that we might ever desire to zero is owned by a
-//! `VolatileCell`. However, this does not make it possible for this crate
-//! to act on references, which severely limits its applicability. In fact
-//! a `VolatileCell` can only act on values, i.e. to read a value from it,
-//! we'd need to make a copy of it, and that's literally the opposite of
-//! what we want.
-//!
-//! It's worth asking what the precise semantics of mixing volatile and
-//! non-volatile reads actually are, and whether a less obtrusive API which
-//! can act entirely on mutable references is possible, safe, and provides the
-//! desired behavior.
-//!
-//! Unfortunately, that's a tricky question, because
-//! [Rust does not have a formally defined memory model][memory-model],
-//! and the behavior of mixing volatile and non-volatile memory accesses is
-//! therefore not rigorously specified and winds up being an LLVM
-//! implementation detail. The semantics were discussed extensively in this
-//! thread, specifically in the context of zeroing secrets from memory:
-//!
-//! <https://internals.rust-lang.org/t/volatile-and-sensitive-memory/3188/24>
-//!
-//! Some notable details from this thread:
-//!
-//! - Rust/LLVM's notion of "volatile" is centered around data *accesses*, not
-//!   the data itself. Specifically it maps to flags in LLVM IR which control
-//!   the behavior of the optimizer, and is therefore a bit different from the
-//!   typical C notion of "volatile".
-//! - As mentioned earlier, LLVM does not presently contain optimizations which
-//!   would reorder a non-volatile read to occur before a volatile write.
-//!   However, there is nothing precluding such optimizations from being added.
-//!   LLVM presently appears to exhibit the desired behavior for point
-//!   #2 above, but there is nothing preventing future versions of Rust
-//!   and/or LLVM from changing that.
-//!
-//! To help mitigate concerns about reordering potentially exposing values
-//! after they have been zeroed, this crate leverages the [core::sync::atomic]
-//! memory fence functions including [compiler_fence] and [fence] (which uses
-//! the CPU's native fence instructions). These fences are leveraged with the
-//! strictest ordering guarantees, [Ordering::SeqCst], which ensures no
-//! accesses are reordered. Without a formally defined memory model we can't
-//! guarantee these will be effective, but we hope they will cover most cases.
-//!
-//! Concretely the threat of leaking "zeroized" secrets (via reordering by
-//! LLVM and/or the CPU via out-of-order or speculative execution) would
-//! require a non-volatile access to be reordered ahead of the following:
-//!
-//! 1. before an [Ordering::SeqCst] compiler fence
-//! 2. before an [Ordering::SeqCst] runtime fence
-//! 3. before a volatile write
-//!
-//! This seems unlikely, but our usage of mixed non-volatile and volatile
-//! accesses is technically undefined behavior, at least until guarantees
-//! about this particular mixture of operations is formally defined in a
-//! Rust memory model.
-//!
-//! Furthermore, given the recent history of microarchitectural attacks
-//! (Spectre, Meltdown, etc), there is also potential for "zeroized" secrets
-//! to be leaked through covert channels (e.g. memory fences have been used
-//! as a covert channel), so we are wary to make guarantees unless they can
-//! be made firmly in terms of both a formal Rust memory model and the
-//! generated code for a particular CPU architecture.
-//!
-//! In conclusion, this crate guarantees the zeroize operation will not be
-//! elided or "optimized away", makes a "best effort" to ensure that
-//! memory accesses will not be reordered ahead of the "zeroize" operation,
-//! but **cannot** yet guarantee that such reordering will not occur.
-//!
-//! In the future it might be possible to guarantee such behavior using
-//! [LLVM's "unordered" atomic mode][unordered], which is documented as
-//! being free of undefined behavior. There's an open issue to
-//! [expose atomic memcpy/memset in core/std][llvm-atomic]
-//! in which case this crate could leverage them to provide well-defined
-//! guarantees that zeroization will always occur.
+//! All of that said, there is still potential for microarchitectural attacks
+//! (ala Spectre/Meltdown) to leak "zeroized" secrets through covert channels
+//! (e.g. the memory fences mentioned above have previously been used as a
+//! covert channel in the Foreshadow attack). This crate makes no guarantees
+//! that zeroized values cannot be leaked through such channels, as they
+//! represent flaws in the underlying hardware.
 //!
 //! ## Stack/Heap Zeroing Notes
 //!
@@ -240,18 +158,15 @@
 //! attempting to zeroize such buffers to initialize them to the correct
 //! capacity, and take care to prevent subsequent reallocation.
 //!
-//! This crate does not intend to implement higher-level abstractions to
-//! eliminate these risks, instead it merely makes a best effort to clear the
-//! memory it's aware of.
+//! The `secrecy` crate provides higher-level abstractions for eliminating
+//! usage patterns which can cause reallocations:
 //!
-//! Crates which are built on `zeroize` and provide higher-level abstractions
-//! for strategically avoiding these problems would certainly be interesting!
-//! (and something we may consider developing in the future)
+//! <https://crates.io/crates/secrecy>
 //!
 //! ## What about: clearing registers, mlock, mprotect, etc?
 //!
-//! This crate is laser-focused on being a simple, unobtrusive crate for zeroing
-//! memory in as reliable a manner as is possible on stable Rust.
+//! This crate is focused on providing simple, unobtrusive support for reliably
+//! zeroing memory using the best approach possible on stable Rust.
 //!
 //! Clearing registers is a difficult problem that can't easily be solved by
 //! something like a crate, and requires either inline ASM or rustc support.
@@ -276,6 +191,8 @@
 //! [DefaultIsZeroes]: https://docs.rs/zeroize/latest/zeroize/trait.DefaultIsZeroes.html
 //! [Default]: https://doc.rust-lang.org/std/default/trait.Default.html
 //! [core::ptr::write_volatile]: https://doc.rust-lang.org/core/ptr/fn.write_volatile.html
+//! [Unsafe Code Guidelines Working Group]: https://github.com/rust-lang/unsafe-code-guidelines
+//! [these remarks have been removed]: https://github.com/rust-lang/rust/pull/60972
 //! [core::sync::atomic]: https://doc.rust-lang.org/stable/core/sync/atomic/index.html
 //! [Ordering::SeqCst]: https://doc.rust-lang.org/std/sync/atomic/enum.Ordering.html#variant.SeqCst
 //! [compiler_fence]: https://doc.rust-lang.org/stable/core/sync/atomic/fn.compiler_fence.html
