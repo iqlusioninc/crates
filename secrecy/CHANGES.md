@@ -1,3 +1,7 @@
+## [0.2.1] (2019-06-04)
+
+- `zeroize` v0.9.0 ([#215])
+
 ## [0.2.0] (2019-05-29)
 
 - Add `CloneableSecret` marker trait ([#210])
@@ -6,5 +10,7 @@
 
 - Initial release
 
-[#211]: https://github.com/iqlusioninc/crates/pull/211
+[0.2.1]: https://github.com/iqlusioninc/crates/pull/216
+[#215]: https://github.com/iqlusioninc/crates/pull/215
+[0.2.0]: https://github.com/iqlusioninc/crates/pull/211
 [#210]: https://github.com/iqlusioninc/crates/pull/210
