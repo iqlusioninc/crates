@@ -326,7 +326,7 @@ name = "secrecy"
 version = "0.2.0"
 dependencies = [
  "serde 1.0.91 (registry+https://github.com/rust-lang/crates.io-index)",
- "zeroize 0.8.0",
+ "zeroize 0.9.0",
 ]
 
 [[package]]
@@ -345,7 +345,7 @@ version = "0.3.6"
 dependencies = [
  "failure 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "failure_derive 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
- "zeroize 0.8.0",
+ "zeroize 0.9.0",
 ]
 
 [[package]]
@@ -435,14 +435,14 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "zeroize"
-version = "0.8.0"
+version = "0.9.0"
 dependencies = [
- "zeroize_derive 0.8.0",
+ "zeroize_derive 0.9.0",
 ]
 
 [[package]]
 name = "zeroize_derive"
-version = "0.8.0"
+version = "0.9.0"
 dependencies = [
  "proc-macro2 0.4.30 (registry+https://github.com/rust-lang/crates.io-index)",
  "quote 0.6.12 (registry+https://github.com/rust-lang/crates.io-index)",
