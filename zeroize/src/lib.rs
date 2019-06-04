@@ -52,34 +52,19 @@
 //!
 //! ## Custom Derive Support
 //!
+//! **NOTICE**: Previous versions of `zeroize` automatically derived
+//! `Drop`. This has been *REMOVED* and you now *MUST* explicitly specify
+//! either `zeroize(drop)` or `zeroize(no_drop)` (see below).
+//!
 //! This crate has custom derive support for the `Zeroize` trait, which
-//! automatically calls `zeroize()` on all members of a struct or tuple struct,
-//! and adds a `Drop` impl which calls `zeroize()` when the item is dropped:
+//! automatically calls `zeroize()` on all members of a struct or tuple struct.
 //!
-//! ```
-//! use zeroize::Zeroize;
+//! Additionally it supports the following attributes (you *MUST* pick one):
 //!
-//! // This struct will be zeroized on drop
-//! #[derive(Zeroize)]
-//! struct MyStruct([u8; 64]);
-//! ```
+//! - `#[zeroize(no_drop)]`: derive only `Zeroize` without adding a `Drop` impl
+//! - `#[zeroize(drop)]`: call `zeroize()` when this item is dropped
 //!
-//! If, for some reason, you only want `Zeroize` to be derived but *don't*
-//! want an automatic `Drop` impl, you can add the `zeroize(no_drop)`
-//! attribute:
-//!
-//! ```
-//! use zeroize::Zeroize;
-//!
-//! // This struct will *NOT* be zeroized on drop
-//! #[derive(Zeroize)]
-//! #[zeroize(no_drop)]
-//! struct MyStruct([u8; 64]);
-//! ```
-//!
-//! If you prefer explicitness, you can add the `#[zeroize(drop)]`
-//! attribute to signal intent to zeroize values on `Drop`. However note this
-//! syntax is not necessary as the `Drop` handler is added by default:
+//! Example which derives `Drop`:
 //!
 //! ```
 //! use zeroize::Zeroize;
@@ -87,7 +72,18 @@
 //! // This struct will be zeroized on drop
 //! #[derive(Zeroize)]
 //! #[zeroize(drop)]
-//! struct MyStruct([u8; 64]);
+//! struct MyStruct([u8; 32]);
+//! ```
+//!
+//! Example which does not derive `Drop` (useful for e.g. `Copy` types)
+//!
+//! ```
+//! use zeroize::Zeroize;
+//!
+//! // This struct will *NOT* be zeroized on drop
+//! #[derive(Copy, Clone, Zeroize)]
+//! #[zeroize(no_drop)]
+//! struct MyStruct([u8; 32]);
 //! ```
 //!
 //! ## `Zeroizing<Z>`: wrapper for zeroizing arbitrary values on drop

@@ -5,6 +5,7 @@ mod custom_derive_tests {
     use zeroize::Zeroize;
 
     #[derive(Zeroize)]
+    #[zeroize(drop)]
     struct ZeroizableTupleStruct([u8; 3]);
 
     #[test]
@@ -15,6 +16,7 @@ mod custom_derive_tests {
     }
 
     #[derive(Zeroize)]
+    #[zeroize(drop)]
     struct ZeroizableStruct {
         string: String,
         vec: Vec<u8>,
