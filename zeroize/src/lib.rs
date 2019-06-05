@@ -295,7 +295,19 @@ where
     }
 }
 
-/// Implement `Zeroize` on slices of types that can be zeroized with `Default`.
+impl<Z> Zeroize for Option<Z>
+where
+    Z: Zeroize,
+{
+    fn zeroize(&mut self) {
+        match self {
+            Some(value) => value.zeroize(),
+            None => (),
+        }
+    }
+}
+
+/// Impl `Zeroize` on slices of types that can be zeroized with `Default`.
 ///
 /// This impl can eventually be optimized using an memset intrinsic,
 /// such as `core::intrinsics::volatile_set_memory`. For that reason the blanket
