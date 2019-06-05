@@ -1,3 +1,7 @@
+## [0.9.1] (2019-06-04)
+
+- Impl `Zeroize` for `Option<Z: Zeroize>` ([#219])
+
 ## [0.9.0] (2019-06-04)
 
 **NOTICE**: This release changes the default behavior of `derive(Zeroize)`
@@ -78,6 +82,8 @@ a pure Rust solution.
 
 - Initial release
 
+[0.9.1]: https://github.com/iqlusioninc/crates/pull/220
+[#219]: https://github.com/iqlusioninc/crates/pull/219
 [0.9.0]: https://github.com/iqlusioninc/crates/pull/215
 [#216]: https://github.com/iqlusioninc/crates/pull/216
 [#214]: https://github.com/iqlusioninc/crates/pull/214
