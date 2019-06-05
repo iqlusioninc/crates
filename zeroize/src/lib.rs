@@ -204,7 +204,7 @@
     unused_import_braces,
     unused_qualifications
 )]
-#![doc(html_root_url = "https://docs.rs/zeroize/0.9.0")]
+#![doc(html_root_url = "https://docs.rs/zeroize/0.9.1")]
 
 #[cfg(all(feature = "alloc", not(feature = "std")))]
 #[allow(unused_imports)] // rustc bug?
