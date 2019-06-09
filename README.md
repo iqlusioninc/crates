@@ -1,9 +1,10 @@
-# iqlusion crates <a href="https://www.iqlusion.io"><img src="https://storage.googleapis.com/iqlusion-prod-web-assets/img/logo/iqlusion-rings-sm.png" alt="iqlusion" width="24" height="24"></a> <a href="https://crates.io">📦</a>
+# iqlusion crates <a href="https://www.iqlusion.io"><img src="https://storage.googleapis.com/iqlusion-production-web/img/logo/iqlusion-rings-sm.png" alt="iqlusion" width="24" height="24"></a> <a href="https://crates.io">📦</a>
 
 [![Apache 2.0 Licensed][license-image]][license-link]
 ![Rust 1.35+][rustc-image]
 [![Build Status][build-image]][build-link]
 [![Appveyor Status][appveyor-image]][appveyor-link]
+[![Gitter Chat][gitter-image]][gitter-link]
 
 This repository contains a set of Apache 2.0-licensed packages (a.k.a.  "crates")
 for the [Rust](https://www.rust-lang.org/) programming language, contributed
@@ -75,6 +76,8 @@ without any additional terms or conditions.
 [build-link]: https://travis-ci.com/iqlusioninc/crates/
 [appveyor-image]: https://ci.appveyor.com/api/projects/status/qslcjs7e1rn4a2w9?svg=true
 [appveyor-link]: https://ci.appveyor.com/project/tony-iqlusion/crates
+[gitter-image]: https://badges.gitter.im/iqlusioninc/community.svg
+[gitter-link]: https://gitter.im/iqlusioninc/community
 
 [//]: # (crates)
 

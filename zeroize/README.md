@@ -1,10 +1,11 @@
-# [zeroize].rs 🄌 <a href="https://www.iqlusion.io"><img src="https://storage.googleapis.com/iqlusion-prod-web-assets/img/logo/iqlusion-rings-sm.png" alt="iqlusion" width="24" height="24"></a>
+# [zeroize].rs 🄌 <a href="https://www.iqlusion.io"><img src="https://storage.googleapis.com/iqlusion-production-web/img/logo/iqlusion-rings-sm.png" alt="iqlusion" width="24" height="24"></a>
 
 [![Crate][crate-image]][crate-link]
 [![Docs][docs-image]][docs-link]
 ![Apache 2.0/MIT Licensed][license-image]
 ![Rust 1.35+][rustc-image]
 [![Build Status][build-image]][build-link]
+[![Gitter Chat][gitter-image]][gitter-link]
 
 Securely zero memory while avoiding compiler optimizations.
 
@@ -62,6 +63,8 @@ without any additional terms or conditions.
 [rustc-image]: https://img.shields.io/badge/rustc-1.35+-blue.svg
 [build-image]: https://travis-ci.com/iqlusioninc/crates.svg?branch=develop
 [build-link]: https://travis-ci.com/iqlusioninc/crates/
+[gitter-image]: https://badges.gitter.im/iqlusioninc/community.svg
+[gitter-link]: https://gitter.im/iqlusioninc/community
 
 [//]: # (general links)
 

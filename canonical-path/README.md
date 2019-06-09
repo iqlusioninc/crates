@@ -5,6 +5,7 @@
 [![Apache 2.0 Licensed][license-image]][license-link]
 ![Rust 1.35+][rustc-image]
 [![Build Status][build-image]][build-link]
+[![Gitter Chat][gitter-image]][gitter-link]
 
 `std::fs::Path` and `PathBuf`-like types for representing canonical
 filesystem paths.
@@ -52,3 +53,5 @@ without any additional terms or conditions.
 [rustc-image]: https://img.shields.io/badge/rustc-1.35+-blue.svg
 [build-image]: https://travis-ci.com/iqlusioninc/crates.svg?branch=develop
 [build-link]: https://travis-ci.com/iqlusioninc/crates/
+[gitter-image]: https://badges.gitter.im/iqlusioninc/community.svg
+[gitter-link]: https://gitter.im/iqlusioninc/community
