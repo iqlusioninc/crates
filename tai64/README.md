@@ -6,6 +6,7 @@
 ![Rust 1.35+][rustc-image]
 [![forbid(unsafe_code)][unsafe-image]][unsafe-link]
 [![Build Status][build-image]][build-link]
+[![Gitter Chat][gitter-image]][gitter-link]
 
 An implementation of the [TAI64(N)] (*Temps Atomique International*) timestamp
 format in Rust.
@@ -52,6 +53,8 @@ without any additional terms or conditions.
 [unsafe-link]: https://internals.rust-lang.org/t/disabling-unsafe-by-default/7988
 [build-image]: https://travis-ci.com/iqlusioninc/crates.svg?branch=develop
 [build-link]: https://travis-ci.com/iqlusioninc/crates/
+[gitter-image]: https://badges.gitter.im/iqlusioninc/community.svg
+[gitter-link]: https://gitter.im/iqlusioninc/community
 
 [//]: # (general links)
 
