@@ -2,13 +2,7 @@
 //! (e.g. passwords, cryptographic keys, access tokens or other credentials)
 
 #![no_std]
-#![deny(
-    warnings,
-    missing_docs,
-    trivial_casts,
-    trivial_numeric_casts,
-    unused_qualifications
-)]
+#![deny(warnings, missing_docs, trivial_casts, unused_qualifications)]
 #![forbid(unsafe_code)]
 #![doc(html_root_url = "https://docs.rs/secrecy/0.2.2")]
 

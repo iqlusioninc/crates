@@ -1,3 +1,7 @@
+## [0.9.2] (2019-06-28)
+
+- README.md: add Gitter badges; update image links ([#221])
+
 ## [0.9.1] (2019-06-04)
 
 - Impl `Zeroize` for `Option<Z: Zeroize>` ([#219])
@@ -82,6 +86,8 @@ a pure Rust solution.
 
 - Initial release
 
+[0.9.2]: https://github.com/iqlusioninc/crates/pull/224
+[#221]: https://github.com/iqlusioninc/crates/pull/221
 [0.9.1]: https://github.com/iqlusioninc/crates/pull/220
 [#219]: https://github.com/iqlusioninc/crates/pull/219
 [0.9.0]: https://github.com/iqlusioninc/crates/pull/215

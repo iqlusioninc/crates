@@ -196,15 +196,8 @@
 //! [good cryptographic hygiene]: https://cryptocoding.net/index.php/Coding_rules#Clean_memory_of_secret_data
 
 #![no_std]
-#![deny(
-    warnings,
-    missing_docs,
-    trivial_casts,
-    trivial_numeric_casts,
-    unused_import_braces,
-    unused_qualifications
-)]
-#![doc(html_root_url = "https://docs.rs/zeroize/0.9.1")]
+#![deny(warnings, missing_docs, trivial_casts, unused_qualifications)]
+#![doc(html_root_url = "https://docs.rs/zeroize/0.9.2")]
 
 #[cfg(all(feature = "alloc", not(feature = "std")))]
 #[allow(unused_imports)] // rustc bug?
