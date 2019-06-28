@@ -1,6 +1,6 @@
 ## [0.2.2] (2019-06-28)
 
-- README: add Gitter badges; update image links ([#221])
+- README.md: add Gitter badges; update image links ([#221])
 
 ## [0.2.1] (2019-06-04)
 
@@ -14,7 +14,7 @@
 
 - Initial release
 
-[0.2.2]: https://github.com/iqlusioninc/crates/pull/222
+[0.2.2]: https://github.com/iqlusioninc/crates/pull/223
 [#221]: https://github.com/iqlusioninc/crates/pull/221
 [0.2.1]: https://github.com/iqlusioninc/crates/pull/216
 [#215]: https://github.com/iqlusioninc/crates/pull/215
