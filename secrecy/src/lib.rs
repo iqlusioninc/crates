@@ -7,11 +7,10 @@
     missing_docs,
     trivial_casts,
     trivial_numeric_casts,
-    unused_import_braces,
     unused_qualifications
 )]
 #![forbid(unsafe_code)]
-#![doc(html_root_url = "https://docs.rs/secrecy/0.2.1")]
+#![doc(html_root_url = "https://docs.rs/secrecy/0.2.2")]
 
 use core::fmt::{self, Debug};
 #[cfg(feature = "serde")]
