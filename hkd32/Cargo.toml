@@ -1,0 +1,25 @@
+[package]
+name        = "hkd32"
+description = """
+              HMAC-based Hierarchical Key Derivation: deterministically derive
+              a hierarchy of symmetric keys from initial keying material through
+              repeated applications of the Hash-based Message Authentication Code
+              (HMAC) construction.
+              """
+version     = "0.0.0" # Also update html_root_url in lib.rs when bumping this
+authors     = ["Tony Arcieri <tony@iqlusion.io>"]
+license     = "Apache-2.0"
+edition     = "2018"
+homepage    = "https://github.com/iqlusioninc/crates/"
+repository  = "https://github.com/iqlusioninc/crates/tree/master/hkd32"
+readme      = "README.md"
+categories  = ["cryptography", "no-std"]
+keywords    = ["bip32", "derivation", "hd", "hmac", "key"]
+
+[badges]
+travis-ci = { repository = "iqlusioninc/crates", branch = "develop" }
+
+[dependencies]
+hmac = "0.7"
+sha2 = "0.8"
+zeroize = { version = "0.9", path = "../zeroize", default-features = false }
