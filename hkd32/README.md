@@ -1,44 +1,26 @@
-# secrecy.rs 🤐 <a href="https://www.iqlusion.io"><img src="https://storage.googleapis.com/iqlusion-production-web/img/logo/iqlusion-rings-sm.png" alt="iqlusion" width="24" height="24"></a>
+# HMAC-based Hierarchical Key Derivation <a href="https://www.iqlusion.io"><img src="https://storage.googleapis.com/iqlusion-production-web/img/logo/iqlusion-rings-sm.png" alt="iqlusion" width="24" height="24"></a>
+
 
 [![Crate][crate-image]][crate-link]
 [![Docs][docs-image]][docs-link]
-![Apache 2.0/MIT Licensed][license-image]
+[![Apache 2.0 Licensed][license-image]][license-link]
 ![Rust 1.35+][rustc-image]
 [![forbid(unsafe_code)][unsafe-image]][unsafe-link]
 [![Build Status][build-image]][build-link]
 [![Gitter Chat][gitter-image]][gitter-link]
 
-A simple secret-keeping library for Rust.
+`hkd32` is a Rust library which implements a hierarchical deterministic
+symmetric key derivation construction inspired by
+[BIP-0032: Hierarchical Deterministic Wallets][bip32].
+
+It can be used to deterministically derive a hierarchy of symmetric keys
+from initial keying material through repeated applications of the
+Hash-based Message Authentication Code (HMAC).
+
+This construction is specialized for deriving 32-byte (256-bit) keys from
+an initial 32-bytes of input key material.
 
 [Documentation][docs-link]
-
-## About
-
-**secrecy** is a *simple*, safe (i.e. `forbid(unsafe_code)` library which
-provides wrapper types and traits for secret management in Rust, namely the
-`Secret<T>` type for wrapping another value in a "secret cell" which attempts
-to limit exposure (only available through a special `ExposeSecret` trait).
-
-This helps to ensure secrets aren't accidentally copied, logged, or otherwise
-exposed (as much as possible), and also ensures secrets are securely wiped
-from memory when dropped.
-
-## Requirements
-
-- Rust 1.35+
-
-## serde support
-
-Optional `serde` support for parsing owned secret values is available, gated
-under the `serde` cargo feature.
-
-It uses the `Deserialize` and `DeserializeOwned` traits to implement
-deserializing secret types which also impl these traits.
-
-This doesn't guarantee `serde` (or code providing input to `serde`) won't
-accidentally make additional copies of the secret, but does the best it can
-with what it is given and tries to minimize risk of exposure as much as
-possible.
 
 ## License
 
@@ -64,11 +46,12 @@ without any additional terms or conditions.
 
 [//]: # (badges)
 
-[crate-image]: https://img.shields.io/crates/v/secrecy.svg
-[crate-link]: https://crates.io/crates/secrecy
-[docs-image]: https://docs.rs/secrecy/badge.svg
-[docs-link]: https://docs.rs/secrecy/
+[crate-image]: https://img.shields.io/crates/v/hkd32.svg
+[crate-link]: https://crates.io/crates/hkd32
+[docs-image]: https://docs.rs/hkd32/badge.svg
+[docs-link]: https://docs.rs/hkd32/
 [license-image]: https://img.shields.io/badge/license-Apache2.0/MIT-blue.svg
+[license-link]: https://github.com/iqlusioninc/crates/blob/master/LICENSE
 [rustc-image]: https://img.shields.io/badge/rustc-1.35+-blue.svg
 [unsafe-image]: https://img.shields.io/badge/unsafe-forbidden-success.svg
 [unsafe-link]: https://internals.rust-lang.org/t/disabling-unsafe-by-default/7988
@@ -79,4 +62,4 @@ without any additional terms or conditions.
 
 [//]: # (general links)
 
-[LICENSE]: https://github.com/iqlusioninc/crates/blob/master/LICENSE
+[bip32]: https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki
