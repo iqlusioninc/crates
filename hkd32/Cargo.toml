@@ -23,6 +23,7 @@ travis-ci = { repository = "iqlusioninc/crates", branch = "develop" }
 getrandom = { version = "0.1", optional = true }
 hmac = { version = "0.7", default-features = false }
 sha2 = { version = "0.8", default-features = false }
+tiny-bip39 = { version = "0.6", default-features = false, optional = true }
 
 [dependencies.zeroize]
 version = "0.9"
@@ -33,3 +34,7 @@ features = ["zeroize_derive"]
 [features]
 default = ["alloc", "getrandom"]
 alloc = []
+mnemonic = ["tiny-bip39"]
+
+[package.metadata.docs.rs]
+all-features = true
