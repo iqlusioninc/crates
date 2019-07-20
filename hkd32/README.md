@@ -14,7 +14,8 @@ symmetric key derivation construction inspired by
 [BIP-0032: Hierarchical Deterministic Wallets][bip32].
 
 It can be used to deterministically derive a hierarchy of symmetric keys
-from initial keying material through repeated applications of the
+from initial keying material (or when the `mnemonic` feature is enabled,
+through a 24-word [BIP39] passphrase) by repeatedly applying the
 Hash-based Message Authentication Code (HMAC).
 
 This construction is specialized for deriving 32-byte (256-bit) keys from
@@ -63,3 +64,4 @@ without any additional terms or conditions.
 [//]: # (general links)
 
 [bip32]: https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki
+[bip39]: https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki

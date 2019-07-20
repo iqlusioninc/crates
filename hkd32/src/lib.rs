@@ -18,6 +18,8 @@ extern crate alloc;
 
 #[cfg(feature = "alloc")]
 use alloc::{str::FromStr, vec::Vec};
+#[cfg(feature = "mnemonic")]
+pub use bip39::Mnemonic;
 use core::slice::Iter;
 use hmac::{Hmac, Mac};
 use sha2::Sha512;
@@ -98,10 +100,10 @@ impl<'a> Path<'a> {
     }
 
     /// Derive an output key from the given input key material
-    pub fn derive(&self, input_key_material: &KeyMaterial) -> KeyMaterial {
+    pub fn derive(&self, input_key_material: KeyMaterial) -> KeyMaterial {
         self.iter()
             .enumerate()
-            .fold(input_key_material.clone(), |parent_key, (i, elem)| {
+            .fold(input_key_material, |parent_key, (i, elem)| {
                 let mut hmac = Hmac::<Sha512>::new_varkey(parent_key.as_ref()).unwrap();
                 hmac.input(elem);
 
@@ -122,6 +124,20 @@ impl<'a> Path<'a> {
 
                 KeyMaterial(child_key)
             })
+    }
+
+    /// Derive an output key from a BIP39 `Mnemonic`.
+    ///
+    /// Requires the `mnemonic` cargo feature.
+    #[cfg(feature = "mnemonic")]
+    pub fn derive_from_mnemonic(&self, mnemonic: &Mnemonic) -> Result<KeyMaterial, Error> {
+        if mnemonic.entropy().len() != KEY_SIZE {
+            return Err(Error);
+        }
+
+        let mut ikm = [0u8; KEY_SIZE];
+        ikm.copy_from_slice(mnemonic.entropy());
+        Ok(self.derive(KeyMaterial(ikm)))
     }
 }
 
@@ -156,16 +172,38 @@ impl PathBuf {
         }
     }
 
+    /// Push an additional component onto this path
+    pub fn push<C: Into<ComponentBuf>>(&mut self, component: C) {
+        self.components.push(component.into());
+    }
+
+    /// Truncate `self` into its parent. Returns false and does nothing if this
+    /// is the root of the derivation hierarchy.
+    pub fn pop(&mut self) -> bool {
+        self.components.pop().is_none()
+    }
+
     /// Iterate over the components of this derivation path
     pub fn iter(&self) -> Iter<ComponentBuf> {
         self.components.iter()
     }
 
     /// Derive an output key from the given key material
-    pub fn derive(&self, input_key_material: &KeyMaterial) -> KeyMaterial {
-        let component_refs = self.iter().map(|c| c.as_ref()).collect::<Vec<_>>();
+    pub fn derive(&self, input_key_material: KeyMaterial) -> KeyMaterial {
+        Path::new(self.component_refs().as_ref()).derive(input_key_material)
+    }
 
-        Path::new(component_refs.as_ref()).derive(input_key_material)
+    /// Derive an output key from a BIP39 `Mnemonic`.
+    ///
+    /// Requires the `mnemonic` cargo feature.
+    #[cfg(feature = "mnemonic")]
+    pub fn derive_from_mnemonic(&self, mnemonic: &Mnemonic) -> Result<KeyMaterial, Error> {
+        Path::new(self.component_refs().as_ref()).derive_from_mnemonic(mnemonic)
+    }
+
+    /// Get references to the components for this `PathBuf`
+    fn component_refs(&self) -> Vec<Component> {
+        self.iter().map(|c| c.as_ref()).collect()
     }
 }
 
@@ -232,15 +270,27 @@ impl Drop for PathBuf {
 mod tests {
     use super::*;
 
-    const TEST_VECTOR_KEY: KeyMaterial = KeyMaterial([
-        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24,
-        25, 26, 27, 28, 29, 30, 31,
-    ]);
+    fn test_key() -> KeyMaterial {
+        KeyMaterial::new([
+            0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23,
+            24, 25, 26, 27, 28, 29, 30, 31,
+        ])
+    }
+
+    #[cfg(feature = "mnemonic")]
+    fn test_mnemonic() -> Mnemonic {
+        // This phrase is the BIP39 equipvalent of `test_key()` above
+        let bip39_phrase: &str =
+            "abandon amount liar amount expire adjust cage candy arch gather drum bullet \
+             absurd math era live bid rhythm alien crouch range attend journey unaware";
+
+        Mnemonic::from_phrase(bip39_phrase, bip39::Language::English).unwrap()
+    }
 
     /// Root path outputs the original IKM
     #[test]
     fn test_vector_0_empty_path() {
-        let output_key = PathBuf::from("/").derive(&TEST_VECTOR_KEY);
+        let output_key = PathBuf::from("/").derive(test_key());
 
         assert_eq!(
             output_key.as_ref(),
@@ -253,7 +303,7 @@ mod tests {
 
     #[test]
     fn test_vector_1() {
-        let output_key = PathBuf::from("/1").derive(&TEST_VECTOR_KEY);
+        let output_key = PathBuf::from("/1").derive(test_key());
 
         assert_eq!(
             output_key.as_ref(),
@@ -266,7 +316,7 @@ mod tests {
 
     #[test]
     fn test_vector_2() {
-        let output_key = PathBuf::from("/1/2").derive(&TEST_VECTOR_KEY);
+        let output_key = PathBuf::from("/1/2").derive(test_key());
 
         assert_eq!(
             output_key.as_ref(),
@@ -279,7 +329,23 @@ mod tests {
 
     #[test]
     fn test_vector_3() {
-        let output_key = PathBuf::from("/1/2/3").derive(&TEST_VECTOR_KEY);
+        let output_key = PathBuf::from("/1/2/3").derive(test_key());
+
+        assert_eq!(
+            output_key.as_ref(),
+            [
+                17, 67, 145, 251, 66, 229, 67, 213, 30, 37, 15, 106, 223, 215, 34, 87, 221, 46,
+                192, 225, 50, 153, 127, 65, 168, 152, 14, 237, 100, 231, 142, 3
+            ]
+        );
+    }
+
+    #[cfg(feature = "mnemonic")]
+    #[test]
+    fn test_mnemonic_derivation() {
+        let output_key = PathBuf::from("/1/2/3")
+            .derive_from_mnemonic(&test_mnemonic())
+            .unwrap();
 
         assert_eq!(
             output_key.as_ref(),
