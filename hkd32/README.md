@@ -4,7 +4,7 @@
 [![Crate][crate-image]][crate-link]
 [![Docs][docs-image]][docs-link]
 [![Apache 2.0 Licensed][license-image]][license-link]
-![Rust 1.35+][rustc-image]
+![Rust 1.36+][rustc-image]
 [![forbid(unsafe_code)][unsafe-image]][unsafe-link]
 [![Build Status][build-image]][build-link]
 [![Gitter Chat][gitter-image]][gitter-link]
@@ -52,7 +52,7 @@ without any additional terms or conditions.
 [docs-link]: https://docs.rs/hkd32/
 [license-image]: https://img.shields.io/badge/license-Apache2.0/MIT-blue.svg
 [license-link]: https://github.com/iqlusioninc/crates/blob/master/LICENSE
-[rustc-image]: https://img.shields.io/badge/rustc-1.35+-blue.svg
+[rustc-image]: https://img.shields.io/badge/rustc-1.36+-blue.svg
 [unsafe-image]: https://img.shields.io/badge/unsafe-forbidden-success.svg
 [unsafe-link]: https://internals.rust-lang.org/t/disabling-unsafe-by-default/7988
 [build-image]: https://travis-ci.com/iqlusioninc/crates.svg?branch=develop

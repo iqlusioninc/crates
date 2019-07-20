@@ -6,8 +6,8 @@ branches:
     - develop
 
 rust:
-  - 1.35.0 # Minimum supported
-  - stable # Stable should always be supported
+  - 1.36.0 # Minimum supported
+  # - stable # Stable should always be supported (but hasn't been bumped to 1.36)
 
 os:
   - linux
