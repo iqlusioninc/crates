@@ -1,7 +1,7 @@
 # iqlusion crates <a href="https://www.iqlusion.io"><img src="https://storage.googleapis.com/iqlusion-production-web/img/logo/iqlusion-rings-sm.png" alt="iqlusion" width="24" height="24"></a> <a href="https://crates.io">📦</a>
 
 [![Apache 2.0 Licensed][license-image]][license-link]
-![Rust 1.35+][rustc-image]
+![Rust 1.36+][rustc-image]
 [![Build Status][build-image]][build-link]
 [![Appveyor Status][appveyor-image]][appveyor-link]
 [![Gitter Chat][gitter-image]][gitter-link]
@@ -20,7 +20,7 @@ read the [CONTRIBUTING.md] and [CODE_OF_CONDUCT.md] files first.
 
 All crates require Rust 2018 edition and are tested on the following channels:
 
-- `1.35.0` (minimum supported)
+- `1.36.0` (minimum supported)
 - `stable`
 
 Crates may work on slightly earlier 2018 edition-supporting versions of Rust
@@ -71,7 +71,7 @@ without any additional terms or conditions.
 
 [license-image]: https://img.shields.io/badge/license-Apache2.0-blue.svg
 [license-link]: https://github.com/iqlusioninc/crates/blob/develop/LICENSE
-[rustc-image]: https://img.shields.io/badge/rustc-1.35+-blue.svg
+[rustc-image]: https://img.shields.io/badge/rustc-1.36+-blue.svg
 [build-image]: https://travis-ci.com/iqlusioninc/crates.svg?branch=develop
 [build-link]: https://travis-ci.com/iqlusioninc/crates/
 [appveyor-image]: https://ci.appveyor.com/api/projects/status/qslcjs7e1rn4a2w9?svg=true
