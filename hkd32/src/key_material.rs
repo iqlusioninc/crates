@@ -9,12 +9,18 @@
 #[cfg(feature = "mnemonic")]
 use crate::mnemonic;
 use crate::{path::Path, Error, KEY_SIZE};
+#[cfg(feature = "bech32")]
+use alloc::string::String;
 use core::convert::TryFrom;
 #[cfg(feature = "getrandom")]
 use getrandom::getrandom;
 use hmac::{Hmac, Mac};
 use sha2::Sha512;
+#[cfg(feature = "bech32")]
+use subtle_encoding::bech32::Bech32;
 use zeroize::Zeroize;
+#[cfg(feature = "bech32")]
+use zeroize::Zeroizing;
 
 /// Cryptographic key material: 256-bit (32-byte) uniformly random bytestring
 /// generated either via a CSRNG or via hierarchical derivation.
@@ -32,6 +38,18 @@ impl KeyMaterial {
         let mut bytes = [0u8; KEY_SIZE];
         getrandom(&mut bytes).expect("getrandom failure!");
         Self::new(bytes)
+    }
+
+    /// Decode key material from a Bech32 representation
+    #[cfg(feature = "bech32")]
+    pub fn from_bech32<S>(encoded: S) -> Result<(String, Self), Error>
+    where
+        S: AsRef<str>,
+    {
+        let (hrp, mut key_bytes) = Bech32::default().decode(encoded).map_err(|_| Error)?;
+        let key_result = Self::from_bytes(&key_bytes);
+        key_bytes.zeroize();
+        key_result.map(|key| (hrp, key))
     }
 
     /// Create key material from a 24-word BIP39 mnemonic phrase
@@ -98,6 +116,16 @@ impl KeyMaterial {
 
                 KeyMaterial(child_key)
             })
+    }
+
+    /// Serialize this `KeyMaterial` as a self-zeroizing Bech32 string
+    #[cfg(feature = "bech32")]
+    pub fn to_bech32<S>(&self, hrp: S) -> Zeroizing<String>
+    where
+        S: AsRef<str>,
+    {
+        let b32 = Bech32::default().encode(hrp, self.as_bytes());
+        Zeroizing::new(b32)
     }
 
     /// Serialize this `KeyMaterial` as a BIP39 mnemonic phrase
