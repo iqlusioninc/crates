@@ -117,6 +117,10 @@ impl FromStr for PathBuf {
         }
 
         for component in components {
+            if !component.is_ascii() {
+                return Err(Error);
+            }
+
             result.push(Component::new(component.as_bytes())?);
         }
 

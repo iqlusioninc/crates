@@ -6,6 +6,29 @@
 //! This library implements a fully symmetric construction inspired by
 //! [BIP-0032: Hierarchical Deterministic Wallets][bip32].
 //!
+//! # Usage
+//!
+//! To derive a key using HKD32, you'll need the following:
+//!
+//! - `hkd32::KeyMaterial`: a 32-byte (256-bit) uniformly random value
+//! - `hkd32::Path` or `hkd32::PathBuf`: path to the child key
+//!
+//! Derivation paths can be raw bytestrings but also support
+//!
+//! # Example
+//!
+//! ```rust
+//! // Parent key
+//! let input_key_material = hkd32::KeyMaterial::random();
+//!
+//! // Path to the child key
+//! let derivation_path = "/foo/bar/baz".parse::<hkd32::PathBuf>().unwrap();
+//!
+//! // Derive subkey from the parent key. Call `as_bytes()` on this to obtain
+//! // a byte slice containing the derived key.
+//! let output_key_material = input_key_material.derive_subkey(derivation_path);
+//! ```
+//!
 //! [bip32]: https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki
 
 #![no_std]

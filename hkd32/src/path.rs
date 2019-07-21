@@ -192,9 +192,15 @@ impl<'a> Component<'a> {
     /// Requires the `alloc` feature is enabled.
     #[cfg(feature = "alloc")]
     pub fn stringify(&self) -> Result<String, Error> {
-        str::from_utf8(self.as_bytes())
+        let s = str::from_utf8(self.as_bytes())
             .map(String::from)
-            .map_err(|_| Error)
+            .map_err(|_| Error)?;
+
+        if s.is_ascii() {
+            Ok(s)
+        } else {
+            Err(Error)
+        }
     }
 
     /// Serialize this component as a length-prefixed bytestring.
