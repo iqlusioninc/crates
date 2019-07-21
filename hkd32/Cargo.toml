@@ -6,7 +6,7 @@ description = """
               repeated applications of the Hash-based Message Authentication Code
               (HMAC) construction.
               """
-version     = "0.0.0" # Also update html_root_url in lib.rs when bumping this
+version     = "0.1.0" # Also update html_root_url in lib.rs when bumping this
 authors     = ["Tony Arcieri <tony@iqlusion.io>"]
 license     = "Apache-2.0"
 edition     = "2018"
@@ -17,6 +17,7 @@ categories  = ["cryptography", "no-std"]
 keywords    = ["bip32", "derivation", "hd", "hmac", "key"]
 
 [badges]
+maintenance = { status = "passively-maintained" }
 travis-ci = { repository = "iqlusioninc/crates", branch = "develop" }
 
 [dependencies]

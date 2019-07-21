@@ -33,7 +33,7 @@
 
 #![no_std]
 #![deny(warnings, missing_docs, unused_qualifications, unsafe_code)]
-#![doc(html_root_url = "https://docs.rs/hkd32/0.0.0")]
+#![doc(html_root_url = "https://docs.rs/hkd32/0.1.0")]
 
 #[cfg(feature = "alloc")]
 #[cfg_attr(test, macro_use)]
