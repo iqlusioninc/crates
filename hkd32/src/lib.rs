@@ -13,7 +13,12 @@
 //! - `hkd32::KeyMaterial`: a 32-byte (256-bit) uniformly random value
 //! - `hkd32::Path` or `hkd32::PathBuf`: path to the child key
 //!
-//! Derivation paths can be raw bytestrings but also support
+//! Derivation paths can be raw bytestrings but also support a Unix path-like
+//! syntax which can be parsed using the `String::parse` method:
+//!
+//! ```rust
+//! let path = "/foo/bar/baz".parse::<hkd32::PathBuf>().unwrap();
+//! ```
 //!
 //! # Example
 //!
