@@ -4,7 +4,7 @@
 [![Docs][docs-image]][docs-link]
 [![Apache 2.0 Licensed][license-image]][license-link]
 ![Rust 1.35+][rustc-image]
-[![forbid(unsafe_code)][unsafe-image]][unsafe-link]
+[![Safety Dance][safety-image]][safety-link]
 [![Build Status][build-image]][build-link]
 [![Gitter Chat][gitter-image]][gitter-link]
 
@@ -65,8 +65,8 @@ without any additional terms or conditions.
 [license-image]: https://img.shields.io/badge/license-Apache2.0-blue.svg
 [license-link]: https://github.com/iqlusioninc/crates/blob/develop/LICENSE
 [rustc-image]: https://img.shields.io/badge/rustc-1.35+-blue.svg
-[unsafe-image]: https://img.shields.io/badge/unsafe-forbidden-success.svg
-[unsafe-link]: https://internals.rust-lang.org/t/disabling-unsafe-by-default/7988
+[safety-image]: https://img.shields.io/badge/unsafe-forbidden-success.svg
+[safety-link]: https://github.com/rust-secure-code/safety-dance/
 [build-image]: https://travis-ci.com/iqlusioninc/crates.svg?branch=develop
 [build-link]: https://travis-ci.com/iqlusioninc/crates/
 [gitter-image]: https://badges.gitter.im/iqlusioninc/community.svg
