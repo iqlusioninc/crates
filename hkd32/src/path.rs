@@ -149,6 +149,12 @@ impl Path {
     }
 }
 
+impl AsRef<Path> for Path {
+    fn as_ref(&self) -> &Self {
+        self
+    }
+}
+
 #[cfg(feature = "alloc")]
 impl Debug for Path {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
