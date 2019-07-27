@@ -192,7 +192,7 @@
 
 #![no_std]
 #![deny(warnings, missing_docs, trivial_casts, unused_qualifications)]
-#![doc(html_root_url = "https://docs.rs/zeroize/0.9.2")]
+#![doc(html_root_url = "https://docs.rs/zeroize/0.9.3")]
 
 #[cfg(all(feature = "alloc", not(feature = "std")))]
 #[allow(unused_imports)] // rustc bug?
