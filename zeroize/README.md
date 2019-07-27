@@ -13,7 +13,7 @@ This crate provides a safe<sup>†</sup>, portable access to cross-platform
 intrinsics for securely zeroing memory which are specifically documented as
 guaranteeing they won't be "optimized away".
 
-The [`Zeroize` trait] is the crate's primary (and only) API.
+The [`Zeroize` trait] is the crate's primary API.
 
 [Documentation]
 
