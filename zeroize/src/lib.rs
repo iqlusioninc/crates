@@ -52,17 +52,13 @@
 //!
 //! ## Custom Derive Support
 //!
-//! **NOTICE**: Previous versions of `zeroize` automatically derived
-//! `Drop`. This has been *REMOVED* and you now *MUST* explicitly specify
-//! either `zeroize(drop)` or `zeroize(no_drop)` (see below).
-//!
 //! This crate has custom derive support for the `Zeroize` trait, which
 //! automatically calls `zeroize()` on all members of a struct or tuple struct.
 //!
-//! Additionally it supports the following attributes (you *MUST* pick one):
+//! Additionally it supports the following attributes:
 //!
-//! - `#[zeroize(no_drop)]`: derive only `Zeroize` without adding a `Drop` impl
 //! - `#[zeroize(drop)]`: call `zeroize()` when this item is dropped
+//! - `#[zeroize(no_drop)]`: legacy attribute which will be removed in `zeroize` 1.0
 //!
 //! Example which derives `Drop`:
 //!
@@ -82,7 +78,6 @@
 //!
 //! // This struct will *NOT* be zeroized on drop
 //! #[derive(Copy, Clone, Zeroize)]
-//! #[zeroize(no_drop)]
 //! struct MyStruct([u8; 32]);
 //! ```
 //!
