@@ -1,3 +1,7 @@
+## [0.9.3] (2019-07-27)
+
+- zeroize: Improved attribute parser; fixes nightly build ([#238])
+
 ## [0.9.2] (2019-06-28)
 
 - README.md: add Gitter badges; update image links ([#221])
@@ -86,6 +90,8 @@ a pure Rust solution.
 
 - Initial release
 
+[0.9.3]: https://github.com/iqlusioninc/crates/pull/239
+[#238]: https://github.com/iqlusioninc/crates/pull/238
 [0.9.2]: https://github.com/iqlusioninc/crates/pull/224
 [#221]: https://github.com/iqlusioninc/crates/pull/221
 [0.9.1]: https://github.com/iqlusioninc/crates/pull/220
