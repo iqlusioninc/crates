@@ -34,7 +34,7 @@ pub struct Reader {
 impl Reader {
     /// Create a new `response::Reader` that consumes a response body from a socket
     #[allow(clippy::new_ret_no_self)]
-    pub(crate) fn new(readable: &mut Read) -> Result<Self, Error> {
+    pub(crate) fn new(readable: &mut dyn Read) -> Result<Self, Error> {
         // TODO: better buffering
         let mut buffer = Self {
             buffer: vec![0u8; MAX_RESPONSE_SIZE],
@@ -59,14 +59,14 @@ impl Reader {
     }
 
     /// Fill the internal buffer with data from the socket
-    fn fill_buffer(&mut self, readable: &mut Read) -> Result<usize, Error> {
+    fn fill_buffer(&mut self, readable: &mut dyn Read) -> Result<usize, Error> {
         let nbytes = readable.read(self.buffer.as_mut())?;
         self.pos += nbytes;
         Ok(nbytes)
     }
 
     /// Read the response headers
-    fn read_headers(&mut self, readable: &mut Read) -> Result<(), Error> {
+    fn read_headers(&mut self, readable: &mut dyn Read) -> Result<(), Error> {
         assert!(self.body_offset.is_none(), "already read headers!");
 
         loop {
@@ -141,7 +141,7 @@ impl Reader {
     }
 
     /// Read the response body into the internal buffer
-    fn read_body(&mut self, readable: &mut Read) -> Result<(), Error> {
+    fn read_body(&mut self, readable: &mut dyn Read) -> Result<(), Error> {
         let body_end =
             self.content_length + self.body_offset.expect("not ready to read the body yet");
 
