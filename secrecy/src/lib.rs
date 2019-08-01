@@ -104,5 +104,7 @@ pub trait DebugSecret {
     /// Information about what the secret contains.
     ///
     /// Static so as to discourage unintentional secret exposure.
-    fn debug_secret() -> &'static str;
+    fn debug_secret() -> &'static str {
+        "[SECRET]"
+    }
 }
