@@ -77,7 +77,10 @@ impl DeriveAttrs {
         if ident == "drop" {
             self.set_drop_flag(true);
         } else if ident == "no_drop" {
-            self.set_drop_flag(false);
+            eprintln!(
+                "warning: use of deprecated attribute #[zeroize(no_drop)]: \
+                 has no effect and will be removed in zeroize 1.0"
+            );
         } else {
             panic!("unknown #[zeroize] attribute type: {}", ident);
         }
