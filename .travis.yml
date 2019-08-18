@@ -7,12 +7,9 @@ branches:
 
 rust:
   - 1.36.0 # Minimum supported
-  # - stable # Stable should always be supported (but hasn't been bumped to 1.36)
+  - stable # Stable should always work too
 
-os:
-  - linux
-  - osx
-  - windows
+os: linux
 
 matrix:
   fast_finish: true
@@ -22,6 +19,13 @@ matrix:
     # improvements to Travis Windows support
     - os: windows
   include:
+    # Travis hasn't bumped `stable` on macOS to 1.36 yet =(
+    - name: "Rust: 1.36"
+      os: osx
+      rust: 1.36.0
+    - name: "Rust: 1.36"
+      os: windows
+      rust: 1.36.0
     - name: "Rust: stable (wasm32)"
       rust: stable
       script:

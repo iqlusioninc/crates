@@ -109,7 +109,7 @@ impl Bech32 {
         // Check separator validity
         match separator {
             '1' | 'B' | 'I' | 'O' | 'b' | 'i' | 'o' => (),
-            '0'...'9' | 'A'...'Z' | 'a'...'z' => panic!("invalid separator: {:?}", separator),
+            '0'..='9' | 'A'..='Z' | 'a'..='z' => panic!("invalid separator: {:?}", separator),
             _ => (),
         }
 
@@ -200,7 +200,7 @@ impl Bech32 {
         // Ensure all characters in the human readable part are in a valid range
         for c in hrp.chars() {
             match c {
-                '!'...'@' | 'A'...'Z' | '['...'`' | 'a'...'z' | '{'...'~' => (),
+                '!'..='@' | 'A'..='Z' | '['..='`' | 'a'..='z' | '{'..='~' => (),
                 _ => return Err(EncodingInvalid),
             }
         }
