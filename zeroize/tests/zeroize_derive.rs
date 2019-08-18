@@ -49,11 +49,10 @@ mod custom_derive_tests {
 
     impl Droppable for ZeroizableStruct {}
 
-    /// Test that this successfully disables deriving a drop handler by defining
-    /// a custom one which should conflict if the custom derive did too
+    /// Test that `Drop` is not derived in the following case by defining a
+    /// `Drop` impl which should conflict if the custom derive defined one too
     #[allow(dead_code)]
     #[derive(Zeroize)]
-    #[zeroize(no_drop)]
     struct ZeroizeNoDropStruct([u8; 3]);
 
     impl Drop for ZeroizeNoDropStruct {

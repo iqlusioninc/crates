@@ -15,10 +15,10 @@ keywords    = ["memory", "memset", "secure", "volatile", "zero"]
 proc-macro = true
 
 [dependencies]
-proc-macro2 = "0.4"
-quote = "0.6"
-syn = "0.15"
-synstructure = "0.10"
+proc-macro2 = "1"
+quote = "1"
+syn = "1"
+synstructure = "0.12"
 
 [badges]
 travis-ci = { repository = "iqlusioninc/crates", branch = "develop" }
