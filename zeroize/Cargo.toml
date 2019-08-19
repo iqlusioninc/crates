@@ -24,5 +24,8 @@ travis-ci = { repository = "iqlusioninc/crates", branch = "develop" }
 zeroize_derive = { version = "0.9", path = "../zeroize_derive", optional = true }
 
 [features]
-default = ["alloc", "zeroize_derive"]
+default = ["alloc"]
 alloc = []
+
+[package.metadata.docs.rs]
+all-features = true
