@@ -1,8 +1,6 @@
 //! Read HTTP responses from an `io::Read`
 
-use crate::prelude::*;
-
-use std::{io::Read, str};
+use std::{io::Read, str, vec::Vec};
 
 use super::Body;
 use crate::error::Error;

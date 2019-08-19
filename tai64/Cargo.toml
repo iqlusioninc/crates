@@ -17,7 +17,6 @@ travis-ci = { repository = "iqlusioninc/crates", branch = "develop" }
 
 [dependencies]
 chrono = { version = "0.4", optional = true, default-features = false }
-failure = { version = "0.1", default-features = false, features = ["failure_derive"] }
 
 [features]
 default = ["std"]

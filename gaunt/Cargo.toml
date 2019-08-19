@@ -15,12 +15,10 @@ keywords    = ["api", "client", "http", "rest", "web"]
 travis-ci = { repository = "iqlusioninc/crates", branch = "develop" }
 
 [dependencies]
-failure = { version = "0.1", default-features = false }
-failure_derive = "0.1"
 slog = { version = "2", optional = true }
 
 [features]
 alloc = []
 default = ["std"]
 logger = ["slog", "std"]
-std = ["alloc", "failure/std"]
+std = ["alloc"]

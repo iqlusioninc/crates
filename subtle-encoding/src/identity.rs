@@ -34,6 +34,8 @@ impl Encoding for Identity {
     }
 }
 
+// TODO(tarcieri): `no_std` tests
+#[cfg(feature = "alloc")]
 #[cfg(test)]
 mod tests {
     use super::*;

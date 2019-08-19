@@ -1,7 +1,7 @@
-use crate::{
-    error::Error::{self, *},
-    prelude::*,
-};
+//! Base32 encoding support
+
+use crate::error::Error;
+use alloc::vec::Vec;
 
 /// Encode binary data as base32
 pub fn encode(data: &[u8]) -> Vec<u8> {
@@ -21,7 +21,7 @@ fn convert(data: &[u8], src_base: u32, dst_base: u32) -> Result<Vec<u8>, Error> 
 
     for value in data {
         let v = u32::from(*value);
-        ensure!(v >> src_base == 0, EncodingInvalid);
+        ensure!(v >> src_base == 0, Error::EncodingInvalid);
 
         acc = (acc << src_base) | v;
         bits += src_base;
@@ -37,7 +37,7 @@ fn convert(data: &[u8], src_base: u32, dst_base: u32) -> Result<Vec<u8>, Error> 
             result.push(((acc << (dst_base - bits)) & max) as u8);
         }
     } else if bits >= src_base || ((acc << (dst_base - bits)) & max) != 0 {
-        return Err(PaddingInvalid);
+        return Err(Error::PaddingInvalid);
     }
 
     Ok(result)

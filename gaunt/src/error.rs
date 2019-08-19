@@ -2,17 +2,13 @@
 
 #![allow(unused_macros)]
 
-#[cfg(feature = "alloc")]
-use crate::prelude::*;
+use core::fmt;
 
 #[cfg(feature = "alloc")]
 use core::{num::ParseIntError, str::Utf8Error};
-use failure::Context;
 
 #[cfg(feature = "std")]
 use std::{
-    error::Error as StdError,
-    fmt::{self, Display},
     io,
     string::{FromUtf8Error, String, ToString},
 };
@@ -21,7 +17,7 @@ use std::{
 #[derive(Debug)]
 pub struct Error {
     /// Error context and kind
-    inner: Context<ErrorKind>,
+    kind: ErrorKind,
 
     /// Optional description
     #[cfg(feature = "alloc")]
@@ -45,42 +41,23 @@ impl Error {
 
     /// Obtain the inner `ErrorKind` for this `Error`
     pub fn kind(&self) -> ErrorKind {
-        *self.inner.get_context()
+        self.kind
     }
 }
 
-#[cfg(feature = "alloc")]
-impl Display for Error {
+impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        self.description().fmt(f)
+        self.kind.fmt(f)
     }
 }
 
-#[cfg(feature = "alloc")]
-impl StdError for Error {
-    fn description(&self) -> &str {
-        if let Some(ref desc) = self.description {
-            desc
-        } else {
-            "(none)"
-        }
-    }
-}
+#[cfg(feature = "std")]
+impl std::error::Error for Error {}
 
 impl From<ErrorKind> for Error {
     fn from(kind: ErrorKind) -> Error {
         Error {
-            inner: Context::new(kind),
-            #[cfg(feature = "alloc")]
-            description: None,
-        }
-    }
-}
-
-impl From<Context<ErrorKind>> for Error {
-    fn from(inner: Context<ErrorKind>) -> Self {
-        Self {
-            inner,
+            kind,
             #[cfg(feature = "alloc")]
             description: None,
         }
@@ -88,27 +65,36 @@ impl From<Context<ErrorKind>> for Error {
 }
 
 /// Kinds of errors
-#[derive(Copy, Clone, Debug, Fail, Eq, PartialEq)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub enum ErrorKind {
     /// Invalid address
-    #[fail(display = "address invalid")]
     AddrInvalid,
 
     /// I/O operation failed
-    #[fail(display = "I/O error")]
     IoError,
 
     /// Parsing data failed
-    #[fail(display = "parse error")]
     ParseError,
 
     /// Request failed
-    #[fail(display = "request error")]
     RequestError,
 
     /// Error reading response
-    #[fail(display = "error reading response")]
     ResponseError,
+}
+
+impl fmt::Display for ErrorKind {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let description = match self {
+            ErrorKind::AddrInvalid => "address invalid",
+            ErrorKind::IoError => "I/O error",
+            ErrorKind::ParseError => "parse error",
+            ErrorKind::RequestError => "request error",
+            ErrorKind::ResponseError => "error reading response",
+        };
+
+        write!(f, "{}", description)
+    }
 }
 
 /// Create a new error (of a given enum variant) with a formatted message

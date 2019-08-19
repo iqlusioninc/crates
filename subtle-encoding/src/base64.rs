@@ -12,7 +12,7 @@ use super::{
     Error::{self, *},
 };
 #[cfg(feature = "alloc")]
-use crate::prelude::*;
+use alloc::vec::Vec;
 use zeroize::Zeroize;
 
 /// Base64 `Encoding` (traditional non-URL-safe RFC 4648 version)

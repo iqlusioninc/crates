@@ -17,18 +17,13 @@
 #![forbid(unsafe_code)]
 #![doc(html_root_url = "https://docs.rs/subtle-encoding/0.3.7")]
 
-#[cfg(all(feature = "alloc", not(feature = "std")))]
-#[allow(unused_imports)] // rustc bug?
+#[cfg(feature = "alloc")]
 #[macro_use]
 extern crate alloc;
 
 #[cfg(any(feature = "std", test))]
-#[macro_use]
 extern crate std;
 
-extern crate failure;
-#[macro_use]
-extern crate failure_derive;
 #[cfg(feature = "zeroize")]
 extern crate zeroize;
 
@@ -43,7 +38,6 @@ pub mod encoding;
 #[cfg(feature = "hex")]
 pub mod hex;
 pub mod identity;
-mod prelude;
 
 #[cfg(feature = "base64")]
 pub use crate::base64::Base64;
