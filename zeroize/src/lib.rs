@@ -18,6 +18,7 @@
 //! - No FFI or inline assembly! **WASM friendly** (and tested)!
 //! - `#![no_std]` i.e. **embedded-friendly**!
 //! - No functionality besides securely zeroing memory!
+//! - (Optional) Custom derive support for zeroing complex structures
 //!
 //! ## Usage
 //!
@@ -52,8 +53,10 @@
 //!
 //! ## Custom Derive Support
 //!
-//! This crate has custom derive support for the `Zeroize` trait, which
-//! automatically calls `zeroize()` on all members of a struct or tuple struct.
+//! This crate has custom derive support for the `Zeroize` trait,
+//! gated under the `zeroize` crate's `zeroize_derive` Cargo feature,
+//! which automatically calls `zeroize()` on all members of a struct
+//! or tuple struct.
 //!
 //! Additionally it supports the following attribute:
 //!

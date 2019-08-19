@@ -28,11 +28,12 @@ and [core::sync::atomic] memory fences to provide easy-to-use, portable
 zeroing behavior which works on all of Rust's core number types and slices
 thereof, implemented in pure Rust with no usage of FFI or assembly.
 
-- **No insecure fallbacks!**
-- **No dependencies!**
-- **No FFI or inline assembly!**
-- `#![no_std]` **i.e. embedded-friendly**!
-- **No functionality besides securely zeroing memory!**
+- No insecure fallbacks!
+- No dependencies!
+- No FFI or inline assembly! **WASM friendly** (and tested)!
+- `#![no_std]` i.e. **embedded-friendly**!
+- No functionality besides securely zeroing memory!
+- (Optional) Custom derive support for zeroing complex structures
 
 ## Requirements
 
