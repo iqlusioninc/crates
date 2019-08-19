@@ -24,6 +24,5 @@ travis-ci = { repository = "iqlusioninc/crates", branch = "develop" }
 zeroize_derive = { version = "0.9", path = "../zeroize_derive", optional = true }
 
 [features]
-default = ["std", "zeroize_derive"]
+default = ["alloc", "zeroize_derive"]
 alloc = []
-std = ["alloc"]
