@@ -3,15 +3,14 @@
 [![Crate][crate-image]][crate-link]
 [![Docs][docs-image]][docs-link]
 ![Apache 2.0/MIT Licensed][license-image]
-![Rust 1.35+][rustc-image]
+![MSRV][rustc-image]
 [![Build Status][build-image]][build-link]
 [![Gitter Chat][gitter-image]][gitter-link]
 
 Securely zero memory while avoiding compiler optimizations.
 
-This crate provides a safe<sup>†</sup>, portable access to cross-platform
-intrinsics for securely zeroing memory which are specifically documented as
-guaranteeing they won't be "optimized away".
+This crate implements a portable approach to securely zeroing memory using
+techniques which guarantee they won't be "optimized away" by the compiler.
 
 The [`Zeroize` trait] is the crate's primary API.
 
@@ -37,7 +36,7 @@ thereof, implemented in pure Rust with no usage of FFI or assembly.
 
 ## Requirements
 
-- Rust 1.35+
+- Rust **1.36+**
 
 ## License
 
@@ -60,7 +59,7 @@ without any additional terms or conditions.
 [docs-image]: https://docs.rs/zeroize/badge.svg
 [docs-link]: https://docs.rs/zeroize/
 [license-image]: https://img.shields.io/badge/license-Apache2.0/MIT-blue.svg
-[rustc-image]: https://img.shields.io/badge/rustc-1.35+-blue.svg
+[rustc-image]: https://img.shields.io/badge/rustc-1.36+-blue.svg
 [build-image]: https://travis-ci.com/iqlusioninc/crates.svg?branch=develop
 [build-link]: https://travis-ci.com/iqlusioninc/crates/
 [gitter-image]: https://badges.gitter.im/iqlusioninc/community.svg

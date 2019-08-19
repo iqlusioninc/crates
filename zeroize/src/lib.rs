@@ -193,14 +193,9 @@
 #![deny(warnings, missing_docs, trivial_casts, unused_qualifications)]
 #![doc(html_root_url = "https://docs.rs/zeroize/0.9.3")]
 
-#[cfg(all(feature = "alloc", not(feature = "std")))]
-#[allow(unused_imports)] // rustc bug?
-#[macro_use]
-extern crate alloc;
-
-#[cfg(any(feature = "std", test))]
+#[cfg(feature = "alloc")]
 #[cfg_attr(test, macro_use)]
-extern crate std;
+extern crate alloc;
 
 #[cfg(feature = "zeroize_derive")]
 #[allow(unused_imports)]
@@ -213,10 +208,8 @@ pub use zeroize_derive::*;
 
 use core::{ops, ptr, slice::IterMut, sync::atomic};
 
-#[cfg(all(feature = "alloc", not(feature = "std")))]
+#[cfg(feature = "alloc")]
 use alloc::{string::String, vec::Vec};
-#[cfg(feature = "std")]
-use std::{string::String, vec::Vec};
 
 /// Trait for securely erasing types from memory
 pub trait Zeroize {
@@ -414,10 +407,8 @@ fn volatile_set<T: Copy + Sized>(dst: &mut [T], src: T) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    #[cfg(all(feature = "alloc", not(feature = "std")))]
+    #[cfg(feature = "alloc")]
     use alloc::boxed::Box;
-    #[cfg(feature = "std")]
-    use std::boxed::Box;
 
     #[test]
     fn zeroize_byte_arrays() {

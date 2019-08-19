@@ -2,7 +2,7 @@
 
 [![Crate][crate-image]][crate-link]
 ![Apache 2.0 Licensed/MIT][license-image]
-![Rust 1.35+][rustc-image]
+![MSRV][rustc-image]
 [![Build Status][build-image]][build-link]
 
 Custom derive support for [zeroize]: a crate for securely zeroing memory
@@ -13,7 +13,7 @@ See [zeroize] crate for documentation.
 
 ## Requirements
 
-- Rust 1.35+
+- Rust **1.36+**
 
 ## License
 
@@ -34,7 +34,7 @@ without any additional terms or conditions.
 [crate-image]: https://img.shields.io/crates/v/zeroize_derive.svg
 [crate-link]: https://crates.io/crates/zeroize_derive
 [license-image]: https://img.shields.io/badge/license-Apache2.0/MIT-blue.svg
-[rustc-image]: https://img.shields.io/badge/rustc-1.35+-blue.svg
+[rustc-image]: https://img.shields.io/badge/rustc-1.36+-blue.svg
 [build-image]: https://travis-ci.com/iqlusioninc/crates.svg?branch=develop
 [build-link]: https://travis-ci.com/iqlusioninc/crates/
 
