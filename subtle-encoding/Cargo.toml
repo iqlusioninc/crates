@@ -17,8 +17,6 @@ categories  = ["cryptography", "encoding", "no-std"]
 keywords    = ["base64", "bech32", "constant-time", "hex", "security"]
 
 [dependencies]
-failure = { version = "0.1", default-features = false }
-failure_derive = "0.1"
 zeroize = { version = "0.9", default-features = false, optional = true, path = "../zeroize" }
 
 [features]

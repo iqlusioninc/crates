@@ -2,7 +2,8 @@
 
 #[cfg(feature = "alloc")]
 use {
-    crate::{error::Error, prelude::*},
+    crate::error::Error,
+    alloc::{borrow::ToOwned, string::String},
     core::{
         fmt::{self, Display},
         str::FromStr,

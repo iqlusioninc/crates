@@ -7,8 +7,7 @@
 
 #[cfg(feature = "chrono")]
 use chrono::{DateTime, NaiveDateTime, Utc};
-use core::{convert::TryFrom, ops, time::Duration};
-use failure::Fail;
+use core::{convert::TryFrom, fmt, ops, time::Duration};
 
 #[cfg(feature = "std")]
 extern crate std;
@@ -284,16 +283,28 @@ impl ops::Sub<Duration> for TAI64N {
 }
 
 /// TAI64 errors
-#[derive(Copy, Clone, Debug, Eq, Fail, PartialEq)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub enum Error {
     /// Invalid length
-    #[fail(display = "length invalid")]
     LengthInvalid,
 
     /// Nanosecond part must be <= 999999999.
-    #[fail(display = "invalid number of nanoseconds")]
     NanosInvalid,
 }
+
+impl fmt::Display for Error {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let description = match self {
+            Error::LengthInvalid => "length invalid",
+            Error::NanosInvalid => "invalid number of nanoseconds",
+        };
+
+        write!(f, "{}", description)
+    }
+}
+
+#[cfg(feature = "std")]
+impl std::error::Error for Error {}
 
 #[cfg(all(test, feature = "std"))]
 mod tests {

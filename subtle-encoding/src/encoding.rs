@@ -1,5 +1,7 @@
 //! The `Encoding` trait: common operations across all encoders
 
+#[cfg(feature = "alloc")]
+use alloc::{string::String, vec::Vec};
 #[cfg(feature = "std")]
 use std::{
     fs::File,
@@ -12,8 +14,6 @@ use std::{fs::OpenOptions, os::unix::fs::OpenOptionsExt};
 use zeroize::Zeroize;
 
 use super::Error;
-#[allow(unused_imports)]
-use crate::prelude::*;
 
 /// Mode to use for newly created files
 // TODO: make this configurable?
@@ -148,6 +148,8 @@ pub trait Encoding: Send + Sync {
     }
 }
 
+// TODO(tarcieri): `no_std` tests
+#[cfg(feature = "alloc")]
 #[cfg(test)]
 mod tests {
     use super::*;

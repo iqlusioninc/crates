@@ -1,7 +1,7 @@
 //! Response body types.
 // TODO: support for streaming response bodies
 
-use crate::prelude::*;
+use alloc::vec::Vec;
 
 /// Response body
 #[derive(Debug)]

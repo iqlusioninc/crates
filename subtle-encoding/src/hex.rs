@@ -44,7 +44,7 @@ use super::{
     Error::{self, *},
 };
 #[cfg(feature = "alloc")]
-use crate::prelude::*;
+use alloc::vec::Vec;
 
 /// Encode the given data as lower-case hexadecimal, returning a `Vec<u8>`
 #[cfg(feature = "alloc")]

@@ -2,42 +2,54 @@
 
 #[cfg(all(feature = "alloc", not(feature = "std")))]
 use alloc::string::FromUtf8Error;
+use core::fmt;
 #[cfg(feature = "std")]
 use std::{io, string::FromUtf8Error};
 
 /// Error type
-#[derive(Clone, Eq, PartialEq, Debug, Fail)]
+#[derive(Clone, Eq, PartialEq, Debug)]
 pub enum Error {
     /// Checksum fdoes not match expected value
-    #[fail(display = "checksum mismatch")]
     ChecksumInvalid,
 
     /// Data is not encoded correctly
-    #[fail(display = "bad encoding")]
     EncodingInvalid,
 
     /// Error performing I/O operation
-    #[cfg(feature = "std")]
-    #[fail(display = "I/O error")]
     IoError,
 
     /// Input or output buffer is an incorrect length
-    #[fail(display = "invalid length")]
     LengthInvalid,
 
     /// Padding missing/invalid
-    #[fail(display = "padding invalid")]
     PaddingInvalid,
 
     /// Trailing whitespace detected
     // TODO: handle trailing whitespace?
-    #[fail(display = "trailing whitespace")]
     TrailingWhitespace,
 }
 
+impl fmt::Display for Error {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let description = match self {
+            Error::ChecksumInvalid => "checksum mismatch",
+            Error::EncodingInvalid => "bad encoding",
+            Error::IoError => "I/O error",
+            Error::LengthInvalid => "invalid length",
+            Error::PaddingInvalid => "padding invalid",
+            Error::TrailingWhitespace => "trailing whitespace",
+        };
+
+        write!(f, "{}", description)
+    }
+}
+
+#[cfg(feature = "std")]
+impl std::error::Error for Error {}
+
 /// Assert that the provided condition is true, or else return the given error
 macro_rules! ensure {
-    ($condition:expr, $err:ident) => {
+    ($condition:expr, $err:path) => {
         if !($condition) {
             Err($err)?;
         }

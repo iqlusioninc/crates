@@ -1,6 +1,6 @@
 //! HTTP request types
 
-use crate::prelude::*;
+use alloc::vec::Vec;
 
 /// Request bodies
 #[derive(Debug, Default)]

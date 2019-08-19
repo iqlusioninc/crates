@@ -1,7 +1,5 @@
 //! Connections to HTTP servers
 
-use crate::prelude::*;
-
 #[cfg(feature = "logger")]
 use slog::Logger;
 use std::{
@@ -9,8 +7,10 @@ use std::{
     io::Write,
     net::{TcpStream, ToSocketAddrs},
     ops::DerefMut,
+    string::String,
     sync::Mutex,
     time::{Duration, Instant},
+    vec::Vec,
 };
 
 use super::{HTTP_VERSION, USER_AGENT};
