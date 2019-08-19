@@ -55,10 +55,9 @@
 //! This crate has custom derive support for the `Zeroize` trait, which
 //! automatically calls `zeroize()` on all members of a struct or tuple struct.
 //!
-//! Additionally it supports the following attributes:
+//! Additionally it supports the following attribute:
 //!
 //! - `#[zeroize(drop)]`: call `zeroize()` when this item is dropped
-//! - `#[zeroize(no_drop)]`: legacy attribute which will be removed in `zeroize` 1.0
 //!
 //! Example which derives `Drop`:
 //!
