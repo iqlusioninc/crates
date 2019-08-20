@@ -14,7 +14,7 @@ homepage    = "https://github.com/iqlusioninc/crates/"
 repository  = "https://github.com/iqlusioninc/crates/tree/develop/hkd32"
 readme      = "README.md"
 categories  = ["cryptography", "no-std"]
-keywords    = ["bip32", "derivation", "hd", "hmac", "key"]
+keywords    = ["crypto", "bip32", "bip39", "derivation", "mnemonic"]
 
 [badges]
 maintenance = { status = "passively-maintained" }
