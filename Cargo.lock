@@ -149,7 +149,7 @@ dependencies = [
 
 [[package]]
 name = "hkd32"
-version = "0.1.2"
+version = "0.2.0"
 dependencies = [
  "getrandom 0.1.10 (registry+https://github.com/rust-lang/crates.io-index)",
  "hmac 0.7.1 (registry+https://github.com/rust-lang/crates.io-index)",

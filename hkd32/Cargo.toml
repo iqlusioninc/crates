@@ -4,9 +4,10 @@ description = """
               HMAC-based Hierarchical Key Derivation: deterministically derive
               a hierarchy of symmetric keys from initial keying material through
               repeated applications of the Hash-based Message Authentication Code
-              (HMAC) construction.
+              (HMAC) construction. Optionally supports storing root derivation
+              passwords as a 24-word mnemonic phrase (i.e. BIP39).
               """
-version     = "0.1.2" # Also update html_root_url in lib.rs when bumping this
+version     = "0.2.0" # Also update html_root_url in lib.rs when bumping this
 authors     = ["Tony Arcieri <tony@iqlusion.io>"]
 license     = "Apache-2.0"
 edition     = "2018"
