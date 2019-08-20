@@ -1,3 +1,7 @@
+## [3.0.0] (2019-08-19)
+
+- Remove `failure` ([#245])
+
 ## [2.0.1] (2019-05-24)
 
 - Test all crates on Rust 1.35.0 ([#206])
@@ -36,6 +40,8 @@
 
 - Initial release
 
+[3.0.0]: https://github.com/iqlusioninc/crates/pull/250
+[#245]: https://github.com/iqlusioninc/crates/pull/245
 [2.0.1]: https://github.com/iqlusioninc/crates/pull/208
 [#206]: https://github.com/iqlusioninc/crates/pull/206
 [2.0.0]: https://github.com/iqlusioninc/crates/pull/197
