@@ -29,9 +29,7 @@ impl Seed {
         let salt = format!("mnemonic{}", password);
         let bytes = pbkdf2(mnemonic.phrase().as_bytes(), &salt);
 
-        Self {
-            bytes,
-        }
+        Self { bytes }
     }
 
     /// Get the seed value as a byte slice
@@ -87,7 +85,10 @@ mod test {
 
     #[test]
     fn seed_hex_format() {
-        let entropy = &[0x33, 0xE4, 0x6B, 0xB1, 0x3A, 0x74, 0x6E, 0xA4, 0x1C, 0xDD, 0xE4, 0x5C, 0x90, 0x84, 0x6A, 0x79];
+        let entropy = &[
+            0x33, 0xE4, 0x6B, 0xB1, 0x3A, 0x74, 0x6E, 0xA4, 0x1C, 0xDD, 0xE4, 0x5C, 0x90, 0x84,
+            0x6A, 0x79,
+        ];
 
         let mnemonic = Mnemonic::from_entropy(entropy, Language::English).unwrap();
         let seed = Seed::new(&mnemonic, "password");

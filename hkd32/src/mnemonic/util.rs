@@ -6,7 +6,7 @@ pub(crate) trait IterExt: Iterator {
     {
         let first = match self.next() {
             Some(first) => first,
-            None        => return String::new().into()
+            None => return String::new().into(),
         };
 
         let (lower, _) = self.size_hint();
@@ -97,7 +97,7 @@ impl BitWriter {
         Self {
             offset: 0,
             remainder: 0,
-            inner: Vec::with_capacity(bytes)
+            inner: Vec::with_capacity(bytes),
         }
     }
 
@@ -179,7 +179,10 @@ where
     fn size_hint(&self) -> (usize, Option<usize>) {
         let (lower, upper) = self.source.size_hint();
 
-        ((lower * In::SIZE) / Out::SIZE, upper.map(|n| (n * In::SIZE) / Out::SIZE))
+        (
+            (lower * In::SIZE) / Out::SIZE,
+            upper.map(|n| (n * In::SIZE) / Out::SIZE),
+        )
     }
 }
 

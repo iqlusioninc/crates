@@ -58,7 +58,7 @@ impl MnemonicType {
             18 => MnemonicType::Words18,
             21 => MnemonicType::Words21,
             24 => MnemonicType::Words24,
-            _ => Err(ErrorKind::InvalidWordLength(size))?
+            _ => Err(ErrorKind::InvalidWordLength(size))?,
         };
 
         Ok(mnemonic_type)
@@ -82,7 +82,7 @@ impl MnemonicType {
             192 => MnemonicType::Words18,
             224 => MnemonicType::Words21,
             256 => MnemonicType::Words24,
-            _ => Err(ErrorKind::InvalidKeysize(size))?
+            _ => Err(ErrorKind::InvalidKeysize(size))?,
         };
 
         Ok(mnemonic_type)
@@ -190,7 +190,12 @@ impl Default for MnemonicType {
 
 impl fmt::Display for MnemonicType {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{} words ({}bits)", self.word_count(), self.entropy_bits())
+        write!(
+            f,
+            "{} words ({}bits)",
+            self.word_count(),
+            self.entropy_bits()
+        )
     }
 }
 

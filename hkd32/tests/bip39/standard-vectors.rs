@@ -1,7 +1,7 @@
 extern crate bip39;
 extern crate hex;
 
-use ::bip39::{Mnemonic, Language, Seed};
+use bip39::{Language, Mnemonic, Seed};
 
 fn test_mnemonic(entropy_hex: &str, expected_phrase: &str) {
     let entropy_bytes = hex::decode(entropy_hex).unwrap();
@@ -20,7 +20,13 @@ fn test_seed(phrase: &str, password: &str, expected_seed_hex: &str) {
     let actual_seed_bytes: &[u8] = seed.as_bytes();
     let expected_seed_bytes = hex::decode(expected_seed_hex).unwrap();
 
-    assert!(actual_seed_bytes.eq(expected_seed_bytes.as_slice()), "Wrong seed for '{}'\nexp: {:?}\nact: {:?}\n", phrase, expected_seed_hex, hex::encode(actual_seed_bytes));
+    assert!(
+        actual_seed_bytes.eq(expected_seed_bytes.as_slice()),
+        "Wrong seed for '{}'\nexp: {:?}\nact: {:?}\n",
+        phrase,
+        expected_seed_hex,
+        hex::encode(actual_seed_bytes)
+    );
 }
 
 macro_rules! tests {

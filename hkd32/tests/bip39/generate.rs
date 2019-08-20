@@ -1,6 +1,6 @@
 extern crate bip39;
 
-use ::bip39::{Mnemonic, MnemonicType, Language, Seed};
+use bip39::{Language, Mnemonic, MnemonicType, Seed};
 
 fn test_word_count(expected_word_count: usize) {
     let mnemonic_type = MnemonicType::for_word_count(expected_word_count).unwrap();
@@ -16,7 +16,6 @@ fn test_word_count(expected_word_count: usize) {
 
     assert!(seed_bytes.len() == 64);
 }
-
 
 #[test]
 fn generate_12_english() {
@@ -46,7 +45,9 @@ fn generate_24_english() {
 #[test]
 fn generate_from_invalid_entropy() {
     // 15 bytes
-    let entropy = &[0x33, 0xE4, 0x6B, 0xB1, 0x3A, 0x74, 0x6E, 0xA4, 0x1C, 0xDD, 0xE4, 0x5C, 0x90, 0x84, 0x6A];
+    let entropy = &[
+        0x33, 0xE4, 0x6B, 0xB1, 0x3A, 0x74, 0x6E, 0xA4, 0x1C, 0xDD, 0xE4, 0x5C, 0x90, 0x84, 0x6A,
+    ];
 
     assert!(Mnemonic::from_entropy(entropy, Language::English).is_err());
 }
