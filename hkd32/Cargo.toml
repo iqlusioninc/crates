@@ -28,7 +28,7 @@ subtle-encoding = { version = "0.3", optional = true }
 tiny-bip39 = { version = "0.6", default-features = false, optional = true }
 
 [dependencies.zeroize]
-version = "0.9"
+version = "0.10"
 path = "../zeroize"
 default-features = false
 features = ["zeroize_derive"]

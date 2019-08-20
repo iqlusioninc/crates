@@ -16,8 +16,11 @@ readme      = "README.md"
 categories  = ["cryptography", "encoding", "no-std"]
 keywords    = ["base64", "bech32", "constant-time", "hex", "security"]
 
-[dependencies]
-zeroize = { version = "0.9", default-features = false, optional = true, path = "../zeroize" }
+[dependencies.zeroize]
+version = "0.10"
+optional = true
+default-features = false
+path = "../zeroize"
 
 [features]
 default = ["base64", "hex", "std"]
