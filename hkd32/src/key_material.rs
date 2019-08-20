@@ -127,12 +127,6 @@ impl KeyMaterial {
         let b32 = Bech32::default().encode(hrp, self.as_bytes());
         Zeroizing::new(b32)
     }
-
-    /// Serialize this `KeyMaterial` as a BIP39 mnemonic phrase
-    #[cfg(feature = "mnemonic")]
-    pub fn to_mnemonic(&self, language: mnemonic::Language) -> mnemonic::Phrase {
-        mnemonic::Phrase::from_key_material(self, language)
-    }
 }
 
 impl From<[u8; KEY_SIZE]> for KeyMaterial {

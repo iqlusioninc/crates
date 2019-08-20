@@ -1,3 +1,10 @@
+//! Bit manipulation for BIP39 derivation
+//!
+//! Adapted from the `bip39` crate
+
+use alloc::{string::String, vec::Vec};
+use core::marker::PhantomData;
+
 pub(crate) trait IterExt: Iterator {
     fn join<R>(&mut self, glue: &str) -> R
     where
@@ -114,10 +121,6 @@ impl BitWriter {
         }
     }
 
-    pub fn len(&self) -> usize {
-        self.inner.len() * 8 + self.offset
-    }
-
     pub fn into_bytes(mut self) -> Vec<u8> {
         if self.offset != 0 {
             self.inner.push((self.remainder >> 24) as u8);
@@ -128,7 +131,7 @@ impl BitWriter {
 }
 
 pub(crate) struct BitIter<In: Bits, Out: Bits, I: Iterator<Item = In> + Sized> {
-    _phantom: ::std::marker::PhantomData<Out>,
+    _phantom: PhantomData<Out>,
     source: I,
     read: usize,
     buffer: u64,
@@ -144,7 +147,7 @@ where
         let source = source.into_iter();
 
         BitIter {
-            _phantom: ::std::marker::PhantomData,
+            _phantom: PhantomData,
             source,
             read: 0,
             buffer: 0,
@@ -169,7 +172,6 @@ where
         }
 
         let result = (self.buffer >> (64 - Out::SIZE)) as u16;
-
         self.buffer <<= Out::SIZE;
         self.read -= Out::SIZE;
 
@@ -184,11 +186,4 @@ where
             upper.map(|n| (n * In::SIZE) / Out::SIZE),
         )
     }
-}
-
-/// Extract the first `bits` from the `source` byte
-pub(crate) fn checksum(source: u8, bits: u8) -> u8 {
-    debug_assert!(bits <= 8, "Can operate on 8-bit integers only");
-
-    source >> (8 - bits)
 }
