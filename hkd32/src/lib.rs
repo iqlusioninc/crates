@@ -38,7 +38,7 @@
 
 #![no_std]
 #![deny(warnings, missing_docs, unused_qualifications, unsafe_code)]
-#![doc(html_root_url = "https://docs.rs/hkd32/0.1.2")]
+#![doc(html_root_url = "https://docs.rs/hkd32/0.2.0")]
 
 #[cfg(feature = "alloc")]
 #[cfg_attr(any(feature = "mnemonic", test), macro_use)]
