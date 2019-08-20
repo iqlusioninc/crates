@@ -16,15 +16,13 @@ fn test_key() -> KeyMaterial {
 }
 
 #[cfg(feature = "mnemonic")]
-fn test_mnemonic_key() -> KeyMaterial {
+fn test_mnemonic() -> mnemonic::Phrase {
     // This phrase is the BIP39 equipvalent of `test_key()` above
     let bip39_phrase: &str =
         "abandon amount liar amount expire adjust cage candy arch gather drum bullet \
          absurd math era live bid rhythm alien crouch range attend journey unaware";
 
-    mnemonic::Phrase::new(bip39_phrase, Default::default())
-        .unwrap()
-        .into()
+    mnemonic::Phrase::new(bip39_phrase, Default::default()).unwrap()
 }
 
 /// Root path outputs the original IKM
@@ -83,7 +81,10 @@ fn test_vector_3() {
 #[cfg(feature = "mnemonic")]
 #[test]
 fn test_mnemonic_derivation() {
-    let output_key = test_mnemonic_key().derive_subkey(parse_path("/1/2/3"));
+    let mnemonic = test_mnemonic();
+    assert_eq!(test_key().as_bytes(), mnemonic.entropy());
+
+    let output_key = mnemonic.derive_subkey(parse_path("/1/2/3"));
 
     assert_eq!(
         output_key.as_bytes(),
