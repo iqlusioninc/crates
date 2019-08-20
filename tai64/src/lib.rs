@@ -1,9 +1,9 @@
 //! TAI64(N) timestamp generation, parsing and calculation.
 
 #![no_std]
-#![deny(warnings, missing_docs, unused_import_braces, unused_qualifications)]
+#![deny(warnings, missing_docs, rust_2018_idioms, unused_qualifications)]
 #![forbid(unsafe_code)]
-#![doc(html_root_url = "https://docs.rs/tai64/2.0.1")]
+#![doc(html_root_url = "https://docs.rs/tai64/3.0.0")]
 
 #[cfg(feature = "chrono")]
 use chrono::{DateTime, NaiveDateTime, Utc};
@@ -293,7 +293,7 @@ pub enum Error {
 }
 
 impl fmt::Display for Error {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let description = match self {
             Error::LengthInvalid => "length invalid",
             Error::NanosInvalid => "invalid number of nanoseconds",

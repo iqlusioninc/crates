@@ -3,7 +3,7 @@
 [![Crate][crate-image]][crate-link]
 [![Docs][docs-image]][docs-link]
 [![Apache 2.0 Licensed][license-image]][license-link]
-![Rust 1.35+][rustc-image]
+![MSRV][rustc-image]
 [![Safety Dance][safety-image]][safety-link]
 [![Build Status][build-image]][build-link]
 [![Gitter Chat][gitter-image]][gitter-link]
@@ -18,7 +18,7 @@ Supports converting to/from Rust's built-in [SystemTime] type and optionally to
 
 ## Requirements
 
-- Rust 1.35+
+- Rust **1.36+**
 
 ## License
 
@@ -48,7 +48,7 @@ without any additional terms or conditions.
 [docs-link]: https://docs.rs/tai64/
 [license-image]: https://img.shields.io/badge/license-Apache2.0-blue.svg
 [license-link]: https://github.com/iqlusioninc/crates/blob/develop/LICENSE
-[rustc-image]: https://img.shields.io/badge/rustc-1.35+-blue.svg
+[rustc-image]: https://img.shields.io/badge/rustc-1.36+-blue.svg
 [safety-image]: https://img.shields.io/badge/unsafe-forbidden-success.svg
 [safety-link]: https://github.com/rust-secure-code/safety-dance/
 [build-image]: https://travis-ci.com/iqlusioninc/crates.svg?branch=develop
