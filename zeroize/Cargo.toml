@@ -19,6 +19,7 @@ keywords    = ["memory", "memset", "secure", "volatile", "zero"]
 
 [badges]
 travis-ci = { repository = "iqlusioninc/crates", branch = "develop" }
+maintenance = { status = "actively-developed" }
 
 [dependencies]
 zeroize_derive = { version = "0.10", path = "../zeroize_derive", optional = true }

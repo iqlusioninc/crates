@@ -24,14 +24,18 @@ travis-ci = { repository = "iqlusioninc/crates", branch = "develop" }
 getrandom = { version = "0.1", optional = true }
 hmac = { version = "0.7", default-features = false }
 sha2 = { version = "0.8", default-features = false }
-subtle-encoding = { version = "0.3", optional = true }
 tiny-bip39 = { version = "0.6", default-features = false, optional = true }
+
+[dependencies.subtle-encoding]
+version = "0.4"
+optional = true
+path = "../subtle-encoding"
 
 [dependencies.zeroize]
 version = "0.10"
-path = "../zeroize"
 default-features = false
 features = ["zeroize_derive"]
+path = "../zeroize"
 
 [features]
 default = ["alloc", "bech32", "getrandom"]

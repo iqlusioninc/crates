@@ -1,3 +1,8 @@
+## [0.4.0] (2019-08-19)
+
+- Remove `failure` ([#245])
+- Use `alloc` for heap allocations; MSRV 1.36+ ([#245])
+
 ## [0.3.7] (2019-05-19)
 
 - `zeroize` v0.9.0 ([#215])
@@ -56,6 +61,8 @@
 
 - Initial release
 
+[0.4.0]: https://github.com/iqlusioninc/crates/pull/249
+[#215]: https://github.com/iqlusioninc/crates/pull/245
 [0.3.7]: https://github.com/iqlusioninc/crates/pull/218
 [#215]: https://github.com/iqlusioninc/crates/pull/215
 [0.3.5]: https://github.com/iqlusioninc/crates/pull/187
