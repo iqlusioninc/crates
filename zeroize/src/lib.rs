@@ -194,7 +194,7 @@
 
 #![no_std]
 #![deny(warnings, missing_docs, trivial_casts, unused_qualifications)]
-#![doc(html_root_url = "https://docs.rs/zeroize/0.9.3")]
+#![doc(html_root_url = "https://docs.rs/zeroize/0.10.0")]
 
 #[cfg(feature = "alloc")]
 #[cfg_attr(test, macro_use)]

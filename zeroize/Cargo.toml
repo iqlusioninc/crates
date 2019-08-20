@@ -7,7 +7,7 @@ description = """
               Uses a portable pure Rust implementation that works everywhere,
               even WASM!
               """
-version     = "0.9.3" # Also update html_root_url in lib.rs when bumping this
+version     = "0.10.0" # Also update html_root_url in lib.rs when bumping this
 authors     = ["Tony Arcieri <tony@iqlusion.io>"]
 license     = "Apache-2.0 OR MIT"
 edition     = "2018"
@@ -21,7 +21,7 @@ keywords    = ["memory", "memset", "secure", "volatile", "zero"]
 travis-ci = { repository = "iqlusioninc/crates", branch = "develop" }
 
 [dependencies]
-zeroize_derive = { version = "0.9", path = "../zeroize_derive", optional = true }
+zeroize_derive = { version = "0.10", path = "../zeroize_derive", optional = true }
 
 [features]
 default = ["alloc"]

@@ -1,6 +1,16 @@
+## [0.10.0] (2019-08-19)
+
+Barring unforeseen circumstances, this release aims to be the last `0.x`
+release prior to a `zeroize` 1.0 release.
+
+- Disable `zeroize_derive` Cargo feature by default ([#247])
+- Remove `std` feature in favor of `alloc`; MSRV 1.36+ ([#246])
+- Deprecate `#[zeroize(no_drop)]` attribute ([#244])
+- Use 1.0 `proc-macro2`, `quote`, and `syn` crates ([#242])
+
 ## [0.9.3] (2019-07-27)
 
-- zeroize: Improved attribute parser; fixes nightly build ([#238])
+- Improved attribute parser; fixes nightly build ([#238])
 
 ## [0.9.2] (2019-06-28)
 
@@ -90,6 +100,11 @@ a pure Rust solution.
 
 - Initial release
 
+[0.10.0]: https://github.com/iqlusioninc/crates/pull/248
+[#247]: https://github.com/iqlusioninc/crates/pull/247
+[#246]: https://github.com/iqlusioninc/crates/pull/246
+[#244]: https://github.com/iqlusioninc/crates/pull/244
+[#242]: https://github.com/iqlusioninc/crates/pull/242
 [0.9.3]: https://github.com/iqlusioninc/crates/pull/239
 [#238]: https://github.com/iqlusioninc/crates/pull/238
 [0.9.2]: https://github.com/iqlusioninc/crates/pull/224
