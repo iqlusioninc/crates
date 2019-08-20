@@ -15,7 +15,7 @@
 #![no_std]
 #![deny(warnings, missing_docs, unused_import_braces, unused_qualifications)]
 #![forbid(unsafe_code)]
-#![doc(html_root_url = "https://docs.rs/subtle-encoding/0.3.7")]
+#![doc(html_root_url = "https://docs.rs/subtle-encoding/0.4.0")]
 
 #[cfg(feature = "alloc")]
 #[macro_use]

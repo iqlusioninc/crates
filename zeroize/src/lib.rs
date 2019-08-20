@@ -41,8 +41,8 @@
 //!
 //! Additionally, it's implemented on slices and `IterMut`s of the above types.
 //!
-//! When the `std` feature is enabled (which it is by default), it's also impl'd
-//! for `Vec`s of the above types as well as `String`, where it provides
+//! When the `alloc` feature is enabled (which it is by default), it's also
+//! impl'd for `Vec<T>` for the above types as well as `String`, where it provides
 //! [Vec::clear()] / [String::clear()]-like behavior (truncating to zero-length)
 //! but ensures the backing memory is securely zeroed with some caveats.
 //! (NOTE: see "Stack/Heap Zeroing Notes" for important `Vec`/`String` details)
@@ -190,7 +190,7 @@
 //! [Ordering::SeqCst]: https://doc.rust-lang.org/std/sync/atomic/enum.Ordering.html#variant.SeqCst
 //! [compiler_fence]: https://doc.rust-lang.org/stable/core/sync/atomic/fn.compiler_fence.html
 //! [pin]: https://doc.rust-lang.org/std/pin/struct.Pin.html
-//! [good cryptographic hygiene]: https://cryptocoding.net/index.php/Coding_rules#Clean_memory_of_secret_data
+//! [good cryptographic hygiene]: https://github.com/veorq/cryptocoding#clean-memory-of-secret-data
 
 #![no_std]
 #![deny(warnings, missing_docs, trivial_casts, unused_qualifications)]
