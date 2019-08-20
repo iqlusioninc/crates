@@ -17,7 +17,7 @@
 - Initial release
 
 [0.2.0]: https://github.com/iqlusioninc/crates/pull/252
-[#249]: https://github.com/iqlusioninc/crates/pull/251
+[#251]: https://github.com/iqlusioninc/crates/pull/251
 [#249]: https://github.com/iqlusioninc/crates/pull/249
 [#248]: https://github.com/iqlusioninc/crates/pull/248
 [0.1.2]: https://github.com/iqlusioninc/crates/pull/236
