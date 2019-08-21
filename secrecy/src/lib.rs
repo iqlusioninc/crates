@@ -6,6 +6,19 @@
 #![forbid(unsafe_code)]
 #![doc(html_root_url = "https://docs.rs/secrecy/0.2.2")]
 
+#[cfg(feature = "alloc")]
+extern crate alloc;
+
+#[cfg(feature = "alloc")]
+mod boxed;
+#[cfg(feature = "alloc")]
+mod string;
+#[cfg(feature = "alloc")]
+mod vec;
+
+#[cfg(feature = "alloc")]
+pub use self::{boxed::SecretBox, string::SecretString, vec::SecretVec};
+
 use core::fmt::{self, Debug};
 #[cfg(feature = "serde")]
 use serde::de::{Deserialize, DeserializeOwned, Deserializer};

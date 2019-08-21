@@ -3,7 +3,7 @@
 [![Crate][crate-image]][crate-link]
 [![Docs][docs-image]][docs-link]
 ![Apache 2.0/MIT Licensed][license-image]
-![Rust 1.35+][rustc-image]
+![MSRV][rustc-image]
 [![Safety Dance][safety-image]][safety-link]
 [![Build Status][build-image]][build-link]
 [![Gitter Chat][gitter-image]][gitter-link]
@@ -25,7 +25,7 @@ from memory when dropped.
 
 ## Requirements
 
-- Rust 1.35+
+- Rust **1.36+**
 
 ## serde support
 
@@ -69,7 +69,7 @@ without any additional terms or conditions.
 [docs-image]: https://docs.rs/secrecy/badge.svg
 [docs-link]: https://docs.rs/secrecy/
 [license-image]: https://img.shields.io/badge/license-Apache2.0/MIT-blue.svg
-[rustc-image]: https://img.shields.io/badge/rustc-1.35+-blue.svg
+[rustc-image]: https://img.shields.io/badge/rustc-1.36+-blue.svg
 [safety-image]: https://img.shields.io/badge/unsafe-forbidden-success.svg
 [safety-link]: https://github.com/rust-secure-code/safety-dance/
 [build-image]: https://travis-ci.com/iqlusioninc/crates.svg?branch=develop
