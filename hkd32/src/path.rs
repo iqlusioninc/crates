@@ -63,7 +63,7 @@ impl Path {
     }
 
     /// Obtain a component iterator for this path.
-    pub fn components(&self) -> Components {
+    pub fn components(&self) -> Components<'_> {
         Components::new(&self.0)
     }
 

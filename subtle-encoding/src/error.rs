@@ -30,7 +30,7 @@ pub enum Error {
 }
 
 impl fmt::Display for Error {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let description = match self {
             Error::ChecksumInvalid => "checksum mismatch",
             Error::EncodingInvalid => "bad encoding",
