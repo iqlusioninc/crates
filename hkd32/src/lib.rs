@@ -37,7 +37,12 @@
 //! [bip32]: https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki
 
 #![no_std]
-#![deny(warnings, missing_docs, unused_qualifications, unsafe_code)]
+#![deny(
+    missing_docs,
+    rust_2018_idioms,
+    unused_lifetimes,
+    unused_qualifications
+)]
 #![doc(html_root_url = "https://docs.rs/hkd32/0.2.0")]
 
 #[cfg(feature = "alloc")]

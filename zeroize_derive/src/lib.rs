@@ -1,10 +1,13 @@
 //! Custom derive support for `zeroize`
 
 #![crate_type = "proc-macro"]
-#![deny(warnings, unused_import_braces, unused_qualifications)]
+#![deny(
+    rust_2018_idioms,
+    trivial_casts,
+    unused_lifetimes,
+    unused_qualifications
+)]
 #![forbid(unsafe_code)]
-
-extern crate proc_macro;
 
 use proc_macro2::TokenStream;
 use quote::quote;
@@ -15,7 +18,7 @@ use synstructure::{decl_derive, BindStyle};
 const ZEROIZE_ATTR: &str = "zeroize";
 
 /// Custom derive for `Zeroize`
-fn derive_zeroize(s: synstructure::Structure) -> TokenStream {
+fn derive_zeroize(s: synstructure::Structure<'_>) -> TokenStream {
     let attributes = DeriveAttrs::parse(&s);
 
     // NOTE: These are split into named functions to simplify testing with
@@ -26,6 +29,7 @@ fn derive_zeroize(s: synstructure::Structure) -> TokenStream {
         derive_zeroize_without_drop(s)
     }
 }
+
 decl_derive!([Zeroize, attributes(zeroize)] => derive_zeroize);
 
 /// Custom derive attributes for `Zeroize`
@@ -37,7 +41,7 @@ struct DeriveAttrs {
 
 impl DeriveAttrs {
     /// Parse attributes from the incoming AST
-    fn parse(s: &synstructure::Structure) -> Self {
+    fn parse(s: &synstructure::Structure<'_>) -> Self {
         let mut result = Self::default();
 
         for v in s.variants().iter() {
@@ -92,7 +96,7 @@ impl DeriveAttrs {
 }
 
 /// Custom derive for `Zeroize` (without `Drop`)
-fn derive_zeroize_without_drop(mut s: synstructure::Structure) -> TokenStream {
+fn derive_zeroize_without_drop(mut s: synstructure::Structure<'_>) -> TokenStream {
     s.bind_with(|_| BindStyle::RefMut);
 
     let zeroizers = s.each(|bi| quote! { #bi.zeroize(); });
@@ -110,7 +114,7 @@ fn derive_zeroize_without_drop(mut s: synstructure::Structure) -> TokenStream {
 }
 
 /// Custom derive for `Zeroize` and `Drop`
-fn derive_zeroize_with_drop(s: synstructure::Structure) -> TokenStream {
+fn derive_zeroize_with_drop(s: synstructure::Structure<'_>) -> TokenStream {
     let drop_impl = s.gen_impl(quote! {
         gen impl Drop for @Self {
             fn drop(&mut self) {

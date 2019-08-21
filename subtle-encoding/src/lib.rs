@@ -13,7 +13,13 @@
 //! [bech32]: https://docs.rs/subtle-encoding/0.2.3/subtle_encoding/bech32/index.html
 
 #![no_std]
-#![deny(warnings, missing_docs, unused_import_braces, unused_qualifications)]
+#![deny(
+    missing_docs,
+    rust_2018_idioms,
+    trivial_casts,
+    unused_lifetimes,
+    unused_qualifications
+)]
 #![forbid(unsafe_code)]
 #![doc(html_root_url = "https://docs.rs/subtle-encoding/0.4.0")]
 
@@ -23,9 +29,6 @@ extern crate alloc;
 
 #[cfg(any(feature = "std", test))]
 extern crate std;
-
-#[cfg(feature = "zeroize")]
-extern crate zeroize;
 
 #[macro_use]
 mod error;

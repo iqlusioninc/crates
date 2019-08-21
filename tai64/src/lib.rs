@@ -1,7 +1,13 @@
 //! TAI64(N) timestamp generation, parsing and calculation.
 
 #![no_std]
-#![deny(warnings, missing_docs, rust_2018_idioms, unused_qualifications)]
+#![deny(
+    missing_docs,
+    rust_2018_idioms,
+    trivial_casts,
+    unused_lifetimes,
+    unused_qualifications
+)]
 #![forbid(unsafe_code)]
 #![doc(html_root_url = "https://docs.rs/tai64/3.0.0")]
 

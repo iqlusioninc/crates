@@ -11,6 +11,9 @@ rust:
 
 os: linux
 
+env:
+  - RUSTFLAGS="-D warnings"
+
 matrix:
   fast_finish: true
   allow_failures:
@@ -26,30 +29,34 @@ matrix:
     - name: "Rust: 1.36"
       os: windows
       rust: 1.36.0
+    - name: audit
+      rust: stable
+      install:
+        - command -v cargo-audit >/dev/null 2>&1 || cargo install cargo-audit
+      script:
+        - cargo audit
+    - name: rustfmt
+      rust: stable
+      install:
+        - rustup component add rustfmt
+      script:
+        - cargo fmt --version
+        - cargo fmt --all -- --check
+    - name: clippy
+      rust: stable
+      install:
+        - rustup component add clippy
+      script:
+        - cargo clippy --version
+        - cargo clippy --all
     - name: "Rust: stable (wasm32)"
+      install:
+        - rustup target add wasm32-unknown-unknown
       rust: stable
       script:
-      - cargo build --package secrecy --target wasm32-unknown-unknown
-      - cargo build --package subtle-encoding --target wasm32-unknown-unknown
-      - cargo build --package tai64 --target wasm32-unknown-unknown
-      - cargo build --package zeroize --target wasm32-unknown-unknown
-
-install:
-  - rustup component add rustfmt
-  - rustup component add clippy
-  - rustup target add wasm32-unknown-unknown
-  - command -v cargo-audit >/dev/null 2>&1 || cargo install cargo-audit
+      - cargo build --all --exclude canonical-path,gaunt --target wasm32-unknown-unknown
 
 script:
-  # audit
-  - cargo audit
-
-  # lint
-  - cargo fmt --version
-  - cargo fmt --all -- --check
-  - cargo clippy --version
-  - cargo clippy --all
-
   # test without default features
   - cargo test --all --no-default-features --release
 

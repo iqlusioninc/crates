@@ -1,7 +1,13 @@
 //! **gaunt.rs**: high-level, self-contained, minimalist HTTP toolkit.
 
 #![no_std]
-#![deny(warnings, missing_docs, unused_import_braces, unused_qualifications)]
+#![deny(
+    missing_docs,
+    rust_2018_idioms,
+    trivial_casts,
+    unused_lifetimes,
+    unused_qualifications
+)]
 #![forbid(unsafe_code)]
 #![doc(
     html_logo_url = "https://storage.googleapis.com/iqlusion-production-web/github/gaunt/gaunt-logo.svg",

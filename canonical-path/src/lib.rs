@@ -5,10 +5,9 @@
 //! are canonical, or at least, were canonical at the time they were created.
 
 #![deny(
-    warnings,
     missing_docs,
-    trivial_numeric_casts,
-    unused_import_braces,
+    rust_2018_idioms,
+    unused_lifetimes,
     unused_qualifications
 )]
 #![doc(html_root_url = "https://docs.rs/canonical-path/2.0.2")]
@@ -95,21 +94,21 @@ macro_rules! impl_path {
 
         /// Produces an iterator over the `Component`s of a path
         #[inline]
-        pub fn components(&self) -> Components {
+        pub fn components(&self) -> Components<'_> {
             self.0.components()
         }
 
         /// Produces an iterator over the path's components viewed as
         /// `OsStr` slices.
          #[inline]
-        pub fn iter(&self) -> Iter {
+        pub fn iter(&self) -> Iter<'_> {
             self.0.iter()
         }
 
         /// Returns an object that implements `Display` for safely printing
         /// paths that may contain non-Unicode data.
         #[inline]
-        pub fn display(&self) -> Display {
+        pub fn display(&self) -> Display<'_> {
             self.0.display()
         }
 

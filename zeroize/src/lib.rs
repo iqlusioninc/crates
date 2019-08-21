@@ -193,7 +193,13 @@
 //! [good cryptographic hygiene]: https://github.com/veorq/cryptocoding#clean-memory-of-secret-data
 
 #![no_std]
-#![deny(warnings, missing_docs, trivial_casts, unused_qualifications)]
+#![deny(
+    missing_docs,
+    rust_2018_idioms,
+    trivial_casts,
+    unused_lifetimes,
+    unused_qualifications
+)]
 #![doc(html_root_url = "https://docs.rs/zeroize/0.10.0")]
 
 #[cfg(feature = "alloc")]
