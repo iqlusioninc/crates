@@ -1,3 +1,9 @@
+## [0.3.0] (2019-08-20)
+
+- Add support for `alloc` types ([#253])
+- `zeroize` v0.10.0 ([#248])
+- Add a default impl for `DebugSecret` trait ([#241])
+
 ## [0.2.2] (2019-06-28)
 
 - README.md: add Gitter badges; update image links ([#221])
@@ -14,6 +20,10 @@
 
 - Initial release
 
+[0.3.0]: https://github.com/iqlusioninc/crates/pull/254
+[#253]: https://github.com/iqlusioninc/crates/pull/253
+[#248]: https://github.com/iqlusioninc/crates/pull/248
+[#241]: https://github.com/iqlusioninc/crates/pull/241
 [0.2.2]: https://github.com/iqlusioninc/crates/pull/223
 [#221]: https://github.com/iqlusioninc/crates/pull/221
 [0.2.1]: https://github.com/iqlusioninc/crates/pull/216
