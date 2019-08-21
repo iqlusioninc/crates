@@ -4,7 +4,7 @@
 #![no_std]
 #![deny(warnings, missing_docs, trivial_casts, unused_qualifications)]
 #![forbid(unsafe_code)]
-#![doc(html_root_url = "https://docs.rs/secrecy/0.2.2")]
+#![doc(html_root_url = "https://docs.rs/secrecy/0.3.0")]
 
 #[cfg(feature = "alloc")]
 extern crate alloc;
