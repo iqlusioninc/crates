@@ -1,6 +1,6 @@
 //! Secret strings
 
-use super::{DebugSecret, Secret, CloneableSecret};
+use super::{CloneableSecret, DebugSecret, Secret};
 use alloc::string::String;
 
 /// Secret strings
