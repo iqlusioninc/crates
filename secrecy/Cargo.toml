@@ -26,4 +26,4 @@ zeroize = { version = "0.10", path = "../zeroize", default-features = false }
 
 [features]
 default = ["alloc"]
-alloc = []
+alloc = ["zeroize/alloc"]

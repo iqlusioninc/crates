@@ -1,9 +1,10 @@
 //! Secret strings
 
-use super::{DebugSecret, Secret};
+use super::{CloneableSecret, DebugSecret, Secret};
 use alloc::string::String;
 
 /// Secret strings
 pub type SecretString = Secret<String>;
 
 impl DebugSecret for String {}
+impl CloneableSecret for String {}
