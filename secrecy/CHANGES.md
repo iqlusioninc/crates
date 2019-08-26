@@ -1,3 +1,7 @@
+## [0.3.1] (2019-08-26)
+
+- Impl `CloneableSecret` for `String` ([#256])
+
 ## [0.3.0] (2019-08-20)
 
 - Add support for `alloc` types ([#253])
@@ -20,6 +24,8 @@
 
 - Initial release
 
+[0.3.1]: https://github.com/iqlusioninc/crates/pull/257
+[#256]: https://github.com/iqlusioninc/crates/pull/256
 [0.3.0]: https://github.com/iqlusioninc/crates/pull/254
 [#253]: https://github.com/iqlusioninc/crates/pull/253
 [#248]: https://github.com/iqlusioninc/crates/pull/248
