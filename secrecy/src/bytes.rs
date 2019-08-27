@@ -1,7 +1,7 @@
 //! Secret bytes
 
 use super::{CloneableSecret, DebugSecret, Secret};
-use bytes::{Bytes, BytesMut};
+use bytes_crate::{Bytes, BytesMut};
 
 /// Secret bytes
 pub type SecretBytes = Secret<Bytes>;

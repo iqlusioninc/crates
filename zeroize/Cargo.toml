@@ -26,9 +26,9 @@ maintenance = { status = "actively-developed" }
 
 [dependencies]
 zeroize_derive = { version = "0.10", path = "../zeroize_derive", optional = true }
-bytes = { version = "0.4.12", optional = true }
+bytes_crate = { package = "bytes", version = "0.4.12", optional = true }
 
 [features]
 default = ["alloc"]
 alloc = []
-zeroize_bytes = ["bytes"]
+bytes = ["bytes_crate"]

@@ -220,8 +220,8 @@ use core::{ops, ptr, slice::IterMut, sync::atomic};
 #[cfg(feature = "alloc")]
 use alloc::{string::String, vec::Vec};
 
-#[cfg(feature = "zeroize_bytes")]
-use bytes::{Bytes, BytesMut};
+#[cfg(feature = "bytes")]
+use bytes_crate::{Bytes, BytesMut};
 
 /// Trait for securely erasing types from memory
 pub trait Zeroize {
@@ -338,7 +338,7 @@ impl Zeroize for String {
     }
 }
 
-#[cfg(feature = "zeroize_bytes")]
+#[cfg(feature = "bytes")]
 impl Zeroize for Bytes {
     fn zeroize(&mut self) {
         self.clear();
@@ -346,7 +346,7 @@ impl Zeroize for Bytes {
     }
 }
 
-#[cfg(feature = "zeroize_bytes")]
+#[cfg(feature = "bytes")]
 impl Zeroize for BytesMut {
     fn zeroize(&mut self) {
         self.clear();
@@ -438,7 +438,7 @@ mod tests {
     #[cfg(feature = "alloc")]
     use alloc::boxed::Box;
 
-    #[cfg(feature = "zeroize_bytes")]
+    #[cfg(feature = "bytes")]
     #[test]
     fn zeroize_bytes() {
         let mut data = Bytes::from("data");
