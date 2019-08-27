@@ -17,6 +17,8 @@ extern crate alloc;
 
 #[cfg(feature = "alloc")]
 mod boxed;
+#[cfg(feature = "secret_bytes")]
+mod bytes;
 #[cfg(feature = "alloc")]
 mod string;
 #[cfg(feature = "alloc")]
@@ -24,6 +26,9 @@ mod vec;
 
 #[cfg(feature = "alloc")]
 pub use self::{boxed::SecretBox, string::SecretString, vec::SecretVec};
+
+#[cfg(feature = "secret_bytes")]
+pub use self::{bytes::SecretBytes, bytes::SecretBytesMut};
 
 use core::fmt::{self, Debug};
 #[cfg(feature = "serde")]
