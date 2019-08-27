@@ -349,6 +349,8 @@ impl Zeroize for Bytes {
 #[cfg(feature = "bytes")]
 impl Zeroize for BytesMut {
     fn zeroize(&mut self) {
+        self.resize(self.capacity(), Default::default());
+        self.as_mut().zeroize();
         self.clear();
         debug_assert!(self.iter().all(|b| *b == 0));
     }
