@@ -28,7 +28,7 @@ mod vec;
 pub use self::{boxed::SecretBox, string::SecretString, vec::SecretVec};
 
 #[cfg(feature = "bytes")]
-pub use self::{bytes::SecretBytes, bytes::SecretBytesMut};
+pub use self::bytes::SecretBytesMut;
 
 use core::fmt::{self, Debug};
 #[cfg(feature = "serde")]

@@ -193,23 +193,18 @@
 //! [good cryptographic hygiene]: https://github.com/veorq/cryptocoding#clean-memory-of-secret-data
 
 #![no_std]
-#![deny(
-    missing_docs,
-    rust_2018_idioms,
-    trivial_casts,
-    unused_lifetimes,
-    unused_qualifications
-)]
 #![doc(html_root_url = "https://docs.rs/zeroize/0.10.0")]
+#![warn(missing_docs, rust_2018_idioms, trivial_casts, unused_qualifications)]
 
 #[cfg(feature = "alloc")]
 #[cfg_attr(test, macro_use)]
 extern crate alloc;
 
+#[cfg(feature = "bytes")]
+mod bytes;
+
 #[cfg(feature = "zeroize_derive")]
-#[allow(unused_imports)]
-#[macro_use]
-extern crate zeroize_derive;
+pub use zeroize_derive::Zeroize;
 
 #[cfg(feature = "zeroize_derive")]
 #[doc(hidden)]
@@ -219,9 +214,6 @@ use core::{ops, ptr, slice::IterMut, sync::atomic};
 
 #[cfg(feature = "alloc")]
 use alloc::{string::String, vec::Vec};
-
-#[cfg(feature = "bytes")]
-use bytes_crate::{Bytes, BytesMut};
 
 /// Trait for securely erasing types from memory
 pub trait Zeroize {
@@ -338,24 +330,6 @@ impl Zeroize for String {
     }
 }
 
-#[cfg(feature = "bytes")]
-impl Zeroize for Bytes {
-    fn zeroize(&mut self) {
-        self.clear();
-        debug_assert!(self.iter().all(|b| *b == 0));
-    }
-}
-
-#[cfg(feature = "bytes")]
-impl Zeroize for BytesMut {
-    fn zeroize(&mut self) {
-        self.resize(self.capacity(), Default::default());
-        self.as_mut().zeroize();
-        self.clear();
-        debug_assert!(self.iter().all(|b| *b == 0));
-    }
-}
-
 /// `Zeroizing` is a a wrapper for any `Z: Zeroize` type which implements a
 /// `Drop` handler which zeroizes dropped values.
 pub struct Zeroizing<Z: Zeroize>(Z);
@@ -439,18 +413,6 @@ mod tests {
     use super::*;
     #[cfg(feature = "alloc")]
     use alloc::boxed::Box;
-
-    #[cfg(feature = "bytes")]
-    #[test]
-    fn zeroize_bytes() {
-        let mut data = Bytes::from("data");
-        data.zeroize();
-        assert!(data.is_empty());
-
-        let mut data = BytesMut::from("data");
-        data.zeroize();
-        assert!(data.is_empty());
-    }
 
     #[test]
     fn zeroize_byte_arrays() {
