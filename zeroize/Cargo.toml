@@ -17,16 +17,18 @@ readme      = "README.md"
 categories  = ["cryptography", "memory-management", "no-std", "os"]
 keywords    = ["memory", "memset", "secure", "volatile", "zero"]
 
+[package.metadata.docs.rs]
+all-features = true
+
 [badges]
 travis-ci = { repository = "iqlusioninc/crates", branch = "develop" }
 maintenance = { status = "actively-developed" }
 
 [dependencies]
 zeroize_derive = { version = "0.10", path = "../zeroize_derive", optional = true }
+bytes_crate = { package = "bytes", version = "0.4.12", optional = true }
 
 [features]
 default = ["alloc"]
 alloc = []
-
-[package.metadata.docs.rs]
-all-features = true
+bytes = ["bytes_crate"]

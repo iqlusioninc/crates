@@ -23,7 +23,9 @@ travis-ci = { repository = "iqlusioninc/crates", branch = "develop" }
 [dependencies]
 serde = { version = "1", optional = true }
 zeroize = { version = "0.10", path = "../zeroize", default-features = false }
+bytes_crate = { package = "bytes", version = "0.4.12", optional = true }
 
 [features]
 default = ["alloc"]
 alloc = ["zeroize/alloc"]
+bytes = ["zeroize/bytes", "bytes_crate"]
