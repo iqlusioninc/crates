@@ -6,7 +6,7 @@ use core::fmt;
 use zeroize::Zeroize;
 
 #[cfg(feature = "serde")]
-use serde::{Deserialize, Serialize};
+use serde::de::{Deserialize, Deserializer};
 
 /// Instance of `Bytes` protected by a type that impls the `ExposeSecret`
 /// trait like `Secret<T>`.
@@ -14,7 +14,6 @@ use serde::{Deserialize, Serialize};
 /// Because of the nature of how the `Bytes` type works, it needs some special
 /// care in order to have a proper zeroizing drop handler.
 #[derive(Clone)]
-#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct SecretBytes(Option<Bytes>);
 
 impl SecretBytes {
@@ -59,6 +58,16 @@ impl Drop for SecretBytes {
                 bytes_mut.zeroize();
             }
         }
+    }
+}
+
+#[cfg(feature = "serde")]
+impl<'de> Deserialize<'de> for SecretBytes where {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        Bytes::deserialize(deserializer).map(SecretBytes::new)
     }
 }
 
