@@ -5,6 +5,9 @@ use bytes_crate::{Bytes, BytesMut};
 use core::fmt;
 use zeroize::Zeroize;
 
+#[cfg(feature = "serde")]
+use serde::de::{Deserialize, Deserializer};
+
 /// Instance of `Bytes` protected by a type that impls the `ExposeSecret`
 /// trait like `Secret<T>`.
 ///
@@ -55,6 +58,16 @@ impl Drop for SecretBytes {
                 bytes_mut.zeroize();
             }
         }
+    }
+}
+
+#[cfg(feature = "serde")]
+impl<'de> Deserialize<'de> for SecretBytes where {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        Bytes::deserialize(deserializer).map(SecretBytes::new)
     }
 }
 
