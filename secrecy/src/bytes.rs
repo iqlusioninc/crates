@@ -5,12 +5,16 @@ use bytes_crate::{Bytes, BytesMut};
 use core::fmt;
 use zeroize::Zeroize;
 
+#[cfg(feature = "serde")]
+use serde::{Deserialize, Serialize};
+
 /// Instance of `Bytes` protected by a type that impls the `ExposeSecret`
 /// trait like `Secret<T>`.
 ///
 /// Because of the nature of how the `Bytes` type works, it needs some special
 /// care in order to have a proper zeroizing drop handler.
 #[derive(Clone)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct SecretBytes(Option<Bytes>);
 
 impl SecretBytes {

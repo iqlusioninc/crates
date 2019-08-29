@@ -21,9 +21,9 @@ maintenance = { status = "passively-maintained" }
 travis-ci = { repository = "iqlusioninc/crates", branch = "develop" }
 
 [dependencies]
-serde = { version = "1", optional = true }
+serde = { version = "1", optional = true, features = ["derive"] }
 zeroize = { version = "0.10", path = "../zeroize", default-features = false }
-bytes_crate = { package = "bytes", version = "0.4", optional = true }
+bytes_crate = { package = "bytes", version = "0.4", features = ["serde"], optional = true }
 
 [features]
 default = ["alloc"]
