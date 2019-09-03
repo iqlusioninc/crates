@@ -29,3 +29,6 @@ bytes_crate = { package = "bytes", version = "0.4", features = ["serde"], option
 default = ["alloc"]
 alloc = ["zeroize/alloc"]
 bytes = ["bytes_crate", "zeroize/bytes"]
+
+[package.metadata.docs.rs]
+all-features = true
