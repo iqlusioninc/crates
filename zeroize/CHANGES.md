@@ -1,3 +1,7 @@
+## [0.10.1] (2019-09-03)
+
+- (Optionally) Impl `Zeroize` for `Bytes` and `BytesMut` ([#258], [#259])
+
 ## [0.10.0] (2019-08-19)
 
 Barring unforeseen circumstances, this release aims to be the last `0.x`
@@ -100,6 +104,9 @@ a pure Rust solution.
 
 - Initial release
 
+[0.10.1]: https://github.com/iqlusioninc/crates/pull/264
+[#259]: https://github.com/iqlusioninc/crates/pull/259
+[#258]: https://github.com/iqlusioninc/crates/pull/258
 [0.10.0]: https://github.com/iqlusioninc/crates/pull/248
 [#247]: https://github.com/iqlusioninc/crates/pull/247
 [#246]: https://github.com/iqlusioninc/crates/pull/246
