@@ -6,7 +6,7 @@ description = """
               (as much as possible), and also ensure secrets are securely wiped
               from memory when dropped.
               """
-version     = "0.3.1" # Also update html_root_url in lib.rs when bumping this
+version     = "0.4.0" # Also update html_root_url in lib.rs when bumping this
 authors     = ["Tony Arcieri <tony@iqlusion.io>"]
 license     = "Apache-2.0 OR MIT"
 edition     = "2018"
@@ -22,7 +22,7 @@ travis-ci = { repository = "iqlusioninc/crates", branch = "develop" }
 
 [dependencies]
 serde = { version = "1", optional = true }
-zeroize = { version = "0.10", path = "../zeroize", default-features = false }
+zeroize = { version = "0.10.1", path = "../zeroize", default-features = false }
 bytes_crate = { package = "bytes", version = "0.4", features = ["serde"], optional = true }
 
 [features]
