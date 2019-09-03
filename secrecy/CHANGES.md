@@ -1,3 +1,8 @@
+## [0.4.0] (2019-09-03)
+
+- Add `SerializableSecret` ([#262])
+- Add (optional) concrete `SecretBytes` type ([#258], [#259], [#260], [#261])
+
 ## [0.3.1] (2019-08-26)
 
 - Impl `CloneableSecret` for `String` ([#256])
@@ -24,6 +29,12 @@
 
 - Initial release
 
+[0.4.0]: https://github.com/iqlusioninc/crates/pull/263
+[#262]: https://github.com/iqlusioninc/crates/pull/262
+[#261]: https://github.com/iqlusioninc/crates/pull/261
+[#260]: https://github.com/iqlusioninc/crates/pull/260
+[#259]: https://github.com/iqlusioninc/crates/pull/259
+[#258]: https://github.com/iqlusioninc/crates/pull/258
 [0.3.1]: https://github.com/iqlusioninc/crates/pull/257
 [#256]: https://github.com/iqlusioninc/crates/pull/256
 [0.3.0]: https://github.com/iqlusioninc/crates/pull/254
