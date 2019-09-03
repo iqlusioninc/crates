@@ -32,7 +32,7 @@ pub use self::bytes::{SecretBytes, SecretBytesMut};
 
 use core::fmt::{self, Debug};
 #[cfg(feature = "serde")]
-use serde::de::{Deserialize, DeserializeOwned, Deserializer};
+use serde::{de, ser, Deserialize, Serialize};
 use zeroize::Zeroize;
 
 /// Wrapper type for values that contains secrets, which attempts to limit
@@ -91,19 +91,6 @@ where
     }
 }
 
-#[cfg(feature = "serde")]
-impl<'de, S> Deserialize<'de> for Secret<S>
-where
-    S: Zeroize + Clone + DebugSecret + DeserializeOwned + Sized,
-{
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: Deserializer<'de>,
-    {
-        S::deserialize(deserializer).map(Secret::new)
-    }
-}
-
 impl<S> Drop for Secret<S>
 where
     S: Zeroize,
@@ -130,5 +117,44 @@ pub trait DebugSecret {
     /// Static so as to discourage unintentional secret exposure.
     fn debug_secret() -> &'static str {
         "[SECRET]"
+    }
+}
+
+/// Marker trait for secrets which can be serialized directly by `serde`.
+/// Since this provides a non-explicit exfiltration path for secrets,
+/// types must explicitly opt into this.
+///
+/// If you are working with a `SecretString`, `SecretVec`, etc. type, they
+/// do *NOT* impl this trait by design. Instead, if you really want to have
+/// `serde` automatically serialize those types, use the `serialize_with`
+/// attribute to specify a serializer that exposes the secret:
+///
+/// <https://serde.rs/field-attrs.html#serialize_with>
+#[cfg(feature = "serde")]
+pub trait SerializableSecret: Serialize {}
+
+#[cfg(feature = "serde")]
+impl<'de, T> Deserialize<'de> for Secret<T>
+where
+    T: Zeroize + Clone + DebugSecret + de::DeserializeOwned + Sized,
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: de::Deserializer<'de>,
+    {
+        T::deserialize(deserializer).map(Secret::new)
+    }
+}
+
+#[cfg(feature = "serde")]
+impl<T> Serialize for Secret<T>
+where
+    T: Zeroize + DebugSecret + Serialize + Sized,
+{
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: ser::Serializer,
+    {
+        self.expose_secret().serialize(serializer)
     }
 }
