@@ -34,7 +34,7 @@ optional = true
 path = "../subtle-encoding"
 
 [dependencies.zeroize]
-version = "0.10"
+version = "1.0.0-pre"
 default-features = false
 features = ["zeroize_derive"]
 path = "../zeroize"
