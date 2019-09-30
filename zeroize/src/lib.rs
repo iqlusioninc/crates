@@ -312,11 +312,15 @@ where
 #[cfg(feature = "alloc")]
 impl<Z> Zeroize for Vec<Z>
 where
-    Z: DefaultIsZeroes,
+    Z: Clone + Default + Zeroize,
 {
+    /// "Best effort" zeroization for `Vec`.
+    ///
+    /// Ensures the entire capacity of the `Vec` is zeroed. Cannot ensure that
+    /// previous reallocations did not leave values on the heap.
     fn zeroize(&mut self) {
         self.resize(self.capacity(), Default::default());
-        self.as_mut_slice().zeroize();
+        self.iter_mut().zeroize();
         self.clear();
     }
 }
