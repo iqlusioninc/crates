@@ -1,3 +1,7 @@
+## [1.0.0-pre] (2019-09-30)
+
+- Loosen `Vec` trait bounds for `Zeroize` ([#267])
+
 ## [0.10.1] (2019-09-03)
 
 - (Optionally) Impl `Zeroize` for `Bytes` and `BytesMut` ([#258], [#259])
@@ -104,6 +108,8 @@ a pure Rust solution.
 
 - Initial release
 
+[1.0.0-pre]: https://github.com/iqlusioninc/crates/pull/268
+[#267]: https://github.com/iqlusioninc/crates/pull/267
 [0.10.1]: https://github.com/iqlusioninc/crates/pull/264
 [#259]: https://github.com/iqlusioninc/crates/pull/259
 [#258]: https://github.com/iqlusioninc/crates/pull/258

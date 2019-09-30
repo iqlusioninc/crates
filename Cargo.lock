@@ -167,7 +167,7 @@ dependencies = [
  "pbkdf2 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "sha2 0.8.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "subtle-encoding 0.4.0",
- "zeroize 0.10.1",
+ "zeroize 1.0.0-pre",
 ]
 
 [[package]]
@@ -450,7 +450,7 @@ version = "0.4.0"
 dependencies = [
  "bytes 0.4.12 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde 1.0.99 (registry+https://github.com/rust-lang/crates.io-index)",
- "zeroize 0.10.1",
+ "zeroize 1.0.0-pre",
 ]
 
 [[package]]
@@ -483,7 +483,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 name = "subtle-encoding"
 version = "0.4.0"
 dependencies = [
- "zeroize 0.10.1",
+ "zeroize 1.0.0-pre",
 ]
 
 [[package]]
@@ -582,15 +582,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "zeroize"
-version = "0.10.1"
+version = "1.0.0-pre"
 dependencies = [
  "bytes 0.4.12 (registry+https://github.com/rust-lang/crates.io-index)",
- "zeroize_derive 0.10.0",
+ "zeroize_derive 1.0.0-pre",
 ]
 
 [[package]]
 name = "zeroize_derive"
-version = "0.10.0"
+version = "1.0.0-pre"
 dependencies = [
  "proc-macro2 1.0.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "quote 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
