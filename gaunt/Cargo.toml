@@ -11,9 +11,6 @@ readme      = "README.md"
 categories  = ["network-programming", "no-std", "web-programming::http-client"]
 keywords    = ["api", "client", "http", "rest", "web"]
 
-[badges]
-travis-ci = { repository = "iqlusioninc/crates", branch = "develop" }
-
 [dependencies]
 slog = { version = "2", optional = true }
 

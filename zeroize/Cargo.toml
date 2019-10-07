@@ -21,7 +21,6 @@ keywords    = ["memory", "memset", "secure", "volatile", "zero"]
 all-features = true
 
 [badges]
-travis-ci = { repository = "iqlusioninc/crates", branch = "develop" }
 maintenance = { status = "actively-developed" }
 
 [dependencies]

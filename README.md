@@ -3,7 +3,6 @@
 [![Apache 2.0 Licensed][license-image]][license-link]
 ![Rust 1.36+][rustc-image]
 [![Build Status][build-image]][build-link]
-[![Appveyor Status][appveyor-image]][appveyor-link]
 [![Gitter Chat][gitter-image]][gitter-link]
 
 This repository contains a set of Apache 2.0-licensed packages (a.k.a.  "crates")
@@ -73,10 +72,8 @@ without any additional terms or conditions.
 [license-image]: https://img.shields.io/badge/license-Apache2.0-blue.svg
 [license-link]: https://github.com/iqlusioninc/crates/blob/develop/LICENSE
 [rustc-image]: https://img.shields.io/badge/rustc-1.36+-blue.svg
-[build-image]: https://travis-ci.com/iqlusioninc/crates.svg?branch=develop
-[build-link]: https://travis-ci.com/iqlusioninc/crates/
-[appveyor-image]: https://ci.appveyor.com/api/projects/status/qslcjs7e1rn4a2w9?svg=true
-[appveyor-link]: https://ci.appveyor.com/project/tony-iqlusion/crates
+[build-image]: https://github.com/iqlusioninc/crates/workflows/Rust/badge.svg
+[build-link]: https://github.com/iqlusioninc/crates/actions
 [gitter-image]: https://badges.gitter.im/iqlusioninc/community.svg
 [gitter-link]: https://gitter.im/iqlusioninc/community
 
