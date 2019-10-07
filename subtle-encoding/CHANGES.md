@@ -1,3 +1,7 @@
+## [0.4.1] (2019-10-07)
+
+- Upgrade to `zeroize` v1.0.0-pre ([#268])
+
 ## [0.4.0] (2019-08-19)
 
 - Remove `failure` ([#245])
@@ -61,6 +65,8 @@
 
 - Initial release
 
+[0.4.1]: https://github.com/iqlusioninc/crates/pull/269
+[#268]: https://github.com/iqlusioninc/crates/pull/268
 [0.4.0]: https://github.com/iqlusioninc/crates/pull/249
 [#215]: https://github.com/iqlusioninc/crates/pull/245
 [0.3.7]: https://github.com/iqlusioninc/crates/pull/218
