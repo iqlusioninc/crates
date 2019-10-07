@@ -32,7 +32,6 @@ std = ["alloc", "zeroize"]
 
 [badges]
 maintenance = { status = "passively-maintained" }
-travis-ci = { repository = "iqlusioninc/crates", branch = "develop" }
 
 [package.metadata.docs.rs]
 features = ["bech32-preview"]

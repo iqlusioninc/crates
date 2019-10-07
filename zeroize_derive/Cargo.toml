@@ -20,8 +20,5 @@ quote = "1"
 syn = "1"
 synstructure = "0.12"
 
-[badges]
-travis-ci = { repository = "iqlusioninc/crates", branch = "develop" }
-
 [package.metadata.docs.rs]
 rustdoc-args = ["--document-private-items"]

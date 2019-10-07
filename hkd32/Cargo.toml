@@ -19,7 +19,6 @@ keywords    = ["crypto", "bip32", "bip39", "derivation", "mnemonic"]
 
 [badges]
 maintenance = { status = "passively-maintained" }
-travis-ci = { repository = "iqlusioninc/crates", branch = "develop" }
 
 [dependencies]
 getrandom = { version = "0.1", optional = true }

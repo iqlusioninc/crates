@@ -18,7 +18,6 @@ keywords    = ["clear", "memory", "secret", "secure", "wipe"]
 
 [badges]
 maintenance = { status = "passively-maintained" }
-travis-ci = { repository = "iqlusioninc/crates", branch = "develop" }
 
 [dependencies]
 serde = { version = "1", optional = true }

@@ -13,7 +13,6 @@ keywords    = ["filesystem", "path", "canonicalization"]
 
 [badges]
 maintenance = { status = "passively-maintained" }
-travis-ci = { repository = "iqlusioninc/crates", branch = "develop" }
 
 [dev-dependencies]
 tempfile = "3"
