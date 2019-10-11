@@ -1,7 +1,7 @@
 [workspace]
 members = [
     "canonical-path",
-    "gaunt",
+    "harp",
     "hkd32",
     "secrecy",
     "subtle-encoding",

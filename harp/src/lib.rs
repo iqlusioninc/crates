@@ -1,18 +1,14 @@
-//! **gaunt.rs**: high-level, self-contained, minimalist HTTP toolkit.
+//! **harp.rs**: high-level, self-contained, minimalist HTTP toolkit.
 
 #![no_std]
 #![deny(
     missing_docs,
     rust_2018_idioms,
-    trivial_casts,
     unused_lifetimes,
     unused_qualifications
 )]
 #![forbid(unsafe_code)]
-#![doc(
-    html_logo_url = "https://storage.googleapis.com/iqlusion-production-web/github/gaunt/gaunt-logo.svg",
-    html_root_url = "https://docs.rs/gaunt/0.1.0"
-)]
+#![doc(html_root_url = "https://docs.rs/harp/0.0.0")]
 
 #[cfg(feature = "alloc")]
 extern crate alloc;
@@ -41,9 +37,9 @@ pub use crate::connection::*;
 pub use crate::error::*;
 pub use crate::path::*;
 
-/// Version of HTTP supported by Gaunt.
+/// Version of HTTP supported by Harp.
 /// NOTE: HTTP/2 support is not planned.
 pub const HTTP_VERSION: &str = "HTTP/1.1";
 
-/// Gaunt's default `User-Agent` string
-pub const USER_AGENT: &str = concat!("gaunt.rs ", env!("CARGO_PKG_VERSION"));
+/// Harp's default `User-Agent` string
+pub const USER_AGENT: &str = concat!("harp.rs ", env!("CARGO_PKG_VERSION"));

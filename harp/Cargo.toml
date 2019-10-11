@@ -1,12 +1,12 @@
 [package]
-name        = "gaunt"
+name        = "harp"
 description = "Minimalist Rust HTTP toolkit (client-only)."
-version     = "0.1.0"
+version     = "0.0.0"
 license     = "Apache-2.0"
 authors     = ["Tony Arcieri <tony@iqlusion.io>"]
 edition     = "2018"
 homepage    = "https://github.com/iqlusioninc/crates/"
-repository  = "https://github.com/iqlusioninc/crates/tree/develop/gaunt"
+repository  = "https://github.com/iqlusioninc/crates/tree/develop/harp"
 readme      = "README.md"
 categories  = ["network-programming", "no-std", "web-programming::http-client"]
 keywords    = ["api", "client", "http", "rest", "web"]

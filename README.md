@@ -38,7 +38,7 @@ This repository contains the following crates:
 | Name              | Version                    | Description |
 |-------------------|----------------------------|-------------|
 | [canonical-path]  | ![][canonical-path-crate]  | Canonical filesystem path support |
-| [gaunt]           | ![][gaunt-crate]           | Minimalist HTTP library |
+| [harp]            | ![][harp-crate]            | Minimalist HTTP library |
 | [hkd32]           | ![][hkd32-crate]           | HMAC-based Hierarchical Key Derivation |
 | [secrecy]         | ![][secrecy-crate]         | Simple secret-keeping library |
 | [subtle-encoding] | ![][subtle-encoding-crate] | Hex, Bech32, and Base64 in constant-time(ish) |
@@ -81,8 +81,8 @@ without any additional terms or conditions.
 
 [canonical-path]: https://github.com/iqlusioninc/crates/tree/develop/canonical-path
 [canonical-path-crate]: https://img.shields.io/crates/v/canonical-path.svg
-[gaunt]: https://github.com/iqlusioninc/crates/tree/develop/gaunt
-[gaunt-crate]: https://img.shields.io/crates/v/gaunt.svg
+[harp]: https://github.com/iqlusioninc/crates/tree/develop/harp
+[harp-crate]: https://img.shields.io/crates/v/harp.svg
 [hkd32]: https://github.com/iqlusioninc/crates/tree/develop/hkd32
 [hkd32-crate]: https://img.shields.io/crates/v/hkd32.svg
 [secrecy]: https://github.com/iqlusioninc/crates/tree/develop/secrecy
