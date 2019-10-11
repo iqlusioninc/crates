@@ -1,14 +1,9 @@
 //! **harp.rs**: high-level, self-contained, minimalist HTTP toolkit.
 
 #![no_std]
-#![deny(
-    missing_docs,
-    rust_2018_idioms,
-    unused_lifetimes,
-    unused_qualifications
-)]
+#![deny(missing_docs, rust_2018_idioms, unused_qualifications)]
 #![forbid(unsafe_code)]
-#![doc(html_root_url = "https://docs.rs/harp/0.0.0")]
+#![doc(html_root_url = "https://docs.rs/harp/0.1.0")]
 
 #[cfg(feature = "alloc")]
 extern crate alloc;
