@@ -1,4 +1,4 @@
-# <img alt="gaunt.rs" src="https://storage.googleapis.com/iqlusion-production-web/github/gaunt/gaunt-logo.svg" width=400>
+# harp
 
 [![Crate][crate-image]][crate-link]
 [![Docs][docs-image]][docs-link]
@@ -16,19 +16,9 @@ are not (yet) available.
 
 ## About
 
-**gaunt.rs** is a minimalist alternative to `hyper` suitable for use in
+**harp.rs** is a minimalist alternative to `hyper` suitable for use in
 environments where crates like `mio` and `tokio` aren't (yet) available,
 such as Intel SGX or `#![no_std]` environments.
-
-It's presently in an early stage of development and not ready for general
-use, but has the following roadmap:
-
-- Lightweight, `#![no_std]`-friendly core.
-- `std`-based blocking socket I/O backend.
-- `hyper`-based backend to leverage `mio`/`tokio` when available.
-- Leverage `http` and `httparse` crates (`hyper` dependencies)
-  as they are mature and well-tested.
-- Add server support in addition to client support.
 
 ## Requirements
 
@@ -58,10 +48,10 @@ without any additional terms or conditions.
 
 [//]: # (badges)
 
-[crate-image]: https://img.shields.io/crates/v/gaunt.svg
-[crate-link]: https://crates.io/crates/gaunt
-[docs-image]: https://docs.rs/gaunt/badge.svg
-[docs-link]: https://docs.rs/gaunt/
+[crate-image]: https://img.shields.io/crates/v/harp.svg
+[crate-link]: https://crates.io/crates/harp
+[docs-image]: https://docs.rs/harp/badge.svg
+[docs-link]: https://docs.rs/harp/
 [license-image]: https://img.shields.io/badge/license-Apache2.0-blue.svg
 [license-link]: https://github.com/iqlusioninc/crates/blob/develop/LICENSE
 [rustc-image]: https://img.shields.io/badge/rustc-1.35+-blue.svg

@@ -1,4 +1,4 @@
-//! Error types used by **gaunt.rs**
+//! Error types used by **harp.rs**
 
 #![allow(unused_macros)]
 
