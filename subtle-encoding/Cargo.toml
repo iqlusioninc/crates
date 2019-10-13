@@ -17,7 +17,7 @@ categories  = ["cryptography", "encoding", "no-std"]
 keywords    = ["base64", "bech32", "constant-time", "hex", "security"]
 
 [dependencies.zeroize]
-version = "1.0.0-pre"
+version = "1"
 optional = true
 default-features = false
 path = "../zeroize"

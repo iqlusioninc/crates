@@ -21,13 +21,13 @@ maintenance = { status = "passively-maintained" }
 
 [dependencies]
 serde = { version = "1", optional = true }
-zeroize = { version = "1.0.0-pre", path = "../zeroize", default-features = false }
+zeroize = { version = "1.0.0", path = "../zeroize", default-features = false }
 bytes_crate = { package = "bytes", version = "0.4", features = ["serde"], optional = true }
 
 [features]
 default = ["alloc"]
 alloc = ["zeroize/alloc"]
-bytes = ["bytes_crate", "zeroize/bytes"]
+bytes = ["bytes_crate", "zeroize/bytes-preview"]
 
 [package.metadata.docs.rs]
 all-features = true
