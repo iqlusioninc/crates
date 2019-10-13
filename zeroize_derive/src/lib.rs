@@ -19,7 +19,7 @@ const ZEROIZE_ATTR: &str = "zeroize";
 
 /// Custom derive for `Zeroize`
 fn derive_zeroize(s: synstructure::Structure<'_>) -> TokenStream {
-    let attributes = DeriveAttrs::parse(&s);
+    let attributes = ZeroizeAttrs::parse(&s);
 
     // NOTE: These are split into named functions to simplify testing with
     // synstructure's `test_derive!` macro.
@@ -34,12 +34,12 @@ decl_derive!([Zeroize, attributes(zeroize)] => derive_zeroize);
 
 /// Custom derive attributes for `Zeroize`
 #[derive(Default)]
-struct DeriveAttrs {
+struct ZeroizeAttrs {
     /// Derive a `Drop` impl which calls zeroize on this type
     drop: bool,
 }
 
-impl DeriveAttrs {
+impl ZeroizeAttrs {
     /// Parse attributes from the incoming AST
     fn parse(s: &synstructure::Structure<'_>) -> Self {
         let mut result = Self::default();
@@ -55,21 +55,24 @@ impl DeriveAttrs {
 
     /// Parse attribute and handle `#[zeroize(...)]` attributes
     fn parse_attr(&mut self, attr: &Attribute) {
-        let meta = attr
+        let meta_list = match attr
             .parse_meta()
-            .unwrap_or_else(|e| panic!("error parsing attribute: {:?} ({})", attr, e));
+            .unwrap_or_else(|e| panic!("error parsing attribute: {:?} ({})", attr, e))
+        {
+            Meta::List(list) => list,
+            _ => return,
+        };
 
-        if let Meta::List(list) = meta {
-            if !list.path.is_ident(ZEROIZE_ATTR) {
-                return;
-            }
+        // Ignore any non-zeroize attributes
+        if !meta_list.path.is_ident(ZEROIZE_ATTR) {
+            return;
+        }
 
-            for nested_meta in &list.nested {
-                if let NestedMeta::Meta(meta) = nested_meta {
-                    self.parse_meta(meta);
-                } else {
-                    panic!("malformed #[zeroize] attribute: {:?}", nested_meta);
-                }
+        for nested_meta in &meta_list.nested {
+            if let NestedMeta::Meta(meta) = nested_meta {
+                self.parse_meta(meta);
+            } else {
+                panic!("malformed #[zeroize] attribute: {:?}", nested_meta);
             }
         }
     }
@@ -77,21 +80,11 @@ impl DeriveAttrs {
     /// Parse `#[zeroize(...)]` attribute metadata (e.g. `drop`)
     fn parse_meta(&mut self, meta: &Meta) {
         if meta.path().is_ident("drop") {
-            self.set_drop_flag();
-        } else if meta.path().is_ident("no_drop") {
-            eprintln!(
-                "warning: use of deprecated attribute #[zeroize(no_drop)]: \
-                 has no effect and will be removed in zeroize 1.0"
-            );
+            assert!(!self.drop, "duplicate #[zeroize] drop flags");
+            self.drop = true;
         } else {
             panic!("unknown #[zeroize] attribute type: {:?}", meta.path());
         }
-    }
-
-    /// Set the value of the `drop` flag
-    fn set_drop_flag(&mut self) {
-        assert!(!self.drop, "duplicate #[zeroize] drop flags");
-        self.drop = true;
     }
 }
 
