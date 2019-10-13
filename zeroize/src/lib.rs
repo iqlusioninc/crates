@@ -104,6 +104,19 @@
 //! }
 //! ```
 //!
+//! ## `bytes-preview` feature: `Zeroize` support for `BytesMut`
+//!
+//! This crate contains an impl of `Zeroize` for the `BytesMut` type from the
+//! `bytes` crate.
+//!
+//! As `bytes` is not yet 1.0, this is a "preview" feature which we do not
+//! include in SemVer guarantees around the `zeroize` crate. Ideally, we can
+//! upstream the implementation and remove the feature entirely.
+//!
+//! Whenever we make any changes to how the `bytes-preview` feature works,
+//! such as upgrading the `bytes` crate version or removing it after
+//! successfully upstreaming, it will be done with a minor version bump.
+//!
 //! ## What guarantees does this crate provide?
 //!
 //! This crate guarantees the following:
@@ -200,7 +213,7 @@
 #[cfg_attr(test, macro_use)]
 extern crate alloc;
 
-#[cfg(feature = "bytes")]
+#[cfg(feature = "bytes-preview")]
 mod bytes;
 
 #[cfg(feature = "zeroize_derive")]

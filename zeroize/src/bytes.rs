@@ -5,7 +5,6 @@
 use super::Zeroize;
 use ::bytes::BytesMut;
 
-#[cfg(feature = "bytes")]
 impl Zeroize for BytesMut {
     fn zeroize(&mut self) {
         self.resize(self.capacity(), Default::default());
