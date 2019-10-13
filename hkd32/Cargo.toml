@@ -42,7 +42,8 @@ path = "../zeroize"
 default = ["alloc", "bech32", "getrandom"]
 alloc = ["zeroize/alloc"]
 bech32 = ["alloc", "subtle-encoding/bech32-preview"]
-mnemonic = ["alloc", "getrandom", "lazy_static", "pbkdf2"]
+mnemonic = ["alloc", "getrandom", "lazy_static"]
+bip39 = ["mnemonic", "pbkdf2"]
 
 [package.metadata.docs.rs]
 all-features = true

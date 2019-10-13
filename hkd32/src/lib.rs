@@ -46,7 +46,7 @@
 #![doc(html_root_url = "https://docs.rs/hkd32/0.2.0")]
 
 #[cfg(feature = "alloc")]
-#[cfg_attr(any(feature = "mnemonic", test), macro_use)]
+#[cfg_attr(any(feature = "bip39", test), macro_use)]
 extern crate alloc;
 
 mod key_material;

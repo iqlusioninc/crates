@@ -13,7 +13,7 @@ const BIP39_BASE_DERIVATION_KEY: [u8; 12] = [
 /// Number of bytes of PBKDF2 output to extract
 pub const SEED_SIZE: usize = 64;
 
-/// BIP39 seeds
+/// BIP39 seeds. Requires the `bip39` cargo feature is enabled.
 pub struct Seed(pub(crate) [u8; SEED_SIZE]);
 
 impl Seed {

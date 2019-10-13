@@ -1,6 +1,6 @@
 //! BIP39 test vectors
 
-#[cfg(feature = "mnemonic")]
+#[cfg(feature = "bip39")]
 mod mnemonic {
     use core::convert::TryInto;
     use hkd32::mnemonic;

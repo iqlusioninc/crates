@@ -1,18 +1,23 @@
 //! BIP39 mnemonic phrases
 
+#[cfg(feature = "bip39")]
+use super::seed::{Seed, SEED_SIZE};
 use super::{
     bits::{BitWriter, IterExt},
     language::Language,
-    seed::{Seed, SEED_SIZE},
 };
 use crate::{Error, KeyMaterial, Path, KEY_SIZE};
 use alloc::string::String;
 use core::convert::TryInto;
+#[cfg(feature = "bip39")]
 use hmac::Hmac;
-use sha2::{Digest, Sha256, Sha512};
+#[cfg(feature = "bip39")]
+use sha2::Sha512;
+use sha2::{Digest, Sha256};
 use zeroize::{Zeroize, Zeroizing};
 
 /// Number of PBKDF2 rounds to perform when deriving the seed
+#[cfg(feature = "bip39")]
 const PBKDF2_ROUNDS: usize = 2048;
 
 /// Source entropy for a BIP39 mnemonic phrase
@@ -135,7 +140,10 @@ impl Phrase {
         KeyMaterial::from(self).derive_subkey(path)
     }
 
-    /// Convert this mnemonic phrase into the BIP39 seed value
+    /// Convert this mnemonic phrase into the BIP39 seed value.
+    ///
+    /// This is only available when the `bip39` Cargo feature is enabled.
+    #[cfg(feature = "bip39")]
     pub fn to_seed(&self, password: &str) -> Seed {
         let salt = Zeroizing::new(format!("mnemonic{}", password));
         let mut seed = [0u8; SEED_SIZE];
