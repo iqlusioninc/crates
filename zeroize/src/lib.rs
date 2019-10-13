@@ -336,6 +336,7 @@ impl Zeroize for String {
 
 /// `Zeroizing` is a a wrapper for any `Z: Zeroize` type which implements a
 /// `Drop` handler which zeroizes dropped values.
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Zeroizing<Z: Zeroize>(Z);
 
 impl<Z> Zeroizing<Z>
