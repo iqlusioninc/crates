@@ -2,15 +2,9 @@
 //! (e.g. passwords, cryptographic keys, access tokens or other credentials)
 
 #![no_std]
-#![deny(
-    missing_docs,
-    rust_2018_idioms,
-    trivial_casts,
-    unused_lifetimes,
-    unused_qualifications
-)]
 #![forbid(unsafe_code)]
-#![doc(html_root_url = "https://docs.rs/secrecy/0.4.0")]
+#![warn(missing_docs, rust_2018_idioms, unused_qualifications)]
+#![doc(html_root_url = "https://docs.rs/secrecy/0.4.1")]
 
 #[cfg(feature = "alloc")]
 extern crate alloc;
