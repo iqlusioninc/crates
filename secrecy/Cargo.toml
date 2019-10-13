@@ -1,12 +1,12 @@
 [package]
 name        = "secrecy"
 description = """
-              Wrapper types and traits for secret management which help ensure
-              they aren't accidentally copied, logged, or otherwise exposed
-              (as much as possible), and also ensure secrets are securely wiped
-              from memory when dropped.
-              """
-version     = "0.4.0" # Also update html_root_url in lib.rs when bumping this
+Wrapper types and traits for secret management which help ensure
+they aren't accidentally copied, logged, or otherwise exposed
+(as much as possible), and also ensure secrets are securely wiped
+from memory when dropped.
+"""
+version     = "0.4.1" # Also update html_root_url in lib.rs when bumping this
 authors     = ["Tony Arcieri <tony@iqlusion.io>"]
 license     = "Apache-2.0 OR MIT"
 edition     = "2018"
