@@ -35,9 +35,13 @@ thereof, implemented in pure Rust with no usage of FFI or assembly.
 - No functionality besides securely zeroing memory!
 - (Optional) Custom derive support for zeroing complex structures
 
-## Requirements
+## Minimum Supported Rust Version
 
-- Rust **1.36+**
+Requires Rust **1.36** or newer.
+
+In the future, we reserve the right to change MSRV (i.e. MSRV is out-of-scope
+for this crate's SemVer guarantees), however when we do it will be accompanied
+with a minor version bump.
 
 ## License
 

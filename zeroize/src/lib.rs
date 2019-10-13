@@ -20,6 +20,14 @@
 //! - No functionality besides securely zeroing memory!
 //! - (Optional) Custom derive support for zeroing complex structures
 //!
+//! ## Minimum Supported Rust Version
+//!
+//! Requires Rust **1.36** or newer.
+//!
+//! In the future, we reserve the right to change MSRV (i.e. MSRV is out-of-scope
+//! for this crate's SemVer guarantees), however when we do it will be accompanied
+//! with a minor version bump.
+//!
 //! ## Usage
 //!
 //! ```

@@ -1,13 +1,13 @@
 [package]
 name        = "zeroize"
 description = """
-              Securely clear secrets from memory with a simple trait built on
-              stable Rust primitives which guarantee memory is zeroed using an
-              operation will not be 'optimized away' by the compiler.
-              Uses a portable pure Rust implementation that works everywhere,
-              even WASM!
-              """
-version     = "1.0.0-pre" # Also update html_root_url in lib.rs when bumping this
+Securely clear secrets from memory with a simple trait built on
+stable Rust primitives which guarantee memory is zeroed using an
+operation will not be 'optimized away' by the compiler.
+Uses a portable pure Rust implementation that works everywhere,
+even WASM!
+"""
+version     = "1.0.0" # Also update html_root_url in lib.rs when bumping this
 authors     = ["Tony Arcieri <tony@iqlusion.io>"]
 license     = "Apache-2.0 OR MIT"
 edition     = "2018"
@@ -17,17 +17,17 @@ readme      = "README.md"
 categories  = ["cryptography", "memory-management", "no-std", "os"]
 keywords    = ["memory", "memset", "secure", "volatile", "zero"]
 
-[package.metadata.docs.rs]
-all-features = true
-
 [badges]
-maintenance = { status = "actively-developed" }
+maintenance = { status = "passively-maintained" }
 
 [dependencies]
-zeroize_derive = { version = "1.0.0-pre", path = "../zeroize_derive", optional = true }
+zeroize_derive = { version = "1.0.0", path = "../zeroize_derive", optional = true }
 bytes = { version = "0.4", optional = true }
 
 [features]
 default = ["alloc"]
 alloc = []
 bytes-preview = ["bytes"]
+
+[package.metadata.docs.rs]
+all-features = true

@@ -1,3 +1,11 @@
+## [1.0.0] (2019-10-13)
+
+- Initial 1.0 release 🎉
+- zeroize_derive: Remove legacy `no_drop` attribute support ([#278])
+- Rename `bytes` feature to `bytes-preview` ([#277])
+- Further relax `Zeroize` trait bounds for `Vec` ([#276])
+- Derive `Clone`, `Debug`, and `Eq` for `Zeroizing` ([#275])
+
 ## [1.0.0-pre] (2019-09-30)
 
 - Loosen `Vec` trait bounds for `Zeroize` ([#267])
@@ -108,6 +116,11 @@ a pure Rust solution.
 
 - Initial release
 
+[1.0.0]: https://github.com/iqlusioninc/crates/pull/279
+[#278]: https://github.com/iqlusioninc/crates/pull/278
+[#277]: https://github.com/iqlusioninc/crates/pull/277
+[#276]: https://github.com/iqlusioninc/crates/pull/276
+[#275]: https://github.com/iqlusioninc/crates/pull/275
 [1.0.0-pre]: https://github.com/iqlusioninc/crates/pull/268
 [#267]: https://github.com/iqlusioninc/crates/pull/267
 [0.10.1]: https://github.com/iqlusioninc/crates/pull/264
