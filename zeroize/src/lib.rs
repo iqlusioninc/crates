@@ -312,14 +312,13 @@ where
 #[cfg(feature = "alloc")]
 impl<Z> Zeroize for Vec<Z>
 where
-    Z: Clone + Default + Zeroize,
+    Z: Zeroize,
 {
     /// "Best effort" zeroization for `Vec`.
     ///
     /// Ensures the entire capacity of the `Vec` is zeroed. Cannot ensure that
     /// previous reallocations did not leave values on the heap.
     fn zeroize(&mut self) {
-        self.resize(self.capacity(), Default::default());
         self.iter_mut().zeroize();
         self.clear();
     }
@@ -378,9 +377,6 @@ where
     }
 }
 
-// We could `derive(Zeroize)` for this, but doing it by hand allows `Zeroizing`
-// to function regardless of whether the `zeroize_derive` feature is enabled
-// or not.
 impl<Z> Drop for Zeroizing<Z>
 where
     Z: Zeroize,
@@ -407,7 +403,7 @@ fn volatile_write<T: Copy + Sized>(dst: &mut T, src: T) {
 /// Perform a volatile `memset` operation which fills a slice with a value
 #[inline]
 fn volatile_set<T: Copy + Sized>(dst: &mut [T], src: T) {
-    // TODO(tarcieri): use `volatile_set_memory` on nightly?
+    // TODO(tarcieri): use `volatile_set_memory` when stabilized
     for elem in dst {
         volatile_write(elem, src);
     }
@@ -432,32 +428,6 @@ mod tests {
         let mut vec = vec![42; 3];
         vec.zeroize();
         assert!(vec.is_empty());
-    }
-
-    #[cfg(feature = "alloc")]
-    #[test]
-    fn zeroize_vec_past_len() {
-        let mut vec = Vec::with_capacity(5);
-        for i in 0..4 {
-            vec.push(10 + i);
-        }
-        vec.clear();
-
-        // safe if: new_len <= capacity AND elements "were initialised"
-        unsafe {
-            vec.set_len(1);
-        }
-        assert_eq!(10, vec[0], "clear() hasn't erased our push()es");
-
-        vec.clear();
-        vec.zeroize();
-
-        unsafe {
-            vec.set_len(4);
-        }
-        for i in 0..4 {
-            assert_eq!(0, vec[i], "it's been zero'd");
-        }
     }
 
     #[cfg(feature = "alloc")]
