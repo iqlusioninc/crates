@@ -4,7 +4,7 @@
 #![no_std]
 #![forbid(unsafe_code)]
 #![warn(missing_docs, rust_2018_idioms, unused_qualifications)]
-#![doc(html_root_url = "https://docs.rs/secrecy/0.4.1")]
+#![doc(html_root_url = "https://docs.rs/secrecy/0.5.0")]
 
 #[cfg(feature = "alloc")]
 extern crate alloc;
