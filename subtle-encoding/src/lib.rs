@@ -10,18 +10,12 @@
 //!
 //! [hex]: https://docs.rs/subtle-encoding/latest/subtle_encoding/hex/index.html
 //! [base64]: https://docs.rs/subtle-encoding/latest/subtle_encoding/base64/index.html
-//! [bech32]: https://docs.rs/subtle-encoding/0.2.3/subtle_encoding/bech32/index.html
+//! [bech32]: https://docs.rs/subtle-encoding/latest/subtle_encoding/bech32/index.html
 
 #![no_std]
-#![deny(
-    missing_docs,
-    rust_2018_idioms,
-    trivial_casts,
-    unused_lifetimes,
-    unused_qualifications
-)]
+#![warn(missing_docs, rust_2018_idioms, unused_qualifications)]
 #![forbid(unsafe_code)]
-#![doc(html_root_url = "https://docs.rs/subtle-encoding/0.4.1")]
+#![doc(html_root_url = "https://docs.rs/subtle-encoding/0.5.0")]
 
 #[cfg(feature = "alloc")]
 #[macro_use]
