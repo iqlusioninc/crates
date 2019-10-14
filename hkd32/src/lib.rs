@@ -43,7 +43,7 @@
     unused_lifetimes,
     unused_qualifications
 )]
-#![doc(html_root_url = "https://docs.rs/hkd32/0.3.0")]
+#![doc(html_root_url = "https://docs.rs/hkd32/0.3.1")]
 
 #[cfg(feature = "alloc")]
 #[cfg_attr(any(feature = "bip39", test), macro_use)]

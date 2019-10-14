@@ -1,3 +1,7 @@
+## [0.3.1] (2019-10-13)
+
+- Upgrade to `subtle-encoding` v0.5.0 ([#283])
+
 ## [0.3.0] (2019-10-13)
 
 - Split out `bip39` cargo feature ([#280])
@@ -21,6 +25,8 @@
 
 - Initial release
 
+[0.3.1]: https://github.com/iqlusioninc/crates/pull/284
+[#283]: https://github.com/iqlusioninc/crates/pull/283
 [0.3.0]: https://github.com/iqlusioninc/crates/pull/281
 [#280]: https://github.com/iqlusioninc/crates/pull/280
 [#279]: https://github.com/iqlusioninc/crates/pull/279
