@@ -13,14 +13,15 @@ keywords    = ["tai64", "time", "timestamps", "chrono"]
 
 [badges]
 maintenance = { status = "passively-maintained" }
-travis-ci = { repository = "iqlusioninc/crates", branch = "develop" }
 
 [dependencies]
 chrono = { version = "0.4", optional = true, default-features = false }
+serde =  { version = "*", optional = true, default-features = false }
 
 [features]
 default = ["std"]
 std = []
+derive_serde = ["serde"]
 
 [dev-dependencies]
 quickcheck = "0.8"

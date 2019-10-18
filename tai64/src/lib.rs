@@ -398,3 +398,146 @@ mod tests {
         }
     }
 }
+
+// Serde Impls
+
+#[cfg(feature = "derive_serde")]
+use serde::de::{Deserialize, Deserializer, SeqAccess};
+#[cfg(feature = "derive_serde")]
+use serde::Serialize;
+#[cfg(feature = "derive_serde")]
+impl Serialize for TAI64{
+    
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where S: serde::ser::Serializer, {
+        use serde::ser::SerializeTupleStruct;
+
+        let mut state = serializer.serialize_tuple_struct("TAI64", 1)?;
+        state.serialize_field(&self.0)?;
+        state.end()
+    }
+}
+#[cfg(feature = "derive_serde")]
+impl<'de> Deserialize<'de> for TAI64 {
+    
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error> where D: Deserializer<'de> {
+        struct Visitor;
+        impl<'de> serde::de::Visitor<'de> for Visitor {
+            type Value = TAI64;
+            fn expecting(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+                formatter.write_str("tuple struct TAI64")
+            }
+            fn visit_newtype_struct<E>(self,e: E) -> Result<Self::Value, E::Error> where E: Deserializer<'de> {
+                let field0: u64 = match <u64 as serde::Deserialize>::deserialize(e) {
+                    Ok(val) => val,
+                    Err(err) => {
+                        return Err(err);
+                    }
+                };
+                Ok(TAI64(field0))
+            }
+            
+            fn visit_seq<A>(self, mut seq: A) -> Result<Self::Value, A::Error> where A: SeqAccess<'de> {
+                let field0 = match match SeqAccess::next_element::<u64>(&mut seq) {
+                        Ok(val) => val,
+                        Err(err) => {
+                            return Err(err);
+                        }
+                    } 
+                    {
+                        Some(value) => value,
+                        None => {
+                            return Err(serde::de::Error::invalid_length(
+                                0usize,
+                                &"tuple struct TAI64 with 1 element",
+                            ));
+                        }
+                    };
+                Ok(TAI64(field0))
+            }
+        }
+
+        deserializer.deserialize_newtype_struct("TAI64",Visitor)
+    }
+}
+#[cfg(feature = "derive_serde")]
+impl Serialize for TAI64N{
+    
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        let mut serde_state =
+            match serde::Serializer::serialize_tuple_struct(serializer, "TAI64N", 0 + 1 + 1)
+            {
+                Ok(val) => val,
+                Err(err) => {
+                    return Err(err);
+                }
+            };
+        match serde::ser::SerializeTupleStruct::serialize_field(&mut serde_state, &self.0) {
+            Ok(val) => val,
+            Err(err) => {
+                return Err(err);
+            }
+        };
+        match serde::ser::SerializeTupleStruct::serialize_field(&mut serde_state, &self.1) {
+            Ok(val) => val,
+            Err(err) => {
+                return Err(err);
+            }
+        };
+        serde::ser::SerializeTupleStruct::end(serde_state)
+    }
+}
+#[cfg(feature = "derive_serde")]
+impl<'de> Deserialize<'de> for TAI64N {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error> where D: Deserializer<'de> {
+        struct Visitor;
+
+        impl<'de> serde::de::Visitor<'de> for Visitor {
+            type Value = TAI64N;
+
+            fn expecting(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+                formatter.write_str("tuple struct TAI64N")
+            }
+            
+            fn visit_seq<A>(self,mut seq: A) -> Result<Self::Value, A::Error> where A: SeqAccess<'de> {
+                let field0 =
+                    match match serde::de::SeqAccess::next_element::<TAI64>(&mut seq) {
+                        Ok(val) => val,
+                        Err(err) => {
+                            return Err(err);
+                        }
+                    }
+                    {
+                        Some(value) => value,
+                        None => {
+                            return Err(serde::de::Error::invalid_length(
+                                0usize,
+                                &"tuple struct TAI64N with 2 elements",
+                            ));
+                        }
+                    };
+                let field1 =
+                    match match serde::de::SeqAccess::next_element::<u32>(&mut seq) {
+                        Ok(val) => val,
+                        Err(err) => {
+                            return Err(err);
+                        }
+                    }
+                    {
+                        Some(value) => value,
+                        None => {
+                            return Err(serde::de::Error::invalid_length(
+                                1usize,
+                                &"tuple struct TAI64N with 2 elements",
+                            ));
+                        }
+                    };
+                Ok(TAI64N(field0, field1))
+            }
+        }
+        deserializer.deserialize_tuple_struct("TAI64N", 2usize, Visitor)
+    }
+}
