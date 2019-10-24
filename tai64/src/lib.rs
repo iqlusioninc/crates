@@ -14,6 +14,11 @@
 #[cfg(feature = "chrono")]
 use chrono::{DateTime, NaiveDateTime, Utc};
 use core::{convert::TryFrom, fmt, ops, time::Duration};
+#[cfg(feature = "serde")]
+use {
+    core::convert::TryInto,
+    serde::{de, ser, Deserialize, Serialize},
+};
 
 #[cfg(feature = "std")]
 extern crate std;
@@ -108,6 +113,20 @@ impl ops::Sub<u64> for TAI64 {
 
     fn sub(self, x: u64) -> TAI64 {
         TAI64(self.0 - x)
+    }
+}
+
+#[cfg(feature = "serde")]
+impl<'de> Deserialize<'de> for TAI64 {
+    fn deserialize<D: de::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        Ok(<[u8; TAI64_LEN]>::deserialize(deserializer)?.into())
+    }
+}
+
+#[cfg(feature = "serde")]
+impl Serialize for TAI64 {
+    fn serialize<S: ser::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
+        self.to_bytes().serialize(serializer)
     }
 }
 
@@ -285,6 +304,23 @@ impl ops::Sub<Duration> for TAI64N {
             (1, NANOS_PER_SECOND + self.1 - d.subsec_nanos())
         };
         TAI64N(self.0 - carry - d.as_secs(), n)
+    }
+}
+
+#[cfg(feature = "serde")]
+impl<'de> Deserialize<'de> for TAI64N {
+    fn deserialize<D: de::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        use de::Error;
+        <[u8; TAI64N_LEN]>::deserialize(deserializer)?
+            .try_into()
+            .map_err(D::Error::custom)
+    }
+}
+
+#[cfg(feature = "serde")]
+impl Serialize for TAI64N {
+    fn serialize<S: ser::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
+        self.to_bytes().serialize(serializer)
     }
 }
 
