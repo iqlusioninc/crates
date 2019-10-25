@@ -513,6 +513,7 @@ version = "3.0.0"
 dependencies = [
  "chrono 0.4.7 (registry+https://github.com/rust-lang/crates.io-index)",
  "quickcheck 0.8.5 (registry+https://github.com/rust-lang/crates.io-index)",
+ "serde 1.0.99 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
