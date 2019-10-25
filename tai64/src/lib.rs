@@ -1,24 +1,19 @@
 //! TAI64(N) timestamp generation, parsing and calculation.
 
 #![no_std]
-#![deny(
-    missing_docs,
-    rust_2018_idioms,
-    trivial_casts,
-    unused_lifetimes,
-    unused_qualifications
-)]
-#![forbid(unsafe_code)]
 #![doc(html_root_url = "https://docs.rs/tai64/3.0.0")]
+#![forbid(unsafe_code)]
+#![warn(missing_docs, rust_2018_idioms, unused_qualifications)]
 
 #[cfg(feature = "chrono")]
 use chrono::{DateTime, NaiveDateTime, Utc};
-use core::{convert::TryFrom, fmt, ops, time::Duration};
-#[cfg(feature = "serde")]
-use {
-    core::convert::TryInto,
-    serde::{de, ser, Deserialize, Serialize},
+use core::{
+    convert::{TryFrom, TryInto},
+    fmt, ops,
+    time::Duration,
 };
+#[cfg(feature = "serde")]
+use serde::{de, ser, Deserialize, Serialize};
 
 #[cfg(feature = "std")]
 extern crate std;
@@ -48,19 +43,13 @@ pub struct TAI64(pub u64);
 impl TAI64 {
     /// Get `TAI64N` timestamp according to system clock.
     #[cfg(feature = "std")]
-    pub fn now() -> TAI64 {
+    pub fn now() -> Self {
         TAI64N::now().into()
     }
 
     /// Parse TAI64 from a byte slice
-    pub fn from_slice(slice: &[u8]) -> Result<TAI64, Error> {
-        if slice.len() == TAI64_LEN {
-            let mut bytes = [0u8; TAI64_LEN];
-            bytes.copy_from_slice(slice);
-            Ok(bytes.into())
-        } else {
-            Err(Error::LengthInvalid)
-        }
+    pub fn from_slice(slice: &[u8]) -> Result<Self, Error> {
+        slice.try_into()
     }
 
     /// Serialize TAI64 as bytes
@@ -81,15 +70,24 @@ impl TAI64 {
 
 impl From<TAI64N> for TAI64 {
     /// Remove the nanosecond component from a TAI64N value
-    fn from(other: TAI64N) -> TAI64 {
+    fn from(other: TAI64N) -> Self {
         other.0
     }
 }
 
 impl From<[u8; TAI64_LEN]> for TAI64 {
     /// Parse TAI64 from external representation
-    fn from(bytes: [u8; TAI64_LEN]) -> TAI64 {
+    fn from(bytes: [u8; TAI64_LEN]) -> Self {
         TAI64(u64::from_be_bytes(bytes))
+    }
+}
+
+impl<'a> TryFrom<&'a [u8]> for TAI64 {
+    type Error = Error;
+
+    fn try_from(slice: &'a [u8]) -> Result<Self, Error> {
+        let bytes: [u8; TAI64_LEN] = slice.try_into().map_err(|_| Error::LengthInvalid)?;
+        Ok(bytes.into())
     }
 }
 
@@ -101,17 +99,17 @@ impl From<TAI64> for [u8; 8] {
 }
 
 impl ops::Add<u64> for TAI64 {
-    type Output = TAI64;
+    type Output = Self;
 
-    fn add(self, x: u64) -> TAI64 {
+    fn add(self, x: u64) -> Self {
         TAI64(self.0 + x)
     }
 }
 
 impl ops::Sub<u64> for TAI64 {
-    type Output = TAI64;
+    type Output = Self;
 
-    fn sub(self, x: u64) -> TAI64 {
+    fn sub(self, x: u64) -> Self {
         TAI64(self.0 - x)
     }
 }
@@ -139,19 +137,13 @@ pub struct TAI64N(pub TAI64, pub u32);
 impl TAI64N {
     /// Get `TAI64N` timestamp according to system clock.
     #[cfg(feature = "std")]
-    pub fn now() -> TAI64N {
+    pub fn now() -> Self {
         TAI64N::from_system_time(&SystemTime::now())
     }
 
     /// Parse TAI64N from a byte slice
-    pub fn from_slice(slice: &[u8]) -> Result<TAI64N, Error> {
-        if slice.len() == TAI64N_LEN {
-            let mut bytes = [0u8; TAI64N_LEN];
-            bytes.copy_from_slice(slice);
-            TAI64N::try_from(bytes)
-        } else {
-            Err(Error::LengthInvalid)
-        }
+    pub fn from_slice(slice: &[u8]) -> Result<Self, Error> {
+        slice.try_into()
     }
 
     /// Serialize TAI64N as bytes
@@ -163,7 +155,7 @@ impl TAI64N {
     ///
     /// Returns `Ok(Duration)` if `other` is earlier than `self`,
     /// `Err(Duration)` otherwise.
-    pub fn duration_since(&self, other: &TAI64N) -> Result<Duration, Duration> {
+    pub fn duration_since(&self, other: &Self) -> Result<Duration, Duration> {
         if self >= other {
             let (carry, n) = if self.1 >= other.1 {
                 (0, self.1 - other.1)
@@ -229,7 +221,7 @@ impl TAI64N {
 
 impl From<TAI64> for TAI64N {
     /// Remove the nanosecond component from a TAI64N value
-    fn from(other: TAI64) -> TAI64N {
+    fn from(other: TAI64) -> Self {
         TAI64N(other, 0)
     }
 }
@@ -238,7 +230,7 @@ impl TryFrom<[u8; TAI64N_LEN]> for TAI64N {
     type Error = Error;
 
     /// Parse TAI64 from external representation
-    fn try_from(bytes: [u8; TAI64N_LEN]) -> Result<TAI64N, Error> {
+    fn try_from(bytes: [u8; TAI64N_LEN]) -> Result<Self, Error> {
         let secs = TAI64::from_slice(&bytes[..TAI64_LEN])?;
 
         let mut nano_bytes = [0u8; 4];
@@ -250,6 +242,15 @@ impl TryFrom<[u8; TAI64N_LEN]> for TAI64N {
         } else {
             Err(Error::NanosInvalid)
         }
+    }
+}
+
+impl<'a> TryFrom<&'a [u8]> for TAI64N {
+    type Error = Error;
+
+    fn try_from(slice: &'a [u8]) -> Result<Self, Error> {
+        let bytes: [u8; TAI64N_LEN] = slice.try_into().map_err(|_| Error::LengthInvalid)?;
+        bytes.try_into()
     }
 }
 
@@ -265,23 +266,23 @@ impl From<TAI64N> for [u8; TAI64N_LEN] {
 
 #[cfg(feature = "std")]
 impl From<SystemTime> for TAI64N {
-    fn from(t: SystemTime) -> TAI64N {
+    fn from(t: SystemTime) -> Self {
         TAI64N::from_system_time(&t)
     }
 }
 
 #[cfg(feature = "chrono")]
 impl From<DateTime<Utc>> for TAI64N {
-    fn from(t: DateTime<Utc>) -> TAI64N {
+    fn from(t: DateTime<Utc>) -> Self {
         TAI64N::from_datetime_utc(&t)
     }
 }
 
 #[allow(clippy::suspicious_arithmetic_impl)]
 impl ops::Add<Duration> for TAI64N {
-    type Output = TAI64N;
+    type Output = Self;
 
-    fn add(self, d: Duration) -> TAI64N {
+    fn add(self, d: Duration) -> Self {
         let n = self.1 + d.subsec_nanos();
 
         let (carry, n) = if n >= NANOS_PER_SECOND {
@@ -295,9 +296,9 @@ impl ops::Add<Duration> for TAI64N {
 }
 
 impl ops::Sub<Duration> for TAI64N {
-    type Output = TAI64N;
+    type Output = Self;
 
-    fn sub(self, d: Duration) -> TAI64N {
+    fn sub(self, d: Duration) -> Self {
         let (carry, n) = if self.1 >= d.subsec_nanos() {
             (0, self.1 - d.subsec_nanos())
         } else {
