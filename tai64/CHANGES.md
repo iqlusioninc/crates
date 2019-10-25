@@ -1,3 +1,8 @@
+## [3.1.0] (2019-10-25)
+
+- Add `TryFrom` impls for slices ([#288])
+- Add (optional) `serde` support ([#287])
+
 ## [3.0.0] (2019-08-19)
 
 - Remove `failure` ([#245])
@@ -40,6 +45,9 @@
 
 - Initial release
 
+[3.1.0]: https://github.com/iqlusioninc/crates/pull/289
+[#288]: https://github.com/iqlusioninc/crates/pull/288
+[#287]: https://github.com/iqlusioninc/crates/pull/287
 [3.0.0]: https://github.com/iqlusioninc/crates/pull/250
 [#245]: https://github.com/iqlusioninc/crates/pull/245
 [2.0.1]: https://github.com/iqlusioninc/crates/pull/208
