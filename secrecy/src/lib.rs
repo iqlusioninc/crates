@@ -110,7 +110,7 @@ pub trait DebugSecret {
     ///
     /// Static so as to discourage unintentional secret exposure.
     fn debug_secret() -> &'static str {
-        "[SECRET]"
+        "[REDACTED]"
     }
 }
 
