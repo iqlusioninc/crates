@@ -1,3 +1,7 @@
+## [0.5.1] (2019-11-30)
+
+- Change default `DebugSecret` string to `[REDACTED]` ([#290])
+
 ## [0.5.0] (2019-10-13)
 
 - Upgrade to `zeroize` v1.0.0 ([#279])
@@ -37,6 +41,8 @@
 
 - Initial release
 
+[0.5.1]: https://github.com/iqlusioninc/crates/pull/291
+[#290]: https://github.com/iqlusioninc/crates/pull/290
 [0.5.0]: https://github.com/iqlusioninc/crates/pull/282
 [#279]: https://github.com/iqlusioninc/crates/pull/279
 [0.4.1]: https://github.com/iqlusioninc/crates/pull/274
