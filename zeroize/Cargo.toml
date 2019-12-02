@@ -22,7 +22,7 @@ maintenance = { status = "passively-maintained" }
 
 [dependencies]
 zeroize_derive = { version = "1.0.0", path = "../zeroize_derive", optional = true }
-bytes = { version = "0.4", optional = true }
+bytes = { version = "0.5", optional = true }
 
 [features]
 default = ["alloc"]
