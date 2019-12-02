@@ -349,6 +349,15 @@ where
 {
     /// Wrap a value in `Zeroizing`, ensuring it's zeroized on drop.
     pub fn new(value: Z) -> Self {
+        value.into()
+    }
+}
+
+impl<Z> From<Z> for Zeroizing<Z>
+where
+    Z: Zeroize,
+{
+    fn from(value: Z) -> Zeroizing<Z> {
         Zeroizing(value)
     }
 }
