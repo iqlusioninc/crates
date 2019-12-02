@@ -16,9 +16,9 @@ Useful for encoding/decoding secret values such as cryptographic keys.
 
 [Documentation]
 
-## Requirements
+## Minimum Supported Rust Version
 
-- Rust **1.36+**
+- Rust **1.39**
 
 ## Security Notice
 
@@ -48,7 +48,7 @@ toplevel directory of this repository or [LICENSE-MIT] for details.
 [docs-image]: https://docs.rs/subtle-encoding/badge.svg
 [docs-link]: https://docs.rs/subtle-encoding/
 [license-image]: https://img.shields.io/badge/license-Apache2.0/MIT-blue.svg
-[rustc-image]: https://img.shields.io/badge/rustc-1.36+-blue.svg
+[rustc-image]: https://img.shields.io/badge/rustc-1.39+-blue.svg
 [safety-image]: https://img.shields.io/badge/unsafe-forbidden-success.svg
 [safety-link]: https://github.com/rust-secure-code/safety-dance/
 [build-image]: https://github.com/iqlusioninc/crates/workflows/Rust/badge.svg

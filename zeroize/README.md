@@ -37,7 +37,7 @@ thereof, implemented in pure Rust with no usage of FFI or assembly.
 
 ## Minimum Supported Rust Version
 
-Requires Rust **1.36** or newer.
+Requires Rust **1.39** or newer.
 
 In the future, we reserve the right to change MSRV (i.e. MSRV is out-of-scope
 for this crate's SemVer guarantees), however when we do it will be accompanied
@@ -64,7 +64,7 @@ without any additional terms or conditions.
 [docs-image]: https://docs.rs/zeroize/badge.svg
 [docs-link]: https://docs.rs/zeroize/
 [license-image]: https://img.shields.io/badge/license-Apache2.0/MIT-blue.svg
-[rustc-image]: https://img.shields.io/badge/rustc-1.36+-blue.svg
+[rustc-image]: https://img.shields.io/badge/rustc-1.39+-blue.svg
 [build-image]: https://github.com/iqlusioninc/crates/workflows/Rust/badge.svg
 [build-link]: https://github.com/iqlusioninc/crates/actions
 [gitter-image]: https://badges.gitter.im/iqlusioninc/community.svg
