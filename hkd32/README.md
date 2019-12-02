@@ -1,6 +1,5 @@
 # HMAC-based Hierarchical Key Derivation <a href="https://www.iqlusion.io"><img src="https://storage.googleapis.com/iqlusion-production-web/img/logo/iqlusion-rings-sm.png" alt="iqlusion" width="24" height="24"></a>
 
-
 [![Crate][crate-image]][crate-link]
 [![Docs][docs-image]][docs-link]
 [![Apache 2.0 Licensed][license-image]][license-link]
@@ -21,6 +20,10 @@ This construction is specialized for deriving 32-byte (256-bit) keys from
 an initial 32-bytes of input key material.
 
 [Documentation][docs-link]
+
+## Minimum Supported Rust Version
+
+- Rust **1.39**
 
 ## License
 
@@ -49,7 +52,7 @@ without any additional terms or conditions.
 [docs-link]: https://docs.rs/hkd32/
 [license-image]: https://img.shields.io/badge/license-Apache2.0/MIT-blue.svg
 [license-link]: https://github.com/iqlusioninc/crates/blob/master/LICENSE
-[rustc-image]: https://img.shields.io/badge/rustc-1.36+-blue.svg
+[rustc-image]: https://img.shields.io/badge/rustc-1.39+-blue.svg
 [build-image]: https://github.com/iqlusioninc/crates/workflows/Rust/badge.svg
 [build-link]: https://github.com/iqlusioninc/crates/actions
 [gitter-image]: https://badges.gitter.im/iqlusioninc/community.svg

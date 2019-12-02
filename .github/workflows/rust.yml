@@ -1,9 +1,9 @@
 # Based on https://github.com/actions-rs/meta/blob/master/recipes/quickstart.md
 
 on:
+  pull_request: {}
   push:
     branches: develop
-  pull_request: {}
 
 name: Rust
 
@@ -72,7 +72,7 @@ jobs:
           - ubuntu-latest
           - windows-latest
         toolchain:
-          - 1.36.0
+          - 1.39.0
           - stable
     runs-on: ${{ matrix.platform }}
     steps:

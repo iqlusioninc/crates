@@ -16,9 +16,13 @@ Supports converting to/from Rust's built-in [SystemTime] type and optionally to
 
 [Documentation][docs-link]
 
-## Requirements
+## Minimum Supported Rust Version
 
-- Rust **1.36+**
+- Rust **1.39**
+
+In the future, we reserve the right to change MSRV (i.e. MSRV is out-of-scope
+for this crate's SemVer guarantees), however when we do it will be accompanied
+with a minor version bump.
 
 ## License
 
@@ -48,7 +52,7 @@ without any additional terms or conditions.
 [docs-link]: https://docs.rs/tai64/
 [license-image]: https://img.shields.io/badge/license-Apache2.0-blue.svg
 [license-link]: https://github.com/iqlusioninc/crates/blob/develop/LICENSE
-[rustc-image]: https://img.shields.io/badge/rustc-1.36+-blue.svg
+[rustc-image]: https://img.shields.io/badge/rustc-1.39+-blue.svg
 [safety-image]: https://img.shields.io/badge/unsafe-forbidden-success.svg
 [safety-link]: https://github.com/rust-secure-code/safety-dance/
 [build-image]: https://github.com/iqlusioninc/crates/workflows/Rust/badge.svg

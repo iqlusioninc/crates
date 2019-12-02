@@ -22,7 +22,7 @@
 //!
 //! ## Minimum Supported Rust Version
 //!
-//! Requires Rust **1.36** or newer.
+//! Requires Rust **1.39** or newer.
 //!
 //! In the future, we reserve the right to change MSRV (i.e. MSRV is out-of-scope
 //! for this crate's SemVer guarantees), however when we do it will be accompanied
@@ -111,19 +111,6 @@
 //!     // The contents of `secret` will be automatically zeroized on drop
 //! }
 //! ```
-//!
-//! ## `bytes-preview` feature: `Zeroize` support for `BytesMut`
-//!
-//! This crate contains an impl of `Zeroize` for the `BytesMut` type from the
-//! `bytes` crate.
-//!
-//! As `bytes` is not yet 1.0, this is a "preview" feature which we do not
-//! include in SemVer guarantees around the `zeroize` crate. Ideally, we can
-//! upstream the implementation and remove the feature entirely.
-//!
-//! Whenever we make any changes to how the `bytes-preview` feature works,
-//! such as upgrading the `bytes` crate version or removing it after
-//! successfully upstreaming, it will be done with a minor version bump.
 //!
 //! ## What guarantees does this crate provide?
 //!
@@ -220,9 +207,6 @@
 #[cfg(feature = "alloc")]
 #[cfg_attr(test, macro_use)]
 extern crate alloc;
-
-#[cfg(feature = "bytes-preview")]
-mod bytes;
 
 #[cfg(feature = "zeroize_derive")]
 pub use zeroize_derive::Zeroize;
