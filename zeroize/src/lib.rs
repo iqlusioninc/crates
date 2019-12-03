@@ -222,8 +222,8 @@ use alloc::{string::String, vec::Vec};
 
 /// Trait for securely erasing types from memory
 pub trait Zeroize {
-    /// Zero out this object from memory (using Rust or OS intrinsics which
-    /// ensure the zeroization operation is not "optimized away")
+    /// Zero out this object from memory using Rust intrinsics which ensure the
+    /// zeroization operation is not "optimized away" by the compiler.
     fn zeroize(&mut self);
 }
 
@@ -338,6 +338,19 @@ impl Zeroize for String {
     }
 }
 
+/// Fallible trait for representing cases where zeroization may or may not be
+/// possible.
+///
+/// This is primarily useful for scenarios like reference counted data, where
+/// zeroization is only possible when the last reference is dropped.
+pub trait TryZeroize {
+    /// Try to zero out this object from memory using Rust intrinsics which
+    /// ensure the zeroization operation is not "optimized away" by the
+    /// compiler.
+    #[must_use]
+    fn try_zeroize(&mut self) -> bool;
+}
+
 /// `Zeroizing` is a a wrapper for any `Z: Zeroize` type which implements a
 /// `Drop` handler which zeroizes dropped values.
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -347,7 +360,8 @@ impl<Z> Zeroizing<Z>
 where
     Z: Zeroize,
 {
-    /// Wrap a value in `Zeroizing`, ensuring it's zeroized on drop.
+    /// Move value inside a `Zeroizing` wrapper which ensures it will be
+    /// zeroized when it's dropped.
     pub fn new(value: Z) -> Self {
         value.into()
     }
