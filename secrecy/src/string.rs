@@ -1,10 +1,18 @@
 //! Secret strings
 
 use super::{CloneableSecret, DebugSecret, Secret};
-use alloc::string::String;
+use alloc::str::FromStr;
+use alloc::string::{String, ToString};
 
 /// Secret strings
 pub type SecretString = Secret<String>;
 
 impl DebugSecret for String {}
 impl CloneableSecret for String {}
+
+impl FromStr for SecretString {
+    type Err = ();
+    fn from_str(src: &str) -> Result<Self, Self::Err> {
+        Ok(SecretString::new(src.to_string()))
+    }
+}
