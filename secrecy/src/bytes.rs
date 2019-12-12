@@ -5,8 +5,8 @@ use bytes::BytesMut;
 use core::fmt;
 use zeroize::Zeroize;
 
-#[cfg(feature = "bytes-serde")]
-use serde::de::{Deserialize, Deserializer};
+#[cfg(all(feature = "bytes", feature = "serde"))]
+use serde::de::{self, Deserialize};
 
 /// Instance of `BytesMut` protected by a type that impls the `ExposeSecret`
 /// trait like `Secret<T>`.
@@ -49,12 +49,47 @@ impl Drop for SecretBytesMut {
     }
 }
 
-#[cfg(feature = "bytes-serde")]
+#[cfg(all(feature = "bytes", feature = "serde"))]
 impl<'de> Deserialize<'de> for SecretBytesMut {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: Deserializer<'de>,
-    {
-        BytesMut::deserialize(deserializer).map(SecretBytesMut::new)
+    fn deserialize<D: de::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        struct SecretBytesVisitor;
+
+        impl<'de> de::Visitor<'de> for SecretBytesVisitor {
+            type Value = SecretBytesMut;
+
+            fn expecting(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+                formatter.write_str("byte array")
+            }
+
+            #[inline]
+            fn visit_bytes<E>(self, v: &[u8]) -> Result<Self::Value, E>
+            where
+                E: de::Error,
+            {
+                let mut bytes = BytesMut::with_capacity(v.len());
+                bytes.extend_from_slice(v);
+                Ok(SecretBytesMut(bytes))
+            }
+
+            #[inline]
+            fn visit_seq<V>(self, mut seq: V) -> Result<Self::Value, V::Error>
+            where
+                V: de::SeqAccess<'de>,
+            {
+                // 4096 is cargo culted from upstream
+                let len = core::cmp::min(seq.size_hint().unwrap_or(0), 4096);
+                let mut bytes = BytesMut::with_capacity(len);
+
+                use bytes::BufMut;
+
+                while let Some(value) = seq.next_element()? {
+                    bytes.put_u8(value);
+                }
+
+                Ok(SecretBytesMut(bytes))
+            }
+        }
+
+        deserializer.deserialize_bytes(SecretBytesVisitor)
     }
 }
