@@ -27,7 +27,6 @@ bytes = { version = "0.5", optional = true }
 [features]
 default = ["alloc"]
 alloc = ["zeroize/alloc"]
-bytes-serde = ["bytes/serde", "serde"]
 
 [package.metadata.docs.rs]
 all-features = true
