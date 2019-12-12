@@ -6,7 +6,7 @@ they aren't accidentally copied, logged, or otherwise exposed
 (as much as possible), and also ensure secrets are securely wiped
 from memory when dropped.
 """
-version     = "0.5.1" # Also update html_root_url in lib.rs when bumping this
+version     = "0.6.0" # Also update html_root_url in lib.rs when bumping this
 authors     = ["Tony Arcieri <tony@iqlusion.io>"]
 license     = "Apache-2.0 OR MIT"
 edition     = "2018"

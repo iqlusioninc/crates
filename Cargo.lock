@@ -308,7 +308,7 @@ dependencies = [
 
 [[package]]
 name = "secrecy"
-version = "0.5.1"
+version = "0.6.0"
 dependencies = [
  "bytes 0.5.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde 1.0.103 (registry+https://github.com/rust-lang/crates.io-index)",
