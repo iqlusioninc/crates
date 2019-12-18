@@ -1,3 +1,7 @@
+## [0.5.2] (2019-12-18)
+
+- Backport Impl `FromStr` for `SecretString` ([#309])
+
 ## [0.5.1] (2019-11-30)
 
 - Change default `DebugSecret` string to `[REDACTED]` ([#290])
@@ -41,6 +45,8 @@
 
 - Initial release
 
+[0.5.2]: https://github.com/iqlusioninc/crates/pull/316
+[#309]: https://github.com/iqlusioninc/crates/pull/309
 [0.5.1]: https://github.com/iqlusioninc/crates/pull/291
 [#290]: https://github.com/iqlusioninc/crates/pull/290
 [0.5.0]: https://github.com/iqlusioninc/crates/pull/282
