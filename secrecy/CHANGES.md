@@ -1,3 +1,10 @@
+## [0.6.0] (2019-12-12)
+
+- Impl `CloneableSecret` for `Secret<[T; N]>` where `T: Clone` ([#311])
+- Impl `DebugSecret` for `[T; N]` where `N` <= 64 ([#310])
+- Impl `FromStr` for `SecretString` ([#309])
+- Upgrade to `bytes` v0.5 ([#301], [#308], [#312])
+
 ## [0.5.2] (2019-12-18)
 
 - Backport Impl `FromStr` for `SecretString` ([#309])
@@ -45,6 +52,13 @@
 
 - Initial release
 
+[0.6.0]: https://github.com/iqlusioninc/crates/pull/313
+[#312]: https://github.com/iqlusioninc/crates/pull/312
+[#311]: https://github.com/iqlusioninc/crates/pull/311
+[#310]: https://github.com/iqlusioninc/crates/pull/310
+[#309]: https://github.com/iqlusioninc/crates/pull/309
+[#308]: https://github.com/iqlusioninc/crates/pull/308
+[#301]: https://github.com/iqlusioninc/crates/pull/301
 [0.5.2]: https://github.com/iqlusioninc/crates/pull/316
 [#309]: https://github.com/iqlusioninc/crates/pull/309
 [0.5.1]: https://github.com/iqlusioninc/crates/pull/291

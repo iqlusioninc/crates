@@ -1,78 +1,95 @@
 //! Optional `Secret` wrapper type for the `bytes::BytesMut` crate.
 
-use super::{CloneableSecret, DebugSecret, ExposeSecret, Secret};
-use bytes_crate::{Bytes, BytesMut};
+use super::ExposeSecret;
+use bytes::BytesMut;
 use core::fmt;
 use zeroize::Zeroize;
 
-#[cfg(feature = "serde")]
-use serde::de::{Deserialize, Deserializer};
+#[cfg(all(feature = "bytes", feature = "serde"))]
+use serde::de::{self, Deserialize};
 
-/// Instance of `Bytes` protected by a type that impls the `ExposeSecret`
+/// Instance of `BytesMut` protected by a type that impls the `ExposeSecret`
 /// trait like `Secret<T>`.
 ///
 /// Because of the nature of how the `Bytes` type works, it needs some special
 /// care in order to have a proper zeroizing drop handler.
 #[derive(Clone)]
-pub struct SecretBytes(Option<Bytes>);
+pub struct SecretBytesMut(BytesMut);
 
-impl SecretBytes {
-    /// Wrap bytes in `SecretBytes`
-    pub fn new(bytes: impl Into<Bytes>) -> SecretBytes {
-        SecretBytes(Some(bytes.into()))
+impl SecretBytesMut {
+    /// Wrap bytes in `SecretBytesMut`
+    pub fn new(bytes: impl Into<BytesMut>) -> SecretBytesMut {
+        SecretBytesMut(bytes.into())
     }
 }
 
-impl ExposeSecret<Bytes> for SecretBytes {
-    fn expose_secret(&self) -> &Bytes {
-        self.0.as_ref().unwrap()
+impl ExposeSecret<BytesMut> for SecretBytesMut {
+    fn expose_secret(&self) -> &BytesMut {
+        &self.0
     }
 }
 
-impl fmt::Debug for SecretBytes {
+impl fmt::Debug for SecretBytesMut {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "SecretBytes(...)")
+        write!(f, "SecretBytesMut([REDACTED])")
     }
 }
 
-impl From<Bytes> for SecretBytes {
-    fn from(bytes: Bytes) -> SecretBytes {
-        SecretBytes::new(bytes)
+impl From<BytesMut> for SecretBytesMut {
+    fn from(bytes: BytesMut) -> SecretBytesMut {
+        SecretBytesMut::new(bytes)
     }
 }
 
-impl From<BytesMut> for SecretBytes {
-    fn from(bytes: BytesMut) -> SecretBytes {
-        SecretBytes::new(bytes)
-    }
-}
-
-impl Drop for SecretBytes {
+impl Drop for SecretBytesMut {
     fn drop(&mut self) {
-        // To zero the contents of `Bytes`, we have to take ownership of it
-        // and then attempt to convert it to a `BytesMut`. If that succeeds,
-        // we are holding the last reference to the inner byte buffer, which
-        // indicates its lifetime has ended and it's ready to be zeroed.
-        if let Some(bytes) = self.0.take() {
-            if let Ok(mut bytes_mut) = bytes.try_mut() {
-                bytes_mut.zeroize();
+        self.0.resize(self.0.capacity(), 0);
+        self.0.as_mut().zeroize();
+        debug_assert!(self.0.as_ref().iter().all(|b| *b == 0));
+    }
+}
+
+#[cfg(all(feature = "bytes", feature = "serde"))]
+impl<'de> Deserialize<'de> for SecretBytesMut {
+    fn deserialize<D: de::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        struct SecretBytesVisitor;
+
+        impl<'de> de::Visitor<'de> for SecretBytesVisitor {
+            type Value = SecretBytesMut;
+
+            fn expecting(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+                formatter.write_str("byte array")
+            }
+
+            #[inline]
+            fn visit_bytes<E>(self, v: &[u8]) -> Result<Self::Value, E>
+            where
+                E: de::Error,
+            {
+                let mut bytes = BytesMut::with_capacity(v.len());
+                bytes.extend_from_slice(v);
+                Ok(SecretBytesMut(bytes))
+            }
+
+            #[inline]
+            fn visit_seq<V>(self, mut seq: V) -> Result<Self::Value, V::Error>
+            where
+                V: de::SeqAccess<'de>,
+            {
+                // 4096 is cargo culted from upstream
+                let len = core::cmp::min(seq.size_hint().unwrap_or(0), 4096);
+                let mut bytes = BytesMut::with_capacity(len);
+
+                use bytes::BufMut;
+
+                while let Some(value) = seq.next_element()? {
+                    bytes.put_u8(value);
+                }
+
+                Ok(SecretBytesMut(bytes))
             }
         }
+
+        deserializer.deserialize_bytes(SecretBytesVisitor)
     }
 }
-
-#[cfg(feature = "serde")]
-impl<'de> Deserialize<'de> for SecretBytes {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: Deserializer<'de>,
-    {
-        Bytes::deserialize(deserializer).map(SecretBytes::new)
-    }
-}
-
-/// Alias for `Secret<BytesMut>`
-pub type SecretBytesMut = Secret<BytesMut>;
-
-impl DebugSecret for BytesMut {}
-impl CloneableSecret for BytesMut {}

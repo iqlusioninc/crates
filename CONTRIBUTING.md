@@ -37,7 +37,7 @@ the toplevel [LICENSE] file).
 [LICENSE]: https://github.com/iqlusioninc/crates/blob/develop/LICENSE
 
 To do this, edit the [AUTHORS.md] file, inserting your name in the list of
-contributors (in rougly alphabetical order by last name, preferably) along with
+contributors (in roughly alphabetical order by last name, preferably) along with
 the name of the crate or crates you are contributing to.
 
 Commit the [AUTHORS.md] file alone (i.e. do not modify other files in the same

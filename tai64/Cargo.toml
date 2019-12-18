@@ -23,7 +23,7 @@ default = ["std"]
 std = []
 
 [dev-dependencies]
-quickcheck = "0.8"
+quickcheck = "0.9"
 
 [package.metadata.docs.rs]
 all-features = true

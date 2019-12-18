@@ -1,50 +1,45 @@
 # Based on https://github.com/actions-rs/meta/blob/master/recipes/quickstart.md
 
 on:
+  pull_request: {}
   push:
     branches: develop
-  pull_request: {}
 
 name: Rust
 
 jobs:
-  audit:
-    name: Audit
+  build:
+    name: Build (wasm32-unknown-unknown)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout sources
         uses: actions/checkout@v1
 
+      - name: Cache cargo registry
+        uses: actions/cache@v1
+        with:
+          path: ~/.cargo/registry
+          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('Cargo.lock') }}
+
+      - name: Cache cargo index
+        uses: actions/cache@v1
+        with:
+          path: ~/.cargo/git
+          key: ${{ runner.os }}-cargo-index-${{ hashFiles('Cargo.lock') }}
+
       - name: Install stable toolchain
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
-          override: true
-
-      - name: Install cargo audit
-        run: cargo install cargo-audit
-
-      - name: Run cargo audit
-        uses: actions-rs/cargo@v1
-        with:
-          command: audit
-          args: --deny-warnings
-
-  build:
-    name: Build (wasm32-unknown-unknown)
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v1
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
           target: wasm32-unknown-unknown
           override: true
-      - uses: actions-rs/cargo@v1
+
+      - name: Run cargo build
+        uses: actions-rs/cargo@v1
         with:
           use-cross: false
           command: build
-          args: --all --exclude canonical-path --exclude gaunt --target wasm32-unknown-unknown
+          args: --all --exclude canonical-path --target wasm32-unknown-unknown
 
   check:
     name: Check
@@ -70,14 +65,33 @@ jobs:
       matrix:
         platform:
           - ubuntu-latest
+          - macos-latest
           - windows-latest
         toolchain:
-          - 1.36.0
+          - 1.39.0
           - stable
     runs-on: ${{ matrix.platform }}
     steps:
       - name: Checkout sources
         uses: actions/checkout@v1
+
+      - name: Cache cargo registry
+        uses: actions/cache@v1
+        with:
+          path: ~/.cargo/registry
+          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('Cargo.lock') }}
+
+      - name: Cache cargo index
+        uses: actions/cache@v1
+        with:
+          path: ~/.cargo/git
+          key: ${{ runner.os }}-cargo-index-${{ hashFiles('Cargo.lock') }}
+
+      - name: Cache cargo build
+        uses: actions/cache@v1
+        with:
+          path: target
+          key: ${{ runner.os }}-cargo-build-target-${{ hashFiles('Cargo.lock') }}
 
       - name: Install toolchain
         uses: actions-rs/toolchain@v1
@@ -137,6 +151,24 @@ jobs:
     steps:
       - name: Checkout sources
         uses: actions/checkout@v1
+
+      - name: Cache cargo registry
+        uses: actions/cache@v1
+        with:
+          path: ~/.cargo/registry
+          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('Cargo.lock') }}
+
+      - name: Cache cargo index
+        uses: actions/cache@v1
+        with:
+          path: ~/.cargo/git
+          key: ${{ runner.os }}-cargo-index-${{ hashFiles('Cargo.lock') }}
+
+      - name: Cache cargo build
+        uses: actions/cache@v1
+        with:
+          path: target
+          key: ${{ runner.os }}-cargo-build-target-${{ hashFiles('Cargo.lock') }}
 
       - name: Install stable toolchain
         uses: actions-rs/toolchain@v1

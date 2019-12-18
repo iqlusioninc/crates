@@ -22,7 +22,7 @@
 //!
 //! ## Minimum Supported Rust Version
 //!
-//! Requires Rust **1.36** or newer.
+//! Requires Rust **1.39** or newer.
 //!
 //! In the future, we reserve the right to change MSRV (i.e. MSRV is out-of-scope
 //! for this crate's SemVer guarantees), however when we do it will be accompanied
@@ -111,19 +111,6 @@
 //!     // The contents of `secret` will be automatically zeroized on drop
 //! }
 //! ```
-//!
-//! ## `bytes-preview` feature: `Zeroize` support for `BytesMut`
-//!
-//! This crate contains an impl of `Zeroize` for the `BytesMut` type from the
-//! `bytes` crate.
-//!
-//! As `bytes` is not yet 1.0, this is a "preview" feature which we do not
-//! include in SemVer guarantees around the `zeroize` crate. Ideally, we can
-//! upstream the implementation and remove the feature entirely.
-//!
-//! Whenever we make any changes to how the `bytes-preview` feature works,
-//! such as upgrading the `bytes` crate version or removing it after
-//! successfully upstreaming, it will be done with a minor version bump.
 //!
 //! ## What guarantees does this crate provide?
 //!
@@ -214,15 +201,12 @@
 //! [good cryptographic hygiene]: https://github.com/veorq/cryptocoding#clean-memory-of-secret-data
 
 #![no_std]
-#![doc(html_root_url = "https://docs.rs/zeroize/1.0.0-pre")]
+#![doc(html_root_url = "https://docs.rs/zeroize/1.1.0")]
 #![warn(missing_docs, rust_2018_idioms, trivial_casts, unused_qualifications)]
 
 #[cfg(feature = "alloc")]
 #[cfg_attr(test, macro_use)]
 extern crate alloc;
-
-#[cfg(feature = "bytes-preview")]
-mod bytes;
 
 #[cfg(feature = "zeroize_derive")]
 pub use zeroize_derive::Zeroize;
@@ -238,8 +222,8 @@ use alloc::{string::String, vec::Vec};
 
 /// Trait for securely erasing types from memory
 pub trait Zeroize {
-    /// Zero out this object from memory (using Rust or OS intrinsics which
-    /// ensure the zeroization operation is not "optimized away")
+    /// Zero out this object from memory using Rust intrinsics which ensure the
+    /// zeroization operation is not "optimized away" by the compiler.
     fn zeroize(&mut self);
 }
 
@@ -354,6 +338,19 @@ impl Zeroize for String {
     }
 }
 
+/// Fallible trait for representing cases where zeroization may or may not be
+/// possible.
+///
+/// This is primarily useful for scenarios like reference counted data, where
+/// zeroization is only possible when the last reference is dropped.
+pub trait TryZeroize {
+    /// Try to zero out this object from memory using Rust intrinsics which
+    /// ensure the zeroization operation is not "optimized away" by the
+    /// compiler.
+    #[must_use]
+    fn try_zeroize(&mut self) -> bool;
+}
+
 /// `Zeroizing` is a a wrapper for any `Z: Zeroize` type which implements a
 /// `Drop` handler which zeroizes dropped values.
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -363,8 +360,18 @@ impl<Z> Zeroizing<Z>
 where
     Z: Zeroize,
 {
-    /// Wrap a value in `Zeroizing`, ensuring it's zeroized on drop.
+    /// Move value inside a `Zeroizing` wrapper which ensures it will be
+    /// zeroized when it's dropped.
     pub fn new(value: Z) -> Self {
+        value.into()
+    }
+}
+
+impl<Z> From<Z> for Zeroizing<Z>
+where
+    Z: Zeroize,
+{
+    fn from(value: Z) -> Zeroizing<Z> {
         Zeroizing(value)
     }
 }

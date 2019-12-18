@@ -1,3 +1,9 @@
+## [1.1.0] (2019-12-02)
+
+- Add `TryZeroize` trait ([#307])
+- Add `From<Z: Zeroize>` impl for `Zeroizing<Z>` ([#304])
+- Remove `bytes-preview` feature ([#301])
+
 ## [1.0.0] (2019-10-13)
 
 - Initial 1.0 release 🎉
@@ -116,6 +122,10 @@ a pure Rust solution.
 
 - Initial release
 
+[1.1.0]: https://github.com/iqlusioninc/crates/pull/308
+[#307]: https://github.com/iqlusioninc/crates/pull/307
+[#304]: https://github.com/iqlusioninc/crates/pull/304
+[#301]: https://github.com/iqlusioninc/crates/pull/301
 [1.0.0]: https://github.com/iqlusioninc/crates/pull/279
 [#278]: https://github.com/iqlusioninc/crates/pull/278
 [#277]: https://github.com/iqlusioninc/crates/pull/277
