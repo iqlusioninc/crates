@@ -294,6 +294,7 @@ impl CanonicalPath {
     /// This uses the same unsafe reference conversion tricks as `std` to
     /// convert from `AsRef<Path>` to `AsRef<CanonicalPath>`, i.e. `&CanonicalPath`
     /// is a newtype for `&Path` in the same way `&Path` is a newtype for `&OsStr`.
+    #[allow(clippy::missing_safety_doc)]
     pub unsafe fn from_path_unchecked<P>(path: &P) -> &Self
     where
         P: AsRef<Path> + ?Sized,

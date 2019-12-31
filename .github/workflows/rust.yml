@@ -99,14 +99,6 @@ jobs:
           toolchain: ${{ matrix.toolchain }}
           override: true
 
-      - name: Run cargo test (--no-default-features)
-        uses: actions-rs/cargo@v1
-        env:
-          RUSTFLAGS: -D warnings
-        with:
-          command: test
-          args: --no-default-features --release
-
       - name: Run cargo test
         uses: actions-rs/cargo@v1
         env:
