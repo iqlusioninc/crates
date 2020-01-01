@@ -35,15 +35,16 @@ All crates in CI with the above channels on the following operating systems:
 
 This repository contains the following crates:
 
-| Name              | Version                    | Description |
-|-------------------|----------------------------|-------------|
-| [canonical-path]  | ![][canonical-path-crate]  | Canonical filesystem path support |
-| [harp]            | ![][harp-crate]            | Minimalist HTTP library |
-| [hkd32]           | ![][hkd32-crate]           | HMAC-based Hierarchical Key Derivation |
-| [secrecy]         | ![][secrecy-crate]         | Simple secret-keeping library |
+| Name              | Version                    | Description                                   |
+|-------------------|----------------------------|-----------------------------------------------|
+| [anomaly]         | ![][anomaly-crate]         | Error context library with sources/backtraces |
+| [canonical-path]  | ![][canonical-path-crate]  | Canonical filesystem path support             |
+| [harp]            | ![][harp-crate]            | Minimalist HTTP library                       |
+| [hkd32]           | ![][hkd32-crate]           | HMAC-based Hierarchical Key Derivation        |
+| [secrecy]         | ![][secrecy-crate]         | Simple secret-keeping library                 |
 | [subtle-encoding] | ![][subtle-encoding-crate] | Hex, Bech32, and Base64 in constant-time(ish) |
-| [tai64]           | ![][tai64-crate]           | TAI64(N) timestamp format |
-| [zeroize]         | ![][zeroize-crate]         | Securely zero memory |
+| [tai64]           | ![][tai64-crate]           | TAI64(N) timestamp format                     |
+| [zeroize]         | ![][zeroize-crate]         | Securely zero memory                          |
 
 ## License
 
@@ -79,6 +80,8 @@ without any additional terms or conditions.
 
 [//]: # (crates)
 
+[anomaly]: https://github.com/iqlusioninc/crates/tree/develop/anomaly
+[anomaly-crate]: https://img.shields.io/crates/v/anomaly.svg
 [canonical-path]: https://github.com/iqlusioninc/crates/tree/develop/canonical-path
 [canonical-path-crate]: https://img.shields.io/crates/v/canonical-path.svg
 [harp]: https://github.com/iqlusioninc/crates/tree/develop/harp
