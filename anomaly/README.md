@@ -35,16 +35,9 @@ its error `Kind` type. We recommend [`thiserror`] for that purpose.
 
 ## What makes anomaly.rs different?
 
-Error crates like [`failure`] and [`anyhow`] use either full type erasure
-or "stringly typed" approach to handling errors, with [`failure`] using
-a `Fail` trait, and [`anyhow`] defining its own [`anyhow::Error`] trait.
-
-**anomaly.rs** instead uses a context generic around a concrete `Kind`
-type, and only uses type erasure (based on [`std::error::Error`]) when
-constructing error chains.
-
-In other words, it supports the full functionality of these other libraries,
-but doesn't require everything be type erased. Or, in bullet point form:
+[`anomaly::Context`] is generic around a concrete `Kind` type, and only
+uses type erasure (based on [`std::error::Error`]) when constructing
+error chains:
 
 - Concrete (generic) types for immediate errors
 - Type erasure for error sources
