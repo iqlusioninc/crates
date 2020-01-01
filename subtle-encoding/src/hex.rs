@@ -16,15 +16,12 @@
 //! Use the [hex::encode] method:
 //!
 //! ```
-//! extern crate subtle_encoding;
 //! use subtle_encoding::hex;
 //!
-//! fn main() {
-//!     let encoded = hex::encode([0, 1, 2, 3, 4, 5]);
+//! let encoded = hex::encode([0, 1, 2, 3, 4, 5]);
 //!
-//!     // Prints the hex encoded version: "000102030405"
-//!     println!("hex encoded: {}", String::from_utf8(encoded).unwrap());
-//! }
+//! // Prints the hex encoded version: "000102030405"
+//! println!("hex encoded: {}", String::from_utf8(encoded).unwrap());
 //! ```
 //!
 //! By default hex is encoded in lower-case. To encode upper-case hex, use the

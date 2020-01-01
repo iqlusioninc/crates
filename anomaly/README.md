@@ -1,0 +1,108 @@
+# anomaly.rs 🦠 <a href="https://www.iqlusion.io"><img src="https://storage.googleapis.com/iqlusion-production-web/img/logo/iqlusion-rings-sm.png" alt="iqlusion" width="24" height="24"></a>
+
+[![Crate][crate-image]][crate-link]
+[![Docs][docs-image]][docs-link]
+![Apache 2.0/MIT Licensed][license-image]
+![MSRV][rustc-image]
+[![Safety Dance][safety-image]][safety-link]
+[![Build Status][build-image]][build-link]
+[![Gitter Chat][gitter-image]][gitter-link]
+
+Error context library with support for type-erased sources and backtraces,
+targeting full support of all features on stable Rust, and with an eye towards
+serializing runtime errors using `serde`.
+
+[Documentation][docs-link]
+
+## About
+
+**anomaly.rs** draws inspiration from libraries like [`error-chain`],
+[`failure`], and [`anyhow`] to provide the following features:
+
+- An [`anomaly::Context`] type which impls [`std::error::Error`] including
+  support for type-erased [`anomaly::BoxError`] sources. Contexts are generic
+  around an error `Kind`, making the sources optional, and generally trying
+  to strike a balance between typed errors and `Box`-based type erasure.
+- Stringly typed errors using the [`anomaly::Message`] type, with a set
+  of macros to construct these errors.
+- Backtrace support using the [`backtrace`] crate, and with it support for
+  stable Rust where other libraries might require nightly.
+- (Forthcoming) Support for serializing errors using `serde`, allowing them
+  to be submitted to exception reporting services.
+
+Notably **anomaly.rs** does NOT include any sort of proc macro to define
+its error `Kind` type. We recommend [`thiserror`] for that purpose.
+
+## What makes anomaly.rs different?
+
+Error crates like [`failure`] and [`anyhow`] use either full type erasure
+or "stringly typed" approach to handling errors, with [`failure`] using
+a `Fail` trait, and [`anyhow`] defining its own [`anyhow::Error`] trait.
+
+**anomaly.rs** instead uses a context generic around a concrete `Kind`
+type, and only uses type erasure (based on [`std::error::Error`]) when
+constructing error chains.
+
+In other words, it supports the full functionality of these other libraries,
+but doesn't require everything be type erased. Or, in bullet point form:
+
+- Concrete (generic) types for immediate errors
+- Type erasure for error sources
+- No additional traits beyond `std::error::Error`
+- Stringly typed [`anomaly::Message`] for where enum variants are too
+  cumbersome or error messages are coming from e.g. API responses.
+
+## History
+
+**anomaly.rs** is an extraction of a set of patterns and boilerplate
+from real-world libraries and applications, most notably [Abscissa].
+
+## Requirements
+
+- Rust **1.36+**
+
+## License
+
+Copyright © 2019 iqlusion
+
+**anomaly.rs** is distributed under the terms of either the MIT license
+or the Apache License (Version 2.0), at your option.
+
+See [LICENSE] (Apache License, Version 2.0) file in the `iqlusioninc/crates`
+toplevel directory of this repository or [LICENSE-MIT] for details.
+
+## Contribution
+
+Unless you explicitly state otherwise, any contribution intentionally
+submitted for inclusion in the work by you shall be dual licensed as above,
+without any additional terms or conditions.
+
+[//]: # (badges)
+
+[crate-image]: https://img.shields.io/crates/v/anomaly.svg
+[crate-link]: https://crates.io/crates/anomaly
+[docs-image]: https://docs.rs/anomaly/badge.svg
+[docs-link]: https://docs.rs/anomaly/
+[license-image]: https://img.shields.io/badge/license-Apache2.0/MIT-blue.svg
+[rustc-image]: https://img.shields.io/badge/rustc-1.36+-blue.svg
+[safety-image]: https://img.shields.io/badge/unsafe-forbidden-success.svg
+[safety-link]: https://github.com/rust-secure-code/safety-dance/
+[build-image]: https://github.com/iqlusioninc/crates/workflows/Rust/badge.svg
+[build-link]: https://github.com/iqlusioninc/crates/actions
+[gitter-image]: https://badges.gitter.im/iqlusioninc/community.svg
+[gitter-link]: https://gitter.im/iqlusioninc/community
+
+[//]: # (general links)
+
+[`error-chain`]: https://crates.io/crates/error-chain
+[`failure`]: https://crates.io/crates/failure
+[`anyhow`]: https://crates.io/crates/anyhow
+[`anomaly::Context`]: https://docs.rs/anomaly/latest/anomaly/struct.Context.html
+[`std::error::Error`]: https://doc.rust-lang.org/std/error/trait.Error.html
+[`anomaly::BoxError`]: https://docs.rs/anomaly/latest/anomaly/type.BoxError.html
+[`anomaly::Message`]: https://docs.rs/anomaly/latest/anomaly/struct.Message.html
+[`backtrace`]: https://crates.io/crates/backtrace
+[`thiserror`]: https://crates.io/crates/thiserror
+[Abscissa]: https://github.com/iqlusioninc/abscissa
+[LICENSE]: https://github.com/iqlusioninc/crates/blob/master/LICENSE
+[LICENSE-MIT]: https://github.com/iqlusioninc/crates/blob/develop/anomaly/LICENSE-MIT

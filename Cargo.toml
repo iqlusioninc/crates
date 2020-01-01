@@ -1,5 +1,6 @@
 [workspace]
 members = [
+    "anomaly",
     "canonical-path",
     "harp",
     "hkd32",
