@@ -23,7 +23,7 @@ macro_rules! format_err {
 #[macro_export]
 macro_rules! fail {
     ($kind:expr, $msg:expr) => {
-        return Err(format_err!($kind, $msg).into());
+        return Err($crate::format_err!($kind, $msg).into());
     };
     ($kind:expr, $fmt:expr, $($arg:tt)+) => {
         fail!($kind, &format!($fmt, $($arg)+));
@@ -35,7 +35,7 @@ macro_rules! fail {
 macro_rules! ensure {
     ($cond:expr, $kind:expr, $msg:expr) => {
         if !($cond) {
-            return Err(format_err!($kind, $msg).into());
+            return Err($crate::format_err!($kind, $msg).into());
         }
     };
     ($cond:expr, $kind:expr, $fmt:expr, $($arg:tt)+) => {
