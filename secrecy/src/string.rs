@@ -11,7 +11,7 @@ impl DebugSecret for String {}
 impl CloneableSecret for String {}
 
 impl FromStr for SecretString {
-    type Err = ();
+    type Err = core::convert::Infallible;
     fn from_str(src: &str) -> Result<Self, Self::Err> {
         Ok(SecretString::new(src.to_string()))
     }
