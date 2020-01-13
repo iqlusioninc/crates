@@ -12,7 +12,7 @@ use crate::message::Message;
 #[macro_export]
 macro_rules! format_err {
     ($kind:expr, $msg:expr) => {
-        $kind.context($crate::error::Message::new($msg))
+        $kind.context($crate::Message::new($msg))
     };
     ($kind:expr, $fmt:expr, $($arg:tt)+) => {
         format_err!($kind, &format!($fmt, $($arg)+))
