@@ -105,7 +105,7 @@ impl FromStr for PathBuf {
         let mut result = Self::new();
 
         // Special case for the root path
-        if s.len() == 1 && s.chars().nth(0) == Some(DELIMITER) {
+        if s.len() == 1 && s.starts_with(DELIMITER) {
             return Ok(result);
         }
 

@@ -5,6 +5,7 @@ members = [
     "harp",
     "hkd32",
     "secrecy",
+    "stdtx",
     "subtle-encoding",
     "tai64",
     "zeroize",
