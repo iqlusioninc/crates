@@ -42,6 +42,7 @@ This repository contains the following crates:
 | [harp]            | ![][harp-crate]            | Minimalist HTTP library                       |
 | [hkd32]           | ![][hkd32-crate]           | HMAC-based Hierarchical Key Derivation        |
 | [secrecy]         | ![][secrecy-crate]         | Simple secret-keeping library                 |
+| [stdtx]           | ![][stdtx-crate]           | Cosmos StdTx builder/signer/serializer        |
 | [subtle-encoding] | ![][subtle-encoding-crate] | Hex, Bech32, and Base64 in constant-time(ish) |
 | [tai64]           | ![][tai64-crate]           | TAI64(N) timestamp format                     |
 | [zeroize]         | ![][zeroize-crate]         | Securely zero memory                          |
@@ -90,6 +91,8 @@ without any additional terms or conditions.
 [hkd32-crate]: https://img.shields.io/crates/v/hkd32.svg
 [secrecy]: https://github.com/iqlusioninc/crates/tree/develop/secrecy
 [secrecy-crate]: https://img.shields.io/crates/v/secrecy.svg
+[stdtx]: https://github.com/iqlusioninc/crates/tree/develop/stdtx
+[stdtx-crate]: https://img.shields.io/crates/v/stdtx.svg
 [subtle-encoding]: https://github.com/iqlusioninc/crates/tree/develop/subtle-encoding
 [subtle-encoding-crate]: https://img.shields.io/crates/v/subtle-encoding.svg
 [tai64]: https://github.com/iqlusioninc/crates/tree/develop/tai64
