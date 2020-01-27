@@ -71,5 +71,5 @@ without any additional terms or conditions.
 
 [//]: # (general links)
 
-[LICENSE]: https://github.com/iqlusioninc/crates/blob/master/LICENSE
+[LICENSE]: https://github.com/iqlusioninc/crates/blob/develop/LICENSE
 [LICENSE-MIT]: https://github.com/iqlusioninc/crates/blob/develop/secrecy/LICENSE-MIT

@@ -97,5 +97,5 @@ without any additional terms or conditions.
 [`backtrace`]: https://crates.io/crates/backtrace
 [`thiserror`]: https://crates.io/crates/thiserror
 [Abscissa]: https://github.com/iqlusioninc/abscissa
-[LICENSE]: https://github.com/iqlusioninc/crates/blob/master/LICENSE
+[LICENSE]: https://github.com/iqlusioninc/crates/blob/develop/LICENSE
 [LICENSE-MIT]: https://github.com/iqlusioninc/crates/blob/develop/anomaly/LICENSE-MIT

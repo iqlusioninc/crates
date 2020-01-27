@@ -51,7 +51,7 @@ without any additional terms or conditions.
 [docs-image]: https://docs.rs/hkd32/badge.svg
 [docs-link]: https://docs.rs/hkd32/
 [license-image]: https://img.shields.io/badge/license-Apache2.0/MIT-blue.svg
-[license-link]: https://github.com/iqlusioninc/crates/blob/master/LICENSE
+[license-link]: https://github.com/iqlusioninc/crates/blob/develop/LICENSE
 [rustc-image]: https://img.shields.io/badge/rustc-1.39+-blue.svg
 [build-image]: https://github.com/iqlusioninc/crates/workflows/Rust/badge.svg
 [build-link]: https://github.com/iqlusioninc/crates/actions
