@@ -121,9 +121,9 @@
 //! [`yubihsm`]: https://docs.rs/yubihsm
 //! [`stdtx::Builder`]: https://docs.rs/stdtx/latest/stdtx/stdtx/struct.Builder.html
 
-#![doc(html_root_url = "https://docs.rs/stdtx/0.0.0")]
+#![doc(html_root_url = "https://docs.rs/stdtx/0.1.0")]
 #![forbid(unsafe_code)]
-#![warn(rust_2018_idioms, missing_docs, unused_qualifications)]
+#![warn(missing_docs, rust_2018_idioms, unused_qualifications)]
 
 pub mod address;
 pub mod amino_types;

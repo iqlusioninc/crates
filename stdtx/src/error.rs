@@ -78,17 +78,18 @@ impl From<Context<ErrorKind>> for Error {
     }
 }
 
+impl From<ecdsa::signature::Error> for Error {
+    fn from(err: ecdsa::signature::Error) -> Error {
+        Context::new(ErrorKind::Signature, Some(err.into())).into()
+    }
+}
+
 impl From<rust_decimal::Error> for Error {
     fn from(err: rust_decimal::Error) -> Error {
         Context::new(ErrorKind::Decimal, Some(err.into())).into()
     }
 }
 
-impl From<ecdsa::signature::Error> for Error {
-    fn from(err: ecdsa::signature::Error) -> Error {
-        Context::new(ErrorKind::Signature, Some(err.into())).into()
-    }
-}
 impl From<subtle_encoding::Error> for Error {
     fn from(err: subtle_encoding::Error) -> Error {
         Context::new(ErrorKind::Parse, Some(err.into())).into()

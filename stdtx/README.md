@@ -10,6 +10,8 @@
 
 Extensible schema-driven [Cosmos] [StdTx] builder and [Amino] serializer.
 
+[Documentation][docs-link]
+
 ## About
 
 **stdtx.rs** is a Rust library for composing transactions in the [StdTx]
