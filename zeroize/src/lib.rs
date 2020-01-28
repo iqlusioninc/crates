@@ -325,6 +325,32 @@ where
     /// previous reallocations did not leave values on the heap.
     fn zeroize(&mut self) {
         self.iter_mut().zeroize();
+
+        // Zero the capacity of the `Vec` that is not initialized.
+        {
+            // Safety:
+            //
+            // This is safe, because `Vec` never allocates more than `isize::MAX` bytes.
+            // This exact use case is even mentioned in the documentation of `pointer::add`.
+            let extra_capacity_start = unsafe { self.as_mut_ptr().add(self.len()) as *mut u8 };
+            let extra_capacity_len = self.capacity().saturating_sub(self.len());
+
+            for i in 0..(extra_capacity_len * core::mem::size_of::<Z>()) {
+                // Safety:
+                //
+                // This is safe, because `Vec` never allocates more than `isize::MAX` bytes.
+                let current_ptr = unsafe { extra_capacity_start.add(i) };
+                // Safety:
+                //
+                // `current_ptr` is valid, because it lies within the allocation of the `Vec`.
+                // It is also properly aligned, because we write a `u8`, which has an alignment of
+                // 1.
+                unsafe { ptr::write_volatile(current_ptr, 0) };
+            }
+
+            atomic_fence();
+        }
+
         self.clear();
     }
 }
@@ -456,6 +482,43 @@ mod tests {
         let mut vec = vec![42; 3];
         vec.zeroize();
         assert!(vec.is_empty());
+    }
+
+    #[cfg(feature = "alloc")]
+    #[test]
+    fn zeroize_vec_entire_capacity() {
+        #[derive(Clone)]
+        struct PanicOnNonZeroDrop(u64);
+
+        impl Zeroize for PanicOnNonZeroDrop {
+            fn zeroize(&mut self) {
+                self.0 = 0;
+            }
+        }
+
+        impl Drop for PanicOnNonZeroDrop {
+            fn drop(&mut self) {
+                if self.0 != 0 {
+                    panic!("dropped non-zeroized data");
+                }
+            }
+        }
+
+        // Ensure that the entire capacity of the vec is zeroized and that no unitinialized data
+        // is ever interpreted as initialized
+        let mut vec = vec![PanicOnNonZeroDrop(42); 2];
+
+        unsafe {
+            vec.set_len(1);
+        }
+
+        vec.zeroize();
+
+        unsafe {
+            vec.set_len(2);
+        }
+
+        drop(vec);
     }
 
     #[cfg(feature = "alloc")]
