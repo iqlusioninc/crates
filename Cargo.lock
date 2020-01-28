@@ -880,7 +880,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "stdtx"
-version = "0.0.0"
+version = "0.1.0"
 dependencies = [
  "anomaly 0.1.2",
  "ecdsa 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
