@@ -31,7 +31,7 @@ uses the [StdTx] format without requiring upstream modifications.
 
 ## License
 
-Copyright © 2020 Tony Arcieri
+Copyright © 2020 iqlusion
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
