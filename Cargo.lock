@@ -1354,7 +1354,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "vint64"
-version = "0.0.0"
+version = "0.1.0"
 dependencies = [
  "criterion 0.3.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "criterion-cycles-per-byte 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
