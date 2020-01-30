@@ -57,7 +57,7 @@ without any additional terms or conditions.
 [rustc-image]: https://img.shields.io/badge/rustc-1.39+-blue.svg
 [safety-image]: https://img.shields.io/badge/unsafe-forbidden-success.svg
 [safety-link]: https://github.com/rust-secure-code/safety-dance/
-[build-image]: https://github.com/iqlusioninc/crates/workflows/Rust/badge.svg
+[build-image]: https://github.com/iqlusioninc/crates/workflows/Rust/badge.svg?branch=develop&event=push
 [build-link]: https://github.com/iqlusioninc/crates/actions
 [gitter-image]: https://badges.gitter.im/iqlusioninc/community.svg
 [gitter-link]: https://gitter.im/iqlusioninc/community

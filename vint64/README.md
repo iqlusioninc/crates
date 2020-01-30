@@ -15,20 +15,21 @@ little endian integers which optimizes for simplicity and performance.
 
 ## About
 
-This crate implements a variable-length encoding for 64-bit little
-endian integers with a number of properties which make it superior in every
-way to other variable-length integer encodings like
-[LEB128], SQLite "Varuints" or CBOR:
+This crate implements a variable-length encoding for 64-bit little endian
+integers with a number of properties which make it superior in almost every
+way to other variable-length integer encodings like [LEB128], SQLite "Varuints",
+or CBOR:
 
 - Capable of expressing the full 64-bit integer range with a maximum of 9-bytes
+- Provides the most compact encoding possible for every value in range
 - No loops involved in decoding: just (unaligned) loads, masks, and shifts
-- No complex branch-heavy logic - decoding is CTZ + shifts and sanity checks
+- No complex branch-heavy logic: decoding is CTZ + shifts and sanity checks
 - Total length of a `vint64` can be determined via the first byte alone
 
 Some precedent for this sort of encoding can be found in the
 [Extensible Binary Meta Language] (used by e.g. the [Matroska]
 media container format), however note that the specific type of "vint"
-used by this format still requires a loop to decode.
+used by that format still requires a loop to decode.
 
 ## License
 
@@ -54,16 +55,16 @@ without any additional terms or conditions.
 
 [//]: # (badges)
 
-[crate-image]: https://img.shields.io/crates/v/vint.svg
-[crate-link]: https://crates.io/crates/vint
-[docs-image]: https://docs.rs/vint/badge.svg
-[docs-link]: https://docs.rs/vint/
+[crate-image]: https://img.shields.io/crates/v/vint64.svg
+[crate-link]: https://crates.io/crates/vint64
+[docs-image]: https://docs.rs/vint64/badge.svg
+[docs-link]: https://docs.rs/vint64/
 [license-image]: https://img.shields.io/badge/license-Apache2.0-blue.svg
 [license-link]: https://github.com/iqlusioninc/crates/blob/develop/LICENSE
 [rustc-image]: https://img.shields.io/badge/rustc-1.39+-blue.svg
 [safety-image]: https://img.shields.io/badge/unsafe-forbidden-success.svg
 [safety-link]: https://github.com/rust-secure-code/safety-dance/
-[build-image]: https://github.com/iqlusioninc/crates/workflows/Rust/badge.svg
+[build-image]: https://github.com/iqlusioninc/crates/workflows/Rust/badge.svg?branch=develop&event=push
 [build-link]: https://github.com/iqlusioninc/crates/actions
 [gitter-image]: https://badges.gitter.im/iqlusioninc/community.svg
 [gitter-link]: https://gitter.im/iqlusioninc/community

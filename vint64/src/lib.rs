@@ -2,20 +2,21 @@
 //!
 //! # About
 //!
-//! This crate implements a variable-length encoding for 64-bit little
-//! endian integers with a number of properties which make it superior in every
-//! way to other variable-length integer encodings like
-//! [LEB128], SQLite "Varuints" or CBOR:
+//! This crate implements a variable-length encoding for 64-bit little endian
+//! integers with a number of properties which make it superior in almost every
+//! way to other variable-length integer encodings like [LEB128], SQLite "Varuints",
+//! or CBOR:
 //!
 //! - Capable of expressing the full 64-bit integer range with a maximum of 9-bytes
+//! - Provides the most compact encoding possible for every value in range
 //! - No loops involved in decoding: just (unaligned) loads, masks, and shifts
-//! - No complex branch-heavy logic - decoding is CTZ + shifts and sanity checks
+//! - No complex branch-heavy logic: decoding is CTZ + shifts and sanity checks
 //! - Total length of a `vint64` can be determined via the first byte alone
 //!
 //! Some precedent for this sort of encoding can be found in the
 //! [Extensible Binary Meta Language] (used by e.g. the [Matroska]
 //! media container format), however note that the specific type of "vint"
-//! used by this format still requires a loop to decode.
+//! used by that format still requires a loop to decode.
 //!
 //! # Usage
 //!
@@ -23,6 +24,10 @@
 //! // Encode a 64-bit integer as a vint64
 //! let encoded = vint64::encode(42);
 //! assert_eq!(encoded.as_ref(), &[0x55]);
+//!
+//! // Get the length of a `vint64` from its first byte.
+//! // NOTE: this is inclusive of the first byte itself.
+//! let encoded_len = vint64::length_hint(encoded.as_ref()[0]);
 //!
 //! // Decode an encoded vint64 with trailing data
 //! let mut slice: &[u8] = &[0x55, 0xde, 0xad, 0xbe, 0xef];
@@ -119,7 +124,9 @@ impl TryFrom<&[u8]> for Vint64 {
     }
 }
 
-/// Get the length of a `vint64` from the first byte
+/// Get the length of a `vint64` from the first byte.
+///
+/// NOTE: The returned value is inclusive of the first byte itself.
 pub fn length_hint(byte: u8) -> usize {
     byte.trailing_zeros() as usize + 1
 }
