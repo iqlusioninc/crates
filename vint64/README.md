@@ -1,4 +1,4 @@
-# TAI64 / TAI64N Timestamps for Rust
+# vint64: simple and efficient variable-length integer encoding
 
 [![Crate][crate-image]][crate-link]
 [![Docs][docs-image]][docs-link]
@@ -8,23 +8,32 @@
 [![Build Status][build-image]][build-link]
 [![Gitter Chat][gitter-image]][gitter-link]
 
-An implementation of the [TAI64(N)] (*Temps Atomique International*) timestamp
-format in Rust.
-
-Supports converting to/from Rust's built-in [SystemTime] type and optionally to
-[chrono]'s [DateTime] type when the `"chrono"` feature is enabled.
+`vint64` is an implementation of a variable-length encoding for 64-bit
+little endian integers which optimizes for simplicity and performance.
 
 [Documentation][docs-link]
 
-## Minimum Supported Rust Version
+## About
 
-- Rust **1.39**
+This crate implements a variable-length encoding for 64-bit little endian
+integers with a number of properties which make it superior in almost every
+way to other variable-length integer encodings like [LEB128], SQLite "Varuints",
+or CBOR:
 
-In the future, we reserve the right to change MSRV (i.e. MSRV is out-of-scope
-for this crate's SemVer guarantees), however when we do it will be accompanied
-with a minor version bump.
+- Capable of expressing the full 64-bit integer range with a maximum of 9-bytes
+- Provides the most compact encoding possible for every value in range
+- No loops involved in decoding: just (unaligned) loads, masks, and shifts
+- No complex branch-heavy logic: decoding is CTZ + shifts and sanity checks
+- Total length of a `vint64` can be determined via the first byte alone
+
+Some precedent for this sort of encoding can be found in the
+[Extensible Binary Meta Language] (used by e.g. the [Matroska]
+media container format), however note that the specific type of "vint"
+used by that format still requires a loop to decode.
 
 ## License
+
+Copyright © 2019-2020 iqlusion
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -46,10 +55,10 @@ without any additional terms or conditions.
 
 [//]: # (badges)
 
-[crate-image]: https://img.shields.io/crates/v/tai64.svg
-[crate-link]: https://crates.io/crates/tai64
-[docs-image]: https://docs.rs/tai64/badge.svg
-[docs-link]: https://docs.rs/tai64/
+[crate-image]: https://img.shields.io/crates/v/vint64.svg
+[crate-link]: https://crates.io/crates/vint64
+[docs-image]: https://docs.rs/vint64/badge.svg
+[docs-link]: https://docs.rs/vint64/
 [license-image]: https://img.shields.io/badge/license-Apache2.0-blue.svg
 [license-link]: https://github.com/iqlusioninc/crates/blob/develop/LICENSE
 [rustc-image]: https://img.shields.io/badge/rustc-1.39+-blue.svg
@@ -62,8 +71,6 @@ without any additional terms or conditions.
 
 [//]: # (general links)
 
-[TAI64(N)]: https://cr.yp.to/libtai/tai64.html
-[SystemTime]: https://doc.rust-lang.org/std/time/struct.SystemTime.html
-[chrono]: https://github.com/chronotope/chrono
-[DateTime]: https://docs.rs/chrono/0.4.0/chrono/struct.DateTime.html
-[LICENSE]: https://github.com/iqlusioninc/crates/blob/develop/LICENSE
+[LEB128]: https://cr.yp.to/libtai/vint.html
+[Extensible Binary Meta Language]: https://en.wikipedia.org/wiki/Extensible_Binary_Meta_Language
+[Matroska]: https://www.matroska.org/
