@@ -46,7 +46,7 @@
 //! [Matroska]: https://www.matroska.org/
 
 #![no_std]
-#![doc(html_root_url = "https://docs.rs/vint64/0.1.0")]
+#![doc(html_root_url = "https://docs.rs/vint64/0.1.1")]
 #![forbid(unsafe_code)]
 #![warn(missing_docs, rust_2018_idioms, unused_qualifications)]
 
