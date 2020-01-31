@@ -8,10 +8,37 @@
 //! or CBOR:
 //!
 //! - Capable of expressing the full 64-bit integer range with a maximum of 9-bytes
+//! - Total length of a `vint64` can be determined via the first byte alone
 //! - Provides the most compact encoding possible for every value in range
 //! - No loops involved in decoding: just (unaligned) loads, masks, and shifts
 //! - No complex branch-heavy logic: decoding is CTZ + shifts and sanity checks
-//! - Total length of a `vint64` can be determined via the first byte alone
+//!
+//! Integers serialized as unsigned `vint64` are (up to) 64-bit unsigned little
+//! endian integers, with the `[0, (2⁶⁴)−1]` range supported.
+//!
+//! They have serialized lengths from 1-byte to 9-bytes depending on what value
+//! they're representing. The number of remaining bytes is stored in the leading
+//! byte, indicated by the number of trailing zeroes in that byte.
+//!
+//! Below is an example of how prefix bits signal the length of the integer value
+//! which follows:
+//!
+//! | Prefix     | Precision | Total Bytes |
+//! |------------|-----------|-------------|
+//! | `xxxxxxx1` | 7 bits    | 1 byte      |
+//! | `xxxxxx10` | 14 bits   | 2 bytes     |
+//! | `xxxxx100` | 21 bits   | 3 bytes     |
+//! | `xxxx1000` | 28 bits   | 4 bytes     |
+//! | `xxx10000` | 35 bits   | 5 bytes     |
+//! | `xx100000` | 42 bits   | 6 bytes     |
+//! | `x1000000` | 49 bits   | 7 bytes     |
+//! | `10000000` | 56 bits   | 8 bytes     |
+//! | `00000000` | 64 bits   | 9 bytes     |
+//!
+//! All arithmetic needed to serialize and deserialize `vint64` can be performed
+//! using only 64-bit integers. The case of the prefix byte being all-zero is
+//! a special case, and any remaining arithmetic is performed on the remaining
+//! bytes.
 //!
 //! Some precedent for this sort of encoding can be found in the
 //! [Extensible Binary Meta Language] (used by e.g. the [Matroska]

@@ -21,10 +21,10 @@ way to other variable-length integer encodings like [LEB128], SQLite "Varuints",
 or CBOR:
 
 - Capable of expressing the full 64-bit integer range with a maximum of 9-bytes
+- Total length of a `vint64` can be determined via the first byte alone
 - Provides the most compact encoding possible for every value in range
 - No loops involved in decoding: just (unaligned) loads, masks, and shifts
 - No complex branch-heavy logic: decoding is CTZ + shifts and sanity checks
-- Total length of a `vint64` can be determined via the first byte alone
 
 Some precedent for this sort of encoding can be found in the
 [Extensible Binary Meta Language] (used by e.g. the [Matroska]
