@@ -35,9 +35,9 @@ its error `Kind` type. We recommend [`thiserror`] for that purpose.
 
 ## What makes anomaly.rs different?
 
-[`anomaly::Context`] is generic around a concrete `Kind` type, and only
-uses type erasure (based on [`std::error::Error`]) when constructing
-error chains:
+[`anomaly::Context`] (and its `Box`-ed wrapper, [`anomaly::Error`] are
+generic around a concrete `Kind` type. Type erasure (based on
+[`std::error::Error`]) is only used when constructing error chains:
 
 - Concrete (generic) types for immediate errors
 - Type erasure for error sources
@@ -91,6 +91,7 @@ without any additional terms or conditions.
 [`failure`]: https://crates.io/crates/failure
 [`anyhow`]: https://crates.io/crates/anyhow
 [`anomaly::Context`]: https://docs.rs/anomaly/latest/anomaly/struct.Context.html
+[`anomaly::Error`]: https://docs.rs/anomaly/latest/anomaly/struct.Error.html
 [`std::error::Error`]: https://doc.rust-lang.org/std/error/trait.Error.html
 [`anomaly::BoxError`]: https://docs.rs/anomaly/latest/anomaly/type.BoxError.html
 [`anomaly::Message`]: https://docs.rs/anomaly/latest/anomaly/struct.Message.html
