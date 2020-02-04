@@ -21,3 +21,7 @@ thiserror = "1"
 [features]
 default = ["backtrace"]
 gimli-symbolize = ["backtrace/gimli-symbolize"]
+serializer = ["backtrace/serde", "serde"]
+
+[package.metadata.docs.rs]
+all-features = true

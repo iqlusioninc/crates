@@ -5,7 +5,8 @@ use super::BoxError;
 use backtrace::Backtrace;
 use std::fmt::{self, Debug, Display};
 
-/// Error context
+/// Error context: stores an error source (as a [`BoxError`]) and backtrace
+/// along with an error `Kind`.
 #[derive(Debug)]
 pub struct Context<Kind>
 where
