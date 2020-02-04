@@ -9,7 +9,7 @@ use std::fmt::{self, Debug, Display};
 #[derive(Debug)]
 pub struct Context<Kind>
 where
-    Kind: Clone + Debug + Display + Eq + PartialEq + Into<BoxError>,
+    Kind: Clone + Debug + Display + Into<BoxError>,
 {
     /// Kind of error
     kind: Kind,
@@ -24,7 +24,7 @@ where
 
 impl<Kind> Context<Kind>
 where
-    Kind: Clone + Debug + Display + Eq + PartialEq + Into<BoxError>,
+    Kind: Clone + Debug + Display + Into<BoxError>,
 {
     /// Create a new error context
     pub fn new(kind: Kind, source: Option<BoxError>) -> Self {
@@ -50,7 +50,7 @@ where
 
 impl<Kind> Display for Context<Kind>
 where
-    Kind: Clone + Debug + Display + Eq + PartialEq + Into<BoxError>,
+    Kind: Clone + Debug + Display + Into<BoxError>,
 {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", &self.kind)?;
@@ -65,7 +65,7 @@ where
 
 impl<Kind> From<Kind> for Context<Kind>
 where
-    Kind: Clone + Debug + Display + Eq + PartialEq + Into<BoxError>,
+    Kind: Clone + Debug + Display + Into<BoxError>,
 {
     fn from(kind: Kind) -> Context<Kind> {
         Self::new(kind, None)
@@ -74,7 +74,7 @@ where
 
 impl<Kind> std::error::Error for Context<Kind>
 where
-    Kind: Clone + Debug + Display + Eq + PartialEq + Into<BoxError>,
+    Kind: Clone + Debug + Display + Into<BoxError>,
 {
     fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
         self.source

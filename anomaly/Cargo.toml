@@ -15,6 +15,9 @@ keywords    = ["backtrace", "error-handling", "exception-reporting", "serde"]
 backtrace = { version = "0.3", optional = true }
 serde = { version = "1", optional = true, features = ["serde_derive"] }
 
+[dev-dependencies]
+thiserror = "1"
+
 [features]
 default = ["backtrace"]
 gimli-symbolize = ["backtrace/gimli-symbolize"]
