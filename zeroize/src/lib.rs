@@ -360,6 +360,31 @@ impl Zeroize for String {
     fn zeroize(&mut self) {
         unsafe { self.as_bytes_mut() }.zeroize();
         debug_assert!(self.as_bytes().iter().all(|b| *b == 0));
+
+        // Zero the capacity of the `String` that is not initialized.
+        {
+            // Safety:
+            //
+            // This is safe, because `String` never allocates more than `isize::MAX` bytes.
+            let extra_capacity_start = unsafe { self.as_mut_ptr().add(self.len()) };
+            let extra_capacity_len = self.capacity().saturating_sub(self.len());
+
+            for i in 0..extra_capacity_len {
+                // Safety:
+                //
+                // This is safe, because `String` never allocates more than `isize::MAX` bytes.
+                let current_ptr = unsafe { extra_capacity_start.add(i) };
+                // Safety:
+                //
+                // `current_ptr` is valid, because it lies within the allocation of the `Vec`.
+                // It is also properly aligned, because we write a `u8`, which has an alignment of
+                // 1.
+                unsafe { ptr::write_volatile(current_ptr, 0) };
+            }
+
+            atomic_fence();
+        }
+
         self.clear();
     }
 }
@@ -527,6 +552,21 @@ mod tests {
         let mut string = String::from("Hello, world!");
         string.zeroize();
         assert!(string.is_empty());
+    }
+
+    #[cfg(feature = "alloc")]
+    #[test]
+    fn zeroize_string_entire_capacity() {
+        let mut string = String::from("Hello, world!");
+        string.truncate(5);
+
+        string.zeroize();
+
+        // convert the string to a vec to easily access the unused capacity
+        let mut as_vec = string.into_bytes();
+        unsafe { as_vec.set_len(as_vec.capacity()) };
+
+        assert!(as_vec.iter().all(|byte| *byte == 0));
     }
 
     #[cfg(feature = "alloc")]
