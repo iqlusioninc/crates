@@ -64,6 +64,18 @@
 //! }
 //! ```
 //!
+//! # `serde` support
+//!
+//! The `serializer` Cargo feature of this crate enables [`serde`] serialization
+//! support for errors, useful for structured logging of error kinds, their
+//! backtraces, and their sources.
+//!
+//! When enabled, it adds a [`SerializedError`] type, as well as
+//! [`serde::Serialize`] impls on the [`Context`] and [`Error`] types.
+//!
+//! These serializers preserve the full structure of your `ErrorKind`. For that
+//! reasion, your `ErrorKind` must also impl [`serde::Serialize`].
+//!
 //! [`thiserror`]: https://github.com/dtolnay/thiserror
 
 #![forbid(unsafe_code)]
@@ -76,8 +88,12 @@ mod macros;
 mod context;
 mod error;
 mod message;
+#[cfg(feature = "serializer")]
+mod serializer;
 
-pub use self::{context::Context, error::Error, message::Message};
+#[cfg(feature = "serializer")]
+pub use crate::serializer::SerializedError;
+pub use crate::{context::Context, error::Error, message::Message};
 #[cfg(feature = "backtrace")]
 pub use backtrace;
 

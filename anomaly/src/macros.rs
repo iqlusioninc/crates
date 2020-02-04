@@ -1,5 +1,5 @@
 //! This crate defines error handling macros designed to produce formatted
-//! error messages using the [`anomaly::Message`] type.
+//! error messages using the [`Message`] type.
 
 #[allow(unused_imports)]
 use crate::message::Message;

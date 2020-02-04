@@ -27,15 +27,15 @@ serializing runtime errors using `serde`.
   of macros to construct these errors.
 - Backtrace support using the [`backtrace`] crate, and with it support for
   stable Rust where other libraries might require nightly.
-- (Forthcoming) Support for serializing errors using `serde`, allowing them
-  to be submitted to exception reporting services.
+- Support for serializing errors using `serde`, allowing them to be submitted
+  to exception reporting services and other structured logging systems.
 
 Notably **anomaly.rs** does NOT include any sort of proc macro to define
 its error `Kind` type. We recommend [`thiserror`] for that purpose.
 
 ## What makes anomaly.rs different?
 
-[`anomaly::Context`] (and its `Box`-ed wrapper, [`anomaly::Error`] are
+[`anomaly::Context`] and its `Box`-ed wrapper, [`anomaly::Error`], are
 generic around a concrete `Kind` type. Type erasure (based on
 [`std::error::Error`]) is only used when constructing error chains:
 
@@ -44,6 +44,7 @@ generic around a concrete `Kind` type. Type erasure (based on
 - No additional traits beyond `std::error::Error`
 - Stringly typed [`anomaly::Message`] for where enum variants are too
   cumbersome or error messages are coming from e.g. API responses.
+- Structured logging of your errors using `serde`
 
 ## History
 
@@ -52,11 +53,11 @@ from real-world libraries and applications, most notably [Abscissa].
 
 ## Requirements
 
-- Rust **1.36+**
+- Rust **1.38+**
 
 ## License
 
-Copyright © 2019 iqlusion
+Copyright © 2019-2020 iqlusion
 
 **anomaly.rs** is distributed under the terms of either the MIT license
 or the Apache License (Version 2.0), at your option.
@@ -77,7 +78,7 @@ without any additional terms or conditions.
 [docs-image]: https://docs.rs/anomaly/badge.svg
 [docs-link]: https://docs.rs/anomaly/
 [license-image]: https://img.shields.io/badge/license-Apache2.0/MIT-blue.svg
-[rustc-image]: https://img.shields.io/badge/rustc-1.36+-blue.svg
+[rustc-image]: https://img.shields.io/badge/rustc-1.38+-blue.svg
 [safety-image]: https://img.shields.io/badge/unsafe-forbidden-success.svg
 [safety-link]: https://github.com/rust-secure-code/safety-dance/
 [build-image]: https://github.com/iqlusioninc/crates/workflows/Rust/badge.svg?branch=develop&event=push
