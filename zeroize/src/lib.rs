@@ -309,7 +309,14 @@ where
     Z: DefaultIsZeroes,
 {
     fn zeroize(&mut self) {
-        volatile_set(self, Z::default());
+        assert!(self.len() <= core::isize::MAX as usize);
+        // Safety:
+        //
+        // This is safe, because the slice is well aligned and is backed by a single allocated
+        // object for at least `self.len()` elements of type `Z`.
+        // `self.len()` is also not larger than an `isize`, because of the assertion above.
+        // The memory of the slice should not wrap around the address space.
+        unsafe { volatile_set(self.as_mut_ptr(), Z::default(), self.len()) };
         atomic_fence();
     }
 }
@@ -335,19 +342,22 @@ where
             let extra_capacity_start = unsafe { self.as_mut_ptr().add(self.len()) as *mut u8 };
             let extra_capacity_len = self.capacity().saturating_sub(self.len());
 
-            for i in 0..(extra_capacity_len * core::mem::size_of::<Z>()) {
-                // Safety:
-                //
-                // This is safe, because `Vec` never allocates more than `isize::MAX` bytes.
-                let current_ptr = unsafe { extra_capacity_start.add(i) };
-                // Safety:
-                //
-                // `current_ptr` is valid, because it lies within the allocation of the `Vec`.
-                // It is also properly aligned, because we write a `u8`, which has an alignment of
-                // 1.
-                unsafe { ptr::write_volatile(current_ptr, 0) };
-            }
-
+            // Safety:
+            // The memory pointed to by `extra_capacity_start` is valid for `extra_capacity_len *
+            // mem::size_of::<Z>()` bytes, because the allocation of the `Vec` has enough reported
+            // capacity for elements of type `Z`.
+            // It is also properly aligned, because the `T` here is `u8`, which has an alignment of
+            // `1`.
+            // `extra_capacity_len` is not larger than an `isize`, because `Vec` never allocates
+            // more than `isize::MAX` bytes.
+            // The `Vec` allocation also guarantees to never wrap around the address space.
+            unsafe {
+                volatile_set(
+                    extra_capacity_start,
+                    0,
+                    extra_capacity_len * core::mem::size_of::<Z>(),
+                )
+            };
             atomic_fence();
         }
 
@@ -369,19 +379,15 @@ impl Zeroize for String {
             let extra_capacity_start = unsafe { self.as_mut_ptr().add(self.len()) };
             let extra_capacity_len = self.capacity().saturating_sub(self.len());
 
-            for i in 0..extra_capacity_len {
-                // Safety:
-                //
-                // This is safe, because `String` never allocates more than `isize::MAX` bytes.
-                let current_ptr = unsafe { extra_capacity_start.add(i) };
-                // Safety:
-                //
-                // `current_ptr` is valid, because it lies within the allocation of the `Vec`.
-                // It is also properly aligned, because we write a `u8`, which has an alignment of
-                // 1.
-                unsafe { ptr::write_volatile(current_ptr, 0) };
-            }
-
+            // Safety:
+            // The memory pointed to by `extra_capacity_start` is valid for `extra_capacity_len`
+            // bytes, because the allocation of the `String` has enough reported capacity.
+            // It is also properly aligned, because the `T` here is `u8`, which has an alignment of
+            // `1`.
+            // `extra_capacity_len` is not larger than an `isize`, because `String` never allocates
+            // more than `isize::MAX` bytes.
+            // The `String` allocation also guarantees to never wrap around the address space.
+            unsafe { volatile_set(extra_capacity_start, 0, extra_capacity_len) };
             atomic_fence();
         }
 
@@ -480,11 +486,28 @@ fn volatile_write<T: Copy + Sized>(dst: &mut T, src: T) {
 }
 
 /// Perform a volatile `memset` operation which fills a slice with a value
+///
+/// Safety:
+/// The memory pointed to by `dst` must be a single allocated object that is valid for `count`
+/// contiguous elements of `T`.
+/// `count` must not be larger than an `isize`.
+/// `dst` being offset by `mem::size_of::<T> * count` bytes must not wrap around the address space.
+/// Also `dst` must be properly aligned.
 #[inline]
-fn volatile_set<T: Copy + Sized>(dst: &mut [T], src: T) {
+unsafe fn volatile_set<T: Copy + Sized>(dst: *mut T, src: T, count: usize) {
     // TODO(tarcieri): use `volatile_set_memory` when stabilized
-    for elem in dst {
-        volatile_write(elem, src);
+    for i in 0..count {
+        // Safety:
+        //
+        // This is safe because there is room for at least `count` objects of type `T` in the
+        // allocation pointed to by `dst`, because `count <= isize::MAX` and because
+        // `dst.add(count)` must not wrap around the address space.
+        let ptr = dst.add(i);
+        // Safety:
+        //
+        // This is safe, because the pointer is valid and because `dst` is well aligned for `T` and
+        // `ptr` is an offset of `dst` by a multiple of `mem::size_of::<T>()` bytes.
+        ptr::write_volatile(ptr, src);
     }
 }
 
