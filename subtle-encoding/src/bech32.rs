@@ -30,9 +30,6 @@ pub const DEFAULT_CHARSET_UPCASE: [char; 32] = [
     'N', '5', '4', 'K', 'H', 'C', 'E', '6', 'M', 'U', 'A', '7', 'L',
 ];
 
-/// Maximum length of a bech32 string
-pub const MAX_LENGTH: usize = 90;
-
 /// Encode the given data as lower-case Bech32, returning a `String`
 pub fn encode<S, D>(hrp: S, data: D) -> String
 where
@@ -166,7 +163,6 @@ impl Bech32 {
         S: AsRef<str>,
     {
         let encoded_str = encoded.as_ref();
-        let encoded_len: usize = encoded_str.len();
 
         // TODO: constant-time whitespace tolerance
         if encoded_str
@@ -177,9 +173,6 @@ impl Bech32 {
         {
             return Err(Error::TrailingWhitespace);
         }
-
-        // TODO: support for longer strings
-        ensure!(encoded_len <= MAX_LENGTH, Error::LengthInvalid);
 
         let pos = encoded_str
             .rfind(self.separator)
@@ -332,15 +325,6 @@ mod tests {
         let bech32 = Bech32::default();
         assert_eq!(bech32.decode("\x201nwldj5"), Err(Error::EncodingInvalid));
         assert_eq!(bech32.decode("\x7F1axkwrx"), Err(Error::EncodingInvalid));
-    }
-
-    #[test]
-    fn overall_max_length_exceeded() {
-        let too_long: &str = "an84characterslonghumanreadablepartthatcontainsthenumber1andtheexcludedcharactersbio1569pvx";
-        assert_eq!(
-            Bech32::default().decode(too_long),
-            Err(Error::LengthInvalid)
-        );
     }
 
     #[test]
