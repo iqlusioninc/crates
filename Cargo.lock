@@ -476,7 +476,7 @@ dependencies = [
  "lazy_static 1.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "pbkdf2 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "sha2 0.8.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "subtle-encoding 0.5.0",
+ "subtle-encoding 0.5.1",
  "zeroize 1.1.0",
 ]
 
@@ -1190,7 +1190,7 @@ dependencies = [
  "serde_json 1.0.47 (registry+https://github.com/rust-lang/crates.io-index)",
  "sha2 0.8.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "signatory-secp256k1 0.18.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "subtle-encoding 0.5.0",
+ "subtle-encoding 0.5.1",
  "thiserror 1.0.10 (registry+https://github.com/rust-lang/crates.io-index)",
  "toml 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -1215,7 +1215,7 @@ dependencies = [
 
 [[package]]
 name = "subtle-encoding"
-version = "0.5.0"
+version = "0.5.1"
 dependencies = [
  "zeroize 1.1.0",
 ]

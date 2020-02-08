@@ -13,7 +13,7 @@
 //! [bech32]: https://docs.rs/subtle-encoding/latest/subtle_encoding/bech32/index.html
 
 #![no_std]
-#![doc(html_root_url = "https://docs.rs/subtle-encoding/0.5.0")]
+#![doc(html_root_url = "https://docs.rs/subtle-encoding/0.5.1")]
 #![forbid(unsafe_code)]
 #![warn(missing_docs, rust_2018_idioms, unused_qualifications)]
 
