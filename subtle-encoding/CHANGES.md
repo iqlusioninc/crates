@@ -1,3 +1,7 @@
+## [0.5.1] (2020-02-08)
+
+- Remove Bech32 max length restriction ([#357])
+
 ## [0.5.0] (2019-10-13)
 
 - Upgrade to `zeroize` v1.0.0 ([#279])
@@ -69,6 +73,8 @@
 
 - Initial release
 
+[0.5.1]: https://github.com/iqlusioninc/crates/pull/358
+[#357]: https://github.com/iqlusioninc/crates/pull/357
 [0.5.0]: https://github.com/iqlusioninc/crates/pull/283
 [#279]: https://github.com/iqlusioninc/crates/pull/279
 [0.4.1]: https://github.com/iqlusioninc/crates/pull/269

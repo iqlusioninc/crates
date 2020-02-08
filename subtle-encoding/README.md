@@ -12,6 +12,10 @@ Rust crate for encoding/decoding binary data to/from **base64** and **hex**
 encodings while avoiding data-dependent branching/table lookups, and therefore
 providing "best effort" constant-time operation.
 
+Also includes a non-constant-time Bech32 encoder/decoder gated under the
+`bech32-preview` Cargo feature (with a goal of eventually making it
+constant-time).
+
 Useful for encoding/decoding secret values such as cryptographic keys.
 
 [Documentation]
@@ -33,7 +37,7 @@ Use at your own risk.
 
 ## License
 
-Copyright © 2018-2019 iqlusion
+Copyright © 2018-2020 iqlusion
 
 **subtle-encoding** is distributed under the terms of either the MIT license
 or the Apache License (Version 2.0), at your option.
