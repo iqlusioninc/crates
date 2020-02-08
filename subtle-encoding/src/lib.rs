@@ -13,9 +13,9 @@
 //! [bech32]: https://docs.rs/subtle-encoding/latest/subtle_encoding/bech32/index.html
 
 #![no_std]
-#![warn(missing_docs, rust_2018_idioms, unused_qualifications)]
-#![forbid(unsafe_code)]
 #![doc(html_root_url = "https://docs.rs/subtle-encoding/0.5.0")]
+#![forbid(unsafe_code)]
+#![warn(missing_docs, rust_2018_idioms, unused_qualifications)]
 
 #[cfg(feature = "alloc")]
 #[macro_use]
