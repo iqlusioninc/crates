@@ -45,7 +45,6 @@ This repository contains the following crates:
 | [stdtx]           | ![][stdtx-crate]           | Cosmos StdTx builder/signer/serializer        |
 | [subtle-encoding] | ![][subtle-encoding-crate] | Hex, Bech32, and Base64 in constant-time(ish) |
 | [tai64]           | ![][tai64-crate]           | TAI64(N) timestamp format                     |
-| [vint64]          | ![][vint64-crate]          | Simple and efficient 64-bit varint encoding   |
 | [zeroize]         | ![][zeroize-crate]         | Securely zero memory                          |
 
 ## License
@@ -98,7 +97,5 @@ without any additional terms or conditions.
 [subtle-encoding-crate]: https://img.shields.io/crates/v/subtle-encoding.svg
 [tai64]: https://github.com/iqlusioninc/crates/tree/develop/tai64
 [tai64-crate]: https://img.shields.io/crates/v/tai64.svg
-[vint64]: https://github.com/iqlusioninc/crates/tree/develop/vint64
-[vint64-crate]: https://img.shields.io/crates/v/vint64.svg
 [zeroize]: https://github.com/iqlusioninc/crates/tree/develop/zeroize
 [zeroize-crate]: https://img.shields.io/crates/v/zeroize.svg
