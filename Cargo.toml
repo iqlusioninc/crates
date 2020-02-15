@@ -8,7 +8,6 @@ members = [
     "stdtx",
     "subtle-encoding",
     "tai64",
-    "vint64",
     "zeroize",
     "zeroize_derive"
 ]
