@@ -27,6 +27,12 @@ jobs:
           path: ~/.cargo/git
           key: ${{ runner.os }}-cargo-index-${{ hashFiles('Cargo.lock') }}
 
+      - name: Cache cargo build
+        uses: actions/cache@v1
+        with:
+          path: target
+          key: ${{ runner.os }}-wasm32-cargo-build-target-${{ hashFiles('Cargo.lock') }}
+
       - name: Install stable toolchain
         uses: actions-rs/toolchain@v1
         with:
@@ -36,6 +42,9 @@ jobs:
 
       - name: Run cargo build
         uses: actions-rs/cargo@v1
+        env:
+          CARGO_INCREMENTAL: 0
+          RUSTFLAGS: -D warnings
         with:
           use-cross: false
           command: build
@@ -58,6 +67,56 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: check
+
+  coverage:
+    name: Code Coverage
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Cache cargo registry
+        uses: actions/cache@v1
+        with:
+          path: ~/.cargo/registry
+          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('Cargo.lock') }}
+
+      - name: Cache cargo index
+        uses: actions/cache@v1
+        with:
+          path: ~/.cargo/git
+          key: ${{ runner.os }}-cargo-index-${{ hashFiles('Cargo.lock') }}
+
+      - name: Cache cargo build
+        uses: actions/cache@v1
+        with:
+          path: target
+          key: ${{ runner.os }}-coverage-cargo-build-target-${{ hashFiles('Cargo.lock') }}
+
+      - name: Install stable toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+
+      - name: Run cargo-tarpaulin
+        uses: actions-rs/tarpaulin@v0.1
+        env:
+          CARGO_INCREMENTAL: 0
+        with:
+          version: 0.11.0
+          args: --all -- --test-threads 1
+
+      - name: Upload to codecov.io
+        uses: codecov/codecov-action@v1.0.2
+        with:
+          token: ${{secrets.CODECOV_TOKEN}}
+
+      - name: Archive code coverage results
+        uses: actions/upload-artifact@v1
+        with:
+          name: code-coverage-report
+          path: cobertura.xml
 
   test:
     name: Test Suite
@@ -91,7 +150,7 @@ jobs:
         uses: actions/cache@v1
         with:
           path: target
-          key: ${{ runner.os }}-cargo-build-target-${{ hashFiles('Cargo.lock') }}
+          key: ${{ runner.os }}-rust-${{ matrix.toolchain }}-cargo-build-target-${{ hashFiles('Cargo.lock') }}
 
       - name: Install toolchain
         uses: actions-rs/toolchain@v1
@@ -102,6 +161,7 @@ jobs:
       - name: Run cargo test
         uses: actions-rs/cargo@v1
         env:
+          CARGO_INCREMENTAL: 0
           RUSTFLAGS: -D warnings
         with:
           command: test
@@ -110,6 +170,7 @@ jobs:
       - name: Run cargo test (--all-features)
         uses: actions-rs/cargo@v1
         env:
+          CARGO_INCREMENTAL: 0
           RUSTFLAGS: -D warnings
         with:
           command: test
@@ -155,12 +216,6 @@ jobs:
         with:
           path: ~/.cargo/git
           key: ${{ runner.os }}-cargo-index-${{ hashFiles('Cargo.lock') }}
-
-      - name: Cache cargo build
-        uses: actions/cache@v1
-        with:
-          path: target
-          key: ${{ runner.os }}-cargo-build-target-${{ hashFiles('Cargo.lock') }}
 
       - name: Install stable toolchain
         uses: actions-rs/toolchain@v1
