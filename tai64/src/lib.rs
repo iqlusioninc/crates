@@ -41,9 +41,12 @@ const NANOS_PER_SECOND: u32 = 1_000_000_000;
 
 /// A `TAI64` label.
 #[derive(Copy, Clone, Debug, Eq, Hash, PartialEq, PartialOrd, Ord)]
-#[cfg(feature = "zero_out")]
-#[derive(Zeroize)]
 pub struct TAI64(pub u64);
+
+#[cfg(feature = "zero_out")]
+impl Zeroize for TAI64 {
+    fn zeroize(&mut self) {}
+}
 
 impl TAI64 {
     /// Get `TAI64N` timestamp according to system clock.
@@ -137,9 +140,12 @@ impl Serialize for TAI64 {
 ///
 /// Invariant: The nanosecond part <= 999999999.
 #[derive(Copy, Clone, Debug, Eq, Hash, PartialEq, PartialOrd, Ord)]
-#[cfg(feature = "zero_out")]
-#[derive(Zeroize)]
 pub struct TAI64N(pub TAI64, pub u32);
+
+#[cfg(feature = "zero_out")]
+impl Zeroize for TAI64N {
+    fn zeroize(&mut self) {}
+}
 
 impl TAI64N {
     /// Get `TAI64N` timestamp according to system clock.
