@@ -21,6 +21,9 @@ extern crate std;
 #[cfg(feature = "std")]
 use std::time::{SystemTime, UNIX_EPOCH};
 
+#[cfg(feature = "zeroize")]
+use zeroize::Zeroize;
+
 /// Unix epoch in TAI64: 1970-01-01 00:00:10 TAI.
 pub const UNIX_EPOCH_TAI64: TAI64 = TAI64(10 + (1 << 62));
 
@@ -39,6 +42,13 @@ const NANOS_PER_SECOND: u32 = 1_000_000_000;
 /// A `TAI64` label.
 #[derive(Copy, Clone, Debug, Eq, Hash, PartialEq, PartialOrd, Ord)]
 pub struct TAI64(pub u64);
+
+#[cfg(feature = "zeroize")]
+impl Zeroize for TAI64 {
+    fn zeroize(&mut self) {
+        self.0.zeroize();
+    }
+}
 
 impl TAI64 {
     /// Get `TAI64N` timestamp according to system clock.
@@ -133,6 +143,14 @@ impl Serialize for TAI64 {
 /// Invariant: The nanosecond part <= 999999999.
 #[derive(Copy, Clone, Debug, Eq, Hash, PartialEq, PartialOrd, Ord)]
 pub struct TAI64N(pub TAI64, pub u32);
+
+#[cfg(feature = "zeroize")]
+impl Zeroize for TAI64N {
+    fn zeroize(&mut self) {
+        self.0.zeroize();
+        self.1.zeroize();
+    }
+}
 
 impl TAI64N {
     /// Get `TAI64N` timestamp according to system clock.
