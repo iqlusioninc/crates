@@ -19,7 +19,7 @@ anomaly = { version = "0.2", path = "../anomaly" }
 ecdsa = { version = "0.4", features = ["k256"] }
 prost-amino = "0.5"
 prost-amino-derive = "0.5"
-rust_decimal = "1.2"
+rust_decimal = "1.4"
 serde = { version = "1", features = ["serde_derive"] }
 serde_json = "1"
 sha2 = "0.8"
