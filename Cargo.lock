@@ -174,8 +174,19 @@ dependencies = [
  "elliptic-curve",
  "generic-array 0.12.3",
  "k256",
- "p256",
- "p384",
+ "sha2",
+ "signature",
+]
+
+[[package]]
+name = "ecdsa"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5a7aaf89875554fab12c9d0855d694803a8820b73bfb89cdc96546b6bcab69e4"
+dependencies = [
+ "elliptic-curve",
+ "generic-array 0.12.3",
+ "k256",
  "sha2",
  "signature",
 ]
@@ -413,24 +424,6 @@ name = "opaque-debug"
 version = "0.2.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2839e79665f131bdb5782e51f2c6c9599c133c6098982a54c794358bf432529c"
-
-[[package]]
-name = "p256"
-version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "812a058a5afc96a52a8ab6e250325d025254ff030ff737dc5b62576e4e604c42"
-dependencies = [
- "elliptic-curve",
-]
-
-[[package]]
-name = "p384"
-version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3aee0d9bdeedaea6cdd47f9281a9f8e1037d3037088b70e2af13c64ce65608ec"
-dependencies = [
- "elliptic-curve",
-]
 
 [[package]]
 name = "pbkdf2"
@@ -717,23 +710,23 @@ dependencies = [
 
 [[package]]
 name = "signatory"
-version = "0.18.1"
+version = "0.19.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "98887ae129a828815e623e2656c6cfcc0a4b2926dcc6104e0c866d9f2f95041c"
+checksum = "09ac23ba234e306afe0d90b1cc809e329622f49a89328aeebe3a6c37a8f8b8a3"
 dependencies = [
- "ecdsa",
+ "ecdsa 0.5.0",
  "getrandom",
  "sha2",
  "signature",
- "subtle-encoding 0.4.1",
+ "subtle-encoding 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "zeroize 1.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
 name = "signatory-secp256k1"
-version = "0.18.1"
+version = "0.19.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0158fc0166ff9241c593d02ef6d81f3485cc2c6761a48e4c95e160d14e57974a"
+checksum = "ff08548248a4b10eb37a1976f2e821f6220ce3efea3cda17321c1f0d564216ba"
 dependencies = [
  "secp256k1",
  "signatory",
@@ -742,9 +735,9 @@ dependencies = [
 
 [[package]]
 name = "signature"
-version = "1.0.0-pre.1"
+version = "1.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a0cfcdc45066661979294e965c21b60355da35eb5d638af8143e5aa83fdfce53"
+checksum = "685e1c5b65c6cc6fd0eb9ba63c6cfb8431f7f9c7e078c626f23f50e13fa378d7"
 dependencies = [
  "digest 0.8.1",
  "signature_derive",
@@ -752,9 +745,9 @@ dependencies = [
 
 [[package]]
 name = "signature_derive"
-version = "1.0.0-pre.1"
+version = "1.0.0-pre.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c6586d38c414ce5d216a7b1f9b253ff95f5424c1cfcf09fdac5e047d8e35b4ea"
+checksum = "b0656c180103507cca4b82519908e813225b2f6b90b2bd59ee119f46155ae872"
 dependencies = [
  "proc-macro2 1.0.12",
  "quote 1.0.4",
@@ -785,7 +778,7 @@ name = "stdtx"
 version = "0.1.0"
 dependencies = [
  "anomaly",
- "ecdsa",
+ "ecdsa 0.4.0",
  "prost-amino",
  "prost-amino-derive",
  "rust_decimal",
@@ -812,18 +805,18 @@ checksum = "7c65d530b10ccaeac294f349038a597e435b18fb456aadd0840a623f83b9e941"
 
 [[package]]
 name = "subtle-encoding"
-version = "0.4.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "30492c59ec8bdeee7d6dd2d851711cae5f1361538f10ecfdcd1d377d57c2a783"
+version = "0.5.1"
 dependencies = [
- "zeroize 1.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "zeroize 1.1.0",
 ]
 
 [[package]]
 name = "subtle-encoding"
 version = "0.5.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7dcb1ed7b8330c5eed5441052651dd7a12c75e2ed88f2ec024ae1fa3a5e59945"
 dependencies = [
- "zeroize 1.1.0",
+ "zeroize 1.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
