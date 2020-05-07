@@ -45,9 +45,11 @@ macro_rules! impl_path {
         /// Return a canonical parent path of this path, or `io::Error` if the
         /// path is the root directory or another canonicalization error occurs.
         pub fn parent(&self) -> Result<CanonicalPathBuf> {
-            CanonicalPathBuf::new(&self.0
-                .parent()
-                .ok_or_else(|| Error::new(ErrorKind::InvalidInput, "can't get parent of '/'"))?)
+            CanonicalPathBuf::new(
+                &self.0.parent().ok_or_else(|| {
+                    Error::new(ErrorKind::InvalidInput, "can't get parent of '/'")
+                })?,
+            )
         }
 
         /// Returns the final component of the path, if there is one.
@@ -100,7 +102,7 @@ macro_rules! impl_path {
 
         /// Produces an iterator over the path's components viewed as
         /// `OsStr` slices.
-         #[inline]
+        #[inline]
         pub fn iter(&self) -> Iter<'_> {
             self.0.iter()
         }
@@ -158,7 +160,7 @@ macro_rules! impl_path {
         pub fn is_dir(&self) -> bool {
             self.0.is_file()
         }
-    }
+    };
 }
 
 /// An owned path on the filesystem which is guaranteed to be canonical.
