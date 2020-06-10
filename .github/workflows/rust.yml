@@ -127,7 +127,7 @@ jobs:
           - macos-latest
           - windows-latest
         toolchain:
-          - 1.39.0
+          - 1.41.0
           - stable
     runs-on: ${{ matrix.platform }}
     steps:
