@@ -14,7 +14,8 @@ use alloc::string::String;
 use core::convert::TryFrom;
 #[cfg(feature = "getrandom")]
 use getrandom::getrandom;
-use hmac::{Hmac, Mac};
+use hmac::Hmac;
+use hmac::crypto_mac::{NewMac, Mac};
 use sha2::Sha512;
 #[cfg(feature = "bech32")]
 use subtle_encoding::bech32::Bech32;
@@ -97,9 +98,9 @@ impl KeyMaterial {
             .enumerate()
             .fold(self, |parent_key, (i, component)| {
                 let mut hmac = Hmac::<Sha512>::new_varkey(parent_key.as_bytes()).unwrap();
-                hmac.input(component.as_bytes());
+                hmac.update(component.as_bytes());
 
-                let mut hmac_result = hmac.result().code();
+                let mut hmac_result = hmac.finalize().into_bytes();
                 let (secret_key, chain_code) = hmac_result.split_at_mut(KEY_SIZE);
                 let mut child_key = [0u8; KEY_SIZE];
 
