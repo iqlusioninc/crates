@@ -14,8 +14,8 @@ use alloc::string::String;
 use core::convert::TryFrom;
 #[cfg(feature = "getrandom")]
 use getrandom::getrandom;
+use hmac::crypto_mac::{Mac, NewMac};
 use hmac::Hmac;
-use hmac::crypto_mac::{NewMac, Mac};
 use sha2::Sha512;
 #[cfg(feature = "bech32")]
 use subtle_encoding::bech32::Bech32;

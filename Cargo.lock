@@ -717,7 +717,7 @@ dependencies = [
  "rust_decimal",
  "serde",
  "serde_json",
- "sha2 0.8.2",
+ "sha2 0.9.0",
  "signatory-secp256k1",
  "subtle-encoding 0.5.1",
  "thiserror",
