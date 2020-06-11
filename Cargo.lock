@@ -166,14 +166,13 @@ dependencies = [
 
 [[package]]
 name = "ecdsa"
-version = "0.5.0"
+version = "0.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5a7aaf89875554fab12c9d0855d694803a8820b73bfb89cdc96546b6bcab69e4"
+checksum = "3a184c3e1b6bc72ac8de04ef553a238d57067cb3c9e5e9783578bdc2bb3c3283"
 dependencies = [
  "elliptic-curve",
- "generic-array 0.12.3",
  "k256",
- "sha2 0.8.2",
+ "sha2 0.9.0",
  "signature",
 ]
 
@@ -185,11 +184,11 @@ checksum = "bb1f6b1ce1c140482ea30ddd3335fc0024ac7ee112895426e0a629a6c20adfe3"
 
 [[package]]
 name = "elliptic-curve"
-version = "0.3.0"
+version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "01f69be7d1feb7a7a04f158aaf32c7deaa7604e9bd58145525e536438c4e5096"
+checksum = "2298f66754d859f4c099b0e645cfd258d2dfdfd1bac9496fd514d603ff6a5c6b"
 dependencies = [
- "generic-array 0.12.3",
+ "generic-array 0.14.1",
  "getrandom",
  "subtle",
  "zeroize 1.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -311,9 +310,9 @@ checksum = "b8b7a7c0c47db5545ed3fef7468ee7bb5b74691498139e4b3f6a20685dc6dd8e"
 
 [[package]]
 name = "k256"
-version = "0.1.1"
+version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0afa79ea8238df7a342756fbf971d4e3ba16f389eaaf730658f3e3f58cf47da4"
+checksum = "c34f5cb67f9625a99c159fc0776e75d2e37f988cdf31c115e9c25225e61d858c"
 dependencies = [
  "elliptic-curve",
 ]
@@ -644,13 +643,13 @@ dependencies = [
 
 [[package]]
 name = "signatory"
-version = "0.19.0"
+version = "0.20.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "09ac23ba234e306afe0d90b1cc809e329622f49a89328aeebe3a6c37a8f8b8a3"
+checksum = "7c20cbcf205bedce2ce5944ab41dd2e10b1dcee2831a0a2a071806761ed6eaba"
 dependencies = [
  "ecdsa",
  "getrandom",
- "sha2 0.8.2",
+ "sha2 0.9.0",
  "signature",
  "subtle-encoding 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "zeroize 1.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -658,9 +657,9 @@ dependencies = [
 
 [[package]]
 name = "signatory-secp256k1"
-version = "0.19.0"
+version = "0.20.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ff08548248a4b10eb37a1976f2e821f6220ce3efea3cda17321c1f0d564216ba"
+checksum = "02a50b18b66b81b859f8ee57b0e85658e1777fe2683ac37b7e756380f0a28f6e"
 dependencies = [
  "secp256k1",
  "signatory",
@@ -669,11 +668,11 @@ dependencies = [
 
 [[package]]
 name = "signature"
-version = "1.0.1"
+version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "685e1c5b65c6cc6fd0eb9ba63c6cfb8431f7f9c7e078c626f23f50e13fa378d7"
+checksum = "65211b7b6fc3f14ff9fc7a2011a434e3e6880585bd2e9e9396315ae24cbf7852"
 dependencies = [
- "digest 0.8.1",
+ "digest 0.9.0",
  "signature_derive",
 ]
 

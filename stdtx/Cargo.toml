@@ -16,7 +16,7 @@ circle-ci = { repository = "tendermint/kms" }
 
 [dependencies]
 anomaly = { version = "0.2", path = "../anomaly" }
-ecdsa = { version = "0.5", features = ["k256"] }
+ecdsa = { version = "0.6", features = ["k256"] }
 prost-amino = "0.5"
 prost-amino-derive = "0.5"
 rust_decimal = "1.6"
@@ -32,4 +32,4 @@ features = ["bech32-preview"]
 path = "../subtle-encoding"
 
 [dev-dependencies]
-signatory-secp256k1 = "0.19"
+signatory-secp256k1 = "0.20"
