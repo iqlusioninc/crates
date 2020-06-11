@@ -18,7 +18,7 @@ use zeroize::{Zeroize, Zeroizing};
 
 /// Number of PBKDF2 rounds to perform when deriving the seed
 #[cfg(feature = "bip39")]
-const PBKDF2_ROUNDS: usize = 2048;
+const PBKDF2_ROUNDS: u32 = 2048;
 
 /// Source entropy for a BIP39 mnemonic phrase
 pub type Entropy = [u8; KEY_SIZE];
@@ -47,7 +47,7 @@ impl Phrase {
     /// Create a new BIP39 mnemonic phrase from the given entropy
     pub fn from_entropy(entropy: Entropy, language: Language) -> Self {
         let wordlist = language.wordlist();
-        let checksum_byte = Sha256::digest(entropy.as_ref()).as_ref()[0];
+        let checksum_byte = Sha256::digest(entropy.as_ref()).as_slice()[0];
 
         // First, create a byte iterator for the given entropy and the first byte of the
         // hash of the entropy that will serve as the checksum (up to 8 bits for biggest
@@ -101,7 +101,7 @@ impl Phrase {
         // Truncate to get rid of the byte containing the checksum
         entropy.truncate(KEY_SIZE);
 
-        let expected_checksum = Sha256::digest(&entropy).as_ref()[0];
+        let expected_checksum = Sha256::digest(&entropy).as_slice()[0];
 
         if actual_checksum != expected_checksum {
             Err(Error)?;
