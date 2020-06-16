@@ -2,6 +2,7 @@
 
 use crate::error::{Error, ErrorKind};
 use anomaly::ensure;
+use serde::{de, Deserialize};
 use std::convert::TryInto;
 use subtle_encoding::bech32;
 
@@ -49,5 +50,20 @@ impl From<[u8; ADDRESS_SIZE]> for Address {
 impl From<Address> for [u8; ADDRESS_SIZE] {
     fn from(addr: Address) -> [u8; ADDRESS_SIZE] {
         addr.0
+    }
+}
+
+impl<'de> Deserialize<'de> for Address {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: de::Deserializer<'de>,
+    {
+        let bech32_addr = String::deserialize(deserializer)?;
+
+        let (_, addr) = Self::from_bech32(&bech32_addr).map_err(|_| {
+            de::Error::custom(format!("invalid bech32-encoded address: {}", bech32_addr))
+        })?;
+
+        Ok(addr)
     }
 }
