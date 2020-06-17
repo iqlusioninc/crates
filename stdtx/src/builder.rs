@@ -9,29 +9,20 @@ pub struct Builder {
     /// Schema which describes valid transaction types
     schema: Schema,
 
-    /// Account number to include in transactions
-    account_number: u64,
-
     /// Chain ID
     chain_id: String,
 
-    /// Transaction signer
-    signer: Box<Signer>,
+    /// Account number to include in transactions
+    account_number: u64,
 }
 
 impl Builder {
     /// Create a new transaction builder
-    pub fn new(
-        schema: Schema,
-        account_number: u64,
-        chain_id: impl Into<String>,
-        signer: Box<Signer>,
-    ) -> Self {
+    pub fn new(schema: Schema, chain_id: impl Into<String>, account_number: u64) -> Self {
         Self {
             schema,
-            account_number,
             chain_id: chain_id.into(),
-            signer,
+            account_number,
         }
     }
 
@@ -40,26 +31,27 @@ impl Builder {
         &self.schema
     }
 
-    /// Get this transaction builder's account number
-    pub fn account_number(&self) -> u64 {
-        self.account_number
-    }
-
     /// Borrow this transaction builder's chain ID
     pub fn chain_id(&self) -> &str {
         &self.chain_id
     }
 
+    /// Get this transaction builder's account number
+    pub fn account_number(&self) -> u64 {
+        self.account_number
+    }
+
     /// Build and sign a transaction containing the given messages
     pub fn sign_tx(
         &self,
+        signer: &Signer,
         sequence: u64,
         fee: StdFee,
         memo: &str,
         messages: &[Msg],
     ) -> Result<StdTx, Error> {
         let sign_msg = self.create_sign_msg(sequence, &fee, memo, messages);
-        let signature = StdSignature::from(self.signer.try_sign(sign_msg.as_bytes())?);
+        let signature = StdSignature::from(signer.try_sign(sign_msg.as_bytes())?);
 
         Ok(StdTx {
             msg: messages.iter().map(|msg| msg.to_amino_bytes()).collect(),
@@ -72,17 +64,24 @@ impl Builder {
     /// Build, sign, and encode a transaction in Amino format
     pub fn sign_amino_tx(
         &self,
+        signer: &Signer,
         sequence: u64,
         fee: StdFee,
         memo: &str,
         messages: &[Msg],
     ) -> Result<Vec<u8>, Error> {
-        let tx = self.sign_tx(sequence, fee, memo, messages)?;
+        let tx = self.sign_tx(signer, sequence, fee, memo, messages)?;
         Ok(tx.to_amino_bytes(self.schema.namespace()))
     }
 
     /// Create the JSON message to sign for this transaction
-    fn create_sign_msg(&self, sequence: u64, fee: &StdFee, memo: &str, messages: &[Msg]) -> String {
+    fn create_sign_json(
+        &self,
+        sequence: u64,
+        fee: &StdFee,
+        memo: &str,
+        messages: &[Msg],
+    ) -> serde_json::Value {
         let messages = messages
             .iter()
             .map(|msg| msg.to_json_value(&self.schema))
@@ -96,6 +95,10 @@ impl Builder {
             "msgs": messages,
             "sequence": sequence.to_string()
         })
-        .to_string()
+    }
+    /// Create the serialized JSON string to sign for this transaction
+    fn create_sign_msg(&self, sequence: u64, fee: &StdFee, memo: &str, messages: &[Msg]) -> String {
+        self.create_sign_json(sequence, fee, memo, messages)
+            .to_string()
     }
 }

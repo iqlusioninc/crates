@@ -97,7 +97,7 @@ impl Schema {
         }
     }
 
-    /// Load a TOML file describing
+    /// Load a TOML file describing a [`Schema`]
     pub fn load_toml(path: impl AsRef<Path>) -> Result<Self, Error> {
         match fs::read_to_string(path.as_ref()) {
             Ok(s) => s.parse(),

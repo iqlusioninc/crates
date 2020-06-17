@@ -94,13 +94,13 @@
 //! /// Parse the TOML schema for Terra `sdk.Msg` types
 //! let schema = TERRA_SCHEMA.parse::<stdtx::Schema>().unwrap();
 //!
+//! /// Create message builder, giving it an account number, chain ID, and a
+//! /// boxed ECDSA secp256k1 signer
+//! let builder = stdtx::Builder::new(schema, CHAIN_ID, ACCOUNT_NUMBER);
+//!
 //! /// Create ECDSA signer (ordinarily you wouldn't generate a random key
 //! /// every time but reuse an existing one)
 //! let signer = EcdsaSigner::from(&SecretKey::generate());
-//!
-//! /// Create message builder, giving it an account number, chain ID, and a
-//! /// boxed ECDSA secp256k1 signer
-//! let builder = stdtx::Builder::new(schema, ACCOUNT_NUMBER, CHAIN_ID, Box::new(signer));
 //!
 //! /// Create message to be included in the `StdTx` using the method defined above
 //! let msg = build_vote_msg(builder.schema()).unwrap();
@@ -110,7 +110,7 @@
 //! let fee = stdtx::StdFee::for_gas(GAS_AMOUNT);
 //! let memo = "";
 //! let amino_bytes = builder
-//!     .sign_amino_tx(sequence_number, fee, memo, &[msg])
+//!     .sign_amino_tx(&signer, sequence_number, fee, memo, &[msg])
 //!     .unwrap();
 //!
 //! // `amino_bytes` is now a `Vec<u8>` containing an Amino serialized transaction
