@@ -10,7 +10,7 @@ use subtle_encoding::bech32;
 pub const ADDRESS_SIZE: usize = 20;
 
 /// Address type
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub struct Address(pub [u8; ADDRESS_SIZE]);
 
 impl Address {
