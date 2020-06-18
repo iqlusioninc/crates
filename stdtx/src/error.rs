@@ -22,6 +22,10 @@ pub enum ErrorKind {
     #[error("I/O error")]
     Io,
 
+    /// Invalid field name
+    #[error("unknown field name")]
+    FieldName,
+
     /// Parse error
     #[error("parse error")]
     Parse,

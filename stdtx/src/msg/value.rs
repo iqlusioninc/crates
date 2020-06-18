@@ -7,7 +7,7 @@ use crate::{
 };
 
 /// Message values - data contained in fields of a message
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub enum Value {
     /// `sdk.AccAddress`: Cosmos SDK account addresses
     /// <https://godoc.org/github.com/cosmos/cosmos-sdk/types#AccAddress>

@@ -59,6 +59,7 @@ impl StdFee {
             gas,
         }
     }
+
     /// Compute `serde_json::Value` representing this fee
     pub fn to_json_value(&self) -> serde_json::Value {
         let amount = self
