@@ -1,3 +1,12 @@
+## [0.4.0] (2020-06-17)
+
+- Update `hmac` to v0.8 ([#435])
+- Update `pbkdf2` to v0.4 ([#435])
+- Update `sha2` to v0.9 ([#435])
+
+[0.4.0]: https://github.com/iqlusioninc/crates/pull/442
+[#435]: https://github.com/iqlusioninc/crates/pull/435
+
 ## [0.3.1] (2019-10-13)
 
 - Upgrade to `subtle-encoding` v0.5.0 ([#283])
