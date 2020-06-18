@@ -75,7 +75,7 @@ impl Builder {
     }
 
     /// Create the JSON message to sign for this transaction
-    fn create_sign_json(
+    pub fn create_sign_json(
         &self,
         sequence: u64,
         fee: &StdFee,
@@ -90,14 +90,21 @@ impl Builder {
         json!({
             "account_number": self.account_number.to_string(),
             "chain_id": self.chain_id,
-            "fee": fee.to_json_value(),
+            "fee": fee,
             "memo": memo,
             "msgs": messages,
             "sequence": sequence.to_string()
         })
     }
+
     /// Create the serialized JSON string to sign for this transaction
-    fn create_sign_msg(&self, sequence: u64, fee: &StdFee, memo: &str, messages: &[Msg]) -> String {
+    pub fn create_sign_msg(
+        &self,
+        sequence: u64,
+        fee: &StdFee,
+        memo: &str,
+        messages: &[Msg],
+    ) -> String {
         self.create_sign_json(sequence, fee, memo, messages)
             .to_string()
     }

@@ -3,7 +3,7 @@
 use crate::{Signature, TypeName};
 use prost_amino::{encode_length_delimiter, Message};
 use prost_amino_derive::Message;
-use serde_json::json;
+use serde::{de, ser, Deserialize, Serialize};
 
 /// StdTx Amino type
 #[derive(Clone, Message)]
@@ -40,7 +40,7 @@ impl StdTx {
 }
 
 /// StdFee amino type
-#[derive(Clone, Message)]
+#[derive(Clone, Message, Deserialize, Serialize)]
 pub struct StdFee {
     /// Fee to be paid
     #[prost_amino(message, repeated, tag = "1")]
@@ -48,6 +48,7 @@ pub struct StdFee {
 
     /// Gas requested for transaction
     #[prost_amino(uint64)]
+    #[serde(serialize_with = "serialize_gas", deserialize_with = "parse_gas")]
     pub gas: u64,
 }
 
@@ -59,24 +60,10 @@ impl StdFee {
             gas,
         }
     }
-
-    /// Compute `serde_json::Value` representing this fee
-    pub fn to_json_value(&self) -> serde_json::Value {
-        let amount = self
-            .amount
-            .iter()
-            .map(|amt| amt.to_json_value())
-            .collect::<Vec<_>>();
-
-        json!({
-            "amount": amount,
-            "gas": self.gas.to_string()
-        })
-    }
 }
 
 /// Coin Amino type
-#[derive(Clone, Message)]
+#[derive(Clone, Message, Deserialize, Serialize)]
 pub struct Coin {
     /// Denomination of coin
     #[prost_amino(string, tag = "1")]
@@ -85,16 +72,6 @@ pub struct Coin {
     /// Amount of the given denomination
     #[prost_amino(string)]
     pub amount: String,
-}
-
-impl Coin {
-    /// Compute `serde_json::Value` representing this coin
-    pub fn to_json_value(&self) -> serde_json::Value {
-        json!({
-            "denom": self.denom,
-            "amount": self.amount
-        })
-    }
 }
 
 /// StdSignature amino type
@@ -116,4 +93,20 @@ impl From<Signature> for StdSignature {
             signature: signature.as_ref().to_vec(),
         }
     }
+}
+
+fn parse_gas<'de, D>(deserializer: D) -> Result<u64, D::Error>
+where
+    D: de::Deserializer<'de>,
+{
+    String::deserialize(deserializer)?
+        .parse()
+        .map_err(serde::de::Error::custom)
+}
+
+fn serialize_gas<S>(value: &u64, serializer: S) -> Result<S::Ok, S::Error>
+where
+    S: ser::Serializer,
+{
+    serializer.serialize_str(&value.to_string())
 }
