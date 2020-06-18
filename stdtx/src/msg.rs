@@ -141,14 +141,17 @@ impl Msg {
         }
 
         let mut json = serde_json::Map::new();
+
         json.insert(
             "type".to_owned(),
             serde_json::Value::String(self.type_name.to_string()),
         );
+
         json.insert(
             "value".to_owned(),
             serde_json::Map::from_iter(values.into_iter()).into(),
         );
+
         serde_json::Value::Object(json)
     }
 
