@@ -52,13 +52,7 @@ impl Builder {
     ) -> Result<StdTx, Error> {
         let sign_msg = self.create_sign_msg(sequence, &fee, memo, messages);
         let signature = StdSignature::from(signer.try_sign(sign_msg.as_bytes())?);
-
-        Ok(StdTx {
-            msg: messages.iter().map(|msg| msg.to_amino_bytes()).collect(),
-            fee: Some(fee),
-            signatures: vec![signature],
-            memo: memo.to_owned(),
-        })
+        Ok(StdTx::new(messages, fee, vec![signature], memo))
     }
 
     /// Build, sign, and encode a transaction in Amino format

@@ -1,14 +1,14 @@
 //! StdTx Amino types
 
-use crate::{Signature, TypeName};
+use crate::{Msg, Signature, TypeName};
 use prost_amino::{encode_length_delimiter, Message};
 use prost_amino_derive::Message;
 use serde::{de, ser, Deserialize, Serialize};
 
-/// StdTx Amino type
+/// `StdTx` Amino type
 #[derive(Clone, Message)]
 pub struct StdTx {
-    /// Messages in transction
+    /// Messages in transaction
     #[prost_amino(bytes, repeated, tag = "1")]
     pub msg: Vec<Vec<u8>>,
 
@@ -26,6 +26,21 @@ pub struct StdTx {
 }
 
 impl StdTx {
+    /// Create a new `StdTx` transaction, serializing the provided messages as Amino
+    pub fn new(
+        messages: &[Msg],
+        fee: StdFee,
+        signatures: Vec<StdSignature>,
+        memo: impl AsRef<str>,
+    ) -> Self {
+        Self {
+            msg: messages.iter().map(|msg| msg.to_amino_bytes()).collect(),
+            fee: Some(fee),
+            signatures,
+            memo: memo.as_ref().to_owned(),
+        }
+    }
+
     /// Encode this [`StdTx`] in Amino encoding identifying it with the given
     /// type name (e.g. `cosmos-sdk/StdTx`)
     pub fn to_amino_bytes(&self, type_name: &TypeName) -> Vec<u8> {
@@ -39,7 +54,7 @@ impl StdTx {
     }
 }
 
-/// StdFee amino type
+/// `StdFee` Amino type
 #[derive(Clone, Message, Deserialize, Serialize)]
 pub struct StdFee {
     /// Fee to be paid
@@ -62,7 +77,7 @@ impl StdFee {
     }
 }
 
-/// Coin Amino type
+/// `Coin` Amino type
 #[derive(Clone, Message, Deserialize, Serialize)]
 pub struct Coin {
     /// Denomination of coin
@@ -74,7 +89,7 @@ pub struct Coin {
     pub amount: String,
 }
 
-/// StdSignature amino type
+/// `StdSignature` Amino type
 #[derive(Clone, Message)]
 pub struct StdSignature {
     /// Public key which can verify this signature
