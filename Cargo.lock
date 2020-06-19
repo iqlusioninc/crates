@@ -712,7 +712,7 @@ checksum = "1cc9c640a4adbfbcc11ffb95efe5aa7af7309e002adab54b185507dbf2377b99"
 
 [[package]]
 name = "stdtx"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "anomaly",
  "ecdsa",
