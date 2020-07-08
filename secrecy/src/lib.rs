@@ -98,7 +98,10 @@ pub use self::{boxed::SecretBox, string::SecretString, vec::SecretVec};
 #[cfg(feature = "bytes")]
 pub use self::bytes::SecretBytesMut;
 
-use core::fmt::{self, Debug};
+use core::{
+    any,
+    fmt::{self, Debug},
+};
 
 #[cfg(feature = "serde")]
 use serde::{de, ser, Deserialize, Serialize};
@@ -155,7 +158,9 @@ where
     S: Zeroize + DebugSecret,
 {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "Secret({})", S::debug_secret())
+        f.write_str("Secret(")?;
+        S::debug_secret(f)?;
+        f.write_str(")")
     }
 }
 
@@ -197,11 +202,14 @@ pub trait ExposeSecret<S> {
 
 /// Debugging trait which is specialized for handling secret values
 pub trait DebugSecret {
-    /// Information about what the secret contains.
+    /// Format information about the secret's type.
     ///
-    /// Static so as to discourage unintentional secret exposure.
-    fn debug_secret() -> &'static str {
-        "[REDACTED]"
+    /// This can be thought of as an equivalent to [`Debug::fmt`], but one
+    /// which by design does not permit access to the secret value.
+    fn debug_secret(f: &mut fmt::Formatter<'_>) -> Result<(), fmt::Error> {
+        f.write_str("[REDACTED ")?;
+        f.write_str(any::type_name::<Self>())?;
+        f.write_str("]")
     }
 }
 
