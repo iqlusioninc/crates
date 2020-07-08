@@ -2,9 +2,10 @@
 //! (e.g. passwords, cryptographic keys, access tokens or other credentials)
 
 #![no_std]
+#![cfg_attr(docsrs, feature(doc_cfg))]
+#![doc(html_root_url = "https://docs.rs/secrecy/0.6.0")]
 #![forbid(unsafe_code)]
 #![warn(missing_docs, rust_2018_idioms, unused_qualifications)]
-#![doc(html_root_url = "https://docs.rs/secrecy/0.6.0")]
 
 #[cfg(feature = "alloc")]
 extern crate alloc;
@@ -161,12 +162,12 @@ impl_debug_secret_for_array!(
 /// by design these types do *NOT* impl this trait.
 ///
 /// If you really want to have `serde` serialize those types, use the
-/// `serialize_with` attribute to specify a serializer that exposes the secret:
-///
-/// <https://serde.rs/field-attrs.html#serialize_with>
+/// [`serialize_with`][2] attribute to specify a serializer that exposes the secret.
 ///
 /// [1]: https://docs.rs/secrecy/latest/secrecy/struct.Secret.html#implementations
+/// [2]: https://serde.rs/field-attrs.html#serialize_with
 #[cfg(feature = "serde")]
+#[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
 pub trait SerializableSecret: Serialize {}
 
 #[cfg(feature = "serde")]

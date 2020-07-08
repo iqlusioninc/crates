@@ -16,9 +16,6 @@ readme      = "README.md"
 categories  = ["cryptography", "memory-management", "no-std", "os"]
 keywords    = ["clear", "memory", "secret", "secure", "wipe"]
 
-[badges]
-maintenance = { status = "passively-maintained" }
-
 [dependencies]
 serde = { version = "1", optional = true }
 zeroize = { version = "1.1", path = "../zeroize", default-features = false }
@@ -30,3 +27,4 @@ alloc = ["zeroize/alloc"]
 
 [package.metadata.docs.rs]
 all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
