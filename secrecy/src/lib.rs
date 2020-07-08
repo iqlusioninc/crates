@@ -38,8 +38,7 @@
 //! the implementation:
 //!
 //! ```rust
-//! use zeroize::Zeroize;
-//! use secrecy::{CloneableSecret, DebugSecret, Secret};
+//! use secrecy::{CloneableSecret, DebugSecret, Secret, Zeroize};
 //!
 //! #[derive(Clone)]
 //! pub struct AccountNumber(String);
@@ -91,6 +90,8 @@ mod string;
 #[cfg(feature = "alloc")]
 mod vec;
 
+pub use zeroize::{self, Zeroize};
+
 #[cfg(feature = "alloc")]
 pub use self::{boxed::SecretBox, string::SecretString, vec::SecretVec};
 
@@ -98,9 +99,9 @@ pub use self::{boxed::SecretBox, string::SecretString, vec::SecretVec};
 pub use self::bytes::SecretBytesMut;
 
 use core::fmt::{self, Debug};
+
 #[cfg(feature = "serde")]
 use serde::{de, ser, Deserialize, Serialize};
-use zeroize::Zeroize;
 
 /// Wrapper type for values that contains secrets, which attempts to limit
 /// accidental exposure and ensure secrets are wiped from memory when dropped.
