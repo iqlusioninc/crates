@@ -4,6 +4,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.7.0 (2020-07-08)
+### Added
+- Re-export zeroize ([#466])
+- `rustdoc` improvements ([#464], [#465])
+
+### Changed
+- Have `DebugSecret` take a formatter ([#467])
+- Make `FromStr` impl for `SecretString` be `Infallible` ([#323])
+
+### Fixed
+- Use `SerializableSecret` in `Serialize` bounds ([#463])
+
+[#467]: https://github.com/iqlusioninc/crates/pull/467
+[#466]: https://github.com/iqlusioninc/crates/pull/466
+[#465]: https://github.com/iqlusioninc/crates/pull/465
+[#464]: https://github.com/iqlusioninc/crates/pull/464
+[#463]: https://github.com/iqlusioninc/crates/pull/463
+[#323]: https://github.com/iqlusioninc/crates/pull/323
+
 ## 0.6.0 (2019-12-12)
 
 - Impl `CloneableSecret` for `Secret<[T; N]>` where `T: Clone` ([#311])
