@@ -1,5 +1,77 @@
-//! `Secret<T>` wrapper type for more carefully handling secret values
+//! [`Secret`] wrapper type for more carefully handling secret values
 //! (e.g. passwords, cryptographic keys, access tokens or other credentials)
+//!
+//! # Goals
+//!
+//! The goals of this crate are as follows:
+//!
+//! - Make secret access explicit and easy-to-audit via the
+//!   [`ExposeSecret`] trait. This also makes secret values immutable which
+//!   helps avoid making accidental copies (e.g. reallocating the backing
+//!   buffer for a `Vec`)
+//! - Prevent accidental leakage of secrets via channels like debug logging
+//! - Ensure secrets are wiped from memory on drop securely
+//!   (using the [`zeroize`] crate)
+//!
+//! Presently this crate favors a simple, `no_std`-friendly, safe i.e.
+//! `forbid(unsafe_code)`-based implementation and does not provide more advanced
+//! memory protection mechanisms e.g. ones based on `mlock(2)`/`mprotect(2)`.
+//! We may explore more advanced protection mechanisms in the future.
+//!
+//! # `Box`, `String`, and `Vec` wrappers
+//!
+//! Most users of this crate will simply want [`Secret`] wrappers around Rust's
+//! core collection types: i.e. `Box`, `String`, and `Vec`.
+//!
+//! When the `alloc` feature of this crate is enabled (which it is by default),
+//! [`SecretBox`], [`SecretString`], and [`SecretVec`] type aliases are
+//! available.
+//!
+//! There's nothing particularly fancy about these: they're just the simple
+//! composition of `Secret<Box<_>>`, `Secret<String>`, and `Secret<Vec<_>>`!
+//! However, in many cases they're all you will need.
+//!
+//! # Advanced usage
+//!
+//! If you are hitting limitations on what's possible with the collection type
+//! wrappers, you'll want to define your own newtype which lets you customize
+//! the implementation:
+//!
+//! ```rust
+//! use zeroize::Zeroize;
+//! use secrecy::{CloneableSecret, DebugSecret, Secret};
+//!
+//! #[derive(Clone)]
+//! pub struct AccountNumber(String);
+//!
+//! impl Zeroize for AccountNumber {
+//!     fn zeroize(&mut self) {
+//!         self.0.zeroize();
+//!     }
+//! }
+//!
+//! /// Permits cloning
+//! impl CloneableSecret for AccountNumber {}
+//!
+//! /// Provides a `Debug` impl (by default `[[REDACTED]]`)
+//! impl DebugSecret for AccountNumber {}
+//!
+//! /// Use this alias when storing secret values
+//! pub type SecretAccountNumber = Secret<AccountNumber>;
+//! ```
+//!
+//! # `serde` support
+//!
+//! When the `serde` feature of this crate is enabled, the [`Secret`] type will
+//! receive a [`Deserialize`] impl for all `Secret<T>` types where
+//! `T: DeserializeOwned`. This allows *loading* secret values from data
+//! deserialized from `serde` (be careful to clean up any intermediate secrets
+//! when doing this, e.g. the unparsed input!)
+//!
+//! To prevent exfiltration of secret values via `serde`, by default `Secret<T>`
+//! does *not* receive a corresponding [`Serialize`] impl. If you would like
+//! types of `Secret<T>` to be serializable with `serde`, you will need to impl
+//! the [`SerializableSecret`] marker trait on `T`.
 
 #![no_std]
 #![cfg_attr(docsrs, feature(doc_cfg))]
@@ -34,7 +106,7 @@ use zeroize::Zeroize;
 /// accidental exposure and ensure secrets are wiped from memory when dropped.
 /// (e.g. passwords, cryptographic keys, access tokens or other credentials)
 ///
-/// Access to the secret inner value occurs through the `ExposeSecret` trait,
+/// Access to the secret inner value occurs through the [`ExposeSecret`] trait,
 /// which provides an `expose_secret()` method for accessing the inner secret
 /// value.
 pub struct Secret<S>
@@ -118,7 +190,7 @@ impl_cloneable_secret_for_array!(
 
 /// Expose a reference to an inner secret
 pub trait ExposeSecret<S> {
-    /// Expose secret
+    /// Expose secret: this is the only method providing access to a secret.
     fn expose_secret(&self) -> &S;
 }
 
