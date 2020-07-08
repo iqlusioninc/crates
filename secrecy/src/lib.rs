@@ -147,23 +147,32 @@ impl_debug_secret_for_array!(
     51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64
 );
 
-/// Marker trait for secrets which can be serialized directly by `serde`.
-/// Since this provides a non-explicit exfiltration path for secrets,
-/// types must explicitly opt into this.
+/// Marker trait for secret types which can be [`Serialize`]-d by [`serde`].
 ///
-/// If you are working with a `SecretString`, `SecretVec`, etc. type, they
-/// do *NOT* impl this trait by design. Instead, if you really want to have
-/// `serde` automatically serialize those types, use the `serialize_with`
-/// attribute to specify a serializer that exposes the secret:
+/// When the `serde` feature of this crate is enabled and types are marked with
+/// this trait, they receive a [`Serialize` impl][1] for `Secret<T>`.
+/// (NOTE: all types which impl `DeserializeOwned` receive a [`Deserialize`]
+/// impl)
+///
+/// This is done deliberately to prevent accidental exfiltration of secrets
+/// via `serde` serialization.
+///
+/// If you are working with [`SecretString`] or [`SecretVec`], not that
+/// by design these types do *NOT* impl this trait.
+///
+/// If you really want to have `serde` serialize those types, use the
+/// `serialize_with` attribute to specify a serializer that exposes the secret:
 ///
 /// <https://serde.rs/field-attrs.html#serialize_with>
+///
+/// [1]: https://docs.rs/secrecy/latest/secrecy/struct.Secret.html#implementations
 #[cfg(feature = "serde")]
 pub trait SerializableSecret: Serialize {}
 
 #[cfg(feature = "serde")]
 impl<'de, T> Deserialize<'de> for Secret<T>
 where
-    T: Zeroize + Clone + DebugSecret + de::DeserializeOwned + Sized,
+    T: Zeroize + Clone + de::DeserializeOwned + Sized,
 {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
@@ -176,7 +185,7 @@ where
 #[cfg(feature = "serde")]
 impl<T> Serialize for Secret<T>
 where
-    T: Zeroize + DebugSecret + Serialize + Sized,
+    T: Zeroize + SerializableSecret + Serialize + Sized,
 {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
