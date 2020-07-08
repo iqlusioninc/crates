@@ -3,8 +3,6 @@
 //!
 //! # Goals
 //!
-//! The goals of this crate are as follows:
-//!
 //! - Make secret access explicit and easy-to-audit via the
 //!   [`ExposeSecret`] trait. This also makes secret values immutable which
 //!   helps avoid making accidental copies (e.g. reallocating the backing
