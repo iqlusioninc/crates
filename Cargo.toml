@@ -2,6 +2,7 @@
 members = [
     "anomaly",
     "canonical-path",
+    "datadog",
     "harp",
     "hkd32",
     "secrecy",
