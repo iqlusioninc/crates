@@ -48,7 +48,7 @@ jobs:
         with:
           use-cross: false
           command: build
-          args: --all --exclude canonical-path --target wasm32-unknown-unknown
+          args: --all --exclude canonical-path --exclude datadog --target wasm32-unknown-unknown
 
   check:
     name: Check
