@@ -34,7 +34,6 @@ where
 #[cfg(test)]
 mod tests {
     use super::send_event;
-    use serde_json::json;
     use std::env;
 
     fn block_on<F: std::future::Future>(f: F) -> F::Output {
