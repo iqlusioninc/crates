@@ -1,11 +1,7 @@
 use hyper::{Body, Client, Method, Request};
 use hyper_tls::HttpsConnector;
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 use serde_json::json;
-
-struct DatadogConfig {
-    dd_api_key: String,
-}
 
 pub async fn send_event<T>(value: &T, dd_api_key: String) -> Result<(), ()>
 where
