@@ -1,14 +1,37 @@
 use hyper::{Body, Client, Method, Request};
 use hyper_tls::HttpsConnector;
-use serde::Serialize;
-use serde_json::json;
+use serde::{ser, Serialize};
+use std::collections::BTreeMap as Map;
+
+#[derive(Serialize)]
+pub struct Event {
+    pub ddsource: String,
+    pub service: String,
+    #[serde(serialize_with = "serialize_ddtags")]
+    pub ddtags: DdTags,
+    pub hostname: String,
+    pub message: String,
+}
+
+pub type DdTags = Map<String, String>;
+
+fn serialize_ddtags<S>(ddtags: &DdTags, serializer: S) -> Result<S::Ok, S::Error>
+where
+    S: ser::Serializer,
+{
+    ddtags
+        .iter()
+        .map(|(k, v)| [k.clone(), v.clone()].join(":"))
+        .collect::<Vec<_>>()
+        .join(",")
+        .serialize(serializer)
+}
 
 pub async fn send_event<T>(value: &T, dd_api_key: String) -> Result<(), ()>
 where
     T: Serialize,
 {
-    let event_json = json!({"ddsource":"datadog_crate", "service":"datadog_crate", "ddtags":"env:staging,user:datadog_crate", "hostname":"127.0.0.1", "message":value});
-    let event = serde_json::to_string(&event_json).unwrap();
+    let event = serde_json::to_string(&value).unwrap();
     println!("{:?}", event);
 
     // https://docs.datadoghq.com/api/v1/logs/#send-logs
@@ -33,7 +56,8 @@ where
 
 #[cfg(test)]
 mod tests {
-    use super::send_event;
+    use super::{send_event, Event};
+    use std::collections::BTreeMap;
     use std::env;
 
     fn block_on<F: std::future::Future>(f: F) -> F::Output {
@@ -45,14 +69,25 @@ mod tests {
             .block_on(f)
     }
 
+    // Set env var with `export DD_API_KEY=<YOUR_DATADOG_API_KEY>`
     // Run test locally with `cargo test -- --ignored`
     #[test]
     #[ignore]
     fn test_send_event() {
         let dd_api_key = env::var("DD_API_KEY").unwrap();
-        let message = "hello world! datadog crate test blob!!";
+        let mut ddtags = BTreeMap::new();
+        ddtags.insert("env".to_owned(), "staging".to_owned());
+        ddtags.insert("user".to_owned(), "datadog_crate".to_owned());
 
-        let event = block_on(send_event(&message, dd_api_key));
+        let event = Event {
+            ddsource: "datadog_crate".to_owned(),
+            service: "datadog_crate".to_owned(),
+            ddtags: ddtags,
+            hostname: "127.0.0.1".to_owned(),
+            message: "hello world! datadog crate test blob!!".to_owned(),
+        };
+
+        let event = block_on(send_event(&event, dd_api_key));
         assert_eq!(event, Ok(()));
     }
 }
