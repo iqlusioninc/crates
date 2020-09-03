@@ -3,7 +3,7 @@ use hyper_tls::HttpsConnector;
 use serde::{ser, Serialize};
 use std::collections::BTreeMap as Map;
 
-#[derive(Serialize)]
+#[derive(Debug, Serialize)]
 pub struct Event {
     pub ddsource: String,
     pub service: String,
@@ -11,6 +11,11 @@ pub struct Event {
     pub ddtags: DdTags,
     pub hostname: String,
     pub message: String,
+}
+
+#[derive(Copy, Clone, Debug, Eq, PartialEq)]
+pub struct Error {
+    pub code: u16,
 }
 
 pub type DdTags = Map<String, String>;
@@ -27,7 +32,7 @@ where
         .serialize(serializer)
 }
 
-pub async fn send_event<T>(value: &T, dd_api_key: String) -> Result<(), ()>
+pub async fn send_event<T>(value: &T, dd_api_key: String) -> Result<(), Error>
 where
     T: Serialize,
 {
@@ -50,7 +55,9 @@ where
     if response.status().is_success() {
         Ok(())
     } else {
-        Err(())
+        Err(Error {
+            code: response.status().as_u16(),
+        })
     }
 }
 
