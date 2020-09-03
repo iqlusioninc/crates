@@ -31,7 +31,7 @@ where
     }
 }
 
-#[cfg(all(test, not(windows)))]
+#[cfg(test)]
 mod tests {
     use super::send_event;
     use serde_json::json;
@@ -46,7 +46,9 @@ mod tests {
             .block_on(f)
     }
 
+    // Run test locally with `cargo test -- --ignored`
     #[test]
+    #[ignore]
     fn test_send_event() {
         let dd_api_key = env::var("DD_API_KEY").unwrap();
         let message = "hello world! datadog crate test blob!!";
