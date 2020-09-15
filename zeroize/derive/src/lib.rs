@@ -1,13 +1,8 @@
 //! Custom derive support for `zeroize`
 
 #![crate_type = "proc-macro"]
-#![deny(
-    rust_2018_idioms,
-    trivial_casts,
-    unused_lifetimes,
-    unused_qualifications
-)]
 #![forbid(unsafe_code)]
+#![warn(rust_2018_idioms, trivial_casts, unused_qualifications)]
 
 use proc_macro2::TokenStream;
 use quote::quote;
