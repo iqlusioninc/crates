@@ -21,7 +21,7 @@ keywords    = ["memory", "memset", "secure", "volatile", "zero"]
 maintenance = { status = "passively-maintained" }
 
 [dependencies]
-zeroize_derive = { version = "1.0.0", path = "../zeroize_derive", optional = true }
+zeroize_derive = { version = "1.0.0", path = "derive", optional = true }
 
 [features]
 default = ["alloc"]
