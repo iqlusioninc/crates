@@ -207,6 +207,7 @@
 //! [good cryptographic hygiene]: https://github.com/veorq/cryptocoding#clean-memory-of-secret-data
 
 #![no_std]
+#![cfg_attr(docsrs, feature(doc_cfg))]
 #![doc(html_root_url = "https://docs.rs/zeroize/1.1.0")]
 #![warn(missing_docs, rust_2018_idioms, trivial_casts, unused_qualifications)]
 
@@ -215,11 +216,8 @@
 extern crate alloc;
 
 #[cfg(feature = "zeroize_derive")]
+#[cfg_attr(docsrs, doc(cfg(feature = "zeroize_derive")))]
 pub use zeroize_derive::Zeroize;
-
-#[cfg(feature = "zeroize_derive")]
-#[doc(hidden)]
-pub use zeroize_derive::*;
 
 use core::{ops, ptr, slice::IterMut, sync::atomic};
 
@@ -328,6 +326,7 @@ where
 }
 
 #[cfg(feature = "alloc")]
+#[cfg_attr(docsrs, doc(cfg(feature = "alloc")))]
 impl<Z> Zeroize for Vec<Z>
 where
     Z: Zeroize,
@@ -372,6 +371,7 @@ where
 }
 
 #[cfg(feature = "alloc")]
+#[cfg_attr(docsrs, doc(cfg(feature = "alloc")))]
 impl Zeroize for String {
     fn zeroize(&mut self) {
         unsafe { self.as_bytes_mut() }.zeroize();
