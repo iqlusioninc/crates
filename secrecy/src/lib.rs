@@ -283,3 +283,9 @@ where
         self.expose_secret().serialize(serializer)
     }
 }
+
+impl<T: Zeroize> From<T> for Secret<T> {
+    fn from(val: T) -> Self {
+        Self::new(val)
+    }
+}
