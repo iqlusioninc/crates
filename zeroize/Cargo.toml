@@ -7,7 +7,7 @@ operation will not be 'optimized away' by the compiler.
 Uses a portable pure Rust implementation that works everywhere,
 even WASM!
 """
-version     = "1.1.0" # Also update html_root_url in lib.rs when bumping this
+version     = "1.1.1" # Also update html_root_url in lib.rs when bumping this
 authors     = ["Tony Arcieri <tony@iqlusion.io>"]
 license     = "Apache-2.0 OR MIT"
 edition     = "2018"
@@ -21,7 +21,7 @@ keywords    = ["memory", "memset", "secure", "volatile", "zero"]
 maintenance = { status = "passively-maintained" }
 
 [dependencies]
-zeroize_derive = { version = "1.0.0", path = "derive", optional = true }
+zeroize_derive = { version = "1", path = "derive", optional = true }
 
 [features]
 default = ["alloc"]

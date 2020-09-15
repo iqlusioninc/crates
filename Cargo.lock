@@ -156,7 +156,7 @@ dependencies = [
  "generic-array",
  "getrandom",
  "subtle",
- "zeroize 1.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "zeroize 1.1.0",
 ]
 
 [[package]]
@@ -222,7 +222,7 @@ dependencies = [
  "pbkdf2",
  "sha2",
  "subtle-encoding 0.5.1",
- "zeroize 1.1.0",
+ "zeroize 1.1.1",
 ]
 
 [[package]]
@@ -515,7 +515,7 @@ version = "0.7.0"
 dependencies = [
  "bytes",
  "serde",
- "zeroize 1.1.0",
+ "zeroize 1.1.1",
 ]
 
 [[package]]
@@ -573,7 +573,7 @@ dependencies = [
  "sha2",
  "signature",
  "subtle-encoding 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "zeroize 1.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "zeroize 1.1.0",
 ]
 
 [[package]]
@@ -643,7 +643,7 @@ checksum = "502d53007c02d7605a05df1c1a73ee436952781653da5d0bf57ad608f66932c1"
 name = "subtle-encoding"
 version = "0.5.1"
 dependencies = [
- "zeroize 1.1.0",
+ "zeroize 1.1.1",
 ]
 
 [[package]]
@@ -652,7 +652,7 @@ version = "0.5.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7dcb1ed7b8330c5eed5441052651dd7a12c75e2ed88f2ec024ae1fa3a5e59945"
 dependencies = [
- "zeroize 1.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "zeroize 1.1.0",
 ]
 
 [[package]]
@@ -685,7 +685,7 @@ dependencies = [
  "chrono",
  "quickcheck",
  "serde",
- "zeroize 1.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "zeroize 1.1.0",
 ]
 
 [[package]]
@@ -789,15 +789,15 @@ checksum = "712e227841d057c1ee1cd2fb22fa7e5a5461ae8e48fa2ca79ec42cfc1931183f"
 [[package]]
 name = "zeroize"
 version = "1.1.0"
-dependencies = [
- "zeroize_derive",
-]
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3cbac2ed2ba24cc90f5e06485ac8c7c1e5449fe8911aef4d8877218af021a5b8"
 
 [[package]]
 name = "zeroize"
-version = "1.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3cbac2ed2ba24cc90f5e06485ac8c7c1e5449fe8911aef4d8877218af021a5b8"
+version = "1.1.1"
+dependencies = [
+ "zeroize_derive",
+]
 
 [[package]]
 name = "zeroize_derive"
