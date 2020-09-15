@@ -73,22 +73,28 @@
 //! Example which derives `Drop`:
 //!
 //! ```
+//! # #[cfg(feature = "derive")]
+//! # {
 //! use zeroize::Zeroize;
 //!
 //! // This struct will be zeroized on drop
 //! #[derive(Zeroize)]
 //! #[zeroize(drop)]
 //! struct MyStruct([u8; 32]);
+//! # }
 //! ```
 //!
 //! Example which does not derive `Drop` (useful for e.g. `Copy` types)
 //!
 //! ```
+//! #[cfg(feature = "derive")]
+//! # {
 //! use zeroize::Zeroize;
 //!
 //! // This struct will *NOT* be zeroized on drop
 //! #[derive(Copy, Clone, Zeroize)]
 //! struct MyStruct([u8; 32]);
+//! # }
 //! ```
 //!
 //! ## `Zeroizing<Z>`: wrapper for zeroizing arbitrary values on drop
