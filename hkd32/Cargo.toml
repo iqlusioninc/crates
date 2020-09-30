@@ -21,7 +21,7 @@ keywords    = ["crypto", "bip32", "bip39", "derivation", "mnemonic"]
 maintenance = { status = "passively-maintained" }
 
 [dependencies]
-getrandom = { version = "0.1", optional = true }
+getrandom = { version = "0.2", optional = true }
 hmac = { version = "0.9", default-features = false }
 lazy_static = { version = "1", optional = true, default-features = false }
 sha2 = { version = "0.9", default-features = false }
