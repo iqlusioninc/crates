@@ -23,7 +23,7 @@ an initial 32-bytes of input key material.
 
 ## Minimum Supported Rust Version
 
-- Rust **1.39**
+- Rust **1.44**
 
 ## License
 
@@ -52,7 +52,7 @@ without any additional terms or conditions.
 [docs-link]: https://docs.rs/hkd32/
 [license-image]: https://img.shields.io/badge/license-Apache2.0/MIT-blue.svg
 [license-link]: https://github.com/iqlusioninc/crates/blob/develop/LICENSE
-[rustc-image]: https://img.shields.io/badge/rustc-1.39+-blue.svg
+[rustc-image]: https://img.shields.io/badge/rustc-1.44+-blue.svg
 [build-image]: hhttps://github.com/iqlusioninc/crates/workflows/Rust/badge.svg?branch=develop&event=push
 [build-link]: https://github.com/iqlusioninc/crates/actions
 [gitter-image]: https://badges.gitter.im/iqlusioninc/community.svg
