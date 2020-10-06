@@ -19,7 +19,7 @@ read the [CONTRIBUTING.md] and [CODE_OF_CONDUCT.md] files first.
 
 All crates require Rust 2018 edition and are tested on the following channels:
 
-- `1.39.0` (minimum supported)
+- `1.44.0` (minimum supported)
 - `stable`
 
 Crates may work on slightly earlier 2018 edition-supporting versions of Rust
@@ -73,7 +73,7 @@ without any additional terms or conditions.
 
 [license-image]: https://img.shields.io/badge/license-Apache2.0-blue.svg
 [license-link]: https://github.com/iqlusioninc/crates/blob/develop/LICENSE
-[msrv-image]: https://img.shields.io/badge/rustc-1.39+-blue.svg
+[msrv-image]: https://img.shields.io/badge/rustc-1.44+-blue.svg
 [build-image]: https://github.com/iqlusioninc/crates/workflows/Rust/badge.svg?branch=develop&event=push
 [build-link]: https://github.com/iqlusioninc/crates/actions
 [gitter-image]: https://badges.gitter.im/iqlusioninc/community.svg

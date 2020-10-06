@@ -22,7 +22,7 @@ such as Intel SGX or `#![no_std]` environments.
 
 ## Minimum Supported Rust Version
 
-- Rust **1.39**
+- Rust **1.44**
 
 ## License
 
@@ -54,7 +54,7 @@ without any additional terms or conditions.
 [docs-link]: https://docs.rs/harp/
 [license-image]: https://img.shields.io/badge/license-Apache2.0-blue.svg
 [license-link]: https://github.com/iqlusioninc/crates/blob/develop/LICENSE
-[rustc-image]: https://img.shields.io/badge/rustc-1.39+-blue.svg
+[rustc-image]: https://img.shields.io/badge/rustc-1.44+-blue.svg
 [safety-image]: https://img.shields.io/badge/unsafe-forbidden-success.svg
 [safety-link]: https://github.com/rust-secure-code/safety-dance/
 [build-image]: https://github.com/iqlusioninc/crates/workflows/Rust/badge.svg?branch=develop&event=push

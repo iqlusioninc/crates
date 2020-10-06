@@ -22,7 +22,7 @@
 //!
 //! ## Minimum Supported Rust Version
 //!
-//! Requires Rust **1.39** or newer.
+//! Requires Rust **1.44** or newer.
 //!
 //! In the future, we reserve the right to change MSRV (i.e. MSRV is out-of-scope
 //! for this crate's SemVer guarantees), however when we do it will be accompanied
@@ -73,22 +73,28 @@
 //! Example which derives `Drop`:
 //!
 //! ```
+//! # #[cfg(feature = "derive")]
+//! # {
 //! use zeroize::Zeroize;
 //!
 //! // This struct will be zeroized on drop
 //! #[derive(Zeroize)]
 //! #[zeroize(drop)]
 //! struct MyStruct([u8; 32]);
+//! # }
 //! ```
 //!
 //! Example which does not derive `Drop` (useful for e.g. `Copy` types)
 //!
 //! ```
+//! #[cfg(feature = "derive")]
+//! # {
 //! use zeroize::Zeroize;
 //!
 //! // This struct will *NOT* be zeroized on drop
 //! #[derive(Copy, Clone, Zeroize)]
 //! struct MyStruct([u8; 32]);
+//! # }
 //! ```
 //!
 //! ## `Zeroizing<Z>`: wrapper for zeroizing arbitrary values on drop
@@ -201,7 +207,8 @@
 //! [good cryptographic hygiene]: https://github.com/veorq/cryptocoding#clean-memory-of-secret-data
 
 #![no_std]
-#![doc(html_root_url = "https://docs.rs/zeroize/1.1.0")]
+#![cfg_attr(docsrs, feature(doc_cfg))]
+#![doc(html_root_url = "https://docs.rs/zeroize/1.1.1")]
 #![warn(missing_docs, rust_2018_idioms, trivial_casts, unused_qualifications)]
 
 #[cfg(feature = "alloc")]
@@ -209,11 +216,8 @@
 extern crate alloc;
 
 #[cfg(feature = "zeroize_derive")]
+#[cfg_attr(docsrs, doc(cfg(feature = "zeroize_derive")))]
 pub use zeroize_derive::Zeroize;
-
-#[cfg(feature = "zeroize_derive")]
-#[doc(hidden)]
-pub use zeroize_derive::*;
 
 use core::{ops, ptr, slice::IterMut, sync::atomic};
 
@@ -322,6 +326,7 @@ where
 }
 
 #[cfg(feature = "alloc")]
+#[cfg_attr(docsrs, doc(cfg(feature = "alloc")))]
 impl<Z> Zeroize for Vec<Z>
 where
     Z: Zeroize,
@@ -366,6 +371,7 @@ where
 }
 
 #[cfg(feature = "alloc")]
+#[cfg_attr(docsrs, doc(cfg(feature = "alloc")))]
 impl Zeroize for String {
     fn zeroize(&mut self) {
         unsafe { self.as_bytes_mut() }.zeroize();

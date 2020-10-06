@@ -9,7 +9,7 @@ members = [
     "subtle-encoding",
     "tai64",
     "zeroize",
-    "zeroize_derive"
+    "zeroize/derive"
 ]
 
 # Enable integer overflow checks in release builds
