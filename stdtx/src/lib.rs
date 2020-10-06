@@ -22,7 +22,8 @@
 //!
 //! ```
 //! use stdtx::Builder;
-//! use signatory_secp256k1::{SecretKey, EcdsaSigner};
+//! use k256::ecdsa::SigningKey;
+//! use rand_core::OsRng; // requires `std` feature of `rand_core`
 //!
 //! /// Example account number
 //! const ACCOUNT_NUMBER: u64 = 946827;
@@ -98,9 +99,9 @@
 //! /// boxed ECDSA secp256k1 signer
 //! let builder = stdtx::Builder::new(schema, CHAIN_ID, ACCOUNT_NUMBER);
 //!
-//! /// Create ECDSA signer (ordinarily you wouldn't generate a random key
+//! /// Create ECDSA signing key (ordinarily you wouldn't generate a random key
 //! /// every time but reuse an existing one)
-//! let signer = EcdsaSigner::from(&SecretKey::generate());
+//! let signer = SigningKey::random(&mut OsRng);
 //!
 //! /// Create message to be included in the `StdTx` using the method defined above
 //! let msg = build_vote_msg(builder.schema()).unwrap();
@@ -145,8 +146,7 @@ pub use self::{
     type_name::TypeName,
 };
 
-/// Fixed-width ECDSA secp256k1 signature
-pub use ecdsa::curve::secp256k1::FixedSignature as Signature;
+pub use k256::ecdsa::Signature;
 
 /// Transaction signer for ECDSA secp256k1 signatures
 pub type Signer = dyn ecdsa::signature::Signer<Signature>;

@@ -25,7 +25,7 @@ from memory when dropped.
 
 ## Minimum Supported Rust Version
 
-- Rust **1.39**
+- Rust **1.44**
 
 ## serde support
 
@@ -61,7 +61,7 @@ without any additional terms or conditions.
 [docs-image]: https://docs.rs/secrecy/badge.svg
 [docs-link]: https://docs.rs/secrecy/
 [license-image]: https://img.shields.io/badge/license-Apache2.0/MIT-blue.svg
-[rustc-image]: https://img.shields.io/badge/rustc-1.39+-blue.svg
+[rustc-image]: https://img.shields.io/badge/rustc-1.44+-blue.svg
 [safety-image]: https://img.shields.io/badge/unsafe-forbidden-success.svg
 [safety-link]: https://github.com/rust-secure-code/safety-dance/
 [build-image]: https://github.com/iqlusioninc/crates/workflows/Rust/badge.svg?branch=develop&event=push
