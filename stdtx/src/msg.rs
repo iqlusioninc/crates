@@ -13,7 +13,7 @@ use crate::{
     schema::{Schema, ValueType},
     Address, Decimal, Error, TypeName,
 };
-use anomaly::fail;
+use anomaly::{fail, format_err};
 use prost_amino::encode_length_delimiter as encode_leb128; // Little-endian Base 128
 use std::{collections::BTreeMap, iter::FromIterator};
 
@@ -89,6 +89,14 @@ impl Msg {
             };
 
             let value = match field_def.value_type() {
+                ValueType::Bytes => {
+                    // Base64. Matches Protobuf JSON mapping
+                    let decoded = base64::decode(value_str).map_err(|e| {
+                        format_err!(ErrorKind::Parse, "invalid Base64-encoded bytes: {}", e)
+                    })?;
+
+                    Value::Bytes(decoded)
+                }
                 ValueType::SdkAccAddress => {
                     let (hrp, addr) = Address::from_bech32(value_str)?;
 

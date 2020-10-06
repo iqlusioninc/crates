@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.2.2 (2020-10-05)
+### Added
+- `bytes` fields ([#519])
+
+[#519]: https://github.com/iqlusioninc/crates/pull/519
+
 ## 0.2.1 (2020-06-23)
 ### Changed
 - Bump `prost-amino`/`prost-amino-derive` to v0.6 ([#451])

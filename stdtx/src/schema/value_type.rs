@@ -13,6 +13,9 @@ use std::{
 /// [`sdk.Msg`]: https://godoc.org/github.com/cosmos/cosmos-sdk/types#Msg
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub enum ValueType {
+    /// Bytes
+    Bytes,
+
     /// `sdk.AccAddress`: Cosmos SDK account addresses
     /// <https://godoc.org/github.com/cosmos/cosmos-sdk/types#AccAddress>
     SdkAccAddress,
@@ -32,6 +35,7 @@ pub enum ValueType {
 impl Display for ValueType {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.write_str(match self {
+            ValueType::Bytes => "bytes",
             ValueType::SdkAccAddress => "sdk.AccAddress",
             ValueType::SdkDecimal => "sdk.Dec",
             ValueType::SdkValAddress => "sdk.ValAddress",
@@ -45,6 +49,7 @@ impl FromStr for ValueType {
 
     fn from_str(s: &str) -> Result<Self, Error> {
         Ok(match s {
+            "bytes" => ValueType::Bytes,
             "sdk.AccAddress" => ValueType::SdkAccAddress,
             "sdk.Dec" => ValueType::SdkDecimal,
             "sdk.ValAddress" => ValueType::SdkValAddress,
