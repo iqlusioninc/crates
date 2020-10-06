@@ -55,12 +55,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "base64"
-version = "0.13.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "904dfeac50f3cdaba28fc6f57fdcddb75f49ed61346676a78c4ffe55877802fd"
-
-[[package]]
 name = "bitvec"
 version = "0.18.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -621,10 +615,9 @@ checksum = "1cc9c640a4adbfbcc11ffb95efe5aa7af7309e002adab54b185507dbf2377b99"
 
 [[package]]
 name = "stdtx"
-version = "0.2.3"
+version = "0.2.4"
 dependencies = [
  "anomaly",
- "base64",
  "ecdsa",
  "k256",
  "prost-amino",

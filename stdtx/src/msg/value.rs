@@ -5,6 +5,7 @@ use crate::{
     decimal::Decimal,
     schema::{Schema, ValueType},
 };
+use subtle_encoding::hex;
 
 /// Message values - data contained in fields of a message
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -66,7 +67,7 @@ impl Value {
     /// Encode this value as a [`serde_json::Value`]
     pub(super) fn to_json_value(&self, schema: &Schema) -> serde_json::Value {
         serde_json::Value::String(match self {
-            Value::Bytes(b) => base64::encode(b),
+            Value::Bytes(b) => String::from_utf8(hex::encode(b)).unwrap(),
             Value::SdkAccAddress(addr) => addr.to_bech32(schema.acc_prefix()),
             Value::SdkDecimal(decimal) => decimal.to_string(),
             Value::SdkValAddress(addr) => addr.to_bech32(schema.val_prefix()),

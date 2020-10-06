@@ -16,6 +16,7 @@ use crate::{
 use anomaly::{fail, format_err};
 use prost_amino::encode_length_delimiter as encode_leb128; // Little-endian Base 128
 use std::{collections::BTreeMap, iter::FromIterator};
+use subtle_encoding::hex;
 
 /// Tags are indexes which identify message fields
 pub type Tag = u64;
@@ -89,14 +90,9 @@ impl Msg {
             };
 
             let value = match field_def.value_type() {
-                ValueType::Bytes => {
-                    // Base64. Matches Protobuf JSON mapping
-                    let decoded = base64::decode(value_str).map_err(|e| {
-                        format_err!(ErrorKind::Parse, "invalid Base64-encoded bytes: {}", e)
-                    })?;
-
-                    Value::Bytes(decoded)
-                }
+                ValueType::Bytes => hex::decode(value_str).map(Value::Bytes).map_err(|e| {
+                    format_err!(ErrorKind::Parse, "invalid hex-encoded bytes: {}", e)
+                })?,
                 ValueType::SdkAccAddress => {
                     let (hrp, addr) = Address::from_bech32(value_str)?;
 
