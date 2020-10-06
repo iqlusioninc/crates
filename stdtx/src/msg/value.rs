@@ -45,8 +45,8 @@ impl Value {
     pub(super) fn wire_type(&self) -> u64 {
         match self {
             // Length-delimited types
-            Value::Bytes(_) |
-            Value::SdkAccAddress(_)
+            Value::Bytes(_)
+            | Value::SdkAccAddress(_)
             | Value::SdkDecimal(_)
             | Value::SdkValAddress(_)
             | Value::String(_) => 2,

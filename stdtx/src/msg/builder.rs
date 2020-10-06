@@ -67,8 +67,8 @@ impl<'a> Builder<'a> {
             .get_field_tag(&field_name, ValueType::SdkAccAddress)?;
 
         let field = Field::new(tag, field_name, Value::SdkAccAddress(address));
-
         self.fields.push(field);
+
         Ok(self)
     }
 
@@ -91,6 +91,23 @@ impl<'a> Builder<'a> {
         self.acc_address(field_name, address)
     }
 
+    /// Bytes
+    pub fn bytes(
+        &mut self,
+        field_name: impl TryInto<TypeName, Error = Error>,
+        b: impl Into<Vec<u8>>,
+    ) -> Result<&mut Self, Error> {
+        let field_name = field_name.try_into()?;
+        let tag = self
+            .schema_definition
+            .get_field_tag(&field_name, ValueType::Bytes)?;
+
+        let field = Field::new(tag, field_name, Value::Bytes(b.into()));
+        self.fields.push(field);
+
+        Ok(self)
+    }
+
     /// `sdk.Dec`: Cosmos SDK decimals
     /// <https://godoc.org/github.com/cosmos/cosmos-sdk/types#Dec>s
     pub fn decimal(
@@ -105,8 +122,8 @@ impl<'a> Builder<'a> {
             .get_field_tag(&field_name, ValueType::SdkDecimal)?;
 
         let field = Field::new(tag, field_name, Value::SdkDecimal(value.into()));
-
         self.fields.push(field);
+
         Ok(self)
     }
 
@@ -123,8 +140,8 @@ impl<'a> Builder<'a> {
             .get_field_tag(&field_name, ValueType::SdkValAddress)?;
 
         let field = Field::new(tag, field_name, Value::SdkValAddress(address));
-
         self.fields.push(field);
+
         Ok(self)
     }
 
@@ -159,8 +176,8 @@ impl<'a> Builder<'a> {
             .get_field_tag(&field_name, ValueType::String)?;
 
         let field = Field::new(tag, field_name, Value::String(s.into()));
-
         self.fields.push(field);
+
         Ok(self)
     }
 
