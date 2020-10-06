@@ -16,10 +16,11 @@ circle-ci = { repository = "tendermint/kms" }
 
 [dependencies]
 anomaly = { version = "0.2", path = "../anomaly" }
-ecdsa = { version = "0.6", features = ["k256"] }
+ecdsa = { version = "0.8", features = ["std"] }
+k256 = { version = "0.5", features = ["ecdsa", "sha256"] }
 prost-amino = "0.6"
 prost-amino-derive = "0.6"
-rust_decimal = "1.6"
+rust_decimal = "1.7"
 serde = { version = "1", features = ["serde_derive"] }
 serde_json = "1"
 sha2 = "0.9"
@@ -28,4 +29,4 @@ thiserror = "1"
 toml = "0.5"
 
 [dev-dependencies]
-signatory-secp256k1 = "0.20"
+rand_core = { version = "0.5", features = ["std"] }

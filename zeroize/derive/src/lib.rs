@@ -1,18 +1,25 @@
 //! Custom derive support for `zeroize`
 
 #![crate_type = "proc-macro"]
-#![deny(
-    rust_2018_idioms,
-    trivial_casts,
-    unused_lifetimes,
-    unused_qualifications
-)]
 #![forbid(unsafe_code)]
+#![warn(rust_2018_idioms, trivial_casts, unused_qualifications)]
 
 use proc_macro2::TokenStream;
 use quote::quote;
 use syn::{Attribute, Meta, NestedMeta};
 use synstructure::{decl_derive, BindStyle};
+
+decl_derive!(
+    [Zeroize, attributes(zeroize)] =>
+
+    /// Derive the `Zeroize` trait.
+    ///
+    /// Supports the following attribute:
+    ///
+    /// - `#[zeroize(drop)]`: derives the `Drop` trait, calling `zeroize()`
+    ///   when this item is dropped.
+    derive_zeroize
+);
 
 /// Name of zeroize-related attributes
 const ZEROIZE_ATTR: &str = "zeroize";
@@ -29,8 +36,6 @@ fn derive_zeroize(s: synstructure::Structure<'_>) -> TokenStream {
         derive_zeroize_without_drop(s)
     }
 }
-
-decl_derive!([Zeroize, attributes(zeroize)] => derive_zeroize);
 
 /// Custom derive attributes for `Zeroize`
 #[derive(Default)]

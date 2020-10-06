@@ -8,12 +8,13 @@ use zeroize::Zeroize;
 #[cfg(all(feature = "bytes", feature = "serde"))]
 use serde::de::{self, Deserialize};
 
-/// Instance of `BytesMut` protected by a type that impls the `ExposeSecret`
+/// Instance of [`BytesMut`] protected by a type that impls the [`ExposeSecret`]
 /// trait like `Secret<T>`.
 ///
-/// Because of the nature of how the `Bytes` type works, it needs some special
+/// Because of the nature of how the `BytesMut` type works, it needs some special
 /// care in order to have a proper zeroizing drop handler.
 #[derive(Clone)]
+#[cfg_attr(docsrs, doc(cfg(feature = "bytes")))]
 pub struct SecretBytesMut(BytesMut);
 
 impl SecretBytesMut {

@@ -118,7 +118,7 @@ impl Msg {
             fields.push(Field::new(field_def.tag(), field_name, value));
         }
 
-        fields.sort_by(|f1, f2| f1.tag().cmp(&f2.tag()));
+        fields.sort_by_key(|f1| f1.tag());
         Ok(Self { type_name, fields })
     }
 

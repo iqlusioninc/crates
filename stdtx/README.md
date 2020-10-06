@@ -27,7 +27,7 @@ uses the [StdTx] format without requiring upstream modifications.
 
 ## Minimum Supported Rust Version
 
-- Rust **1.39+**
+- Rust **1.44+**
 
 ## License
 
@@ -57,7 +57,7 @@ limitations under the License.
 [safety-link]: https://github.com/rust-secure-code/safety-dance/
 [license-image]: https://img.shields.io/badge/license-Apache2.0-blue.svg
 [license-link]: https://github.com/iqlusioninc/crates/blob/develop/LICENSE
-[msrv-image]: https://img.shields.io/badge/rustc-1.39+-blue.svg
+[msrv-image]: https://img.shields.io/badge/rustc-1.44+-blue.svg
 [gitter-image]: https://badges.gitter.im/iqlusioninc/community.svg
 [gitter-link]: https://gitter.im/iqlusioninc/community
 
