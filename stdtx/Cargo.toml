@@ -16,6 +16,7 @@ circle-ci = { repository = "tendermint/kms" }
 
 [dependencies]
 anomaly = { version = "0.2", path = "../anomaly" }
+base64 = "0.13"
 ecdsa = { version = "0.6", features = ["k256"] }
 prost-amino = "0.6"
 prost-amino-derive = "0.6"
