@@ -51,7 +51,7 @@ impl std::error::Error for Error {}
 macro_rules! ensure {
     ($condition:expr, $err:path) => {
         if !($condition) {
-            Err($err)?;
+            return Err($err);
         }
     };
 }
