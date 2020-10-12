@@ -122,7 +122,7 @@
 //! [`yubihsm`]: https://docs.rs/yubihsm
 //! [`stdtx::Builder`]: https://docs.rs/stdtx/latest/stdtx/stdtx/struct.Builder.html
 
-#![doc(html_root_url = "https://docs.rs/stdtx/0.2.4")]
+#![doc(html_root_url = "https://docs.rs/stdtx/0.3.0")]
 #![forbid(unsafe_code)]
 #![warn(missing_docs, rust_2018_idioms, unused_qualifications)]
 

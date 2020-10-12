@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.3.0 (2020-10-12)
+### Changed
+- MSRV 1.44+ ([#515])
+- Replace `signatory-secp256k1` with `k256` ([#514])
+
+[#515]: https://github.com/iqlusioninc/crates/pull/515
+[#514]: https://github.com/iqlusioninc/crates/pull/514
+
 ## 0.2.4 (2020-10-06)
 ### Fixed
 - Hex-encode `bytes` fields ([#521])
