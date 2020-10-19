@@ -275,10 +275,10 @@ dependencies = [
 name = "hkd32"
 version = "0.4.0"
 dependencies = [
- "getrandom",
  "hmac 0.10.1",
  "once_cell",
  "pbkdf2",
+ "rand_core",
  "sha2",
  "subtle-encoding",
  "zeroize 1.1.1",

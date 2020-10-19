@@ -23,8 +23,10 @@
 //! # Example
 //!
 //! ```rust
+//! use rand_core::OsRng;
+//!
 //! // Parent key
-//! let input_key_material = hkd32::KeyMaterial::random();
+//! let input_key_material = hkd32::KeyMaterial::random(&mut OsRng);
 //!
 //! // Path to the child key
 //! let derivation_path = "/foo/bar/baz".parse::<hkd32::PathBuf>().unwrap();
