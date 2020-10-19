@@ -15,24 +15,6 @@ jobs:
       - name: Checkout sources
         uses: actions/checkout@v1
 
-      - name: Cache cargo registry
-        uses: actions/cache@v1
-        with:
-          path: ~/.cargo/registry
-          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('Cargo.lock') }}
-
-      - name: Cache cargo index
-        uses: actions/cache@v1
-        with:
-          path: ~/.cargo/git
-          key: ${{ runner.os }}-cargo-index-${{ hashFiles('Cargo.lock') }}
-
-      - name: Cache cargo build
-        uses: actions/cache@v1
-        with:
-          path: target
-          key: ${{ runner.os }}-wasm32-cargo-build-target-${{ hashFiles('Cargo.lock') }}
-
       - name: Install stable toolchain
         uses: actions-rs/toolchain@v1
         with:
@@ -134,24 +116,6 @@ jobs:
       - name: Checkout sources
         uses: actions/checkout@v1
 
-      - name: Cache cargo registry
-        uses: actions/cache@v1
-        with:
-          path: ~/.cargo/registry
-          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('Cargo.lock') }}
-
-      - name: Cache cargo index
-        uses: actions/cache@v1
-        with:
-          path: ~/.cargo/git
-          key: ${{ runner.os }}-cargo-index-${{ hashFiles('Cargo.lock') }}
-
-      - name: Cache cargo build
-        uses: actions/cache@v1
-        with:
-          path: target
-          key: ${{ runner.os }}-rust-${{ matrix.toolchain }}-cargo-build-target-${{ hashFiles('Cargo.lock') }}
-
       - name: Install toolchain
         uses: actions-rs/toolchain@v1
         with:
@@ -204,18 +168,6 @@ jobs:
     steps:
       - name: Checkout sources
         uses: actions/checkout@v1
-
-      - name: Cache cargo registry
-        uses: actions/cache@v1
-        with:
-          path: ~/.cargo/registry
-          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('Cargo.lock') }}
-
-      - name: Cache cargo index
-        uses: actions/cache@v1
-        with:
-          path: ~/.cargo/git
-          key: ${{ runner.os }}-cargo-index-${{ hashFiles('Cargo.lock') }}
 
       - name: Install stable toolchain
         uses: actions-rs/toolchain@v1
