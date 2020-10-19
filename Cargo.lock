@@ -277,7 +277,7 @@ version = "0.4.0"
 dependencies = [
  "getrandom",
  "hmac 0.10.1",
- "lazy_static",
+ "once_cell",
  "pbkdf2",
  "sha2",
  "subtle-encoding",
@@ -392,6 +392,12 @@ name = "object"
 version = "0.21.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "37fd5004feb2ce328a52b0b3d01dbf4ffff72583493900ed15f22d4111c51693"
+
+[[package]]
+name = "once_cell"
+version = "1.4.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "260e51e7efe62b592207e9e13a68e43692a7a279171d6ba57abd208bf23645ad"
 
 [[package]]
 name = "opaque-debug"
