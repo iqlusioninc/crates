@@ -60,10 +60,11 @@ impl WordList {
     }
 }
 
+// TODO(tarcieri): use `const fn` instead of `Lazy`
 mod lazy {
     use super::{Bits11, WordList, WordMap};
     use alloc::vec::Vec;
-    use lazy_static::lazy_static;
+    use once_cell::sync::Lazy;
 
     /// lazy generation of the word list
     fn gen_wordlist(lang_words: &'static str) -> WordList {
@@ -86,9 +87,8 @@ mod lazy {
         WordMap { inner }
     }
 
-    lazy_static! {
-        pub(crate) static ref WORDLIST_ENGLISH: WordList =
-            gen_wordlist(include_str!("langs/english.txt"));
-        pub(crate) static ref WORDMAP_ENGLISH: WordMap = gen_wordmap(&WORDLIST_ENGLISH);
-    }
+    pub(crate) static WORDLIST_ENGLISH: Lazy<WordList> =
+        Lazy::new(|| gen_wordlist(include_str!("langs/english.txt")));
+
+    pub(crate) static WORDMAP_ENGLISH: Lazy<WordMap> = Lazy::new(|| gen_wordmap(&WORDLIST_ENGLISH));
 }

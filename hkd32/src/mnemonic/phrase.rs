@@ -1,7 +1,5 @@
 //! BIP39 mnemonic phrases
 
-#[cfg(feature = "bip39")]
-use super::seed::{Seed, SEED_SIZE};
 use super::{
     bits::{BitWriter, IterExt},
     language::Language,
@@ -9,12 +7,16 @@ use super::{
 use crate::{Error, KeyMaterial, Path, KEY_SIZE};
 use alloc::string::String;
 use core::convert::TryInto;
-#[cfg(feature = "bip39")]
-use hmac::Hmac;
-#[cfg(feature = "bip39")]
-use sha2::Sha512;
+use rand_core::{CryptoRng, RngCore};
 use sha2::{Digest, Sha256};
 use zeroize::{Zeroize, Zeroizing};
+
+#[cfg(feature = "bip39")]
+use {
+    super::seed::{Seed, SEED_SIZE},
+    hmac::Hmac,
+    sha2::Sha512,
+};
 
 /// Number of PBKDF2 rounds to perform when deriving the seed
 #[cfg(feature = "bip39")]
@@ -38,9 +40,9 @@ pub struct Phrase {
 
 impl Phrase {
     /// Create a random BIP39 mnemonic phrase.
-    pub fn random(language: Language) -> Self {
+    pub fn random(mut rng: impl RngCore + CryptoRng, language: Language) -> Self {
         let mut entropy = Entropy::default();
-        getrandom::getrandom(&mut entropy).expect("RNG failure!");
+        rng.fill_bytes(&mut entropy);
         Self::from_entropy(entropy, language)
     }
 
