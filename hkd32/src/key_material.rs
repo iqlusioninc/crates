@@ -6,22 +6,19 @@
 //! The `KeyMaterial` type is used to represent both input and output key
 //! material, and is the primary type useful for deriving other keys.
 
-#[cfg(feature = "mnemonic")]
-use crate::mnemonic;
 use crate::{path::Path, Error, KEY_SIZE};
-#[cfg(feature = "bech32")]
-use alloc::string::String;
 use core::convert::TryFrom;
-#[cfg(feature = "getrandom")]
-use getrandom::getrandom;
 use hmac::crypto_mac::{Mac, NewMac};
 use hmac::Hmac;
+use rand_core::{CryptoRng, RngCore};
 use sha2::Sha512;
-#[cfg(feature = "bech32")]
-use subtle_encoding::bech32::Bech32;
 use zeroize::Zeroize;
+
 #[cfg(feature = "bech32")]
-use zeroize::Zeroizing;
+use {alloc::string::String, subtle_encoding::bech32::Bech32, zeroize::Zeroizing};
+
+#[cfg(feature = "mnemonic")]
+use crate::mnemonic;
 
 /// Cryptographic key material: 256-bit (32-byte) uniformly random bytestring
 /// generated either via a CSRNG or via hierarchical derivation.
@@ -34,10 +31,9 @@ pub struct KeyMaterial([u8; KEY_SIZE]);
 
 impl KeyMaterial {
     /// Create random key material using the operating system CSRNG
-    #[cfg(feature = "getrandom")]
-    pub fn random() -> Self {
+    pub fn random(mut rng: impl RngCore + CryptoRng) -> Self {
         let mut bytes = [0u8; KEY_SIZE];
-        getrandom(&mut bytes).expect("getrandom failure!");
+        rng.fill_bytes(&mut bytes);
         Self::new(bytes)
     }
 

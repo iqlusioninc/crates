@@ -23,8 +23,10 @@
 //! # Example
 //!
 //! ```rust
+//! use rand_core::OsRng;
+//!
 //! // Parent key
-//! let input_key_material = hkd32::KeyMaterial::random();
+//! let input_key_material = hkd32::KeyMaterial::random(&mut OsRng);
 //!
 //! // Path to the child key
 //! let derivation_path = "/foo/bar/baz".parse::<hkd32::PathBuf>().unwrap();
@@ -43,7 +45,7 @@
     unused_lifetimes,
     unused_qualifications
 )]
-#![doc(html_root_url = "https://docs.rs/hkd32/0.4.0")]
+#![doc(html_root_url = "https://docs.rs/hkd32/0.5.0")]
 
 #[cfg(feature = "alloc")]
 #[cfg_attr(any(feature = "bip39", test), macro_use)]
