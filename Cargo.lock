@@ -87,6 +87,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0e4cec68f03f32e44924783795810fa50a7035d8c8ebe78580ad7e6c703fba38"
 
 [[package]]
+name = "bytes"
+version = "0.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e0dcbc35f504eb6fc275a6d20e4ebcda18cf50d40ba6fabff8c711fa16cb3b16"
+
+[[package]]
 name = "canonical-path"
 version = "2.0.2"
 dependencies = [
@@ -436,7 +442,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6dda006a6c21ae45e261a5a756f2a3e5299722eedae2405f4747dd6a5b47556e"
 dependencies = [
  "byteorder",
- "bytes",
+ "bytes 0.5.6",
 ]
 
 [[package]]
@@ -580,7 +586,7 @@ checksum = "71d301d4193d031abdd79ff7e3dd721168a9572ef3fe51a1517aba235bd8f86e"
 name = "secrecy"
 version = "0.7.0"
 dependencies = [
- "bytes",
+ "bytes 0.6.0",
  "serde",
  "zeroize 1.1.1",
 ]
