@@ -131,6 +131,15 @@ where
     }
 }
 
+impl<S> Zeroize for Secret<S>
+where
+    S: Zeroize,
+{
+    fn zeroize(&mut self) {
+        self.inner_secret.zeroize();
+    }
+}
+
 impl<S> ExposeSecret<S> for Secret<S>
 where
     S: Zeroize,
@@ -149,7 +158,7 @@ where
     }
 }
 
-impl<S> Clone for Secret<S>
+impl<S: Zeroize> Clone for Secret<S>
 where
     S: CloneableSecret,
 {
@@ -182,14 +191,14 @@ where
 }
 
 /// Marker trait for secrets which are allowed to be cloned
-pub trait CloneableSecret: Clone + Zeroize {}
+pub trait CloneableSecret: Clone {}
 
 /// Implement `CloneableSecret` on arrays of types that impl `Clone` and
 /// `Zeroize`.
 macro_rules! impl_cloneable_secret_for_array {
     ($($size:expr),+) => {
         $(
-            impl<T: Clone + Zeroize> CloneableSecret for [T; $size] {}
+            impl<T: Clone> CloneableSecret for [T; $size] {}
         )+
      };
 }

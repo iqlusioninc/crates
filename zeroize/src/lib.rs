@@ -222,7 +222,7 @@ pub use zeroize_derive::Zeroize;
 use core::{ops, ptr, slice::IterMut, sync::atomic};
 
 #[cfg(feature = "alloc")]
-use alloc::{string::String, vec::Vec};
+use alloc::{boxed::Box, string::String, vec::Vec};
 
 /// Trait for securely erasing types from memory
 pub trait Zeroize {
@@ -231,28 +231,30 @@ pub trait Zeroize {
     fn zeroize(&mut self);
 }
 
-/// Marker trait for types whose `Default` is the desired zeroization result
-pub trait DefaultIsZeroes: Copy + Default + Sized {}
-
-impl<Z> Zeroize for Z
-where
-    Z: DefaultIsZeroes,
-{
-    fn zeroize(&mut self) {
-        volatile_write(self, Z::default());
+/// Trait for types whose `Default` is the desired zeroization result
+pub trait DefaultIsZeroes: Copy + Default {
+    /// Zero out this object from memory using Rust intrinsics which ensure the
+    /// zeroization operation is not "optimized away" by the compiler.
+    fn default_zeroize(&mut self) {
+        volatile_write(self, Self::default());
         atomic_fence();
     }
 }
 
-macro_rules! impl_zeroize_with_default {
+macro_rules! impl_zeroize {
     ($($type:ty),+) => {
-        $(impl DefaultIsZeroes for $type {})+
+        $(impl Zeroize for $type {
+            fn zeroize(&mut self) {
+                volatile_write(self, Self::default());
+                atomic_fence();
+            }
+        })+
     };
 }
 
-impl_zeroize_with_default!(i8, i16, i32, i64, i128, isize);
-impl_zeroize_with_default!(u8, u16, u32, u64, u128, usize);
-impl_zeroize_with_default!(f32, f64, char, bool);
+impl_zeroize!(i8, i16, i32, i64, i128, isize);
+impl_zeroize!(u8, u16, u32, u64, u128, usize);
+impl_zeroize!(f32, f64, char, bool);
 
 /// Implement `Zeroize` on arrays of types that impl `Zeroize`
 macro_rules! impl_zeroize_for_array {
@@ -300,17 +302,26 @@ where
     }
 }
 
+impl<Z> Zeroize for Box<Z>
+where
+    Z: Zeroize,
+{
+    fn zeroize(&mut self) {
+        (**self).zeroize();
+    }
+}
+
 /// Impl `Zeroize` on slices of types that can be zeroized with `Default`.
 ///
 /// This impl can eventually be optimized using an memset intrinsic,
 /// such as `core::intrinsics::volatile_set_memory`. For that reason the blanket
-/// impl on slices is bounded by `DefaultIsZeroes`.
+/// impl on slices is bounded by `Copy` + `Default`.
 ///
 /// To zeroize a mut slice of `Z: Zeroize` which does not impl
-/// `DefaultIsZeroes`, call `iter_mut().zeroize()`.
+/// `Copy` + `Default`, call `iter_mut().zeroize()`.
 impl<Z> Zeroize for [Z]
 where
-    Z: DefaultIsZeroes,
+    Z: Copy + Default,
 {
     fn zeroize(&mut self) {
         assert!(self.len() <= core::isize::MAX as usize);
@@ -520,8 +531,6 @@ unsafe fn volatile_set<T: Copy + Sized>(dst: *mut T, src: T, count: usize) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    #[cfg(feature = "alloc")]
-    use alloc::boxed::Box;
 
     #[test]
     fn zeroize_byte_arrays() {
@@ -602,7 +611,7 @@ mod tests {
     #[test]
     fn zeroize_box() {
         let mut boxed_arr = Box::new([42u8; 3]);
-        boxed_arr.zeroize();
+        <Box<_> as Zeroize>::zeroize(&mut boxed_arr);
         assert_eq!(boxed_arr.as_ref(), &[0u8; 3]);
     }
 }
