@@ -1,7 +1,7 @@
 //! Message fields
 
 use super::{Tag, Value};
-use crate::type_name::TypeName;
+use crate::amino::type_name::TypeName;
 
 /// Message fields
 #[derive(Clone, Debug)]

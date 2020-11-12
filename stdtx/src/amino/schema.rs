@@ -50,10 +50,8 @@ mod value_type;
 
 pub use self::{definition::Definition, field::Field, value_type::ValueType};
 
-use crate::{
-    error::{Error, ErrorKind},
-    type_name::TypeName,
-};
+use super::TypeName;
+use crate::error::{Error, ErrorKind};
 use anomaly::fail;
 use serde::Deserialize;
 use std::{fs, path::Path, str::FromStr};

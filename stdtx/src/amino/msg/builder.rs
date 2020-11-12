@@ -3,10 +3,12 @@
 use super::{Field, Msg, Value};
 use crate::{
     address::Address,
+    amino::{
+        schema::{Definition, Schema, ValueType},
+        type_name::TypeName,
+    },
     decimal::Decimal,
     error::{Error, ErrorKind},
-    schema::{Definition, Schema, ValueType},
-    type_name::TypeName,
 };
 use anomaly::{ensure, format_err};
 use std::convert::TryInto;

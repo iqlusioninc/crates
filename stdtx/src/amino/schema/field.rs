@@ -1,7 +1,7 @@
 //! Fields in a type definition
 
 use super::ValueType;
-use crate::{msg::Tag, type_name::TypeName};
+use crate::amino::{msg::Tag, type_name::TypeName};
 use serde::{de, Deserialize};
 use std::collections::BTreeSet as Set;
 
@@ -49,7 +49,7 @@ impl Field {
 }
 
 /// Deserialize `Vec<Field>`, populating their `tag` if unpopulated
-pub(super) fn deserialize_vec<'de, D>(deserializer: D) -> Result<Vec<Field>, D::Error>
+pub(crate) fn deserialize_vec<'de, D>(deserializer: D) -> Result<Vec<Field>, D::Error>
 where
     D: de::Deserializer<'de>,
 {
@@ -86,7 +86,7 @@ fn populate_tags(fields: &mut [Field]) -> Result<(), &str> {
 }
 
 /// Ensure field names and tags are unique across all fields
-pub(super) fn validate(fields: &[Field]) -> Result<(), String> {
+pub(crate) fn validate(fields: &[Field]) -> Result<(), String> {
     let mut names = Set::new();
     let mut tags = Set::new();
 

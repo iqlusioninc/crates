@@ -1,6 +1,7 @@
 //! Builder for `StdTx` transactions which handles construction and signing.
 
-use crate::{Error, Msg, Schema, Signer, StdFee, StdSignature, StdTx};
+use super::{Msg, Schema, StdFee, StdSignature, StdTx};
+use crate::{Error, Signer};
 use serde_json::json;
 
 /// [`StdTx`] transaction builder, which handles construction, signing, and

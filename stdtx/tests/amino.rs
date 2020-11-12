@@ -1,6 +1,8 @@
 //! Integration tests
 
-use stdtx::Schema;
+#![cfg(feature = "amino")]
+
+use stdtx::amino::Schema;
 
 /// Path to an example schema TOML file
 const EXAMPLE_SCHEMA: &str = "tests/support/example_schema.toml";
