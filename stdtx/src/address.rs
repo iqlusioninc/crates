@@ -1,7 +1,7 @@
 //! Address types (account or validator)
 
-use crate::error::{Error, ErrorKind};
-use anomaly::ensure;
+use crate::Error;
+use eyre::{Result, WrapErr};
 use serde::{de, Deserialize};
 use std::convert::TryInto;
 use subtle_encoding::bech32;
@@ -15,16 +15,18 @@ pub struct Address(pub [u8; ADDRESS_SIZE]);
 
 impl Address {
     /// Parse an address from its Bech32 form
-    pub fn from_bech32(addr_bech32: impl AsRef<str>) -> Result<(String, Address), Error> {
+    pub fn from_bech32(addr_bech32: impl AsRef<str>) -> Result<(String, Address)> {
         let (hrp, addr) = bech32::decode(addr_bech32.as_ref())?;
 
-        ensure!(
-            addr.len() == ADDRESS_SIZE,
-            ErrorKind::Address,
-            "invalid length for decoded address: {} (expected {})",
-            addr.len(),
-            ADDRESS_SIZE
-        );
+        if addr.len() != ADDRESS_SIZE {
+            return Err(Error::Address).wrap_err_with(|| {
+                format!(
+                    "invalid length for decoded address: {} (expected {})",
+                    addr.len(),
+                    ADDRESS_SIZE
+                )
+            });
+        }
 
         Ok((hrp, Address(addr.as_slice().try_into().unwrap())))
     }

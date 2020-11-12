@@ -23,7 +23,7 @@
 //! ```
 //! # #[cfg(feature = "amino")]
 //! # {
-//! use stdtx::amino::Builder;
+//! use stdtx::{amino::Builder, error::Result};
 //! use k256::ecdsa::SigningKey;
 //! use rand_core::OsRng; // requires `std` feature of `rand_core`
 //!
@@ -73,18 +73,8 @@
 //!     ]
 //!     "#;
 //!
-//! /// Simple error type
-//! #[derive(Debug)]
-//! struct Error(String);
-//!
-//! impl From<stdtx::Error> for Error {
-//!     fn from(err: stdtx::Error) -> Error {
-//!         Error(err.to_string())
-//!     }
-//! }
-//!
 //! /// Simple builder for an `oracle/MsgExchangeRateVote` message
-//! fn build_vote_msg(schema: &stdtx::amino::Schema) -> Result<stdtx::amino::Msg, Error> {
+//! fn build_vote_msg(schema: &stdtx::amino::Schema) -> Result<stdtx::amino::Msg> {
 //!     Ok(stdtx::amino::msg::Builder::new(schema, "oracle/MsgExchangeRateVote")?
 //!         .decimal("exchange_rate", -1i8)?
 //!         .string("salt", "XXXX")?

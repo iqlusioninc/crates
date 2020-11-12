@@ -1,7 +1,7 @@
 //! Types of values that can be present in an `sdk.Msg`
 
-use crate::error::{Error, ErrorKind};
-use anomaly::fail;
+use crate::Error;
+use eyre::{Result, WrapErr};
 use serde::{de, Deserialize};
 use std::{
     fmt::{self, Display},
@@ -45,17 +45,17 @@ impl Display for ValueType {
 }
 
 impl FromStr for ValueType {
-    type Err = Error;
+    type Err = eyre::Report;
 
-    fn from_str(s: &str) -> Result<Self, Error> {
-        Ok(match s {
-            "bytes" => ValueType::Bytes,
-            "sdk.AccAddress" => ValueType::SdkAccAddress,
-            "sdk.Dec" => ValueType::SdkDecimal,
-            "sdk.ValAddress" => ValueType::SdkValAddress,
-            "string" => ValueType::String,
-            _ => fail!(ErrorKind::Parse, "unknown value type: `{}`", s),
-        })
+    fn from_str(s: &str) -> Result<Self> {
+        match s {
+            "bytes" => Ok(ValueType::Bytes),
+            "sdk.AccAddress" => Ok(ValueType::SdkAccAddress),
+            "sdk.Dec" => Ok(ValueType::SdkDecimal),
+            "sdk.ValAddress" => Ok(ValueType::SdkValAddress),
+            "string" => Ok(ValueType::String),
+            _ => Err(Error::Parse).wrap_err_with(|| format!("unknown value type: `{}`", s)),
+        }
     }
 }
 

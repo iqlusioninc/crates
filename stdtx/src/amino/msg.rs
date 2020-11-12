@@ -9,8 +9,8 @@ mod value;
 pub use self::{builder::Builder, field::Field, value::Value};
 
 use super::{schema::ValueType, Schema, TypeName};
-use crate::{error::ErrorKind, Address, Decimal, Error};
-use anomaly::{fail, format_err};
+use crate::{Address, Decimal, Error};
+use eyre::{Result, WrapErr};
 use prost_amino::encode_length_delimiter as encode_leb128; // Little-endian Base 128
 use std::{collections::BTreeMap, iter::FromIterator};
 use subtle_encoding::hex;
@@ -35,36 +35,34 @@ pub struct Msg {
 impl Msg {
     /// Parse a [`Msg`] from a [`serde_json::Value`] following the provided
     /// [`Schema`] for field definitions.
-    pub fn from_json_value(schema: &Schema, json_value: serde_json::Value) -> Result<Self, Error> {
+    pub fn from_json_value(schema: &Schema, json_value: serde_json::Value) -> Result<Self> {
         let json_obj = match json_value.as_object() {
             Some(obj) => obj,
-            None => fail!(ErrorKind::Type, "expected JSON object"),
+            None => return Err(Error::Type).wrap_err("expected JSON object"),
         };
 
         if json_obj.len() != 2 {
-            fail!(ErrorKind::Parse, "unexpected keys in JSON object");
+            return Err(Error::Parse).wrap_err("unexpected keys in JSON object");
         }
 
         let type_name = match json_obj.get("type").and_then(|v| v.as_str()) {
             Some(name) => name.parse::<TypeName>()?,
-            None => fail!(ErrorKind::Parse, "no `type` key in JSON object"),
+            None => return Err(Error::Parse).wrap_err("no `type` key in JSON object"),
         };
 
         let type_def = match schema.get_definition(&type_name) {
             Some(def) => def,
-            None => fail!(
-                ErrorKind::FieldName,
-                "no type definition for `{}`",
-                type_name
-            ),
+            None => {
+                return Err(Error::FieldName)
+                    .wrap_err_with(|| format!("no type definition for `{}`", type_name))
+            }
         };
 
         let value_obj = match json_obj.get("value").and_then(|v| v.as_object()) {
             Some(obj) => obj,
-            None => fail!(
-                ErrorKind::Parse,
-                "missing or invalid `value` key in JSON object"
-            ),
+            None => {
+                return Err(Error::Parse).wrap_err("missing or invalid `value` key in JSON object")
+            }
         };
 
         let mut fields = vec![];
@@ -74,27 +72,31 @@ impl Msg {
 
             let field_def = match type_def.get_field(&field_name) {
                 Some(def) => def,
-                None => fail!(ErrorKind::FieldName, "unknown field name: `{}`", field_name),
+                None => {
+                    return Err(Error::FieldName)
+                        .wrap_err_with(|| format!("unknown field name: `{}`", field_name))
+                }
             };
 
             let value_str = match json_value.as_str() {
                 Some(s) => s,
-                None => fail!(
-                    ErrorKind::Parse,
-                    "couldn't parse JSON value: `{}`",
-                    field_name
-                ),
+                None => {
+                    return Err(Error::Parse)
+                        .wrap_err_with(|| format!("couldn't parse JSON value: `{}`", field_name))
+                }
             };
 
             let value = match field_def.value_type() {
-                ValueType::Bytes => hex::decode(value_str).map(Value::Bytes).map_err(|e| {
-                    format_err!(ErrorKind::Parse, "invalid hex-encoded bytes: {}", e)
-                })?,
+                ValueType::Bytes => hex::decode(value_str)
+                    .map(Value::Bytes)
+                    .map_err(|_| Error::Parse)
+                    .wrap_err_with(|| format!("invalid hex-encoded bytes: '{}'", value_str))?,
                 ValueType::SdkAccAddress => {
                     let (hrp, addr) = Address::from_bech32(value_str)?;
 
                     if schema.acc_prefix() != hrp {
-                        fail!(ErrorKind::Parse, "invalid account prefix: {}", value_str);
+                        return Err(Error::Parse)
+                            .wrap_err_with(|| format!("invalid account prefix: {}", value_str));
                     }
 
                     Value::SdkAccAddress(addr)
@@ -103,7 +105,8 @@ impl Msg {
                     let (hrp, addr) = Address::from_bech32(value_str)?;
 
                     if schema.val_prefix() != hrp {
-                        fail!(ErrorKind::Parse, "invalid validator prefix: {}", value_str);
+                        return Err(Error::Parse)
+                            .wrap_err_with(|| format!("invalid validator prefix: {}", value_str));
                     }
 
                     Value::SdkValAddress(addr)

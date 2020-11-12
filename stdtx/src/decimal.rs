@@ -2,8 +2,8 @@
 //!
 //! [`sdk.Dec`]: https://godoc.org/github.com/cosmos/cosmos-sdk/types#Dec
 
-use crate::error::{Error, ErrorKind};
-use anomaly::{ensure, fail};
+use crate::Error;
+use eyre::{Result, WrapErr};
 use std::{
     convert::{TryFrom, TryInto},
     fmt::{self, Debug, Display},
@@ -30,13 +30,15 @@ impl Decimal {
     ///
     /// 18 digits required by the Cosmos SDK. See:
     /// See: <https://github.com/cosmos/cosmos-sdk/blob/26d6e49/types/decimal.go#L23>
-    pub fn new(integral_digits: i64, fractional_digits: u64) -> Result<Self, Error> {
-        ensure!(
-            fractional_digits <= FRACTIONAL_DIGITS_MAX,
-            ErrorKind::Decimal,
-            "fractional digits exceed available precision: {}",
-            fractional_digits
-        );
+    pub fn new(integral_digits: i64, fractional_digits: u64) -> Result<Self> {
+        if fractional_digits > FRACTIONAL_DIGITS_MAX {
+            return Err(Error::Decimal).wrap_err_with(|| {
+                format!(
+                    "fractional digits exceed available precision: {}",
+                    fractional_digits
+                )
+            });
+        }
 
         let integral_digits: rust_decimal::Decimal = integral_digits.into();
         let fractional_digits: rust_decimal::Decimal = fractional_digits.into();
@@ -52,6 +54,7 @@ impl Decimal {
         self.0
             .set_scale(0)
             .expect("can't rescale decimal for Amino serialization");
+
         self.to_string().into_bytes()
     }
 }
@@ -69,17 +72,17 @@ impl Display for Decimal {
 }
 
 impl FromStr for Decimal {
-    type Err = Error;
+    type Err = eyre::Report;
 
-    fn from_str(s: &str) -> Result<Self, Error> {
+    fn from_str(s: &str) -> Result<Self> {
         s.parse::<rust_decimal::Decimal>()?.try_into()
     }
 }
 
 impl TryFrom<rust_decimal::Decimal> for Decimal {
-    type Error = Error;
+    type Error = eyre::Report;
 
-    fn try_from(mut decimal_value: rust_decimal::Decimal) -> Result<Self, Error> {
+    fn try_from(mut decimal_value: rust_decimal::Decimal) -> Result<Self> {
         match decimal_value.scale() {
             0 => {
                 let exp: rust_decimal::Decimal = 10u64.pow(PRECISION).into();
@@ -87,11 +90,11 @@ impl TryFrom<rust_decimal::Decimal> for Decimal {
                 decimal_value.set_scale(PRECISION)?;
             }
             PRECISION => (),
-            other => fail!(
-                ErrorKind::Decimal,
-                "invalid decimal precision: {} (must be 0 or 18)",
-                other
-            ),
+            other => {
+                return Err(Error::Decimal).wrap_err_with(|| {
+                    format!("invalid decimal precision: {} (must be 0 or 18)", other)
+                })
+            }
         }
 
         Ok(Decimal(decimal_value))
