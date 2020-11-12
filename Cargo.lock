@@ -669,7 +669,7 @@ checksum = "1cc9c640a4adbfbcc11ffb95efe5aa7af7309e002adab54b185507dbf2377b99"
 
 [[package]]
 name = "stdtx"
-version = "0.3.0"
+version = "0.4.0-pre"
 dependencies = [
  "ecdsa",
  "eyre",
