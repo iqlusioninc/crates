@@ -2,8 +2,8 @@
 
 use crate::{
     address::Address,
+    amino::schema::{Schema, ValueType},
     decimal::Decimal,
-    schema::{Schema, ValueType},
 };
 use subtle_encoding::hex;
 
@@ -43,7 +43,7 @@ impl Value {
 
     /// Get the Amino/Proto wire type for this field
     /// See: <https://developers.google.com/protocol-buffers/docs/encoding#structure>
-    pub(super) fn wire_type(&self) -> u64 {
+    pub(crate) fn wire_type(&self) -> u64 {
         match self {
             // Length-delimited types
             Value::Bytes(_)
@@ -55,7 +55,7 @@ impl Value {
     }
 
     /// Encode this value as Amino bytes
-    pub(super) fn to_amino_bytes(&self) -> Vec<u8> {
+    pub(crate) fn to_amino_bytes(&self) -> Vec<u8> {
         match self {
             Value::Bytes(b) => b.clone(),
             Value::SdkAccAddress(addr) | Value::SdkValAddress(addr) => addr.as_ref().to_vec(),
@@ -65,7 +65,7 @@ impl Value {
     }
 
     /// Encode this value as a [`serde_json::Value`]
-    pub(super) fn to_json_value(&self, schema: &Schema) -> serde_json::Value {
+    pub(crate) fn to_json_value(&self, schema: &Schema) -> serde_json::Value {
         serde_json::Value::String(match self {
             Value::Bytes(b) => String::from_utf8(hex::encode(b)).unwrap(),
             Value::SdkAccAddress(addr) => addr.to_bech32(schema.acc_prefix()),

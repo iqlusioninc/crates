@@ -8,11 +8,8 @@ mod value;
 
 pub use self::{builder::Builder, field::Field, value::Value};
 
-use crate::{
-    error::ErrorKind,
-    schema::{Schema, ValueType},
-    Address, Decimal, Error, TypeName,
-};
+use super::{schema::ValueType, Schema, TypeName};
+use crate::{error::ErrorKind, Address, Decimal, Error};
 use anomaly::{fail, format_err};
 use prost_amino::encode_length_delimiter as encode_leb128; // Little-endian Base 128
 use std::{collections::BTreeMap, iter::FromIterator};
@@ -180,7 +177,7 @@ impl Msg {
 #[cfg(test)]
 mod tests {
     use super::{Msg, Value};
-    use crate::{Address, Schema};
+    use crate::{amino::Schema, Address};
     use serde_json::json;
 
     /// Path to an example schema TOML file

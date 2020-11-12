@@ -1,6 +1,7 @@
 //! StdTx Amino types
 
-use crate::{Msg, Signature, TypeName};
+use super::{Msg, TypeName};
+use crate::Signature;
 use prost_amino::{encode_length_delimiter, Message};
 use prost_amino_derive::Message;
 use serde::{de, ser, Deserialize, Serialize};

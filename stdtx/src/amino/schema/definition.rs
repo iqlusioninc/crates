@@ -1,9 +1,9 @@
 //! Type definition within a schema
 
-use super::{field, Field, TypeName, ValueType};
+use super::{field, Field, ValueType};
 use crate::{
+    amino::{msg::Tag, TypeName},
     error::{Error, ErrorKind},
-    msg::Tag,
 };
 use anomaly::{fail, format_err};
 use serde::Deserialize;
