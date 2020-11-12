@@ -1,7 +1,7 @@
 //! Amino type names
 
-use crate::error::{Error, ErrorKind};
-use anomaly::fail;
+use crate::Error;
+use eyre::{Result, WrapErr};
 use serde::{de, Deserialize};
 use sha2::{Digest, Sha256};
 use std::{
@@ -16,7 +16,7 @@ pub struct TypeName(String);
 
 impl TypeName {
     /// Create a new `sdk.Msg` type name
-    pub fn new(name: impl AsRef<str>) -> Result<Self, Error> {
+    pub fn new(name: impl AsRef<str>) -> Result<Self> {
         name.as_ref().parse()
     }
 
@@ -59,18 +59,17 @@ impl<'de> Deserialize<'de> for TypeName {
 }
 
 impl FromStr for TypeName {
-    type Err = Error;
+    type Err = eyre::Report;
 
-    fn from_str(s: &str) -> Result<Self, Error> {
+    fn from_str(s: &str) -> Result<Self> {
         for c in s.chars() {
             match c {
                 'A'..='Z' | 'a'..='z' | '0'..='9' | '/' | '_' => (),
-                _ => fail!(
-                    ErrorKind::Parse,
-                    "invalid character `{}` in type name: `{}`",
-                    c,
-                    s
-                ),
+                _ => {
+                    return Err(Error::Parse).wrap_err_with(|| {
+                        format!("invalid character `{}` in type name: `{}`", c, s)
+                    })
+                }
             }
         }
 
@@ -79,9 +78,9 @@ impl FromStr for TypeName {
 }
 
 impl TryFrom<&str> for TypeName {
-    type Error = Error;
+    type Error = eyre::Report;
 
-    fn try_from(s: &str) -> Result<Self, Error> {
+    fn try_from(s: &str) -> Result<Self> {
         s.parse()
     }
 }

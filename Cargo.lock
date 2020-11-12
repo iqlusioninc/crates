@@ -207,6 +207,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "eyre"
+version = "0.6.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5f29abf4740a4778632fe27a4f681ef5b7a6f659aeba3330ac66f48e20cfa3b7"
+dependencies = [
+ "indenter",
+ "once_cell",
+]
+
+[[package]]
 name = "failure"
 version = "0.1.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -309,6 +319,12 @@ dependencies = [
  "crypto-mac 0.10.0",
  "digest",
 ]
+
+[[package]]
+name = "indenter"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e0bd112d44d9d870a6819eb505d04dd92b5e4d94bb8c304924a0872ae7016fb5"
 
 [[package]]
 name = "itertools"
@@ -655,8 +671,8 @@ checksum = "1cc9c640a4adbfbcc11ffb95efe5aa7af7309e002adab54b185507dbf2377b99"
 name = "stdtx"
 version = "0.3.0"
 dependencies = [
- "anomaly",
  "ecdsa",
+ "eyre",
  "k256",
  "prost-amino",
  "prost-amino-derive",
