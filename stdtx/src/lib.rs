@@ -122,13 +122,14 @@
 pub mod address;
 pub mod decimal;
 pub mod error;
+pub mod proto;
 
 #[cfg(feature = "amino")]
 pub mod amino;
 
 pub use self::{address::Address, decimal::Decimal, error::Error};
 
-pub use k256::ecdsa::Signature;
+pub use k256::ecdsa::{Signature, VerifyKey};
 
-/// Transaction signer for ECDSA secp256k1 signatures
+/// Transaction signer for ECDSA/secp256k1 signatures
 pub type Signer = dyn ecdsa::signature::Signer<Signature>;
