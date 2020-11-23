@@ -109,7 +109,7 @@ jobs:
           - macos-latest
           - windows-latest
         toolchain:
-          - 1.44.0
+          - 1.45.0
           - stable
     runs-on: ${{ matrix.platform }}
     steps:
@@ -172,7 +172,7 @@ jobs:
       - name: Install stable toolchain
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: stable
+          toolchain: 1.45.0
           override: true
 
       - name: Install clippy
