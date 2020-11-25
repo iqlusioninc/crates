@@ -374,30 +374,7 @@ where
 #[cfg_attr(docsrs, doc(cfg(feature = "alloc")))]
 impl Zeroize for String {
     fn zeroize(&mut self) {
-        unsafe { self.as_bytes_mut() }.zeroize();
-        debug_assert!(self.as_bytes().iter().all(|b| *b == 0));
-
-        // Zero the capacity of the `String` that is not initialized.
-        {
-            // Safety:
-            //
-            // This is safe, because `String` never allocates more than `isize::MAX` bytes.
-            let extra_capacity_start = unsafe { self.as_mut_ptr().add(self.len()) };
-            let extra_capacity_len = self.capacity().saturating_sub(self.len());
-
-            // Safety:
-            // The memory pointed to by `extra_capacity_start` is valid for `extra_capacity_len`
-            // bytes, because the allocation of the `String` has enough reported capacity.
-            // It is also properly aligned, because the `T` here is `u8`, which has an alignment of
-            // `1`.
-            // `extra_capacity_len` is not larger than an `isize`, because `String` never allocates
-            // more than `isize::MAX` bytes.
-            // The `String` allocation also guarantees to never wrap around the address space.
-            unsafe { volatile_set(extra_capacity_start, 0, extra_capacity_len) };
-            atomic_fence();
-        }
-
-        self.clear();
+        unsafe { self.as_mut_vec() }.zeroize();
     }
 }
 
