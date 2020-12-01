@@ -21,7 +21,9 @@
 //! type to construct a signed [`StdTx`] message:
 //!
 //! ```
-//! use stdtx::Builder;
+//! # #[cfg(feature = "amino")]
+//! # {
+//! use stdtx::{amino::Builder, error::Result};
 //! use k256::ecdsa::SigningKey;
 //! use rand_core::OsRng; // requires `std` feature of `rand_core`
 //!
@@ -71,19 +73,9 @@
 //!     ]
 //!     "#;
 //!
-//! /// Simple error type
-//! #[derive(Debug)]
-//! struct Error(String);
-//!
-//! impl From<stdtx::Error> for Error {
-//!     fn from(err: stdtx::Error) -> Error {
-//!         Error(err.to_string())
-//!     }
-//! }
-//!
 //! /// Simple builder for an `oracle/MsgExchangeRateVote` message
-//! fn build_vote_msg(schema: &stdtx::Schema) -> Result<stdtx::Msg, Error> {
-//!     Ok(stdtx::msg::Builder::new(schema, "oracle/MsgExchangeRateVote")?
+//! fn build_vote_msg(schema: &stdtx::amino::Schema) -> Result<stdtx::amino::Msg> {
+//!     Ok(stdtx::amino::msg::Builder::new(schema, "oracle/MsgExchangeRateVote")?
 //!         .decimal("exchange_rate", -1i8)?
 //!         .string("salt", "XXXX")?
 //!         .string("denom", "ukrw")?
@@ -93,11 +85,11 @@
 //! }
 //!
 //! /// Parse the TOML schema for Terra `sdk.Msg` types
-//! let schema = TERRA_SCHEMA.parse::<stdtx::Schema>().unwrap();
+//! let schema = TERRA_SCHEMA.parse::<stdtx::amino::Schema>().unwrap();
 //!
 //! /// Create message builder, giving it an account number, chain ID, and a
 //! /// boxed ECDSA secp256k1 signer
-//! let builder = stdtx::Builder::new(schema, CHAIN_ID, ACCOUNT_NUMBER);
+//! let builder = stdtx::amino::Builder::new(schema, CHAIN_ID, ACCOUNT_NUMBER);
 //!
 //! /// Create ECDSA signing key (ordinarily you wouldn't generate a random key
 //! /// every time but reuse an existing one)
@@ -108,13 +100,14 @@
 //!
 //! /// Build transaction, returning serialized Amino bytes as a `Vec<u8>`
 //! let sequence_number = 123456;
-//! let fee = stdtx::StdFee::for_gas(GAS_AMOUNT);
+//! let fee = stdtx::amino::StdFee::for_gas(GAS_AMOUNT);
 //! let memo = "";
 //! let amino_bytes = builder
 //!     .sign_amino_tx(&signer, sequence_number, fee, memo, &[msg])
 //!     .unwrap();
 //!
 //! // `amino_bytes` is now a `Vec<u8>` containing an Amino serialized transaction
+//! # }
 //! ```
 //!
 //! [`ecdsa` crate]: https://docs.rs/ecdsa
@@ -127,26 +120,16 @@
 #![warn(missing_docs, rust_2018_idioms, unused_qualifications)]
 
 pub mod address;
-pub mod amino_types;
-pub mod builder;
 pub mod decimal;
 pub mod error;
-pub mod msg;
-pub mod schema;
-pub mod type_name;
+pub mod proto;
 
-pub use self::{
-    address::Address,
-    amino_types::{StdFee, StdSignature, StdTx},
-    builder::Builder,
-    decimal::Decimal,
-    error::Error,
-    msg::Msg,
-    schema::Schema,
-    type_name::TypeName,
-};
+#[cfg(feature = "amino")]
+pub mod amino;
 
-pub use k256::ecdsa::Signature;
+pub use self::{address::Address, decimal::Decimal, error::Error};
 
-/// Transaction signer for ECDSA secp256k1 signatures
+pub use k256::ecdsa::{Signature, VerifyKey};
+
+/// Transaction signer for ECDSA/secp256k1 signatures
 pub type Signer = dyn ecdsa::signature::Signer<Signature>;

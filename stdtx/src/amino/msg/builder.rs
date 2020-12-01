@@ -2,13 +2,13 @@
 
 use super::{Field, Msg, Value};
 use crate::{
-    address::Address,
-    decimal::Decimal,
-    error::{Error, ErrorKind},
-    schema::{Definition, Schema, ValueType},
-    type_name::TypeName,
+    amino::{
+        schema::{Definition, Schema, ValueType},
+        type_name::TypeName,
+    },
+    Address, Decimal, Error,
 };
-use anomaly::{ensure, format_err};
+use eyre::{Result, WrapErr};
 use std::convert::TryInto;
 
 /// Transaction message builder
@@ -33,17 +33,14 @@ impl<'a> Builder<'a> {
     /// Create a new message builder for the given schema and message type
     pub fn new(
         schema: &'a Schema,
-        type_name: impl TryInto<TypeName, Error = Error>,
-    ) -> Result<Self, Error> {
+        type_name: impl TryInto<TypeName, Error = eyre::Report>,
+    ) -> Result<Self> {
         let type_name = type_name.try_into()?;
 
-        let schema_definition = schema.get_definition(&type_name).ok_or_else(|| {
-            format_err!(
-                ErrorKind::Type,
-                "type not found in schema: `{}`",
-                &type_name
-            )
-        })?;
+        let schema_definition = schema
+            .get_definition(&type_name)
+            .ok_or_else(|| Error::Type)
+            .wrap_err_with(|| format!("type not found in schema: `{}`", &type_name))?;
 
         Ok(Self {
             schema_definition,
@@ -58,9 +55,9 @@ impl<'a> Builder<'a> {
     /// <https://godoc.org/github.com/cosmos/cosmos-sdk/types#AccAddress>
     pub fn acc_address(
         &mut self,
-        field_name: impl TryInto<TypeName, Error = Error>,
+        field_name: impl TryInto<TypeName, Error = eyre::Report>,
         address: Address,
-    ) -> Result<&mut Self, Error> {
+    ) -> Result<&mut Self> {
         let field_name = field_name.try_into()?;
         let tag = self
             .schema_definition
@@ -75,18 +72,19 @@ impl<'a> Builder<'a> {
     /// `sdk.AccAddress` encoded as Bech32
     pub fn acc_address_bech32(
         &mut self,
-        field_name: impl TryInto<TypeName, Error = Error>,
+        field_name: impl TryInto<TypeName, Error = eyre::Report>,
         addr_bech32: impl AsRef<str>,
-    ) -> Result<&mut Self, Error> {
+    ) -> Result<&mut Self> {
         let (hrp, address) = Address::from_bech32(addr_bech32)?;
 
-        ensure!(
-            hrp == self.acc_prefix,
-            ErrorKind::Address,
-            "invalid account address prefix: `{}` (expected `{}`)",
-            hrp,
-            self.acc_prefix,
-        );
+        if hrp != self.acc_prefix {
+            return Err(Error::Address).wrap_err_with(|| {
+                format!(
+                    "invalid account address prefix: `{}` (expected `{}`)",
+                    hrp, self.acc_prefix
+                )
+            });
+        }
 
         self.acc_address(field_name, address)
     }
@@ -94,9 +92,9 @@ impl<'a> Builder<'a> {
     /// Bytes
     pub fn bytes(
         &mut self,
-        field_name: impl TryInto<TypeName, Error = Error>,
+        field_name: impl TryInto<TypeName, Error = eyre::Report>,
         b: impl Into<Vec<u8>>,
-    ) -> Result<&mut Self, Error> {
+    ) -> Result<&mut Self> {
         let field_name = field_name.try_into()?;
         let tag = self
             .schema_definition
@@ -112,9 +110,9 @@ impl<'a> Builder<'a> {
     /// <https://godoc.org/github.com/cosmos/cosmos-sdk/types#Dec>s
     pub fn decimal(
         &mut self,
-        field_name: impl TryInto<TypeName, Error = Error>,
+        field_name: impl TryInto<TypeName, Error = eyre::Report>,
         value: impl Into<Decimal>,
-    ) -> Result<&mut Self, Error> {
+    ) -> Result<&mut Self> {
         let field_name = field_name.try_into()?;
 
         let tag = self
@@ -131,9 +129,9 @@ impl<'a> Builder<'a> {
     /// <https://godoc.org/github.com/cosmos/cosmos-sdk/types#ValAddress>
     pub fn val_address(
         &mut self,
-        field_name: impl TryInto<TypeName, Error = Error>,
+        field_name: impl TryInto<TypeName, Error = eyre::Report>,
         address: Address,
-    ) -> Result<&mut Self, Error> {
+    ) -> Result<&mut Self> {
         let field_name = field_name.try_into()?;
         let tag = self
             .schema_definition
@@ -148,18 +146,19 @@ impl<'a> Builder<'a> {
     /// `sdk.ValAddress` encoded as Bech32
     pub fn val_address_bech32(
         &mut self,
-        field_name: impl TryInto<TypeName, Error = Error>,
+        field_name: impl TryInto<TypeName, Error = eyre::Report>,
         addr_bech32: impl AsRef<str>,
-    ) -> Result<&mut Self, Error> {
+    ) -> Result<&mut Self> {
         let (hrp, address) = Address::from_bech32(addr_bech32)?;
 
-        ensure!(
-            hrp == self.val_prefix,
-            ErrorKind::Address,
-            "invalid validator address prefix: `{}` (expected `{}`)",
-            hrp,
-            self.val_prefix,
-        );
+        if hrp != self.val_prefix {
+            return Err(Error::Address).wrap_err_with(|| {
+                format!(
+                    "invalid validator address prefix: `{}` (expected `{}`)",
+                    hrp, self.val_prefix
+                )
+            });
+        }
 
         self.val_address(field_name, address)
     }
@@ -167,9 +166,9 @@ impl<'a> Builder<'a> {
     /// Strings
     pub fn string(
         &mut self,
-        field_name: impl TryInto<TypeName, Error = Error>,
+        field_name: impl TryInto<TypeName, Error = eyre::Report>,
         s: impl Into<String>,
-    ) -> Result<&mut Self, Error> {
+    ) -> Result<&mut Self> {
         let field_name = field_name.try_into()?;
         let tag = self
             .schema_definition

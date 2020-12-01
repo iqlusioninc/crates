@@ -1,6 +1,8 @@
 //! Builder for `StdTx` transactions which handles construction and signing.
 
-use crate::{Error, Msg, Schema, Signer, StdFee, StdSignature, StdTx};
+use super::{Msg, Schema, StdFee, StdSignature, StdTx};
+use crate::Signer;
+use eyre::Result;
 use serde_json::json;
 
 /// [`StdTx`] transaction builder, which handles construction, signing, and
@@ -49,7 +51,7 @@ impl Builder {
         fee: StdFee,
         memo: &str,
         messages: &[Msg],
-    ) -> Result<StdTx, Error> {
+    ) -> Result<StdTx> {
         let sign_msg = self.create_sign_msg(sequence, &fee, memo, messages);
         let signature = StdSignature::from(signer.try_sign(sign_msg.as_bytes())?);
         Ok(StdTx::new(messages, fee, vec![signature], memo))
@@ -63,7 +65,7 @@ impl Builder {
         fee: StdFee,
         memo: &str,
         messages: &[Msg],
-    ) -> Result<Vec<u8>, Error> {
+    ) -> Result<Vec<u8>> {
         let tx = self.sign_tx(signer, sequence, fee, memo, messages)?;
         Ok(tx.to_amino_bytes(self.schema.namespace()))
     }

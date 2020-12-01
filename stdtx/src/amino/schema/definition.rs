@@ -1,11 +1,11 @@
 //! Type definition within a schema
 
-use super::{field, Field, TypeName, ValueType};
+use super::{field, Field, ValueType};
 use crate::{
-    error::{Error, ErrorKind},
-    msg::Tag,
+    amino::{msg::Tag, TypeName},
+    Error,
 };
-use anomaly::{fail, format_err};
+use eyre::{Result, WrapErr};
 use serde::Deserialize;
 
 /// Definition of a particular type in the schema
@@ -22,11 +22,11 @@ pub struct Definition {
 
 impl Definition {
     /// Create a new schema [`Definition`] with the given type name and fields
-    pub fn new(type_name: TypeName, fields: impl Into<Vec<Field>>) -> Result<Self, Error> {
+    pub fn new(type_name: TypeName, fields: impl Into<Vec<Field>>) -> Result<Self> {
         let fields = fields.into();
 
         if let Err(e) = field::validate(&fields) {
-            fail!(ErrorKind::Parse, "{}", e);
+            return Err(Error::Parse).wrap_err_with(|| format!("{}", e));
         }
 
         Ok(Self { type_name, fields })
@@ -48,29 +48,27 @@ impl Definition {
     }
 
     /// Get the [`Tag`] for a [`Field`], ensuring is of the given [`ValueType`]
-    pub fn get_field_tag(
-        &self,
-        field_name: &TypeName,
-        value_type: ValueType,
-    ) -> Result<Tag, Error> {
-        let field = self.get_field(field_name).ok_or_else(|| {
-            format_err!(
-                ErrorKind::Type,
-                "field name not found in `{}` schema: `{}`",
-                &self.type_name,
-                field_name
-            )
-        })?;
+    pub fn get_field_tag(&self, field_name: &TypeName, value_type: ValueType) -> Result<Tag> {
+        let field = self
+            .get_field(field_name)
+            .ok_or_else(|| Error::Type)
+            .wrap_err_with(|| {
+                format!(
+                    "field name not found in `{}` schema: `{}`",
+                    &self.type_name, field_name
+                )
+            })?;
 
         if field.value_type() != value_type {
-            fail!(
-                ErrorKind::Type,
-                "field `{}` of `{}` is not an {} (expected {})",
-                field_name,
-                &self.type_name,
-                value_type,
-                field.value_type()
-            );
+            return Err(Error::Type).wrap_err_with(|| {
+                format!(
+                    "field `{}` of `{}` is not an {} (expected {})",
+                    field_name,
+                    &self.type_name,
+                    value_type,
+                    field.value_type()
+                )
+            });
         }
 
         Ok(field.tag())

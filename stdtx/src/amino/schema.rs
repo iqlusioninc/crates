@@ -50,11 +50,9 @@ mod value_type;
 
 pub use self::{definition::Definition, field::Field, value_type::ValueType};
 
-use crate::{
-    error::{Error, ErrorKind},
-    type_name::TypeName,
-};
-use anomaly::fail;
+use super::TypeName;
+use crate::Error;
+use eyre::{Result, WrapErr};
 use serde::Deserialize;
 use std::{fs, path::Path, str::FromStr};
 
@@ -98,15 +96,11 @@ impl Schema {
     }
 
     /// Load a TOML file describing a [`Schema`]
-    pub fn load_toml(path: impl AsRef<Path>) -> Result<Self, Error> {
+    pub fn load_toml(path: impl AsRef<Path>) -> Result<Self> {
         match fs::read_to_string(path.as_ref()) {
             Ok(s) => s.parse(),
-            Err(e) => fail!(
-                ErrorKind::Io,
-                "couldn't open {}: {}",
-                path.as_ref().display(),
-                e
-            ),
+            Err(e) => Err(Error::Io)
+                .wrap_err_with(|| format!("couldn't open {}: {}", path.as_ref().display(), e)),
         }
     }
 
@@ -139,9 +133,9 @@ impl Schema {
 }
 
 impl FromStr for Schema {
-    type Err = Error;
+    type Err = eyre::Report;
 
-    fn from_str(s: &str) -> Result<Self, Error> {
+    fn from_str(s: &str) -> Result<Self> {
         Ok(toml::from_str(s)?)
     }
 }
