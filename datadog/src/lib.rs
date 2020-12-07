@@ -32,10 +32,7 @@ where
         .serialize(serializer)
 }
 
-pub async fn send_event<T>(value: &T, dd_api_key: String) -> Result<(), Error>
-where
-    T: Serialize,
-{
+pub async fn send_event(value: &Event, dd_api_key: String) -> Result<(), Error> {
     let event = serde_json::to_string(&value).unwrap();
     println!("{:?}", event);
 
