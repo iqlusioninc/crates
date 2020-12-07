@@ -18,7 +18,7 @@ circle-ci = { repository = "tendermint/kms" }
 ecdsa = { version = "0.8", features = ["std"] }
 eyre = "0.6"
 ibc-proto = "0.4"
-k256 = { version = "0.5", features = ["ecdsa", "sha256"] }
+k256 = { version = "0.6", features = ["ecdsa", "sha256"] }
 prost = "0.6"
 prost-types = "0.6"
 prost-amino = { version = "0.6", optional = true }
