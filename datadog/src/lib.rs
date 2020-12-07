@@ -1,3 +1,12 @@
+//! **datadog.rs**: Rust bindings to Datadog API.
+//!
+//! # About
+//!
+//! **datadog.rs** is an API wrapper which provides support for sending HTTPS log
+//! events to Datadog. Future work will include error report integration.
+//! Currently very alpha, though iqlusion will test in prod. :D
+//!
+
 use hyper::{Body, Client, Method, Request};
 use hyper_tls::HttpsConnector;
 use serde::{ser, Serialize};

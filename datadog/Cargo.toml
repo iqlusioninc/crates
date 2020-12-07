@@ -3,12 +3,12 @@ name = "datadog"
 version = "0.1.0"
 authors = ["Shella Stephens <shella@iqlusion.io>"]
 edition = "2018"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+homepage = "https://github.com/iqlusioninc/crates/"
+categories  = ["api-bindings"]
 
 [dependencies]
 hyper = "0.13"
 hyper-tls = "0.4"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-tokio = { version = "0.3", features = ["full"] }
+tokio = { version = "0.2", features = ["full"] }
