@@ -12,6 +12,8 @@ use hyper_tls::HttpsConnector;
 use serde::{ser, Serialize};
 use std::collections::BTreeMap as Map;
 
+/// Event struct
+/// Struct fields from https://docs.datadoghq.com/api/v1/logs/#send-logs
 #[derive(Debug, Serialize)]
 pub struct Event {
     pub ddsource: String,
@@ -22,11 +24,13 @@ pub struct Event {
     pub message: String,
 }
 
+/// Error struct
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub struct Error {
     pub code: u16,
 }
 
+/// DdTags type
 pub type DdTags = Map<String, String>;
 
 fn serialize_ddtags<S>(ddtags: &DdTags, serializer: S) -> Result<S::Ok, S::Error>
@@ -41,6 +45,7 @@ where
         .serialize(serializer)
 }
 
+/// Send event to Datadog. Requires DD_API_KEY env variable set.
 pub async fn send_event(value: &Event, dd_api_key: String) -> Result<(), Error> {
     let event = serde_json::to_string(&value).unwrap();
     println!("{:?}", event);
