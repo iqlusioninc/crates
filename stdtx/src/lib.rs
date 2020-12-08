@@ -129,7 +129,7 @@ pub mod amino;
 
 pub use self::{address::Address, decimal::Decimal, error::Error};
 
-pub use k256::ecdsa::{Signature, VerifyKey};
+pub use k256::ecdsa::{Signature, VerifyingKey};
 
 /// Transaction signer for ECDSA/secp256k1 signatures
 pub type Signer = dyn ecdsa::signature::Signer<Signature>;
