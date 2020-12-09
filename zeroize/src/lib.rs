@@ -219,6 +219,9 @@ extern crate alloc;
 #[cfg_attr(docsrs, doc(cfg(feature = "zeroize_derive")))]
 pub use zeroize_derive::Zeroize;
 
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+mod x86;
+
 use core::{ops, ptr, slice::IterMut, sync::atomic};
 
 #[cfg(feature = "alloc")]
