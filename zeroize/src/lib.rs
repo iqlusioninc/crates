@@ -208,7 +208,7 @@
 
 #![no_std]
 #![cfg_attr(docsrs, feature(doc_cfg))]
-#![doc(html_root_url = "https://docs.rs/zeroize/1.1.1")]
+#![doc(html_root_url = "https://docs.rs/zeroize/1.2.0")]
 #![warn(missing_docs, rust_2018_idioms, trivial_casts, unused_qualifications)]
 
 #[cfg(feature = "alloc")]

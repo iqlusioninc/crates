@@ -1,3 +1,21 @@
+# Changelog
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## 1.2.0 (2020-12-09)
+### Added
+- `Zeroize` support for x86(_64) SIMD registers ([#577])
+
+### Changed
+- Simplify `String::zeroize` ([#563])
+- MSRV 1.44+ ([#515])
+
+[#577]: https://github.com/iqlusioninc/crates/pull/577
+[#563]: https://github.com/iqlusioninc/crates/pull/563
+[#515]: https://github.com/iqlusioninc/crates/pull/515
+
 ## 1.1.1 (2020-09-15)
 
 - Add `doc_cfg`([#505])
