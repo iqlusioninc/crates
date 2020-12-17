@@ -15,7 +15,7 @@ edition     = "2018"
 circle-ci = { repository = "tendermint/kms" }
 
 [dependencies]
-ecdsa = { version = "0.8", features = ["std"] }
+ecdsa = { version = "0.10", features = ["std"] }
 eyre = "0.6"
 ibc-proto = "0.4"
 k256 = { version = "0.5", features = ["ecdsa", "sha256"] }
