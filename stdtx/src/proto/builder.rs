@@ -6,7 +6,7 @@
 // Licensed under the Apache 2.0 license
 
 use super::msg::Msg;
-use crate::{Signature, VerifyKey};
+use crate::{Signature, VerifyingKey};
 use ecdsa::signature::Signer;
 use eyre::Result;
 use ibc_proto::cosmos::tx::v1beta1::{
@@ -54,7 +54,7 @@ impl Builder {
     ) -> Result<Vec<u8>>
     where
         S: Signer<Signature>,
-        VerifyKey: for<'a> From<&'a S>,
+        VerifyingKey: for<'a> From<&'a S>,
     {
         // Create TxBody
         let body = TxBody {
@@ -69,7 +69,7 @@ impl Builder {
         let mut body_buf = Vec::new();
         prost::Message::encode(&body, &mut body_buf).unwrap();
 
-        let pk = VerifyKey::from(signer);
+        let pk = VerifyingKey::from(signer);
         let mut pk_buf = Vec::new();
         prost::Message::encode(&pk.to_bytes().to_vec(), &mut pk_buf).unwrap();
 
