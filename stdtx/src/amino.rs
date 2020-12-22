@@ -1,7 +1,4 @@
-//! Legacy Amino encoding support
-//!
-//! This will eventually be deprecated and removed once the migration to
-//! Protocol Buffers is complete.
+//! Amino encoding support.
 
 pub mod builder;
 pub mod msg;

@@ -120,15 +120,11 @@
 #![warn(missing_docs, rust_2018_idioms, unused_qualifications)]
 
 pub mod address;
+pub mod amino;
 pub mod decimal;
 pub mod error;
-pub mod proto;
-
-#[cfg(feature = "amino")]
-pub mod amino;
 
 pub use self::{address::Address, decimal::Decimal, error::Error};
-
 pub use k256::ecdsa::{Signature, VerifyingKey};
 
 /// Transaction signer for ECDSA/secp256k1 signatures
