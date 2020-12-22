@@ -26,7 +26,7 @@ impl Definition {
         let fields = fields.into();
 
         if let Err(e) = field::validate(&fields) {
-            return Err(Error::Parse).wrap_err_with(|| format!("{}", e));
+            return Err(Error::Parse).wrap_err_with(|| e.to_string());
         }
 
         Ok(Self { type_name, fields })

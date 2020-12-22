@@ -654,20 +654,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "ibc-proto"
-version = "0.4.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fc4ebe4b5b45847252446d017e3414189baca08e6546090c372eea297e77d64f"
-dependencies = [
- "anomaly 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "bytes 0.5.6",
- "prost",
- "prost-types",
- "tendermint-proto 0.1.0",
- "thiserror",
-]
-
-[[package]]
 name = "indenter"
 version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1402,12 +1388,9 @@ version = "0.4.0-pre"
 dependencies = [
  "ecdsa",
  "eyre",
- "ibc-proto",
  "k256",
- "prost",
  "prost-amino",
  "prost-amino-derive",
- "prost-types",
  "rand_core",
  "rust_decimal",
  "serde",
@@ -1513,23 +1496,10 @@ dependencies = [
  "signature",
  "subtle",
  "subtle-encoding 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "tendermint-proto 0.17.0",
+ "tendermint-proto",
  "thiserror",
  "toml",
  "zeroize 1.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
-]
-
-[[package]]
-name = "tendermint-proto"
-version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4c4fdc9387721336d43a783b5dd2e2595708ff2454133aba79ee0270817bfe30"
-dependencies = [
- "anomaly 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "bytes 0.5.6",
- "prost",
- "prost-types",
- "thiserror",
 ]
 
 [[package]]
