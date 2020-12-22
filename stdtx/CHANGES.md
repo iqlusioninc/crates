@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.4.0 (2020-12-21)
+### Changed
+- MSRV 1.46+ ([#588])
+- Bump `ecdsa` dependency to v0.10 ([#588])
+- Bump `k256` dependency to v0.7 ([#588])
+- Replace `anomaly` with `eyre` ([#555])
+
+[#588]: https://github.com/iqlusioninc/crates/pull/588
+[#555]: https://github.com/iqlusioninc/crates/pull/555
+
 ## 0.3.0 (2020-10-12)
 ### Changed
 - MSRV 1.44+ ([#515])
