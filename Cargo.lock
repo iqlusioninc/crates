@@ -246,9 +246,9 @@ dependencies = [
 
 [[package]]
 name = "eyre"
-version = "0.6.3"
+version = "0.6.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5f29abf4740a4778632fe27a4f681ef5b7a6f659aeba3330ac66f48e20cfa3b7"
+checksum = "bb990906c94a51949a088cb5a4f9242164293c8fd21ec1d45147dd8301f4e6d6"
 dependencies = [
  "indenter",
  "once_cell",
