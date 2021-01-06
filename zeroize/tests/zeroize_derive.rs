@@ -45,9 +45,10 @@ mod custom_derive_tests {
     }
 
     /// Test that the custom macro actually derived `Drop` for `ZeroizableStruct`
-    trait Droppable: Drop {}
-
-    impl Droppable for ZeroizableStruct {}
+    #[test]
+    fn derive_drop() {
+        assert!(std::mem::needs_drop::<ZeroizableStruct>());
+    }
 
     /// Test that `Drop` is not derived in the following case by defining a
     /// `Drop` impl which should conflict if the custom derive defined one too
