@@ -413,7 +413,7 @@ mod tests {
     }
 
     impl Arbitrary for TAI64N {
-        fn arbitrary<G: Gen>(g: &mut G) -> Self {
+        fn arbitrary(g: &mut Gen) -> Self {
             let s = u64::arbitrary(g);
             let n = u32::arbitrary(g) % NANOS_PER_SECOND;
             TAI64N(TAI64(s), n)
