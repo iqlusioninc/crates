@@ -79,8 +79,7 @@ mod tests {
     use std::env;
 
     fn block_on<F: std::future::Future>(f: F) -> F::Output {
-        tokio::runtime::Builder::new()
-            .basic_scheduler()
+        tokio::runtime::Builder::new_current_thread()
             .enable_all()
             .build()
             .unwrap()
