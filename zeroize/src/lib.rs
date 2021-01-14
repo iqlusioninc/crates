@@ -225,7 +225,7 @@ mod x86;
 use core::{ops, ptr, slice::IterMut, sync::atomic};
 
 #[cfg(feature = "alloc")]
-use alloc::{string::String, vec::Vec};
+use alloc::{boxed::Box, string::String, vec::Vec};
 
 /// Trait for securely erasing types from memory
 pub trait Zeroize {
@@ -370,6 +370,19 @@ where
         }
 
         self.clear();
+    }
+}
+
+#[cfg(feature = "alloc")]
+#[cfg_attr(docsrs, doc(cfg(feature = "alloc")))]
+impl<Z> Zeroize for Box<[Z]>
+where
+    Z: Zeroize,
+{
+    /// Unlike `Vec`, `Box<[Z]>` cannot reallocate, so we can be sure that we are not leaving
+    /// values on the heap.
+    fn zeroize(&mut self) {
+        self.iter_mut().zeroize();
     }
 }
 
