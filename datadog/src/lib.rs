@@ -41,7 +41,7 @@ pub struct Event {
     pub message: String,
 }
 
-/// Stream event
+/// Stream Event struct
 /// https://docs.datadoghq.com/api/latest/events/#post-an-event
 #[derive(Debug, Serialize)]
 pub struct StreamEvent {
@@ -79,7 +79,7 @@ where
         .serialize(serializer)
 }
 
-/// Send event to Datadog. Requires DD_API_KEY env variable set.
+/// Send a log event to Datadog via HTTPS. Requires DD_API_KEY env variable set.
 pub async fn send_event(value: &Event, dd_api_key: String) -> Result<(), Error> {
     let event = serde_json::to_string(&value).unwrap();
     println!("{:?}", event);
@@ -102,6 +102,32 @@ pub async fn send_event(value: &Event, dd_api_key: String) -> Result<(), Error> 
     } else {
         Err(Error {
             code: response.status().as_u16(),
+        })
+    }
+}
+
+/// Send a stream event to Datadog via HTTPS. Required DD_API_KEY env variable set
+pub async fn send_stream_event(value: &StreamEvent, dd_api_key: String) -> Result<(), Error> {
+    let stream_event = serde_json::to_string(&value).unwrap();
+    println!("{:?}", stream_event);
+
+    let request = Request::builder()
+        .method(Method::POST)
+        .uri("https://api.datadoghq.com/api/v1/events")
+        .header("Content-Type", "application/json")
+        .header("DD-API-KEY", dd_api_key)
+        .body(Body::from(stream_event))
+        .unwrap();
+    println!("{:?}", &request);
+
+    let https = HttpsConnector::new();
+    let client = Client::builder::build::<_, hyper::Body>(https);
+    let response = client.request(request).await.unwrap();
+    if response.status.is_success() {
+        Ok(())
+    } else {
+        Err(Error {
+            code: response.status.as_u16(),
         })
     }
 }
