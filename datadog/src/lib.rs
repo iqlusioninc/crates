@@ -45,16 +45,18 @@ pub struct Event {
 /// https://docs.datadoghq.com/api/latest/events/#post-an-event
 #[derive(Debug, Serialize)]
 pub struct StreamEvent {
-    pub aggregation_key: String,
-    pub alert_type: AlertType,
-    pub date_happened: SystemTime,
-    pub device_name: String,
-    pub host: String,
-    pub priority: Priority,
-    pub related_event_id: u64,
+    pub aggregation_key: Option<String>,
+    pub alert_type: Option<AlertType>,
+    pub date_happened: Option<SystemTime>,
+    pub device_name: Option<String>,
+    pub host: Option<String>,
+    pub priority: Option<Priority>,
+    pub related_event_id: Option<u64>,
     #[serde(serialize_with = "serialize_ddtags")]
     pub tags: DdTags,
+    // Required
     pub text: String,
+    // Required
     pub title: String,
 }
 
@@ -106,7 +108,7 @@ pub async fn send_event(value: &Event, dd_api_key: String) -> Result<(), Error> 
     }
 }
 
-/// Send a stream event to Datadog via HTTPS. Required DD_API_KEY env variable set
+/// Send a stream event to Datadog via HTTPS. Required DD_API_KEY env variable set.
 pub async fn send_stream_event(value: &StreamEvent, dd_api_key: String) -> Result<(), Error> {
     let stream_event = serde_json::to_string(&value).unwrap();
     println!("{:?}", stream_event);
@@ -121,22 +123,23 @@ pub async fn send_stream_event(value: &StreamEvent, dd_api_key: String) -> Resul
     println!("{:?}", &request);
 
     let https = HttpsConnector::new();
-    let client = Client::builder::build::<_, hyper::Body>(https);
+    let client = Client::builder().build::<_, hyper::Body>(https);
     let response = client.request(request).await.unwrap();
-    if response.status.is_success() {
+    if response.status().is_success() {
         Ok(())
     } else {
         Err(Error {
-            code: response.status.as_u16(),
+            code: response.status().as_u16(),
         })
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use super::{send_event, Event};
+    use super::{send_event, send_stream_event, Event, StreamEvent};
     use std::collections::BTreeMap;
     use std::env;
+    use crate::AlertType::Info;
 
     fn block_on<F: std::future::Future>(f: F) -> F::Output {
         tokio::runtime::Builder::new_current_thread()
@@ -166,5 +169,31 @@ mod tests {
 
         let event = block_on(send_event(&event, dd_api_key));
         assert_eq!(event, Ok(()));
+    }
+
+    // Set env var with `export DD_API_KEY=<YOUR_DATADOG_API_KEY>`
+    // Run test locally with `cargo test -- --ignored`
+    #[test]
+    #[ignore]
+    fn test_send_stream_event() {
+        let dd_api_key = env::var("DD_API_KEY").unwrap();
+        let mut ddtags = BTreeMap::new();
+        ddtags.insert("env".to_owned(), "staging".to_owned());
+
+        let stream_event = StreamEvent {
+            aggregation_key: None,
+            alert_type: None,
+            date_happened: None,
+            device_name: None,
+            host: None,
+            priority: None,
+            related_event_id: None,
+            tags: ddtags,
+            text: "@pagerduty 💾🐶📦".to_owned(),
+            title: "datadog 💾🐶📦 test".to_owned(),
+        };
+
+        let stream_event = block_on(send_stream_event(&stream_event, dd_api_key));
+        assert_eq!(stream_event, Ok(()));
     }
 }
