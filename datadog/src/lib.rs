@@ -8,25 +8,36 @@
 //! Currently very alpha, though iqlusion will test in prod.
 //!
 
+#![warn(missing_docs)]
 use hyper::{Body, Client, Method, Request};
 use hyper_tls::HttpsConnector;
 use serde::{ser, Serialize};
 use std::collections::BTreeMap as Map;
-use std::time::SystemTime;
+use std::time::{SystemTime, UNIX_EPOCH};
 
+/// Alert enum for stream event
 #[derive(Debug, Serialize)]
 pub enum AlertType {
+    /// Error
     Error,
+    /// Warning
     Warning,
+    /// Info
     Info,
+    /// Success
     Success,
+    /// Recommendation
     Recommendation,
+    /// Snapshot
     Snapshot,
 }
 
+/// Priority enum for stream event
 #[derive(Debug, Serialize)]
 pub enum Priority {
+    /// Normal priority event stream
     Normal,
+    /// Low priorirty
     Low,
 }
 
@@ -34,11 +45,16 @@ pub enum Priority {
 /// https://docs.datadoghq.com/api/v1/logs/#send-logs
 #[derive(Debug, Serialize)]
 pub struct Event {
+    /// Ddsource
     pub ddsource: String,
+    /// Service
     pub service: String,
+    /// Ddtags
     #[serde(serialize_with = "serialize_ddtags")]
     pub ddtags: Option<DdTags>,
+    /// Hostname
     pub hostname: String,
+    /// Message
     pub message: String,
 }
 
@@ -46,24 +62,38 @@ pub struct Event {
 /// https://docs.datadoghq.com/api/latest/events/#post-an-event
 #[derive(Debug, Serialize)]
 pub struct StreamEvent {
+    /// Aggregation key
     pub aggregation_key: Option<String>,
+    /// Alert type
     pub alert_type: Option<AlertType>,
+    /// Date happened
+    #[serde(serialize_with = "serialize_unix_time")]
     pub date_happened: Option<SystemTime>,
+    /// Device name
     pub device_name: Option<String>,
-    pub host: Option<String>,
+    /// Hostname
+    pub hostname: Option<String>,
+    /// Priority
     pub priority: Option<Priority>,
+    /// Related event id
     pub related_event_id: Option<u64>,
+    /// Tags
     #[serde(serialize_with = "serialize_ddtags")]
     pub tags: Option<DdTags>,
-    // Required
+    /// Text - required field
+    ///
+    /// Text field must contain @pagerduty to trigger alert.
+    /// Limited to 4000 characters, supports markdown.
+    /// To use markdown, start the text block with %%% \n and end the text block with \n %%%.
     pub text: String,
-    // Required
+    /// Title - required field
     pub title: String,
 }
 
 /// Error struct
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub struct Error {
+    /// Code for error
     pub code: u16,
 }
 
@@ -80,6 +110,17 @@ where
             .collect::<Vec<_>>()
             .join(",")
             .serialize(serializer)
+    } else {
+        serializer.serialize_none()
+    }
+}
+
+fn serialize_unix_time<S>(time: &Option<SystemTime>, serializer: S) -> Result<S::Ok, S::Error>
+where
+    S: ser::Serializer,
+{
+    if let Some(t) = time.and_then(|t| t.duration_since(UNIX_EPOCH).ok()) {
+        serializer.serialize_u64(t.as_secs())
     } else {
         serializer.serialize_none()
     }
@@ -141,6 +182,7 @@ mod tests {
     use crate::AlertType::Error;
     use crate::Priority::Normal;
     use hostname;
+    use std::alloc::System;
     use std::collections::BTreeMap;
     use std::env;
     use std::time::SystemTime;
@@ -185,13 +227,14 @@ mod tests {
         ddtags.insert("env".to_owned(), "staging".to_owned());
 
         let hostname = hostname::get().unwrap();
+        let time = SystemTime::now();
 
         let stream_event = StreamEvent {
             aggregation_key: None,
             alert_type: Some(Error),
-            date_happened: None,
+            date_happened: Some(time),
             device_name: None,
-            host: Some(hostname.to_string_lossy().to_string()),
+            hostname: Some(hostname.to_string_lossy().to_string()),
             priority: Some(Normal),
             related_event_id: None,
             tags: Some(ddtags),
