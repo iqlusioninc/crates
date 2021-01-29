@@ -11,9 +11,26 @@ use hyper::{Body, Client, Method, Request};
 use hyper_tls::HttpsConnector;
 use serde::{ser, Serialize};
 use std::collections::BTreeMap as Map;
+use std::time::{SystemTime, UNIX_EPOCH};
+
+#[derive(Debug, Serialize)]
+pub enum AlertType {
+    StreamError,
+    Warning,
+    Info,
+    Success,
+    Recommendation,
+    Snapshot,
+}
+
+#[derive(Debug, Serialize)]
+pub enum Priority {
+    Normal,
+    Low,
+}
 
 /// Event struct
-/// Struct fields from https://docs.datadoghq.com/api/v1/logs/#send-logs
+/// https://docs.datadoghq.com/api/v1/logs/#send-logs
 #[derive(Debug, Serialize)]
 pub struct Event {
     pub ddsource: String,
@@ -22,6 +39,23 @@ pub struct Event {
     pub ddtags: DdTags,
     pub hostname: String,
     pub message: String,
+}
+
+/// Stream event
+/// https://docs.datadoghq.com/api/latest/events/#post-an-event
+#[derive(Debug, Serialize)]
+pub struct StreamEvent {
+    pub aggregation_key: String,
+    pub alert_type: AlertType,
+    pub date_happened: SystemTime,
+    pub device_name: String,
+    pub host: String,
+    pub priority: Priority,
+    pub related_event_id: u64,
+    #[serde(serialize_with = "serialize_ddtags")]
+    pub tags: DdTags,
+    pub text: String,
+    pub title: String,
 }
 
 /// Error struct
