@@ -182,7 +182,6 @@ mod tests {
     use crate::AlertType::Error;
     use crate::Priority::Normal;
     use hostname;
-    use std::alloc::System;
     use std::collections::BTreeMap;
     use std::env;
     use std::time::SystemTime;
