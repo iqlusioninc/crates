@@ -785,9 +785,9 @@ dependencies = [
 
 [[package]]
 name = "pbkdf2"
-version = "0.6.0"
+version = "0.7.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b3b8c0d71734018084da0c0354193a5edfb81b20d2d57a92c5b154aefc554a4a"
+checksum = "ca5c74683c467276ba17c4bb16e219487dc8fd4465b24d2653386e40de37dab6"
 dependencies = [
  "crypto-mac",
 ]
