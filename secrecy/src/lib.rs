@@ -76,6 +76,9 @@
 #![forbid(unsafe_code)]
 #![warn(missing_docs, rust_2018_idioms, unused_qualifications)]
 
+#[cfg(feature = "diesel")]
+extern crate std;
+
 #[cfg(feature = "alloc")]
 extern crate alloc;
 
@@ -103,6 +106,9 @@ use core::{
 
 #[cfg(feature = "serde")]
 use serde::{de, ser, Deserialize, Serialize};
+
+#[cfg(feature = "diesel")]
+use std::io::Write;
 
 /// Wrapper type for values that contains secrets, which attempts to limit
 /// accidental exposure and ensure secrets are wiped from memory when dropped.
@@ -281,5 +287,45 @@ where
         S: ser::Serializer,
     {
         self.expose_secret().serialize(serializer)
+    }
+}
+
+#[cfg(feature = "diesel")]
+impl<A, DB, T> diesel::serialize::ToSql<A, DB> for Secret<T>
+where 
+    T: diesel::types::ToSql<A, DB> + Zeroize + DebugSecret + Sized,
+    DB: diesel::backend::Backend
+        + diesel::types::HasSqlType<A>,
+{
+    fn to_sql<W: Write>(&self, out: &mut diesel::serialize::Output<'_, W, DB>) -> diesel::serialize::Result {
+        self.inner_secret.to_sql(out)
+    }
+}
+
+#[cfg(feature = "diesel")]
+impl<'a, E, T> diesel::expression::AsExpression<E> for &'a Secret<T>
+where
+    T: diesel::expression::AsExpression<E> + Zeroize + DebugSecret + Sized,
+    &'a T: diesel::expression::AsExpression<E>,
+{
+    type Expression = <&'a T as diesel::expression::AsExpression<E>>::Expression;
+
+    #[inline]
+    fn as_expression(self) -> Self::Expression {
+        self.expose_secret().as_expression()
+    }
+}
+
+#[cfg(feature = "diesel")]
+impl<T, ST, DB> diesel::query_source::Queryable<ST, DB> for Secret<T>
+where
+    T: diesel::query_source::Queryable<ST, DB> + Zeroize + DebugSecret + Sized,
+    DB: diesel::backend::Backend + diesel::types::HasSqlType<ST>,
+{
+    type Row = T::Row;
+
+    #[inline]
+    fn build(row: Self::Row) -> Self {
+        Secret::new(T::build(row))
     }
 }

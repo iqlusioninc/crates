@@ -40,6 +40,16 @@ accidentally make additional copies of the secret, but does the best it can
 with what it is given and tries to minimize risk of exposure as much as
 possible.
 
+## diesel support
+
+Optional `diesel` support for parsing owned secret values is available, gated
+under the `diesel` cargo feature.
+
+This doesn't guarantee `diesel` (or code providing input to `diesel`) won't
+accidentally make additional copies of the secret, but does the best it can
+with what it is given and tries to minimize risk of exposure as much as
+possible.
+
 ## License
 
 **secrecy** is distributed under the terms of either the MIT license
