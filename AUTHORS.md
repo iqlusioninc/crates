@@ -18,3 +18,4 @@ contributions under the terms of the [Apache License, Version 2.0]
 * Niclas Schwarzlose ([@aticu](https://github.com/aticu))
 * Yin Guanhao ([@sopium](https://github.com/sopium))
 * Will Speak ([@iwillspeak](https://github.com/iwillspeak))
+* Zach Reizner ([@zachreizner](https://github.com/zachreizner))

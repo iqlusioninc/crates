@@ -297,7 +297,24 @@ where
 {
     fn zeroize(&mut self) {
         match self {
-            Some(value) => value.zeroize(),
+            Some(value) => {
+                value.zeroize();
+                // Ensures self is None and that the value was dropped. Without the take, the drop
+                // of the (zeroized) value isn't called, which might lead to a leak or other
+                // unexpected behavior. For example, if this were Option<Vec<T>>, the above call to
+                // zeroize would not free the allocated memory, but the the `take` call will.
+                self.take();
+                // Ensures self is overwritten with the default bit pattern. volatile_write can't be
+                // used because Option<Z> is not copy.
+                //
+                // Safety:
+                //
+                // self is safe to replace with the default, which the take() call above should have
+                // already done semantically. Any value which needed to be dropped will have been
+                // done so by take().
+                unsafe { ptr::write_volatile(self, Option::default()) }
+                atomic_fence();
+            }
             None => (),
         }
     }
