@@ -51,12 +51,12 @@ limitations under the License.
 [crate-link]: https://crates.io/crates/stdtx
 [docs-image]: https://docs.rs/stdtx/badge.svg
 [docs-link]: https://docs.rs/stdtx/
-[build-image]: https://github.com/iqlusioninc/crates/workflows/Rust/badge.svg?branch=develop&event=push
+[build-image]: https://github.com/iqlusioninc/crates/workflows/Rust/badge.svg?branch=main&event=push
 [build-link]: https://github.com/iqlusioninc/crates/actions
 [safety-image]: https://img.shields.io/badge/unsafe-forbidden-success.svg
 [safety-link]: https://github.com/rust-secure-code/safety-dance/
 [license-image]: https://img.shields.io/badge/license-Apache2.0-blue.svg
-[license-link]: https://github.com/iqlusioninc/crates/blob/develop/LICENSE
+[license-link]: https://github.com/iqlusioninc/crates/blob/main/LICENSE
 [msrv-image]: https://img.shields.io/badge/rustc-1.46+-blue.svg
 [gitter-image]: https://badges.gitter.im/iqlusioninc/community.svg
 [gitter-link]: https://gitter.im/iqlusioninc/community

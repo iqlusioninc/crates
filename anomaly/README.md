@@ -81,7 +81,7 @@ without any additional terms or conditions.
 [rustc-image]: https://img.shields.io/badge/rustc-1.38+-blue.svg
 [safety-image]: https://img.shields.io/badge/unsafe-forbidden-success.svg
 [safety-link]: https://github.com/rust-secure-code/safety-dance/
-[build-image]: https://github.com/iqlusioninc/crates/workflows/Rust/badge.svg?branch=develop&event=push
+[build-image]: https://github.com/iqlusioninc/crates/workflows/Rust/badge.svg?branch=main&event=push
 [build-link]: https://github.com/iqlusioninc/crates/actions
 [gitter-image]: https://badges.gitter.im/iqlusioninc/community.svg
 [gitter-link]: https://gitter.im/iqlusioninc/community
@@ -99,5 +99,5 @@ without any additional terms or conditions.
 [`backtrace`]: https://crates.io/crates/backtrace
 [`thiserror`]: https://crates.io/crates/thiserror
 [Abscissa]: https://github.com/iqlusioninc/abscissa
-[LICENSE]: https://github.com/iqlusioninc/crates/blob/develop/LICENSE
-[LICENSE-MIT]: https://github.com/iqlusioninc/crates/blob/develop/anomaly/LICENSE-MIT
+[LICENSE]: https://github.com/iqlusioninc/crates/blob/main/LICENSE
+[LICENSE-MIT]: https://github.com/iqlusioninc/crates/blob/main/anomaly/LICENSE-MIT

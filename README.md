@@ -12,8 +12,8 @@ to the community by [iqlusion](https://www.iqlusion.io).
 If you are interested in contributing to this repository, please make sure to
 read the [CONTRIBUTING.md] and [CODE_OF_CONDUCT.md] files first.
 
-[CONTRIBUTING.md]: https://github.com/iqlusioninc/crates/blob/develop/CONTRIBUTING.md
-[CODE_OF_CONDUCT.md]: https://github.com/iqlusioninc/crates/blob/develop/CODE_OF_CONDUCT.md
+[CONTRIBUTING.md]: https://github.com/iqlusioninc/crates/blob/main/CONTRIBUTING.md
+[CODE_OF_CONDUCT.md]: https://github.com/iqlusioninc/crates/blob/main/CODE_OF_CONDUCT.md
 
 ## Requirements
 
@@ -72,30 +72,30 @@ without any additional terms or conditions.
 [//]: # (badges)
 
 [license-image]: https://img.shields.io/badge/license-Apache2.0-blue.svg
-[license-link]: https://github.com/iqlusioninc/crates/blob/develop/LICENSE
+[license-link]: https://github.com/iqlusioninc/crates/blob/main/LICENSE
 [msrv-image]: https://img.shields.io/badge/rustc-1.44+-blue.svg
-[build-image]: https://github.com/iqlusioninc/crates/workflows/Rust/badge.svg?branch=develop&event=push
+[build-image]: https://github.com/iqlusioninc/crates/workflows/Rust/badge.svg?branch=main&event=push
 [build-link]: https://github.com/iqlusioninc/crates/actions
 [gitter-image]: https://badges.gitter.im/iqlusioninc/community.svg
 [gitter-link]: https://gitter.im/iqlusioninc/community
 
 [//]: # (crates)
 
-[anomaly]: https://github.com/iqlusioninc/crates/tree/develop/anomaly
+[anomaly]: https://github.com/iqlusioninc/crates/tree/main/anomaly
 [anomaly-crate]: https://img.shields.io/crates/v/anomaly.svg
-[canonical-path]: https://github.com/iqlusioninc/crates/tree/develop/canonical-path
+[canonical-path]: https://github.com/iqlusioninc/crates/tree/main/canonical-path
 [canonical-path-crate]: https://img.shields.io/crates/v/canonical-path.svg
-[harp]: https://github.com/iqlusioninc/crates/tree/develop/harp
+[harp]: https://github.com/iqlusioninc/crates/tree/main/harp
 [harp-crate]: https://img.shields.io/crates/v/harp.svg
-[hkd32]: https://github.com/iqlusioninc/crates/tree/develop/hkd32
+[hkd32]: https://github.com/iqlusioninc/crates/tree/main/hkd32
 [hkd32-crate]: https://img.shields.io/crates/v/hkd32.svg
-[secrecy]: https://github.com/iqlusioninc/crates/tree/develop/secrecy
+[secrecy]: https://github.com/iqlusioninc/crates/tree/main/secrecy
 [secrecy-crate]: https://img.shields.io/crates/v/secrecy.svg
-[stdtx]: https://github.com/iqlusioninc/crates/tree/develop/stdtx
+[stdtx]: https://github.com/iqlusioninc/crates/tree/main/stdtx
 [stdtx-crate]: https://img.shields.io/crates/v/stdtx.svg
-[subtle-encoding]: https://github.com/iqlusioninc/crates/tree/develop/subtle-encoding
+[subtle-encoding]: https://github.com/iqlusioninc/crates/tree/main/subtle-encoding
 [subtle-encoding-crate]: https://img.shields.io/crates/v/subtle-encoding.svg
-[tai64]: https://github.com/iqlusioninc/crates/tree/develop/tai64
+[tai64]: https://github.com/iqlusioninc/crates/tree/main/tai64
 [tai64-crate]: https://img.shields.io/crates/v/tai64.svg
-[zeroize]: https://github.com/iqlusioninc/crates/tree/develop/zeroize
+[zeroize]: https://github.com/iqlusioninc/crates/tree/main/zeroize
 [zeroize-crate]: https://img.shields.io/crates/v/zeroize.svg

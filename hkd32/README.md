@@ -51,9 +51,9 @@ without any additional terms or conditions.
 [docs-image]: https://docs.rs/hkd32/badge.svg
 [docs-link]: https://docs.rs/hkd32/
 [license-image]: https://img.shields.io/badge/license-Apache2.0/MIT-blue.svg
-[license-link]: https://github.com/iqlusioninc/crates/blob/develop/LICENSE
+[license-link]: https://github.com/iqlusioninc/crates/blob/main/LICENSE
 [rustc-image]: https://img.shields.io/badge/rustc-1.44+-blue.svg
-[build-image]: hhttps://github.com/iqlusioninc/crates/workflows/Rust/badge.svg?branch=develop&event=push
+[build-image]: hhttps://github.com/iqlusioninc/crates/workflows/Rust/badge.svg?branch=main&event=push
 [build-link]: https://github.com/iqlusioninc/crates/actions
 [gitter-image]: https://badges.gitter.im/iqlusioninc/community.svg
 [gitter-link]: https://gitter.im/iqlusioninc/community
@@ -62,5 +62,5 @@ without any additional terms or conditions.
 
 [bip32]: https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki
 [bip39]: https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki
-[LICENSE]: https://github.com/iqlusioninc/crates/blob/develop/LICENSE
-[LICENSE-MIT]: https://github.com/iqlusioninc/crates/blob/develop/hkd32/LICENSE-MIT
+[LICENSE]: https://github.com/iqlusioninc/crates/blob/main/LICENSE
+[LICENSE-MIT]: https://github.com/iqlusioninc/crates/blob/main/hkd32/LICENSE-MIT
