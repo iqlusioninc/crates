@@ -39,11 +39,11 @@ without any additional terms or conditions.
 [crate-link]: https://crates.io/crates/zeroize_derive
 [license-image]: https://img.shields.io/badge/license-Apache2.0/MIT-blue.svg
 [rustc-image]: https://img.shields.io/badge/rustc-1.44+-blue.svg
-[build-image]: https://github.com/iqlusioninc/crates/workflows/Rust/badge.svg?branch=develop&event=push
+[build-image]: https://github.com/iqlusioninc/crates/workflows/Rust/badge.svg?branch=main&event=push
 [build-link]: https://github.com/iqlusioninc/crates/actions
 
 [//]: # (general links)
 
-[zeroize]: https://github.com/iqlusioninc/crates/tree/develop/zeroize
-[LICENSE]: https://github.com/iqlusioninc/crates/blob/develop/LICENSE
-[LICENSE-MIT]: https://github.com/iqlusioninc/crates/blob/develop/zeroize/LICENSE-MIT
+[zeroize]: https://github.com/iqlusioninc/crates/tree/main/zeroize
+[LICENSE]: https://github.com/iqlusioninc/crates/blob/main/LICENSE
+[LICENSE-MIT]: https://github.com/iqlusioninc/crates/blob/main/zeroize/LICENSE-MIT

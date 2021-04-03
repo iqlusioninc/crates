@@ -65,7 +65,7 @@ without any additional terms or conditions.
 [docs-link]: https://docs.rs/zeroize/
 [license-image]: https://img.shields.io/badge/license-Apache2.0/MIT-blue.svg
 [rustc-image]: https://img.shields.io/badge/rustc-1.44+-blue.svg
-[build-image]: https://github.com/iqlusioninc/crates/workflows/Rust/badge.svg?branch=develop&event=push
+[build-image]: https://github.com/iqlusioninc/crates/workflows/Rust/badge.svg?branch=main&event=push
 [build-link]: https://github.com/iqlusioninc/crates/actions
 [gitter-image]: https://badges.gitter.im/iqlusioninc/community.svg
 [gitter-link]: https://gitter.im/iqlusioninc/community
@@ -79,5 +79,5 @@ without any additional terms or conditions.
 [core::ptr::write_volatile]: https://doc.rust-lang.org/core/ptr/fn.write_volatile.html
 [core::sync::atomic]: https://doc.rust-lang.org/stable/core/sync/atomic/index.html
 [good cryptographic hygiene]: https://github.com/veorq/cryptocoding#clean-memory-of-secret-data
-[LICENSE]: https://github.com/iqlusioninc/crates/blob/develop/LICENSE
-[LICENSE-MIT]: https://github.com/iqlusioninc/crates/blob/develop/zeroize/LICENSE-MIT
+[LICENSE]: https://github.com/iqlusioninc/crates/blob/main/LICENSE
+[LICENSE-MIT]: https://github.com/iqlusioninc/crates/blob/main/zeroize/LICENSE-MIT

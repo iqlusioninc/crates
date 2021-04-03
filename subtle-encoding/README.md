@@ -55,7 +55,7 @@ toplevel directory of this repository or [LICENSE-MIT] for details.
 [rustc-image]: https://img.shields.io/badge/rustc-1.44+-blue.svg
 [safety-image]: https://img.shields.io/badge/unsafe-forbidden-success.svg
 [safety-link]: https://github.com/rust-secure-code/safety-dance/
-[build-image]: https://github.com/iqlusioninc/crates/workflows/Rust/badge.svg?branch=develop&event=push
+[build-image]: https://github.com/iqlusioninc/crates/workflows/Rust/badge.svg?branch=main&event=push
 [build-link]: https://github.com/iqlusioninc/crates/actions
 [gitter-image]: https://badges.gitter.im/iqlusioninc/community.svg
 [gitter-link]: https://gitter.im/iqlusioninc/community
@@ -63,5 +63,5 @@ toplevel directory of this repository or [LICENSE-MIT] for details.
 [//]: # (general links)
 
 [Documentation]: https://docs.rs/subtle-encoding/
-[LICENSE]: https://github.com/iqlusioninc/crates/blob/develop/LICENSE
-[LICENSE-MIT]: https://github.com/iqlusioninc/crates/blob/develop/subtle-encoding/LICENSE-MIT
+[LICENSE]: https://github.com/iqlusioninc/crates/blob/main/LICENSE
+[LICENSE-MIT]: https://github.com/iqlusioninc/crates/blob/main/subtle-encoding/LICENSE-MIT
