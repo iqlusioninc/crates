@@ -50,7 +50,7 @@ pub(crate) struct WordList {
 
 impl WordMap {
     pub fn get_bits(&self, word: &str) -> Result<Bits11, Error> {
-        self.inner.get(word).cloned().ok_or_else(|| Error)
+        self.inner.get(word).cloned().ok_or(Error)
     }
 }
 

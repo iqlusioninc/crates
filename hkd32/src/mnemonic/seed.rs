@@ -7,7 +7,7 @@ use sha2::Sha512;
 use zeroize::Zeroize;
 
 /// Base derivation secret for BIP39 keys
-const BIP39_BASE_DERIVATION_KEY: [u8; 12] = [
+pub const BIP39_BASE_DERIVATION_KEY: [u8; 12] = [
     0x42, 0x69, 0x74, 0x63, 0x6f, 0x69, 0x6e, 0x20, 0x73, 0x65, 0x65, 0x64,
 ];
 

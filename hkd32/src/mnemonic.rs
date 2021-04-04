@@ -9,7 +9,7 @@ mod bits;
 mod language;
 mod phrase;
 #[cfg(feature = "bip39")]
-mod seed;
+pub(crate) mod seed;
 
 #[cfg(feature = "bip39")]
 pub use self::seed::Seed;

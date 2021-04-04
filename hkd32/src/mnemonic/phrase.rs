@@ -88,7 +88,7 @@ impl Phrase {
         // Preallocate enough space for the longest possible word list
         let mut bits = BitWriter::with_capacity(264);
 
-        for word in phrase.split(" ") {
+        for word in phrase.split(' ') {
             bits.push(wordmap.get_bits(&word)?);
         }
 
@@ -106,7 +106,7 @@ impl Phrase {
         let expected_checksum = Sha256::digest(&entropy).as_slice()[0];
 
         if actual_checksum != expected_checksum {
-            Err(Error)?;
+            return Err(Error);
         }
 
         Ok(Self::from_entropy(
