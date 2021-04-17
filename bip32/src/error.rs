@@ -23,3 +23,10 @@ impl From<k256::elliptic_curve::Error> for Error {
         Error
     }
 }
+
+#[cfg(feature = "secp256k1")]
+impl From<k256::ecdsa::Error> for Error {
+    fn from(_: k256::ecdsa::Error) -> Error {
+        Error
+    }
+}

@@ -55,3 +55,26 @@ impl SecretKey for k256::SecretKey {
             .expect("malformed public key")
     }
 }
+
+#[cfg(feature = "secp256k1")]
+impl SecretKey for k256::ecdsa::SigningKey {
+    type PublicKey = [u8; 33];
+
+    fn from_bytes(bytes: &SecretKeyBytes) -> Result<Self> {
+        Ok(k256::ecdsa::SigningKey::from_bytes(bytes)?)
+    }
+
+    fn to_bytes(&self) -> SecretKeyBytes {
+        k256::ecdsa::SigningKey::to_bytes(self).into()
+    }
+
+    fn derive_child(&self, derivation_key: &SecretKeyBytes) -> Result<Self> {
+        k256::SecretKey::from(self)
+            .derive_child(derivation_key)
+            .map(Into::into)
+    }
+
+    fn public_key(&self) -> Self::PublicKey {
+        SecretKey::public_key(&k256::SecretKey::from(self))
+    }
+}
