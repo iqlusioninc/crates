@@ -24,6 +24,9 @@ pub use self::{
 };
 pub use hkd32::KEY_SIZE;
 
+#[cfg(feature = "secp256k1")]
+pub use k256 as secp256k1;
+
 /// Chain code: extension for both private and public keys which provides an
 /// additional 256-bits of entropy.
 pub type ChainCode = [u8; KEY_SIZE];
