@@ -20,7 +20,7 @@ eyre = "0.6"
 k256 = { version = "0.7", features = ["ecdsa", "sha256"] }
 prost-amino = "0.6"
 prost-amino-derive = "0.6"
-rust_decimal = "1.10"
+rust_decimal = "1.11"
 serde = { version = "1", features = ["serde_derive"] }
 serde_json = "1"
 sha2 = "0.9"
