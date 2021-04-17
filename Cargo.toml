@@ -1,6 +1,7 @@
 [workspace]
 members = [
     "anomaly",
+    "bip32",
     "canonical-path",
     "datadog",
     "harp",

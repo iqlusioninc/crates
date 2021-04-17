@@ -1,0 +1,30 @@
+[package]
+name = "bip32"
+description = "BIP32 hierarchical key derivation"
+version    = "0.0.0" # Also update html_root_url in lib.rs when bumping this
+authors    = ["Tony Arcieri <tony@iqlusion.io>"]
+license    = "Apache-2.0 OR MIT"
+edition    = "2018"
+homepage   = "https://github.com/iqlusioninc/crates/"
+repository = "https://github.com/iqlusioninc/crates/tree/develop/bip32"
+readme     = "README.md"
+categories = ["cryptography", "no-std"]
+keywords   = ["crypto", "bip32", "bip39", "derivation", "mnemonic"]
+
+[dependencies]
+bs58 = "0.4"
+hmac = "0.10"
+hkd32 = { version = "0.5", default-features = false, features = ["bip39", "mnemonic"], path = "../hkd32" }
+k256 = { version = "0.7", optional = true, default-features = false, features = ["arithmetic", "zeroize"] }
+sha2 = "0.9"
+
+[dev-dependencies]
+hex-literal = "0.3"
+
+[features]
+default = ["secp256k1"]
+secp256k1 = ["k256"]
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]

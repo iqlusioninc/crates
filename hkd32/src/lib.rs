@@ -10,8 +10,8 @@
 //!
 //! To derive a key using HKD32, you'll need the following:
 //!
-//! - `hkd32::KeyMaterial`: a 32-byte (256-bit) uniformly random value
-//! - `hkd32::Path` or `hkd32::PathBuf`: path to the child key
+//! - [`KeyMaterial`]: a 32-byte (256-bit) uniformly random value
+//! - [`Path`] or [`PathBuf`]: path to the child key
 //!
 //! Derivation paths can be raw bytestrings but also support a Unix path-like
 //! syntax which can be parsed using the `String::parse` method:
@@ -39,28 +39,30 @@
 //! [bip32]: https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki
 
 #![no_std]
-#![deny(
-    missing_docs,
-    rust_2018_idioms,
-    unused_lifetimes,
-    unused_qualifications
-)]
+#![cfg_attr(docsrs, feature(doc_cfg))]
+#![deny(missing_docs, rust_2018_idioms, unused_qualifications)]
 #![doc(html_root_url = "https://docs.rs/hkd32/0.5.0")]
 
 #[cfg(feature = "alloc")]
 #[cfg_attr(any(feature = "bip39", test), macro_use)]
 extern crate alloc;
 
-mod key_material;
 #[cfg(feature = "mnemonic")]
 pub mod mnemonic;
+
+mod key_material;
 mod path;
 #[cfg(feature = "alloc")]
 mod pathbuf;
 
+pub use self::{key_material::*, path::*};
+
 #[cfg(feature = "alloc")]
 pub use self::pathbuf::PathBuf;
-pub use self::{key_material::*, path::*};
+
+#[cfg(feature = "bip39")]
+#[cfg_attr(docsrs, doc(cfg(feature = "bip39")))]
+pub use self::mnemonic::seed::BIP39_BASE_DERIVATION_KEY;
 
 /// Delimiter used for strings containing paths
 pub const DELIMITER: char = '/';
