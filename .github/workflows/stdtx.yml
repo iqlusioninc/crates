@@ -1,0 +1,51 @@
+name: stdtx
+
+on:
+  pull_request:
+    paths:
+      - "stdtx/**"
+      - "Cargo.*"
+  push:
+    branches: main
+
+defaults:
+  run:
+    working-directory: stdtx
+
+env:
+  CARGO_INCREMENTAL: 0
+  RUSTFLAGS: "-Dwarnings"
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        platform:
+          - ubuntu-latest
+          - macos-latest
+          - windows-latest
+        toolchain:
+          - 1.47.0
+          - stable
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: ${{ matrix.toolchain }}
+          override: true
+          profile: minimal
+      - run: cargo test --release
+      - run: cargo test --release --all-features
+
+  wasm:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          target: wasm32-unknown-unknown
+          override: true
+          profile: minimal
+      - run: cargo build --target wasm32-unknown-unknown
