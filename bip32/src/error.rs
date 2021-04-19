@@ -1,8 +1,8 @@
-/// Error type
+/// Error type.
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub struct Error;
 
-/// Result type
+/// Result type.
 pub type Result<T> = core::result::Result<T, Error>;
 
 impl From<core::array::TryFromSliceError> for Error {
