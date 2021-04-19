@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 1.3.0 (2021-04-19)
+### Added
+- impl `Zeroize` for `Box<[Z]>` ([#615])
+- Clear residual space within `Option` ([#687])
+
+### Changed
+- Ensure `Option` is `None` when zeroized ([#649])
+- Bump MSRV to 1.47 ([#685])
+
+[#615]: https://github.com/iqlusioninc/crates/pull/615
+[#649]: https://github.com/iqlusioninc/crates/pull/649
+[#685]: https://github.com/iqlusioninc/crates/pull/685
+[#687]: https://github.com/iqlusioninc/crates/pull/687
+
 ## 1.2.0 (2020-12-09)
 ### Added
 - `Zeroize` support for x86(_64) SIMD registers ([#577])
