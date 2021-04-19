@@ -20,7 +20,7 @@ pub use self::{
     child_number::ChildNumber,
     derivation_path::DerivationPath,
     error::{Error, Result},
-    extended_secret_key::ExtendedSecretKey,
+    extended_secret_key::{Depth, ExtendedSecretKey},
 };
 pub use hkd32::KEY_SIZE;
 
