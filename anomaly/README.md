@@ -6,7 +6,6 @@
 ![MSRV][rustc-image]
 [![Safety Dance][safety-image]][safety-link]
 [![Build Status][build-image]][build-link]
-[![Gitter Chat][gitter-image]][gitter-link]
 
 Error context library with support for type-erased sources and backtraces,
 targeting full support of all features on stable Rust, and with an eye towards
@@ -51,13 +50,17 @@ generic around a concrete `Kind` type. Type erasure (based on
 **anomaly.rs** is an extraction of a set of patterns and boilerplate
 from real-world libraries and applications, most notably [Abscissa].
 
-## Requirements
+## Minimum Supported Rust Version
 
-- Rust **1.38+**
+Rust **1.47** or newer.
+
+In the future, we reserve the right to change MSRV (i.e. MSRV is out-of-scope
+for this crate's SemVer guarantees), however when we do it will be accompanied by
+a minor version bump.
 
 ## License
 
-Copyright © 2019-2020 iqlusion
+Copyright © 2019-2021 iqlusion
 
 **anomaly.rs** is distributed under the terms of either the MIT license
 or the Apache License (Version 2.0), at your option.
@@ -78,13 +81,11 @@ without any additional terms or conditions.
 [docs-image]: https://docs.rs/anomaly/badge.svg
 [docs-link]: https://docs.rs/anomaly/
 [license-image]: https://img.shields.io/badge/license-Apache2.0/MIT-blue.svg
-[rustc-image]: https://img.shields.io/badge/rustc-1.38+-blue.svg
+[rustc-image]: https://img.shields.io/badge/rustc-1.47+-blue.svg
 [safety-image]: https://img.shields.io/badge/unsafe-forbidden-success.svg
 [safety-link]: https://github.com/rust-secure-code/safety-dance/
 [build-image]: https://github.com/iqlusioninc/crates/actions/workflows/anomaly.yml/badge.svg
 [build-link]: https://github.com/iqlusioninc/crates/actions/workflows/anomaly.yml
-[gitter-image]: https://badges.gitter.im/iqlusioninc/community.svg
-[gitter-link]: https://gitter.im/iqlusioninc/community
 
 [//]: # (general links)
 

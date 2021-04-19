@@ -10,39 +10,23 @@ to the community by [iqlusion](https://www.iqlusion.io).
 If you are interested in contributing to this repository, please make sure to
 read the [CONTRIBUTING.md] and [CODE_OF_CONDUCT.md] files first.
 
-[CONTRIBUTING.md]: https://github.com/iqlusioninc/crates/blob/main/CONTRIBUTING.md
-[CODE_OF_CONDUCT.md]: https://github.com/iqlusioninc/crates/blob/main/CODE_OF_CONDUCT.md
-
-## Requirements
-
-All crates require Rust 2018 edition and are tested on the following channels:
-
-- `1.47.0` (minimum supported)
-- `stable`
-
-All crates in CI with the above channels on the following operating systems:
-
-- Linux
-- macOS
-- Windows
-
 ## Crates
 
 This repository contains the following crates:
 
-| Name              | Version                    | Build                      | Description                                   |
-|-------------------|----------------------------|----------------------------|--------------------------|
-| [anomaly]         | ![][anomaly-crate]         | ![][anomaly-build]         | Error context library with sources/backtraces |
-| [bip32]           | ![][bip32-crate]           | ![][bip32-build]           | Hierarchical key derivation
-| [canonical‑path]  | ![][canonical-path-crate]  | ![][canonical-path-build]  | Canonical filesystem path support             |
-| [datadog]         | ![][datadog-crate]         | ![][datadog-build]         | Datadog client library
-| [harp]            | ![][harp-crate]            | ![][harp-build]            | Minimalist HTTP library                       |
-| [hkd32]           | ![][hkd32-crate]           | ![][hkd32-build]           | HMAC-based Hierarchical Key Derivation        |
-| [secrecy]         | ![][secrecy-crate]         | ![][secrecy-build]         | Simple secret-keeping library                 |
-| [stdtx]           | ![][stdtx-crate]           | ![][stdtx-build]           | Cosmos StdTx builder/signer/serializer        |
-| [subtle‑encoding] | ![][subtle-encoding-crate] | ![][subtle-encoding-build] | Hex, Bech32, and Base64 in constant-time(ish) |
-| [tai64]           | ![][tai64-crate]           | ![][tai64-build]           | TAI64(N) timestamp format                     |
-| [zeroize]         | ![][zeroize-crate]         | ![][zeroize-build]         | Securely zero memory                          |
+| Name              | Version                    | Build                      | Description                            |
+|-------------------|----------------------------|----------------------------|----------------------------------------|
+| [anomaly]         | ![][anomaly-crate]         | ![][anomaly-build]         | Error context library                  |
+| [bip32]           | ![][bip32-crate]           | ![][bip32-build]           | Hierarchical key derivation            |
+| [canonical‑path]  | ![][canonical-path-crate]  | ![][canonical-path-build]  | Canonical filesystem path support      |
+| [datadog]         | ![][datadog-crate]         | ![][datadog-build]         | Datadog client library                 |
+| [harp]            | ![][harp-crate]            | ![][harp-build]            | Minimalist HTTP library                |
+| [hkd32]           | ![][hkd32-crate]           | ![][hkd32-build]           | HMAC-based Hierarchical Key Derivation |
+| [secrecy]         | ![][secrecy-crate]         | ![][secrecy-build]         | Simple secret-keeping library          |
+| [stdtx]           | ![][stdtx-crate]           | ![][stdtx-build]           | Cosmos StdTx builder/signer/serializer |
+| [subtle‑encoding] | ![][subtle-encoding-crate] | ![][subtle-encoding-build] | Constant-time hex/bech32/base64        |
+| [tai64]           | ![][tai64-crate]           | ![][tai64-build]           | TAI64(N) timestamp format              |
+| [zeroize]         | ![][zeroize-crate]         | ![][zeroize-build]         | Securely zero memory                   |
 
 ## License
 
@@ -65,6 +49,11 @@ limitations under the License.
 Unless you explicitly state otherwise, any contribution intentionally
 submitted for inclusion in the work by you shall be licensed as above,
 without any additional terms or conditions.
+
+[//]: # (links)
+
+[CONTRIBUTING.md]: https://github.com/iqlusioninc/crates/blob/main/CONTRIBUTING.md
+[CODE_OF_CONDUCT.md]: https://github.com/iqlusioninc/crates/blob/main/CODE_OF_CONDUCT.md
 
 [//]: # (badges)
 

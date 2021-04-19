@@ -22,11 +22,11 @@
 //!
 //! ## Minimum Supported Rust Version
 //!
-//! Requires Rust **1.44** or newer.
+//! Requires Rust **1.47** or newer.
 //!
 //! In the future, we reserve the right to change MSRV (i.e. MSRV is out-of-scope
 //! for this crate's SemVer guarantees), however when we do it will be accompanied
-//! with a minor version bump.
+//! by a minor version bump.
 //!
 //! ## Usage
 //!

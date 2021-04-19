@@ -5,7 +5,6 @@
 [![Apache 2.0 Licensed][license-image]][license-link]
 ![MSRV][rustc-image]
 [![Build Status][build-image]][build-link]
-[![Gitter Chat][gitter-image]][gitter-link]
 
 `hkd32` is a Rust library which implements a hierarchical deterministic
 symmetric key derivation construction inspired by
@@ -23,11 +22,11 @@ an initial 32-bytes of input key material.
 
 ## Minimum Supported Rust Version
 
-- Rust **1.44**
+- Rust **1.47**
 
 ## License
 
-Copyright © 2019 iqlusion
+Copyright © 2019-2021 iqlusion
 
 Includes code from the `bip39` crate. Copyright © 2017-2018 Stephen Oliver,
 with contributions by Maciej Hirsz.
@@ -52,11 +51,9 @@ without any additional terms or conditions.
 [docs-link]: https://docs.rs/hkd32/
 [license-image]: https://img.shields.io/badge/license-Apache2.0/MIT-blue.svg
 [license-link]: https://github.com/iqlusioninc/crates/blob/main/LICENSE
-[rustc-image]: https://img.shields.io/badge/rustc-1.44+-blue.svg
+[rustc-image]: https://img.shields.io/badge/rustc-1.47+-blue.svg
 [build-image]: https://github.com/iqlusioninc/crates/actions/workflows/hkd32.yml/badge.svg
 [build-link]: https://github.com/iqlusioninc/crates/actions/workflows/hkd32.yml
-[gitter-image]: https://badges.gitter.im/iqlusioninc/community.svg
-[gitter-link]: https://gitter.im/iqlusioninc/community
 
 [//]: # (general links)
 

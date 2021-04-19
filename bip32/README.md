@@ -13,25 +13,21 @@ BIP32 hierarchical key derivation.
 
 ## Minimum Supported Rust Version
 
-- Rust **1.47**
+Rust **1.47** or newer.
 
 In the future, we reserve the right to change MSRV (i.e. MSRV is out-of-scope
-for this crate's SemVer guarantees), however when we do it will be accompanied
-with a minor version bump.
+for this crate's SemVer guarantees), however when we do it will be accompanied by
+a minor version bump.
 
 ## License
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+Copyright © 2020-2021 iqlusion
 
-    https://www.apache.org/licenses/LICENSE-2.0
+**bip32.rs** is distributed under the terms of either the MIT license
+or the Apache License (Version 2.0), at your option.
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+See [LICENSE] (Apache License, Version 2.0) file in the `iqlusioninc/crates`
+toplevel directory of this repository or [LICENSE-MIT] for details.
 
 ## Contribution
 

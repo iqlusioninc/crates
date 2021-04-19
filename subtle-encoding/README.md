@@ -6,7 +6,6 @@
 ![MSRV][rustc-image]
 [![Safety Dance][safety-image]][safety-link]
 [![Build Status][build-image]][build-link]
-[![Gitter Chat][gitter-image]][gitter-link]
 
 Rust crate for encoding/decoding binary data to/from **base64** and **hex**
 encodings while avoiding data-dependent branching/table lookups, and therefore
@@ -22,7 +21,11 @@ Useful for encoding/decoding secret values such as cryptographic keys.
 
 ## Minimum Supported Rust Version
 
-- Rust **1.44**
+Rust **1.47** or newer.
+
+In the future, we reserve the right to change MSRV (i.e. MSRV is out-of-scope
+for this crate's SemVer guarantees), however when we do it will be accompanied by
+a minor version bump.
 
 ## Security Notice
 
@@ -37,7 +40,7 @@ Use at your own risk.
 
 ## License
 
-Copyright © 2018-2020 iqlusion
+Copyright © 2018-2021 iqlusion
 
 **subtle-encoding** is distributed under the terms of either the MIT license
 or the Apache License (Version 2.0), at your option.
@@ -52,13 +55,11 @@ toplevel directory of this repository or [LICENSE-MIT] for details.
 [docs-image]: https://docs.rs/subtle-encoding/badge.svg
 [docs-link]: https://docs.rs/subtle-encoding/
 [license-image]: https://img.shields.io/badge/license-Apache2.0/MIT-blue.svg
-[rustc-image]: https://img.shields.io/badge/rustc-1.44+-blue.svg
+[rustc-image]: https://img.shields.io/badge/rustc-1.47+-blue.svg
 [safety-image]: https://img.shields.io/badge/unsafe-forbidden-success.svg
 [safety-link]: https://github.com/rust-secure-code/safety-dance/
 [build-image]: https://github.com/iqlusioninc/crates/actions/workflows/subtle-encoding.yml/badge.svg
 [build-link]: https://github.com/iqlusioninc/crates/actions/workflows/subtle-encoding.yml
-[gitter-image]: https://badges.gitter.im/iqlusioninc/community.svg
-[gitter-link]: https://gitter.im/iqlusioninc/community
 
 [//]: # (general links)
 

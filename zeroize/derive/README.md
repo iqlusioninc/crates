@@ -13,11 +13,11 @@ See [zeroize] crate for documentation.
 
 ## Minimum Supported Rust Version
 
-Requires Rust **1.44** or newer.
+Rust **1.47** or newer.
 
 In the future, we reserve the right to change MSRV (i.e. MSRV is out-of-scope
-for this crate's SemVer guarantees), however when we do it will be accompanied
-with a minor version bump.
+for this crate's SemVer guarantees), however when we do it will be accompanied by
+a minor version bump.
 
 ## License
 
@@ -38,7 +38,7 @@ without any additional terms or conditions.
 [crate-image]: https://img.shields.io/crates/v/zeroize_derive.svg
 [crate-link]: https://crates.io/crates/zeroize_derive
 [license-image]: https://img.shields.io/badge/license-Apache2.0/MIT-blue.svg
-[rustc-image]: https://img.shields.io/badge/rustc-1.44+-blue.svg
+[rustc-image]: https://img.shields.io/badge/rustc-1.47+-blue.svg
 [build-image]: https://github.com/iqlusioninc/crates/workflows/Rust/badge.svg?branch=main&event=push
 [build-link]: https://github.com/iqlusioninc/crates/actions
 

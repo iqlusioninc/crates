@@ -6,7 +6,6 @@
 ![MSRV][rustc-image]
 [![Safety Dance][safety-image]][safety-link]
 [![Build Status][build-image]][build-link]
-[![Gitter Chat][gitter-image]][gitter-link]
 
 High-level, (mostly) self-contained, minimalist HTTP toolkit (client-only).
 Suitable for use in constrainted environments where `mio` and `tokio`
@@ -22,11 +21,15 @@ such as Intel SGX or `#![no_std]` environments.
 
 ## Minimum Supported Rust Version
 
-- Rust **1.44**
+Rust **1.47** or newer.
+
+In the future, we reserve the right to change MSRV (i.e. MSRV is out-of-scope
+for this crate's SemVer guarantees), however when we do it will be accompanied by
+a minor version bump.
 
 ## License
 
-Copyright © 2019 iqlusion
+Copyright © 2019-2021 iqlusion
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -54,10 +57,8 @@ without any additional terms or conditions.
 [docs-link]: https://docs.rs/harp/
 [license-image]: https://img.shields.io/badge/license-Apache2.0-blue.svg
 [license-link]: https://github.com/iqlusioninc/crates/blob/main/LICENSE
-[rustc-image]: https://img.shields.io/badge/rustc-1.44+-blue.svg
+[rustc-image]: https://img.shields.io/badge/rustc-1.47+-blue.svg
 [safety-image]: https://img.shields.io/badge/unsafe-forbidden-success.svg
 [safety-link]: https://github.com/rust-secure-code/safety-dance/
 [build-image]: https://github.com/iqlusioninc/crates/actions/workflows/harp.yml/badge.svg
 [build-link]: https://github.com/iqlusioninc/crates/actions/workflows/harp.yml
-[gitter-image]: https://badges.gitter.im/iqlusioninc/community.svg
-[gitter-link]: https://gitter.im/iqlusioninc/community

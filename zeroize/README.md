@@ -5,7 +5,6 @@
 ![Apache 2.0/MIT Licensed][license-image]
 ![MSRV][rustc-image]
 [![Build Status][build-image]][build-link]
-[![Gitter Chat][gitter-image]][gitter-link]
 
 Securely zero memory while avoiding compiler optimizations.
 
@@ -37,11 +36,11 @@ thereof, implemented in pure Rust with no usage of FFI or assembly.
 
 ## Minimum Supported Rust Version
 
-Requires Rust **1.44** or newer.
+Rust **1.47** or newer.
 
 In the future, we reserve the right to change MSRV (i.e. MSRV is out-of-scope
-for this crate's SemVer guarantees), however when we do it will be accompanied
-with a minor version bump.
+for this crate's SemVer guarantees), however when we do it will be accompanied by
+a minor version bump.
 
 ## License
 
@@ -64,11 +63,9 @@ without any additional terms or conditions.
 [docs-image]: https://docs.rs/zeroize/badge.svg
 [docs-link]: https://docs.rs/zeroize/
 [license-image]: https://img.shields.io/badge/license-Apache2.0/MIT-blue.svg
-[rustc-image]: https://img.shields.io/badge/rustc-1.44+-blue.svg
+[rustc-image]: https://img.shields.io/badge/rustc-1.47+-blue.svg
 [build-image]: https://github.com/iqlusioninc/crates/actions/workflows/zeroize.yml/badge.svg
 [build-link]: https://github.com/iqlusioninc/crates/actions/workflows/zeroize.yml
-[gitter-image]: https://badges.gitter.im/iqlusioninc/community.svg
-[gitter-link]: https://gitter.im/iqlusioninc/community
 
 [//]: # (general links)
 
