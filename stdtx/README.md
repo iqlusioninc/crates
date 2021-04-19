@@ -6,7 +6,6 @@
 [![Safety Dance][safety-image]][safety-link]
 [![Apache 2.0 Licensed][license-image]][license-link]
 ![MSRV][msrv-image]
-[![Gitter Chat][gitter-image]][gitter-link]
 
 Extensible schema-driven [Cosmos] [StdTx] builder and [Amino] serializer.
 
@@ -27,11 +26,15 @@ uses the [StdTx] format without requiring upstream modifications.
 
 ## Minimum Supported Rust Version
 
-- Rust **1.46+**
+Rust **1.47** or newer.
+
+In the future, we reserve the right to change MSRV (i.e. MSRV is out-of-scope
+for this crate's SemVer guarantees), however when we do it will be accompanied by
+a minor version bump.
 
 ## License
 
-Copyright © 2020 iqlusion
+Copyright © 2020-21 iqlusion
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -57,9 +60,7 @@ limitations under the License.
 [safety-link]: https://github.com/rust-secure-code/safety-dance/
 [license-image]: https://img.shields.io/badge/license-Apache2.0-blue.svg
 [license-link]: https://github.com/iqlusioninc/crates/blob/main/LICENSE
-[msrv-image]: https://img.shields.io/badge/rustc-1.46+-blue.svg
-[gitter-image]: https://badges.gitter.im/iqlusioninc/community.svg
-[gitter-link]: https://gitter.im/iqlusioninc/community
+[msrv-image]: https://img.shields.io/badge/rustc-1.47+-blue.svg
 
 [//]: # (general links)
 

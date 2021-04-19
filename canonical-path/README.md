@@ -3,9 +3,8 @@
 [![Crate][crate-image]][crate-link]
 [![Docs][docs-image]][docs-link]
 [![Apache 2.0 Licensed][license-image]][license-link]
-![Rust 1.44+][rustc-image]
+![MSRV][rustc-image]
 [![Build Status][build-image]][build-link]
-[![Gitter Chat][gitter-image]][gitter-link]
 
 `std::fs::Path` and `PathBuf`-like types for representing canonical
 filesystem paths.
@@ -18,15 +17,15 @@ are canonical, or at least, were canonical at the time they were created.
 
 ## Minimum Supported Rust Version
 
-- Rust **1.44**
+Rust **1.47** or newer.
 
 In the future, we reserve the right to change MSRV (i.e. MSRV is out-of-scope
-for this crate's SemVer guarantees), however when we do it will be accompanied
-with a minor version bump.
+for this crate's SemVer guarantees), however when we do it will be accompanied by
+a minor version bump.
 
 ## License
 
-Copyright © 2018-2019 iqlusion
+Copyright © 2018-2021 iqlusion
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -54,8 +53,6 @@ without any additional terms or conditions.
 [docs-link]: https://docs.rs/canonical-path/
 [license-image]: https://img.shields.io/badge/license-Apache2.0-blue.svg
 [license-link]: https://github.com/iqlusioninc/crates/blob/main/LICENSE
-[rustc-image]: https://img.shields.io/badge/rustc-1.44+-blue.svg
+[rustc-image]: https://img.shields.io/badge/rustc-1.47+-blue.svg
 [build-image]: https://github.com/iqlusioninc/crates/actions/workflows/canonical-path.yml/badge.svg
 [build-link]: https://github.com/iqlusioninc/crates/actions/workflows/canonical-path.yml
-[gitter-image]: https://badges.gitter.im/iqlusioninc/community.svg
-[gitter-link]: https://gitter.im/iqlusioninc/community

@@ -6,7 +6,6 @@
 ![MSRV][rustc-image]
 [![Safety Dance][safety-image]][safety-link]
 [![Build Status][build-image]][build-link]
-[![Gitter Chat][gitter-image]][gitter-link]
 
 A simple secret-keeping library for Rust.
 
@@ -25,7 +24,11 @@ from memory when dropped.
 
 ## Minimum Supported Rust Version
 
-- Rust **1.44**
+Rust **1.47** or newer.
+
+In the future, we reserve the right to change MSRV (i.e. MSRV is out-of-scope
+for this crate's SemVer guarantees), however when we do it will be accompanied by
+a minor version bump.
 
 ## serde support
 
@@ -41,6 +44,8 @@ with what it is given and tries to minimize risk of exposure as much as
 possible.
 
 ## License
+
+Copyright © 2019-2021 iqlusion
 
 **secrecy** is distributed under the terms of either the MIT license
 or the Apache License (Version 2.0), at your option.
@@ -61,13 +66,11 @@ without any additional terms or conditions.
 [docs-image]: https://docs.rs/secrecy/badge.svg
 [docs-link]: https://docs.rs/secrecy/
 [license-image]: https://img.shields.io/badge/license-Apache2.0/MIT-blue.svg
-[rustc-image]: https://img.shields.io/badge/rustc-1.44+-blue.svg
+[rustc-image]: https://img.shields.io/badge/rustc-1.47+-blue.svg
 [safety-image]: https://img.shields.io/badge/unsafe-forbidden-success.svg
 [safety-link]: https://github.com/rust-secure-code/safety-dance/
 [build-image]: https://github.com/iqlusioninc/crates/actions/workflows/secrecy.yml/badge.svg
 [build-link]: https://github.com/iqlusioninc/crates/actions/workflows/secrecy.yml
-[gitter-image]: https://badges.gitter.im/iqlusioninc/community.svg
-[gitter-link]: https://gitter.im/iqlusioninc/community
 
 [//]: # (general links)
 
