@@ -55,8 +55,8 @@ toplevel directory of this repository or [LICENSE-MIT] for details.
 [rustc-image]: https://img.shields.io/badge/rustc-1.44+-blue.svg
 [safety-image]: https://img.shields.io/badge/unsafe-forbidden-success.svg
 [safety-link]: https://github.com/rust-secure-code/safety-dance/
-[build-image]: https://github.com/iqlusioninc/crates/workflows/Rust/badge.svg?branch=main&event=push
-[build-link]: https://github.com/iqlusioninc/crates/actions
+[build-image]: https://github.com/iqlusioninc/crates/actions/workflows/subtle-encoding.yml/badge.svg
+[build-link]: https://github.com/iqlusioninc/crates/actions/workflows/subtle-encoding.yml
 [gitter-image]: https://badges.gitter.im/iqlusioninc/community.svg
 [gitter-link]: https://gitter.im/iqlusioninc/community
 
