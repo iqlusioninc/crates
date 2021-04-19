@@ -2,8 +2,6 @@
 
 [![Apache 2.0 Licensed][license-image]][license-link]
 ![MSRV][msrv-image]
-[![Build Status][build-image]][build-link]
-[![Gitter Chat][gitter-image]][gitter-link]
 
 This repository contains a set of Apache 2.0-licensed packages (a.k.a.  "crates")
 for the [Rust](https://www.rust-lang.org/) programming language, contributed
@@ -19,11 +17,8 @@ read the [CONTRIBUTING.md] and [CODE_OF_CONDUCT.md] files first.
 
 All crates require Rust 2018 edition and are tested on the following channels:
 
-- `1.44.0` (minimum supported)
+- `1.47.0` (minimum supported)
 - `stable`
-
-Crates may work on slightly earlier 2018 edition-supporting versions of Rust
-(i.e. 1.31.0+) but are not tested on these releases or guaranteed to work.
 
 All crates in CI with the above channels on the following operating systems:
 
@@ -35,21 +30,23 @@ All crates in CI with the above channels on the following operating systems:
 
 This repository contains the following crates:
 
-| Name              | Version                    | Description                                   |
-|-------------------|----------------------------|-----------------------------------------------|
-| [anomaly]         | ![][anomaly-crate]         | Error context library with sources/backtraces |
-| [canonical-path]  | ![][canonical-path-crate]  | Canonical filesystem path support             |
-| [harp]            | ![][harp-crate]            | Minimalist HTTP library                       |
-| [hkd32]           | ![][hkd32-crate]           | HMAC-based Hierarchical Key Derivation        |
-| [secrecy]         | ![][secrecy-crate]         | Simple secret-keeping library                 |
-| [stdtx]           | ![][stdtx-crate]           | Cosmos StdTx builder/signer/serializer        |
-| [subtle-encoding] | ![][subtle-encoding-crate] | Hex, Bech32, and Base64 in constant-time(ish) |
-| [tai64]           | ![][tai64-crate]           | TAI64(N) timestamp format                     |
-| [zeroize]         | ![][zeroize-crate]         | Securely zero memory                          |
+| Name              | Version                    | Build                      | Description                                   |
+|-------------------|----------------------------|----------------------------|--------------------------|
+| [anomaly]         | ![][anomaly-crate]         | ![][anomaly-build]         | Error context library with sources/backtraces |
+| [bip32]           | ![][bip32-crate]           | ![][bip32-build]           | Hierarchical key derivation
+| [canonical-path]  | ![][canonical-path-crate]  | ![][canonical-path-build]  | Canonical filesystem path support             |
+| [datadog]         | ![][datadog-crate]         | ![][datadog-build]         | Datadog client library
+| [harp]            | ![][harp-crate]            | ![][harp-build]            | Minimalist HTTP library                       |
+| [hkd32]           | ![][hkd32-crate]           | ![][hkd32-build]           | HMAC-based Hierarchical Key Derivation        |
+| [secrecy]         | ![][secrecy-crate]         | ![][secrecy-build]         | Simple secret-keeping library                 |
+| [stdtx]           | ![][stdtx-crate]           | ![][stdtx-build]           | Cosmos StdTx builder/signer/serializer        |
+| [subtle-encoding] | ![][subtle-encoding-crate] | ![][subtle-encoding-build] | Hex, Bech32, and Base64 in constant-time(ish) |
+| [tai64]           | ![][tai64-crate]           | ![][tai64-build]           | TAI64(N) timestamp format                     |
+| [zeroize]         | ![][zeroize-crate]         | ![][zeroize-build]         | Securely zero memory                          |
 
 ## License
 
-Copyright © 2018-2019 iqlusion
+Copyright © 2018-2021 iqlusion
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -73,18 +70,18 @@ without any additional terms or conditions.
 
 [license-image]: https://img.shields.io/badge/license-Apache2.0-blue.svg
 [license-link]: https://github.com/iqlusioninc/crates/blob/main/LICENSE
-[msrv-image]: https://img.shields.io/badge/rustc-1.44+-blue.svg
-[build-image]: https://github.com/iqlusioninc/crates/workflows/Rust/badge.svg?branch=main&event=push
-[build-link]: https://github.com/iqlusioninc/crates/actions
-[gitter-image]: https://badges.gitter.im/iqlusioninc/community.svg
-[gitter-link]: https://gitter.im/iqlusioninc/community
+[msrv-image]: https://img.shields.io/badge/rustc-1.47+-blue.svg
 
 [//]: # (crates)
 
 [anomaly]: https://github.com/iqlusioninc/crates/tree/main/anomaly
 [anomaly-crate]: https://img.shields.io/crates/v/anomaly.svg
+[bip32]: https://github.com/iqlusioninc/crates/tree/main/bip32
+[bip32-crate]: https://img.shields.io/crates/v/bip32.svg
 [canonical-path]: https://github.com/iqlusioninc/crates/tree/main/canonical-path
 [canonical-path-crate]: https://img.shields.io/crates/v/canonical-path.svg
+[datadog]: https://github.com/iqlusioninc/crates/tree/main/datadog
+[datadog-crate]: https://img.shields.io/crates/v/datadog.svg
 [harp]: https://github.com/iqlusioninc/crates/tree/main/harp
 [harp-crate]: https://img.shields.io/crates/v/harp.svg
 [hkd32]: https://github.com/iqlusioninc/crates/tree/main/hkd32
@@ -99,3 +96,17 @@ without any additional terms or conditions.
 [tai64-crate]: https://img.shields.io/crates/v/tai64.svg
 [zeroize]: https://github.com/iqlusioninc/crates/tree/main/zeroize
 [zeroize-crate]: https://img.shields.io/crates/v/zeroize.svg
+
+[//]: # (build)
+
+[anomaly-build]: https://github.com/iqlusioninc/crates/actions/workflows/anomaly.yml/badge.svg
+[bip32-build]: https://github.com/iqlusioninc/crates/actions/workflows/bip32.yml/badge.svg
+[canonical-path-build]: https://github.com/iqlusioninc/crates/actions/workflows/canonical-path.yml/badge.svg
+[datadog-build]: https://github.com/iqlusioninc/crates/actions/workflows/datadog.yml/badge.svg
+[harp-build]: https://github.com/iqlusioninc/crates/actions/workflows/harp.yml/badge.svg
+[hkd32-build]: https://github.com/iqlusioninc/crates/actions/workflows/hkd32.yml/badge.svg
+[secrecy-build]: https://github.com/iqlusioninc/crates/actions/workflows/secrecy.yml/badge.svg
+[stdtx-build]: https://github.com/iqlusioninc/crates/actions/workflows/stdtx.yml/badge.svg
+[subtle-encoding-build]: https://github.com/iqlusioninc/crates/actions/workflows/subtle-encoding.yml/badge.svg
+[tai64-build]: https://github.com/iqlusioninc/crates/actions/workflows/tai64.yml/badge.svg
+[zeroize-build]: https://github.com/iqlusioninc/crates/actions/workflows/zeroize.yml/badge.svg
