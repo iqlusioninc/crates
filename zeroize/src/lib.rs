@@ -209,7 +209,7 @@
 #![no_std]
 #![cfg_attr(docsrs, feature(doc_cfg))]
 #![doc(html_root_url = "https://docs.rs/zeroize/1.2.0")]
-#![warn(missing_docs, rust_2018_idioms, trivial_casts, unused_qualifications)]
+#![warn(missing_docs, rust_2018_idioms, unused_qualifications)]
 
 #[cfg(feature = "alloc")]
 #[cfg_attr(test, macro_use)]
@@ -296,27 +296,38 @@ where
     Z: Zeroize,
 {
     fn zeroize(&mut self) {
-        match self {
-            Some(value) => {
-                value.zeroize();
-                // Ensures self is None and that the value was dropped. Without the take, the drop
-                // of the (zeroized) value isn't called, which might lead to a leak or other
-                // unexpected behavior. For example, if this were Option<Vec<T>>, the above call to
-                // zeroize would not free the allocated memory, but the the `take` call will.
-                self.take();
-                // Ensures self is overwritten with the default bit pattern. volatile_write can't be
-                // used because Option<Z> is not copy.
-                //
-                // Safety:
-                //
-                // self is safe to replace with the default, which the take() call above should have
-                // already done semantically. Any value which needed to be dropped will have been
-                // done so by take().
-                unsafe { ptr::write_volatile(self, Option::default()) }
-                atomic_fence();
-            }
-            None => (),
+        if let Some(value) = self {
+            value.zeroize();
+
+            // Ensures self is None and that the value was dropped. Without the take, the drop
+            // of the (zeroized) value isn't called, which might lead to a leak or other
+            // unexpected behavior. For example, if this were Option<Vec<T>>, the above call to
+            // zeroize would not free the allocated memory, but the the `take` call will.
+            self.take();
         }
+
+        // Ensure that if the `Option` were previously `Some` but a value was copied/moved out
+        // that the remaining space in the `Option` is zeroized.
+        //
+        // Safety:
+        //
+        // The memory pointed to by `self` is valid for `mem::size_of::<Self>()` bytes.
+        // It is also properly aligned, because `u8` has an alignment of `1`.
+        unsafe {
+            volatile_set(self as *mut _ as *mut u8, 0, core::mem::size_of::<Self>());
+        }
+
+        // Ensures self is overwritten with the default bit pattern. volatile_write can't be
+        // used because Option<Z> is not copy.
+        //
+        // Safety:
+        //
+        // self is safe to replace with the default, which the take() call above should have
+        // already done semantically. Any value which needed to be dropped will have been
+        // done so by take().
+        unsafe { ptr::write_volatile(self, Option::default()) }
+
+        atomic_fence();
     }
 }
 
