@@ -34,13 +34,13 @@ This repository contains the following crates:
 |-------------------|----------------------------|----------------------------|--------------------------|
 | [anomaly]         | ![][anomaly-crate]         | ![][anomaly-build]         | Error context library with sources/backtraces |
 | [bip32]           | ![][bip32-crate]           | ![][bip32-build]           | Hierarchical key derivation
-| [canonical-path]  | ![][canonical-path-crate]  | ![][canonical-path-build]  | Canonical filesystem path support             |
+| [canonical‑path]  | ![][canonical-path-crate]  | ![][canonical-path-build]  | Canonical filesystem path support             |
 | [datadog]         | ![][datadog-crate]         | ![][datadog-build]         | Datadog client library
 | [harp]            | ![][harp-crate]            | ![][harp-build]            | Minimalist HTTP library                       |
 | [hkd32]           | ![][hkd32-crate]           | ![][hkd32-build]           | HMAC-based Hierarchical Key Derivation        |
 | [secrecy]         | ![][secrecy-crate]         | ![][secrecy-build]         | Simple secret-keeping library                 |
 | [stdtx]           | ![][stdtx-crate]           | ![][stdtx-build]           | Cosmos StdTx builder/signer/serializer        |
-| [subtle-encoding] | ![][subtle-encoding-crate] | ![][subtle-encoding-build] | Hex, Bech32, and Base64 in constant-time(ish) |
+| [subtle‑encoding] | ![][subtle-encoding-crate] | ![][subtle-encoding-build] | Hex, Bech32, and Base64 in constant-time(ish) |
 | [tai64]           | ![][tai64-crate]           | ![][tai64-build]           | TAI64(N) timestamp format                     |
 | [zeroize]         | ![][zeroize-crate]         | ![][zeroize-build]         | Securely zero memory                          |
 
@@ -78,7 +78,7 @@ without any additional terms or conditions.
 [anomaly-crate]: https://img.shields.io/crates/v/anomaly.svg
 [bip32]: https://github.com/iqlusioninc/crates/tree/main/bip32
 [bip32-crate]: https://img.shields.io/crates/v/bip32.svg
-[canonical-path]: https://github.com/iqlusioninc/crates/tree/main/canonical-path
+[canonical‑path]: https://github.com/iqlusioninc/crates/tree/main/canonical-path
 [canonical-path-crate]: https://img.shields.io/crates/v/canonical-path.svg
 [datadog]: https://github.com/iqlusioninc/crates/tree/main/datadog
 [datadog-crate]: https://img.shields.io/crates/v/datadog.svg
@@ -90,7 +90,7 @@ without any additional terms or conditions.
 [secrecy-crate]: https://img.shields.io/crates/v/secrecy.svg
 [stdtx]: https://github.com/iqlusioninc/crates/tree/main/stdtx
 [stdtx-crate]: https://img.shields.io/crates/v/stdtx.svg
-[subtle-encoding]: https://github.com/iqlusioninc/crates/tree/main/subtle-encoding
+[subtle‑encoding]: https://github.com/iqlusioninc/crates/tree/main/subtle-encoding
 [subtle-encoding-crate]: https://img.shields.io/crates/v/subtle-encoding.svg
 [tai64]: https://github.com/iqlusioninc/crates/tree/main/tai64
 [tai64-crate]: https://img.shields.io/crates/v/tai64.svg
