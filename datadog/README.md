@@ -1,4 +1,4 @@
-# TAI64 / TAI64N Timestamps for Rust
+# Datadog
 
 [![Crate][crate-image]][crate-link]
 [![Docs][docs-image]][docs-link]
@@ -6,19 +6,14 @@
 ![MSRV][rustc-image]
 [![Safety Dance][safety-image]][safety-link]
 [![Build Status][build-image]][build-link]
-[![Gitter Chat][gitter-image]][gitter-link]
 
-An implementation of the [TAI64(N)] (*Temps Atomique International*) timestamp
-format in Rust.
-
-Supports converting to/from Rust's built-in [SystemTime] type and optionally to
-[chrono]'s [DateTime] type when the `"chrono"` feature is enabled.
+Client library for the [Datadog] service.
 
 [Documentation][docs-link]
 
 ## Minimum Supported Rust Version
 
-- Rust **1.44**
+- Rust **1.47**
 
 In the future, we reserve the right to change MSRV (i.e. MSRV is out-of-scope
 for this crate's SemVer guarantees), however when we do it will be accompanied
@@ -46,24 +41,18 @@ without any additional terms or conditions.
 
 [//]: # (badges)
 
-[crate-image]: https://img.shields.io/crates/v/tai64.svg
-[crate-link]: https://crates.io/crates/tai64
-[docs-image]: https://docs.rs/tai64/badge.svg
-[docs-link]: https://docs.rs/tai64/
+[crate-image]: https://img.shields.io/crates/v/datadog.svg
+[crate-link]: https://crates.io/crates/datadog
+[docs-image]: https://docs.rs/datadog/badge.svg
+[docs-link]: https://docs.rs/datadog/
 [license-image]: https://img.shields.io/badge/license-Apache2.0-blue.svg
 [license-link]: https://github.com/iqlusioninc/crates/blob/main/LICENSE
-[rustc-image]: https://img.shields.io/badge/rustc-1.44+-blue.svg
+[rustc-image]: https://img.shields.io/badge/rustc-1.47+-blue.svg
 [safety-image]: https://img.shields.io/badge/unsafe-forbidden-success.svg
 [safety-link]: https://github.com/rust-secure-code/safety-dance/
-[build-image]: https://github.com/iqlusioninc/crates/actions/workflows/tai64.yml/badge.svg
-[build-link]: https://github.com/iqlusioninc/crates/actions/workflows/tai64.yml
-[gitter-image]: https://badges.gitter.im/iqlusioninc/community.svg
-[gitter-link]: https://gitter.im/iqlusioninc/community
+[build-image]: https://github.com/iqlusioninc/crates/actions/workflows/datadog.yml/badge.svg
+[build-link]: https://github.com/iqlusioninc/crates/actions/workflows/datadog.yml
 
-[//]: # (general links)
+[//]: # (links)
 
-[TAI64(N)]: https://cr.yp.to/libtai/tai64.html
-[SystemTime]: https://doc.rust-lang.org/std/time/struct.SystemTime.html
-[chrono]: https://github.com/chronotope/chrono
-[DateTime]: https://docs.rs/chrono/0.4.0/chrono/struct.DateTime.html
-[LICENSE]: https://github.com/iqlusioninc/crates/blob/main/LICENSE
+[Datadog]: https://www.datadoghq.com/
