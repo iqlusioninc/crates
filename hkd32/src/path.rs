@@ -211,7 +211,7 @@ impl<'a> Component<'a> {
 
     /// Serialize this component as a length-prefixed bytestring.
     #[cfg(feature = "alloc")]
-    pub fn to_bytes(&self) -> Vec<u8> {
+    pub fn to_bytes(self) -> Vec<u8> {
         let mut serialized = Vec::with_capacity(1 + self.len());
         serialized.push((self.len() - 1) as u8);
         serialized.extend_from_slice(&self.0);
