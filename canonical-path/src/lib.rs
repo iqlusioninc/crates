@@ -330,7 +330,7 @@ impl ToOwned for CanonicalPath {
 /// executable.
 pub fn current_exe() -> Result<CanonicalPathBuf> {
     let p = env::current_exe()?;
-    Ok(CanonicalPathBuf::canonicalize(p)?)
+    CanonicalPathBuf::canonicalize(p)
 }
 
 // TODO: test on Windows

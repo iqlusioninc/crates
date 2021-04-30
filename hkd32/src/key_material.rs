@@ -93,7 +93,8 @@ impl KeyMaterial {
             .components()
             .enumerate()
             .fold(self, |parent_key, (i, component)| {
-                let mut hmac = Hmac::<Sha512>::new_varkey(parent_key.as_bytes()).unwrap();
+                let mut hmac = Hmac::<Sha512>::new_from_slice(parent_key.as_bytes())
+                    .expect("HMAC key size incorrect");
                 hmac.update(component.as_bytes());
 
                 let mut hmac_result = hmac.finalize().into_bytes();

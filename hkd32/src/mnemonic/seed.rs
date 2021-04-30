@@ -1,8 +1,7 @@
 //! BIP39 seed values
 
 use crate::{KeyMaterial, Path, KEY_SIZE};
-use hmac::crypto_mac::NewMac;
-use hmac::{Hmac, Mac};
+use hmac::{Hmac, Mac, NewMac};
 use sha2::Sha512;
 use zeroize::Zeroize;
 
@@ -25,7 +24,8 @@ impl Seed {
 
     /// Derive a BIP32 subkey from this seed
     pub fn derive_subkey(self, path: impl AsRef<Path>) -> KeyMaterial {
-        let mut hmac = Hmac::<Sha512>::new_varkey(&BIP39_BASE_DERIVATION_KEY).unwrap();
+        let mut hmac = Hmac::<Sha512>::new_from_slice(&BIP39_BASE_DERIVATION_KEY)
+            .expect("HMAC key size incorrect");
         hmac.update(&self.0);
 
         // Use the chain code of the derived key as the root key

@@ -176,7 +176,7 @@ impl Bech32 {
 
         let pos = encoded_str
             .rfind(self.separator)
-            .ok_or_else(|| Error::EncodingInvalid)?;
+            .ok_or(Error::EncodingInvalid)?;
 
         if pos == encoded_str.len() {
             return Err(Error::EncodingInvalid);
@@ -209,7 +209,7 @@ impl Bech32 {
                 .charset_inverse
                 .get(encoded_byte as usize)
                 .and_then(|byte| *byte)
-                .ok_or_else(|| Error::EncodingInvalid)?;
+                .ok_or(Error::EncodingInvalid)?;
 
             base32_data.push(decoded_byte);
         }
