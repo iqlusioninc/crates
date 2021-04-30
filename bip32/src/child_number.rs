@@ -17,7 +17,7 @@ impl ChildNumber {
     }
 
     /// Serialize this child number as bytes.
-    pub fn to_bytes(&self) -> [u8; 4] {
+    pub fn to_bytes(self) -> [u8; 4] {
         self.0.to_be_bytes()
     }
 }

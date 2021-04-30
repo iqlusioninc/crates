@@ -68,9 +68,9 @@ impl Phrase {
             .join(" ");
 
         Phrase {
-            phrase,
             language,
             entropy,
+            phrase
         }
     }
 

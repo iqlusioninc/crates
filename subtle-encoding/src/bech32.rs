@@ -174,9 +174,7 @@ impl Bech32 {
             return Err(Error::TrailingWhitespace);
         }
 
-        let pos = encoded_str
-            .rfind(self.separator)
-            .ok_or_else(|| Error::EncodingInvalid)?;
+        let pos = encoded_str.rfind(self.separator).ok_or(Error::EncodingInvalid)?;
 
         if pos == encoded_str.len() {
             return Err(Error::EncodingInvalid);
@@ -205,11 +203,7 @@ impl Bech32 {
         let mut base32_data = Vec::with_capacity(encoded_data.len());
 
         for encoded_byte in encoded_data.bytes() {
-            let decoded_byte = self
-                .charset_inverse
-                .get(encoded_byte as usize)
-                .and_then(|byte| *byte)
-                .ok_or_else(|| Error::EncodingInvalid)?;
+            let decoded_byte = self.charset_inverse.get(encoded_byte as usize).and_then(|byte| *byte).ok_or(Error::EncodingInvalid)?;
 
             base32_data.push(decoded_byte);
         }

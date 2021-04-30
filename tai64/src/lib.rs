@@ -200,7 +200,7 @@ impl TAI64N {
 
     /// Convert `TAI64N`to `SystemTime`.
     #[cfg(feature = "std")]
-    pub fn to_system_time(&self) -> SystemTime {
+    pub fn to_system_time(self) -> SystemTime {
         match self.duration_since(&UNIX_EPOCH_TAI64N) {
             Ok(d) => UNIX_EPOCH + d,
             Err(d) => UNIX_EPOCH - d,
