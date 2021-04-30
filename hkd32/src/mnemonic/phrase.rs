@@ -70,7 +70,7 @@ impl Phrase {
         Phrase {
             language,
             entropy,
-            phrase
+            phrase,
         }
     }
 
