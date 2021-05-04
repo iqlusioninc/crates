@@ -1,0 +1,41 @@
+name: iqhttp
+
+on:
+  pull_request:
+    paths:
+      - "iqhttp/**"
+      - "Cargo.*"
+  push:
+    branches: main
+
+defaults:
+  run:
+    working-directory: iqhttp
+
+env:
+  CARGO_INCREMENTAL: 0
+  RUSTFLAGS: "-Dwarnings"
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        platform:
+          - ubuntu-latest
+          - macos-latest
+          - windows-latest
+        toolchain:
+          - 1.47.0
+          - stable
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: ${{ matrix.toolchain }}
+          override: true
+          profile: minimal
+      - run: cargo test --release
+      - run: cargo test --release --features json
+      - run: cargo test --release --features proxy
+      - run: cargo test --release --all-features
