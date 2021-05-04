@@ -7,6 +7,7 @@ members = [
     "harp",
     "hkd32",
     "iqhttp",
+    "mintscan",
     "secrecy",
     "stdtx",
     "subtle-encoding",

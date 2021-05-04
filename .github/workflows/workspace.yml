@@ -1,4 +1,4 @@
-name: workspace
+name: Workspace
 
 on:
   pull_request: {}
