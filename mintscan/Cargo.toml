@@ -9,7 +9,7 @@ homepage   = "https://github.com/iqlusioninc/crates/"
 repository = "https://github.com/iqlusioninc/crates/tree/main/mintscan"
 license    = "Apache-2.0 OR MIT"
 categories = ["api-bindings", "cryptography::cryptocurrencies"]
-keywords   = ["api", "client", "cosmos", "explorer"]
+keywords   = ["api", "client", "cosmos", "explorer", "tendermint"]
 readme     = "README.md"
 edition    = "2018"
 

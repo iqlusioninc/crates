@@ -21,6 +21,7 @@ edition    = "2018"
 hyper = "0.14"
 hyper-rustls = { version = "0.22", features = ["rustls-native-certs"] }
 
+# optional dependencies
 hyper-proxy = { version = "=0.9.1", optional = true } # carefully vet changes before bumping version
 serde = { version = "1", optional = true }
 serde_json = { version = "1", optional = true }
