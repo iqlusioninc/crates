@@ -6,6 +6,7 @@ members = [
     "datadog",
     "harp",
     "hkd32",
+    "iqhttp",
     "secrecy",
     "stdtx",
     "subtle-encoding",

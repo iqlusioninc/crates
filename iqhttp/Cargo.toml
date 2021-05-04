@@ -1,0 +1,34 @@
+[package]
+name = "iqhttp"
+version = "0.0.0" # Also update html_root_url in lib.rs when bumping this
+description = """
+iqlusion's HTTPS toolkit. Provides a high-level wrapper around hyper, with
+built-in SSL/TLS support based on rustls.
+"""
+authors = [
+    "Tony Arcieri <tony@iqlusion.io>",
+    "Shella Stephens <shella@iqlusion.io>"
+]
+homepage   = "https://github.com/iqlusioninc/crates/"
+repository = "https://github.com/iqlusioninc/crates/tree/main/iqhttp"
+license    = "Apache-2.0 OR MIT"
+categories = ["network-programming", "web-programming::http-client"]
+keywords   = ["api", "client", "http", "rest", "web"]
+readme     = "README.md"
+edition    = "2018"
+
+[dependencies]
+hyper = "0.14"
+hyper-rustls = { version = "0.22", features = ["rustls-native-certs"] }
+
+hyper-proxy = { version = "=0.9.1", optional = true } # carefully vet changes before bumping version
+serde = { version = "1", optional = true }
+serde_json = { version = "1", optional = true }
+
+[features]
+json = ["serde", "serde_json"]
+proxy = ["hyper-proxy"]
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
