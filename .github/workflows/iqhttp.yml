@@ -38,4 +38,5 @@ jobs:
       - run: cargo test --release
       - run: cargo test --release --features json
       - run: cargo test --release --features proxy
+      - run: cargo test --release --features serde
       - run: cargo test --release --all-features
