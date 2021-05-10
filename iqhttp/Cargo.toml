@@ -1,6 +1,6 @@
 [package]
 name = "iqhttp"
-version = "0.0.1" # Also update html_root_url in lib.rs when bumping this
+version = "0.1.0" # Also update html_root_url in lib.rs when bumping this
 description = """
 iqlusion's HTTPS toolkit. Provides a high-level wrapper around hyper, with
 built-in SSL/TLS support based on rustls.
