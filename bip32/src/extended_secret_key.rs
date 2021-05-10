@@ -34,7 +34,7 @@ where
     /// Derive a child key from the given [`DerivationPath`].
     pub fn derive_child_from_path(seed: &[u8], path: &DerivationPath) -> Result<Self> {
         // TODO(tarcieri): unify this with the equivalent logic in `hkd32`
-        let mut hmac = Hmac::<Sha512>::new_varkey(&BIP39_BASE_DERIVATION_KEY)?;
+        let mut hmac = Hmac::<Sha512>::new_from_slice(&BIP39_BASE_DERIVATION_KEY)?;
         hmac.update(seed);
 
         let result = hmac.finalize().into_bytes();
@@ -55,7 +55,7 @@ where
 
     /// Derive a child key for a particular [`ChildNumber`].
     pub fn derive_child(&self, child: ChildNumber) -> Result<Self> {
-        let mut hmac: Hmac<Sha512> = Hmac::new_varkey(&self.chain_code).map_err(|_| Error)?;
+        let mut hmac: Hmac<Sha512> = Hmac::new_from_slice(&self.chain_code).map_err(|_| Error)?;
 
         if child.is_hardened() {
             hmac.update(&[0]);
