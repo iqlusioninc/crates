@@ -13,7 +13,7 @@ keywords    = ["crypto", "bip32", "bip39", "derivation", "mnemonic"]
 
 [dependencies]
 bs58 = "0.4"
-hmac = "0.10"
+hmac = "0.11"
 hkd32 = { version = "0.5", default-features = false, features = ["bip39", "mnemonic"], path = "../hkd32" }
 sha2 = "0.9"
 
