@@ -22,7 +22,10 @@ pub use self::{
     error::{Error, Result},
     extended_secret_key::{Depth, ExtendedSecretKey},
 };
-pub use hkd32::KEY_SIZE;
+pub use hkd32::{
+    mnemonic::{Phrase as Mnemonic, Seed},
+    KEY_SIZE,
+};
 
 #[cfg(feature = "secp256k1")]
 pub use k256 as secp256k1;
