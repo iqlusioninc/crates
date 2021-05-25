@@ -25,7 +25,7 @@ pub use self::{
     extended_secret_key::{Depth, ExtendedSecretKey},
 };
 pub use hkd32::{
-    mnemonic::{Phrase as Mnemonic, Seed},
+    mnemonic::{Language, Phrase as Mnemonic, Seed},
     KEY_SIZE,
 };
 
