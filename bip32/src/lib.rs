@@ -5,14 +5,16 @@
 
 #![no_std]
 #![cfg_attr(docsrs, feature(doc_cfg))]
-#![deny(missing_docs, rust_2018_idioms, unused_qualifications)]
 #![doc(html_root_url = "https://docs.rs/bip32/0.0.0")]
+#![deny(missing_docs, rust_2018_idioms, unused_qualifications)]
+#![forbid(unsafe_code, clippy::unwrap_used)]
 
 extern crate alloc;
 
 mod child_number;
 mod derivation_path;
 mod error;
+mod extended_key;
 mod extended_secret_key;
 mod secret_key;
 

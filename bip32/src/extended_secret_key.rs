@@ -1,7 +1,8 @@
 //! Extended secret keys
 
 use crate::{
-    secret_key::SecretKey, ChainCode, ChildNumber, DerivationPath, Error, Result, KEY_SIZE,
+    extended_key::ExtendedKey, secret_key::SecretKey, ChainCode, ChildNumber, DerivationPath,
+    Error, Result, KEY_SIZE,
 };
 use core::{convert::TryInto, str::FromStr};
 use hkd32::BIP39_BASE_DERIVATION_KEY;
@@ -108,18 +109,13 @@ where
 {
     type Err = Error;
 
-    // TODO(tarcieri): yprv, zprv
     fn from_str(xprv: &str) -> Result<Self> {
-        let data = bs58::decode(xprv).into_vec().map_err(|_| Error)?;
+        let decoded = ExtendedKey::from_str(xprv)?;
 
-        if data.len() == 82 {
-            Ok(ExtendedSecretKey {
-                chain_code: data[13..45].try_into()?,
-                secret_key: SecretKey::from_bytes(data[46..78].try_into()?)?,
-                depth: data[4],
-            })
-        } else {
-            Err(Error)
-        }
+        Ok(Self {
+            chain_code: decoded.chain_code,
+            secret_key: SecretKey::from_bytes(&decoded.key_bytes)?,
+            depth: decoded.depth,
+        })
     }
 }
