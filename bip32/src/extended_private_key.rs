@@ -1,10 +1,13 @@
 //! Extended secret keys
 
 use crate::{
-    extended_key::ExtendedKey, secret_key::SecretKey, ChainCode, ChildNumber, DerivationPath,
+    extended_key::ExtendedKey, private_key::PrivateKey, ChainCode, ChildNumber, DerivationPath,
     Error, Result, KEY_SIZE,
 };
-use core::{convert::TryInto, str::FromStr};
+use core::{
+    convert::{TryFrom, TryInto},
+    str::FromStr,
+};
 use hkd32::mnemonic::{Seed, BIP39_DOMAIN_SEPARATOR};
 use hmac::{Hmac, Mac, NewMac};
 use sha2::Sha512;
@@ -12,9 +15,9 @@ use sha2::Sha512;
 /// Derivation depth.
 pub type Depth = u8;
 
-/// Extended secret keys derived using BIP32.
+/// Extended private keys derived using BIP32.
 #[derive(Clone, Debug)]
-pub struct ExtendedSecretKey<K: SecretKey> {
+pub struct ExtendedPrivateKey<K: PrivateKey> {
     /// Secret key
     secret_key: K,
 
@@ -25,15 +28,27 @@ pub struct ExtendedSecretKey<K: SecretKey> {
     depth: Depth,
 }
 
-impl<K> ExtendedSecretKey<K>
+impl<K> ExtendedPrivateKey<K>
 where
-    K: SecretKey,
+    K: PrivateKey,
 {
     /// Maximum derivation depth.
     pub const MAX_DEPTH: Depth = u8::MAX;
 
     /// Derive a child key from the given [`DerivationPath`].
     pub fn derive_child_from_path<S>(seed: S, path: &DerivationPath) -> Result<Self>
+    where
+        S: AsRef<[u8; Seed::SIZE]>,
+    {
+        path.as_ref()
+            .iter()
+            .fold(Self::new(seed), |sk, &child_num| {
+                sk?.derive_child(child_num)
+            })
+    }
+
+    /// Create the root extended key for the given seed value.
+    pub fn new<S>(seed: S) -> Result<Self>
     where
         S: AsRef<[u8; Seed::SIZE]>,
     {
@@ -44,17 +59,11 @@ where
         let result = hmac.finalize().into_bytes();
         let (secret_key, chain_code) = result.split_at(KEY_SIZE);
 
-        let mut sk = ExtendedSecretKey {
-            secret_key: SecretKey::from_bytes(secret_key.try_into()?)?,
+        Ok(ExtendedPrivateKey {
+            secret_key: PrivateKey::from_bytes(secret_key.try_into()?)?,
             chain_code: chain_code.try_into()?,
             depth: 0,
-        };
-
-        for child in path.as_ref() {
-            sk = sk.derive_child(*child)?;
-        }
-
-        Ok(sk)
+        })
     }
 
     /// Derive a child key for a particular [`ChildNumber`].
@@ -73,7 +82,7 @@ where
         let result = hmac.finalize().into_bytes();
         let (secret_key, chain_code) = result.split_at(KEY_SIZE);
 
-        Ok(ExtendedSecretKey {
+        Ok(ExtendedPrivateKey {
             secret_key: self.secret_key.derive_child(secret_key.try_into()?)?,
             chain_code: chain_code.try_into()?,
             depth: self.depth.checked_add(1).ok_or(Error)?,
@@ -106,19 +115,32 @@ where
     }
 }
 
-impl<K> FromStr for ExtendedSecretKey<K>
+impl<K> FromStr for ExtendedPrivateKey<K>
 where
-    K: SecretKey,
+    K: PrivateKey,
 {
     type Err = Error;
 
     fn from_str(xprv: &str) -> Result<Self> {
-        let decoded = ExtendedKey::from_str(xprv)?;
+        ExtendedKey::from_str(xprv)?.try_into()
+    }
+}
 
-        Ok(Self {
-            chain_code: decoded.chain_code,
-            secret_key: SecretKey::from_bytes(&decoded.key_bytes)?,
-            depth: decoded.depth,
-        })
+impl<K> TryFrom<ExtendedKey> for ExtendedPrivateKey<K>
+where
+    K: PrivateKey,
+{
+    type Error = Error;
+
+    fn try_from(extended_key: ExtendedKey) -> Result<ExtendedPrivateKey<K>> {
+        if extended_key.version.is_private() {
+            Ok(Self {
+                chain_code: extended_key.chain_code,
+                secret_key: PrivateKey::from_bytes(&extended_key.key_bytes)?,
+                depth: extended_key.depth,
+            })
+        } else {
+            Err(Error)
+        }
     }
 }

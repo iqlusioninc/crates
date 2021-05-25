@@ -8,7 +8,7 @@ const HARDENED_FLAG: u32 = 1 << 31;
 
 /// Index of a particular child key for a given (extended) secret key.
 #[derive(Copy, Clone, PartialEq, Eq, Debug)]
-pub struct ChildNumber(u32);
+pub struct ChildNumber(pub u32);
 
 impl ChildNumber {
     /// Is this child number within the hardened range?
@@ -19,6 +19,18 @@ impl ChildNumber {
     /// Serialize this child number as bytes.
     pub fn to_bytes(self) -> [u8; 4] {
         self.0.to_be_bytes()
+    }
+}
+
+impl From<u32> for ChildNumber {
+    fn from(n: u32) -> ChildNumber {
+        ChildNumber(n)
+    }
+}
+
+impl From<ChildNumber> for u32 {
+    fn from(n: ChildNumber) -> u32 {
+        n.0
     }
 }
 
