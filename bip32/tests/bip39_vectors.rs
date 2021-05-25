@@ -1,15 +1,21 @@
 //! BIP39 test vectors
 
+#![cfg(feature = "secp256k1")]
+
+use bip32::XPrv;
 use hex_literal::hex;
 use hkd32::mnemonic;
 
+/// BIP39 test vector
 struct TestVector {
     entropy: [u8; 32],
     phrase: &'static str,
     seed: [u8; 64],
-    #[allow(dead_code)] // TODO(tarcieri)
     xprv: &'static str,
 }
+
+/// Password used on all test vectors
+const TEST_VECTOR_PASSWORD: &str = "TREZOR";
 
 /// From: https://github.com/trezor/python-mnemonic/blob/master/vectors.json
 const TEST_VECTORS: &[TestVector] = &[
@@ -73,10 +79,28 @@ fn test_mnemonic() {
 
 #[test]
 fn test_seed() {
-    let password = "TREZOR";
-
     for vector in TEST_VECTORS {
         let mnemonic = mnemonic::Phrase::new(vector.phrase, mnemonic::Language::English).unwrap();
-        assert_eq!(&vector.seed, mnemonic.to_seed(password).as_bytes());
+        assert_eq!(
+            &vector.seed,
+            mnemonic.to_seed(TEST_VECTOR_PASSWORD).as_bytes()
+        );
+    }
+}
+
+#[test]
+fn test_xprv() {
+    for vector in TEST_VECTORS {
+        let seed = mnemonic::Seed::new(vector.seed);
+        let expected_xprv: XPrv = vector.xprv.parse().unwrap();
+        let derived_xprv = XPrv::new(&seed).unwrap();
+
+        // TODO(tarcieri): `Eq` impl for `ExtendedPrivateKey`? (using `subtle` behind the scenes)
+        assert_eq!(
+            expected_xprv.secret_key().to_bytes(),
+            derived_xprv.secret_key().to_bytes()
+        );
+        assert_eq!(expected_xprv.chain_code(), derived_xprv.chain_code());
+        assert_eq!(expected_xprv.depth(), derived_xprv.depth());
     }
 }

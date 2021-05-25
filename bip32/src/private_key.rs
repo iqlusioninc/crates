@@ -5,8 +5,8 @@ use crate::{Result, KEY_SIZE};
 /// Bytes which represent a secret key.
 type SecretKeyBytes = [u8; KEY_SIZE];
 
-/// Derive a child key for this key.
-pub trait SecretKey: Sized {
+/// Trait for key types which can be derived using BIP32.
+pub trait PrivateKey: Sized {
     /// Serialized public key type.
     type PublicKey: AsRef<[u8]> + Sized;
 
@@ -24,7 +24,8 @@ pub trait SecretKey: Sized {
 }
 
 #[cfg(feature = "secp256k1")]
-impl SecretKey for k256::SecretKey {
+#[cfg_attr(docsrs, doc(cfg(feature = "secp256k1")))]
+impl PrivateKey for k256::SecretKey {
     type PublicKey = [u8; 33];
 
     fn from_bytes(bytes: &SecretKeyBytes) -> Result<Self> {
@@ -57,7 +58,8 @@ impl SecretKey for k256::SecretKey {
 }
 
 #[cfg(feature = "secp256k1")]
-impl SecretKey for k256::ecdsa::SigningKey {
+#[cfg_attr(docsrs, doc(cfg(feature = "secp256k1")))]
+impl PrivateKey for k256::ecdsa::SigningKey {
     type PublicKey = [u8; 33];
 
     fn from_bytes(bytes: &SecretKeyBytes) -> Result<Self> {
@@ -75,6 +77,6 @@ impl SecretKey for k256::ecdsa::SigningKey {
     }
 
     fn public_key(&self) -> Self::PublicKey {
-        SecretKey::public_key(&k256::SecretKey::from(self))
+        PrivateKey::public_key(&k256::SecretKey::from(self))
     }
 }

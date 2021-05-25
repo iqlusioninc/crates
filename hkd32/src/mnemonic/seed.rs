@@ -19,6 +19,11 @@ impl Seed {
     /// Number of bytes of PBKDF2 output to extract.
     pub const SIZE: usize = 64;
 
+    /// Create a new seed from the given bytes.
+    pub fn new(bytes: [u8; Seed::SIZE]) -> Self {
+        Seed(bytes)
+    }
+
     /// Get the inner secret byte slice
     pub fn as_bytes(&self) -> &[u8; Seed::SIZE] {
         &self.0

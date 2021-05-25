@@ -1,7 +1,10 @@
 //! Parser for extended key types (i.e. `xprv` and `xpub`)
 
-use crate::{ChainCode, Error, Result, KEY_SIZE};
-use core::{convert::TryInto, str::FromStr};
+use crate::{ChainCode, Depth, Error, Result, Version, KEY_SIZE};
+use core::{
+    convert::{TryFrom, TryInto},
+    str::FromStr,
+};
 
 #[cfg(feature = "zeroize")]
 use zeroize::Zeroize;
@@ -9,24 +12,24 @@ use zeroize::Zeroize;
 /// Size of an extended key when deserialized into bytes from Base58.
 const EXTENDED_KEY_BYTES: usize = 78;
 
-/// Serialized extended key (`xprv` and `xpub`).
+/// Serialized extended key (e.g. `xprv` and `xpub`).
 pub(crate) struct ExtendedKey {
-    /// Version
-    pub version: u32,
+    /// [Version] - prefix of the key interpreted as a big endian integer.
+    pub version: Version,
 
-    /// Depth
-    pub depth: u8,
+    /// Depth in the key derivation hierarchy.
+    pub depth: Depth,
 
-    /// Parent fingerprint
+    /// Parent fingerprint.
     pub parent_fingerprint: u32,
 
-    /// Child number
+    /// Child number.
     pub child_number: u32,
 
-    /// Chain code
+    /// Chain code.
     pub chain_code: ChainCode,
 
-    /// Key material
+    /// Key material.
     pub key_bytes: [u8; KEY_SIZE],
 }
 
@@ -35,6 +38,7 @@ impl FromStr for ExtendedKey {
 
     fn from_str(base58: &str) -> Result<Self> {
         let mut bytes = [0u8; EXTENDED_KEY_BYTES + 4];
+
         let decoded_len = bs58::decode(base58)
             .with_check(None)
             .into(&mut bytes)
@@ -44,7 +48,7 @@ impl FromStr for ExtendedKey {
             return Err(Error);
         }
 
-        let version = u32::from_be_bytes(bytes[..4].try_into()?);
+        let version = Version::try_from(&bytes[..4])?;
         let depth = bytes[4];
         let parent_fingerprint = u32::from_be_bytes(bytes[5..9].try_into()?);
         let child_number = u32::from_be_bytes(bytes[9..13].try_into()?);
@@ -68,7 +72,7 @@ impl FromStr for ExtendedKey {
 #[cfg(feature = "zeroize")]
 impl Zeroize for ExtendedKey {
     fn zeroize(&mut self) {
-        self.version.zeroize();
+        self.version = Version::Other(0);
         self.depth.zeroize();
         self.parent_fingerprint.zeroize();
         self.child_number.zeroize();
@@ -87,7 +91,7 @@ impl Drop for ExtendedKey {
 // TODO(tarcieri): consolidate test vectors
 #[cfg(test)]
 mod tests {
-    use super::ExtendedKey;
+    use super::{ExtendedKey, Version};
     use hex_literal::hex;
 
     #[test]
@@ -97,7 +101,7 @@ mod tests {
             .parse()
             .unwrap();
 
-        assert_eq!(xprv.version, 0x0488ADE4); // "xprv"
+        assert_eq!(xprv.version, Version::XPrv);
         assert_eq!(xprv.depth, 0);
         assert_eq!(xprv.parent_fingerprint, 0);
         assert_eq!(xprv.child_number, 0);
@@ -115,7 +119,7 @@ mod tests {
             .parse()
             .unwrap();
 
-        assert_eq!(xpub.version, 0x0488B21E);
+        assert_eq!(xpub.version, Version::XPub);
         assert_eq!(xpub.depth, 0);
         assert_eq!(xpub.parent_fingerprint, 0);
         assert_eq!(xpub.child_number, 0);
