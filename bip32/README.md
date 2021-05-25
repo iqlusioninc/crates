@@ -9,6 +9,8 @@
 
 BIP32 hierarchical key derivation.
 
+![Diagram](https://raw.githubusercontent.com/bitcoin/bips/4bc05ff903cb47eb18ce58a9836de1ac13ecf1b7/bip-0032/derivation.png)
+
 [Documentation][docs-link]
 
 ## Minimum Supported Rust Version
