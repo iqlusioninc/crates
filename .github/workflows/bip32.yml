@@ -36,6 +36,7 @@ jobs:
           override: true
           profile: minimal
       - run: cargo test --release
+      - run: cargo test --release --features zeroize
       - run: cargo test --release --all-features
 
   wasm:
