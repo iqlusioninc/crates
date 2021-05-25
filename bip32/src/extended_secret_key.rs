@@ -5,7 +5,7 @@ use crate::{
     Error, Result, KEY_SIZE,
 };
 use core::{convert::TryInto, str::FromStr};
-use hkd32::BIP39_BASE_DERIVATION_KEY;
+use hkd32::mnemonic::{Seed, BIP39_DOMAIN_SEPARATOR};
 use hmac::{Hmac, Mac, NewMac};
 use sha2::Sha512;
 
@@ -33,10 +33,13 @@ where
     pub const MAX_DEPTH: Depth = u8::MAX;
 
     /// Derive a child key from the given [`DerivationPath`].
-    pub fn derive_child_from_path(seed: &[u8], path: &DerivationPath) -> Result<Self> {
+    pub fn derive_child_from_path<S>(seed: S, path: &DerivationPath) -> Result<Self>
+    where
+        S: AsRef<[u8; Seed::SIZE]>,
+    {
         // TODO(tarcieri): unify this with the equivalent logic in `hkd32`
-        let mut hmac = Hmac::<Sha512>::new_from_slice(&BIP39_BASE_DERIVATION_KEY)?;
-        hmac.update(seed);
+        let mut hmac = Hmac::<Sha512>::new_from_slice(&BIP39_DOMAIN_SEPARATOR)?;
+        hmac.update(seed.as_ref());
 
         let result = hmac.finalize().into_bytes();
         let (secret_key, chain_code) = result.split_at(KEY_SIZE);

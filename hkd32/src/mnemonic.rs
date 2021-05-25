@@ -8,9 +8,11 @@
 mod bits;
 mod language;
 mod phrase;
+
 #[cfg(feature = "bip39")]
 pub(crate) mod seed;
 
-#[cfg(feature = "bip39")]
-pub use self::seed::Seed;
 pub use self::{language::Language, phrase::Phrase};
+
+#[cfg(feature = "bip39")]
+pub use self::seed::{Seed, BIP39_DOMAIN_SEPARATOR};
