@@ -52,6 +52,7 @@ pub mod mnemonic;
 
 mod key_material;
 mod path;
+
 #[cfg(feature = "alloc")]
 mod pathbuf;
 
@@ -59,10 +60,6 @@ pub use self::{key_material::*, path::*};
 
 #[cfg(feature = "alloc")]
 pub use self::pathbuf::PathBuf;
-
-#[cfg(feature = "bip39")]
-#[cfg_attr(docsrs, doc(cfg(feature = "bip39")))]
-pub use self::mnemonic::seed::BIP39_BASE_DERIVATION_KEY;
 
 /// Delimiter used for strings containing paths
 pub const DELIMITER: char = '/';
