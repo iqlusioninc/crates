@@ -97,8 +97,8 @@ fn test_xprv() {
 
         // TODO(tarcieri): `Eq` impl for `ExtendedPrivateKey`? (using `subtle` behind the scenes)
         assert_eq!(
-            expected_xprv.secret_key().to_bytes(),
-            derived_xprv.secret_key().to_bytes()
+            expected_xprv.private_key().to_bytes(),
+            derived_xprv.private_key().to_bytes()
         );
         assert_eq!(expected_xprv.chain_code(), derived_xprv.chain_code());
         assert_eq!(expected_xprv.depth(), derived_xprv.depth());
