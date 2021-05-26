@@ -60,7 +60,7 @@ where
         let (secret_key, chain_code) = result.split_at(KEY_SIZE);
 
         Ok(ExtendedPrivateKey {
-            private_key: PrivateKey::from_bytes(secret_key.try_into()?)?,
+            private_key: PrivateKey::from_bytes(secret_key.try_into()?).ok_or(Error)?,
             chain_code: chain_code.try_into()?,
             depth: 0,
         })
@@ -136,7 +136,7 @@ where
         if extended_key.version.is_private() {
             Ok(Self {
                 chain_code: extended_key.chain_code,
-                private_key: PrivateKey::from_bytes(&extended_key.key_bytes)?,
+                private_key: PrivateKey::from_bytes(&extended_key.key_bytes).ok_or(Error)?,
                 depth: extended_key.depth,
             })
         } else {

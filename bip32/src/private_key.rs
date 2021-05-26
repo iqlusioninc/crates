@@ -10,8 +10,11 @@ pub trait PrivateKey: Sized {
     /// Serialized public key type.
     type PublicKey: AsRef<[u8]> + Sized;
 
-    /// Initialize this key from bytes.
-    fn from_bytes(bytes: &KeyBytes) -> Result<Self>;
+    /// Initialize this key from a the provided bytes, interpreting the
+    /// provided value as a big endian integer and reducing it mod n.
+    ///
+    /// Returns `None` if the provided value is equal to zero.
+    fn from_bytes(bytes: &KeyBytes) -> Option<Self>;
 
     /// Serialize this key as bytes.
     fn to_bytes(&self) -> KeyBytes;
@@ -28,8 +31,9 @@ pub trait PrivateKey: Sized {
 impl PrivateKey for k256::SecretKey {
     type PublicKey = [u8; 33];
 
-    fn from_bytes(bytes: &KeyBytes) -> Result<Self> {
-        Ok(k256::SecretKey::from_bytes(bytes)?)
+    fn from_bytes(bytes: &KeyBytes) -> Option<Self> {
+        let scalar = k256::Scalar::from_bytes_reduced(bytes.into());
+        Some(k256::SecretKey::new(k256::NonZeroScalar::new(scalar)?))
     }
 
     fn to_bytes(&self) -> KeyBytes {
@@ -62,8 +66,8 @@ impl PrivateKey for k256::SecretKey {
 impl PrivateKey for k256::ecdsa::SigningKey {
     type PublicKey = [u8; 33];
 
-    fn from_bytes(bytes: &KeyBytes) -> Result<Self> {
-        Ok(k256::ecdsa::SigningKey::from_bytes(bytes)?)
+    fn from_bytes(bytes: &KeyBytes) -> Option<Self> {
+        k256::NonZeroScalar::new(k256::Scalar::from_bytes_reduced(bytes.into())).map(Into::into)
     }
 
     fn to_bytes(&self) -> KeyBytes {
