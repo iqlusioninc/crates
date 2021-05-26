@@ -6,7 +6,7 @@ use core::str::FromStr;
 /// Hardened child keys use indices 2^31 through 2^32-1.
 const HARDENED_FLAG: u32 = 1 << 31;
 
-/// Index of a particular child key for a given (extended) secret key.
+/// Index of a particular child key for a given (extended) private key.
 #[derive(Copy, Clone, PartialEq, Eq, Debug)]
 pub struct ChildNumber(pub u32);
 

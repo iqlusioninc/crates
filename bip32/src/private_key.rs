@@ -2,8 +2,8 @@
 
 use crate::{Result, KEY_SIZE};
 
-/// Bytes which represent a secret key.
-type SecretKeyBytes = [u8; KEY_SIZE];
+/// Bytes which represent a private key.
+type KeyBytes = [u8; KEY_SIZE];
 
 /// Trait for key types which can be derived using BIP32.
 pub trait PrivateKey: Sized {
@@ -11,13 +11,13 @@ pub trait PrivateKey: Sized {
     type PublicKey: AsRef<[u8]> + Sized;
 
     /// Initialize this key from bytes.
-    fn from_bytes(bytes: &SecretKeyBytes) -> Result<Self>;
+    fn from_bytes(bytes: &KeyBytes) -> Result<Self>;
 
     /// Serialize this key as bytes.
-    fn to_bytes(&self) -> SecretKeyBytes;
+    fn to_bytes(&self) -> KeyBytes;
 
     /// Derive a child key from this key and a provided [`ChainCode`].
-    fn derive_child(&self, derivation_key: &SecretKeyBytes) -> Result<Self>;
+    fn derive_child(&self, derivation_key: &KeyBytes) -> Result<Self>;
 
     /// Serialize the public key for this [`SecretKey`].
     fn public_key(&self) -> Self::PublicKey;
@@ -28,15 +28,15 @@ pub trait PrivateKey: Sized {
 impl PrivateKey for k256::SecretKey {
     type PublicKey = [u8; 33];
 
-    fn from_bytes(bytes: &SecretKeyBytes) -> Result<Self> {
+    fn from_bytes(bytes: &KeyBytes) -> Result<Self> {
         Ok(k256::SecretKey::from_bytes(bytes)?)
     }
 
-    fn to_bytes(&self) -> SecretKeyBytes {
+    fn to_bytes(&self) -> KeyBytes {
         k256::SecretKey::to_bytes(self).into()
     }
 
-    fn derive_child(&self, derivation_key: &SecretKeyBytes) -> Result<Self> {
+    fn derive_child(&self, derivation_key: &KeyBytes) -> Result<Self> {
         let child_scalar = k256::Scalar::from_bytes_reduced(derivation_key.into());
         let derived_scalar = self.secret_scalar().as_ref() + child_scalar;
 
@@ -62,15 +62,15 @@ impl PrivateKey for k256::SecretKey {
 impl PrivateKey for k256::ecdsa::SigningKey {
     type PublicKey = [u8; 33];
 
-    fn from_bytes(bytes: &SecretKeyBytes) -> Result<Self> {
+    fn from_bytes(bytes: &KeyBytes) -> Result<Self> {
         Ok(k256::ecdsa::SigningKey::from_bytes(bytes)?)
     }
 
-    fn to_bytes(&self) -> SecretKeyBytes {
+    fn to_bytes(&self) -> KeyBytes {
         k256::ecdsa::SigningKey::to_bytes(self).into()
     }
 
-    fn derive_child(&self, derivation_key: &SecretKeyBytes) -> Result<Self> {
+    fn derive_child(&self, derivation_key: &KeyBytes) -> Result<Self> {
         k256::SecretKey::from(self)
             .derive_child(derivation_key)
             .map(Into::into)

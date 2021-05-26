@@ -1,4 +1,4 @@
-//! Extended secret keys
+//! Extended private keys
 
 use crate::{
     extended_key::ExtendedKey, private_key::PrivateKey, ChainCode, ChildNumber, DerivationPath,
@@ -18,8 +18,8 @@ pub type Depth = u8;
 /// Extended private keys derived using BIP32.
 #[derive(Clone, Debug)]
 pub struct ExtendedPrivateKey<K: PrivateKey> {
-    /// Secret key
-    secret_key: K,
+    /// Derived private key
+    private_key: K,
 
     /// Chain code
     chain_code: ChainCode,
@@ -60,7 +60,7 @@ where
         let (secret_key, chain_code) = result.split_at(KEY_SIZE);
 
         Ok(ExtendedPrivateKey {
-            secret_key: PrivateKey::from_bytes(secret_key.try_into()?)?,
+            private_key: PrivateKey::from_bytes(secret_key.try_into()?)?,
             chain_code: chain_code.try_into()?,
             depth: 0,
         })
@@ -72,9 +72,9 @@ where
 
         if child.is_hardened() {
             hmac.update(&[0]);
-            hmac.update(&self.secret_key.to_bytes());
+            hmac.update(&self.private_key.to_bytes());
         } else {
-            hmac.update(self.secret_key.public_key().as_ref());
+            hmac.update(self.private_key.public_key().as_ref());
         }
 
         hmac.update(&child.to_bytes());
@@ -83,35 +83,35 @@ where
         let (secret_key, chain_code) = result.split_at(KEY_SIZE);
 
         Ok(ExtendedPrivateKey {
-            secret_key: self.secret_key.derive_child(secret_key.try_into()?)?,
+            private_key: self.private_key.derive_child(secret_key.try_into()?)?,
             chain_code: chain_code.try_into()?,
             depth: self.depth.checked_add(1).ok_or(Error)?,
         })
     }
 
-    /// Borrow the derived secret key value.
-    pub fn secret_key(&self) -> &K {
-        &self.secret_key
+    /// Borrow the derived private key value.
+    pub fn private_key(&self) -> &K {
+        &self.private_key
     }
 
     /// Serialize the derived public key as bytes.
     pub fn public_key(&self) -> K::PublicKey {
-        self.secret_key.public_key()
+        self.private_key.public_key()
     }
 
-    /// Borrow the chain code for this extended secret key.
+    /// Borrow the chain code for this extended private key.
     pub fn chain_code(&self) -> &ChainCode {
         &self.chain_code
     }
 
-    /// Get the [`Depth`] of this extended secret key.
+    /// Get the [`Depth`] of this extended private key.
     pub fn depth(&self) -> Depth {
         self.depth
     }
 
     /// Serialize this key as a byte array.
     pub fn to_bytes(&self) -> [u8; KEY_SIZE] {
-        self.secret_key.to_bytes()
+        self.private_key.to_bytes()
     }
 }
 
@@ -136,7 +136,7 @@ where
         if extended_key.version.is_private() {
             Ok(Self {
                 chain_code: extended_key.chain_code,
-                secret_key: PrivateKey::from_bytes(&extended_key.key_bytes)?,
+                private_key: PrivateKey::from_bytes(&extended_key.key_bytes)?,
                 depth: extended_key.depth,
             })
         } else {
