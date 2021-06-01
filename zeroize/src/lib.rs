@@ -458,7 +458,7 @@ impl<Z: Zeroize + Clone> Clone for Zeroizing<Z> {
 
     fn clone_from(&mut self, source: &Self) {
         self.0.zeroize();
-        self.0.clone_from(source.0);
+        self.0.clone_from(&source.0);
     }
 }
 
