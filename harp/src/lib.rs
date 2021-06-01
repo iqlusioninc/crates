@@ -1,6 +1,7 @@
 //! **harp.rs**: high-level, self-contained, minimalist HTTP toolkit.
 
 #![no_std]
+#![allow(clippy::manual_strip)]
 #![deny(missing_docs, rust_2018_idioms, unused_qualifications)]
 #![forbid(unsafe_code)]
 #![doc(html_root_url = "https://docs.rs/harp/0.1.0")]

@@ -1,21 +1,15 @@
 //! Parser for extended key types (i.e. `xprv` and `xpub`)
 
-use crate::{ChainCode, Depth, Error, Result, Version, KEY_SIZE};
-use core::{
-    convert::{TryFrom, TryInto},
-    str::FromStr,
-};
+use crate::{ChainCode, Depth, Error, Prefix, Result, Version, KEY_SIZE};
+use core::{convert::TryInto, str::FromStr};
 
 #[cfg(feature = "zeroize")]
 use zeroize::Zeroize;
 
-/// Size of an extended key when deserialized into bytes from Base58.
-const EXTENDED_KEY_BYTES: usize = 78;
-
 /// Serialized extended key (e.g. `xprv` and `xpub`).
-pub(crate) struct ExtendedKey {
-    /// [Version] - prefix of the key interpreted as a big endian integer.
-    pub version: Version,
+pub struct ExtendedKey {
+    /// [Prefix] (a.k.a. "version") of the key (e.g. `xprv`, `xpub`)
+    pub prefix: Prefix,
 
     /// Depth in the key derivation hierarchy.
     pub depth: Depth,
@@ -33,22 +27,33 @@ pub(crate) struct ExtendedKey {
     pub key_bytes: [u8; KEY_SIZE],
 }
 
+impl ExtendedKey {
+    /// Size of an extended key when deserialized into bytes from Base58.
+    pub const BYTE_SIZE: usize = 78;
+
+    /// Maximum size of a Base58Check-encoded extended key in bytes.
+    ///
+    /// Note that extended keys can also be 111-bytes.
+    pub const MAX_BASE58_SIZE: usize = 112;
+}
+
 impl FromStr for ExtendedKey {
     type Err = Error;
 
     fn from_str(base58: &str) -> Result<Self> {
-        let mut bytes = [0u8; EXTENDED_KEY_BYTES + 4];
+        let mut bytes = [0u8; Self::BYTE_SIZE + 4]; // with 4-byte checksum
+        let decoded_len = bs58::decode(base58).with_check(None).into(&mut bytes)?;
 
-        let decoded_len = bs58::decode(base58)
-            .with_check(None)
-            .into(&mut bytes)
-            .map_err(|_| Error)?;
-
-        if decoded_len != EXTENDED_KEY_BYTES {
+        if decoded_len != Self::BYTE_SIZE {
             return Err(Error);
         }
 
-        let version = Version::try_from(&bytes[..4])?;
+        let prefix = base58.get(..4).ok_or(Error).and_then(|chars| {
+            Prefix::validate_str(chars)?;
+            let version = Version::from_be_bytes(bytes[..4].try_into()?);
+            Ok(Prefix::from_parts_unchecked(chars, version))
+        })?;
+
         let depth = bytes[4];
         let parent_fingerprint = u32::from_be_bytes(bytes[5..9].try_into()?);
         let child_number = u32::from_be_bytes(bytes[9..13].try_into()?);
@@ -59,7 +64,7 @@ impl FromStr for ExtendedKey {
         bytes.zeroize();
 
         Ok(ExtendedKey {
-            version,
+            prefix,
             depth,
             parent_fingerprint,
             child_number,
@@ -72,7 +77,7 @@ impl FromStr for ExtendedKey {
 #[cfg(feature = "zeroize")]
 impl Zeroize for ExtendedKey {
     fn zeroize(&mut self) {
-        self.version = Version::Other(0);
+        // TODO(tarcieri): prefix?
         self.depth.zeroize();
         self.parent_fingerprint.zeroize();
         self.child_number.zeroize();
@@ -91,7 +96,7 @@ impl Drop for ExtendedKey {
 // TODO(tarcieri): consolidate test vectors
 #[cfg(test)]
 mod tests {
-    use super::{ExtendedKey, Version};
+    use super::ExtendedKey;
     use hex_literal::hex;
 
     #[test]
@@ -101,7 +106,7 @@ mod tests {
             .parse()
             .unwrap();
 
-        assert_eq!(xprv.version, Version::XPrv);
+        assert_eq!(xprv.prefix.as_str(), "xprv");
         assert_eq!(xprv.depth, 0);
         assert_eq!(xprv.parent_fingerprint, 0);
         assert_eq!(xprv.child_number, 0);
@@ -119,7 +124,7 @@ mod tests {
             .parse()
             .unwrap();
 
-        assert_eq!(xpub.version, Version::XPub);
+        assert_eq!(xpub.prefix.as_str(), "xpub");
         assert_eq!(xpub.depth, 0);
         assert_eq!(xpub.parent_fingerprint, 0);
         assert_eq!(xpub.child_number, 0);

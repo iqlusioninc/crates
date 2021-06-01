@@ -16,15 +16,16 @@ mod derivation_path;
 mod error;
 mod extended_key;
 mod extended_private_key;
+mod prefix;
 mod private_key;
-mod version;
 
 pub use self::{
     child_number::ChildNumber,
     derivation_path::DerivationPath,
     error::{Error, Result},
+    extended_key::ExtendedKey,
     extended_private_key::{Depth, ExtendedPrivateKey},
-    version::Version,
+    prefix::Prefix,
 };
 pub use hkd32::{
     mnemonic::{Language, Phrase as Mnemonic, Seed},
@@ -43,3 +44,6 @@ pub type ChainCode = [u8; KEY_SIZE];
 #[cfg(feature = "secp256k1")]
 #[cfg_attr(docsrs, doc(cfg(feature = "secp256k1")))]
 pub type XPrv = ExtendedPrivateKey<secp256k1::ecdsa::SigningKey>;
+
+/// BIP32 "versions": integer representation of the key prefix.
+pub type Version = u32;

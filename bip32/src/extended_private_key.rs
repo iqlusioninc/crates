@@ -133,7 +133,7 @@ where
     type Error = Error;
 
     fn try_from(extended_key: ExtendedKey) -> Result<ExtendedPrivateKey<K>> {
-        if extended_key.version.is_private() {
+        if extended_key.prefix.is_private() {
             Ok(Self {
                 chain_code: extended_key.chain_code,
                 private_key: PrivateKey::from_bytes(&extended_key.key_bytes)?,

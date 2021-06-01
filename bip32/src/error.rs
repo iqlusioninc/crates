@@ -5,6 +5,18 @@ pub struct Error;
 /// Result type.
 pub type Result<T> = core::result::Result<T, Error>;
 
+impl From<bs58::decode::Error> for Error {
+    fn from(_: bs58::decode::Error) -> Error {
+        Error
+    }
+}
+
+impl From<bs58::encode::Error> for Error {
+    fn from(_: bs58::encode::Error) -> Error {
+        Error
+    }
+}
+
 impl From<core::array::TryFromSliceError> for Error {
     fn from(_: core::array::TryFromSliceError) -> Error {
         Error
