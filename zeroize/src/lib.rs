@@ -424,7 +424,7 @@ pub trait TryZeroize {
 
 /// `Zeroizing` is a a wrapper for any `Z: Zeroize` type which implements a
 /// `Drop` handler which zeroizes dropped values.
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq)]
 pub struct Zeroizing<Z: Zeroize>(Z);
 
 impl<Z> Zeroizing<Z>
@@ -435,6 +435,17 @@ where
     /// zeroized when it's dropped.
     pub fn new(value: Z) -> Self {
         value.into()
+    }
+}
+
+impl<Z: Zeroize + Clone> Clone for Zeroizing<Z> {
+    fn clone(&self) -> Self {
+        Self(self.0.clone())
+    }
+
+    fn clone_from(&mut self, source: &Self) {
+        self.0.zeroize();
+        self.0.clone_from(source.0);
     }
 }
 
