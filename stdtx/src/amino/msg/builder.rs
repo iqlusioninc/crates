@@ -39,7 +39,7 @@ impl<'a> Builder<'a> {
 
         let schema_definition = schema
             .get_definition(&type_name)
-            .ok_or_else(|| Error::Type)
+            .ok_or(Error::Type)
             .wrap_err_with(|| format!("type not found in schema: `{}`", &type_name))?;
 
         Ok(Self {

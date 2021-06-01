@@ -51,7 +51,7 @@ impl Definition {
     pub fn get_field_tag(&self, field_name: &TypeName, value_type: ValueType) -> Result<Tag> {
         let field = self
             .get_field(field_name)
-            .ok_or_else(|| Error::Type)
+            .ok_or(Error::Type)
             .wrap_err_with(|| {
                 format!(
                     "field name not found in `{}` schema: `{}`",
