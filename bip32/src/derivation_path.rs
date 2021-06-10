@@ -17,7 +17,7 @@ impl FromStr for DerivationPath {
         let mut path = path.split('/');
 
         if path.next() != Some("m") {
-            return Err(Error);
+            return Err(Error::Decode);
         }
 
         Ok(DerivationPath {

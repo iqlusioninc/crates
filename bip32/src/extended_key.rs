@@ -45,10 +45,10 @@ impl FromStr for ExtendedKey {
         let decoded_len = bs58::decode(base58).with_check(None).into(&mut bytes)?;
 
         if decoded_len != Self::BYTE_SIZE {
-            return Err(Error);
+            return Err(Error::Decode);
         }
 
-        let prefix = base58.get(..4).ok_or(Error).and_then(|chars| {
+        let prefix = base58.get(..4).ok_or(Error::Decode).and_then(|chars| {
             Prefix::validate_str(chars)?;
             let version = Version::from_be_bytes(bytes[..4].try_into()?);
             Ok(Prefix::from_parts_unchecked(chars, version))

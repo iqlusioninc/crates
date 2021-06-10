@@ -68,7 +68,8 @@ where
 
     /// Derive a child key for a particular [`ChildNumber`].
     pub fn derive_child(&self, child: ChildNumber) -> Result<Self> {
-        let mut hmac: Hmac<Sha512> = Hmac::new_from_slice(&self.chain_code).map_err(|_| Error)?;
+        let mut hmac =
+            Hmac::<Sha512>::new_from_slice(&self.chain_code).map_err(|_| Error::Crypto)?;
 
         if child.is_hardened() {
             hmac.update(&[0]);
@@ -85,7 +86,7 @@ where
         Ok(ExtendedPrivateKey {
             private_key: self.private_key.derive_child(secret_key.try_into()?)?,
             chain_code: chain_code.try_into()?,
-            depth: self.depth.checked_add(1).ok_or(Error)?,
+            depth: self.depth.checked_add(1).ok_or(Error::Depth)?,
         })
     }
 
@@ -140,7 +141,7 @@ where
                 depth: extended_key.depth,
             })
         } else {
-            Err(Error)
+            Err(Error::Crypto)
         }
     }
 }

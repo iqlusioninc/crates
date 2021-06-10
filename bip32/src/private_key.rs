@@ -2,6 +2,9 @@
 
 use crate::{Result, KEY_SIZE};
 
+#[cfg(feature = "secp256k1")]
+use crate::Error;
+
 /// Bytes which represent a private key.
 type KeyBytes = [u8; KEY_SIZE];
 
@@ -42,7 +45,7 @@ impl PrivateKey for k256::SecretKey {
 
         k256::NonZeroScalar::new(derived_scalar)
             .map(Self::new)
-            .ok_or(crate::Error)
+            .ok_or(Error::Crypto)
     }
 
     fn public_key(&self) -> Self::PublicKey {
