@@ -11,6 +11,9 @@
 
 extern crate alloc;
 
+#[cfg(feature = "std")]
+extern crate std;
+
 mod child_number;
 mod derivation_path;
 mod error;

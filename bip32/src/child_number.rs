@@ -43,12 +43,12 @@ impl FromStr for ChildNumber {
             None => (child, 0),
         };
 
-        let index = child.parse::<u32>().map_err(|_| Error)?;
+        let index = child.parse::<u32>().map_err(|_| Error::Decode)?;
 
         if index & HARDENED_FLAG == 0 {
             Ok(ChildNumber(index | mask))
         } else {
-            Err(Error)
+            Err(Error::Decode)
         }
     }
 }
