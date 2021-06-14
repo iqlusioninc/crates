@@ -9,6 +9,7 @@ use crate::Error;
 type KeyBytes = [u8; KEY_SIZE];
 
 /// Trait for key types which can be derived using BIP32.
+// TODO(tarcieri): add `ConstantTimeEq` bound
 pub trait PrivateKey: Sized {
     /// Serialized public key type.
     type PublicKey: AsRef<[u8]> + Sized;
@@ -29,7 +30,7 @@ pub trait PrivateKey: Sized {
 #[cfg(feature = "secp256k1")]
 #[cfg_attr(docsrs, doc(cfg(feature = "secp256k1")))]
 impl PrivateKey for k256::SecretKey {
-    type PublicKey = [u8; 33];
+    type PublicKey = k256::CompressedPoint;
 
     fn from_bytes(bytes: &KeyBytes) -> Result<Self> {
         Ok(k256::SecretKey::from_bytes(bytes)?)

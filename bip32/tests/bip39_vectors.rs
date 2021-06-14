@@ -2,9 +2,8 @@
 
 #![cfg(feature = "secp256k1")]
 
-use bip32::XPrv;
+use bip32::{Mnemonic, Seed, XPrv};
 use hex_literal::hex;
-use hkd32::mnemonic;
 
 /// BIP39 test vector
 struct TestVector {
@@ -72,7 +71,7 @@ const TEST_VECTORS: &[TestVector] = &[
 #[test]
 fn test_mnemonic() {
     for vector in TEST_VECTORS {
-        let mnemonic = mnemonic::Phrase::from_entropy(vector.entropy, mnemonic::Language::English);
+        let mnemonic = Mnemonic::from_entropy(vector.entropy, Default::default());
         assert_eq!(mnemonic.phrase(), vector.phrase);
     }
 }
@@ -80,7 +79,7 @@ fn test_mnemonic() {
 #[test]
 fn test_seed() {
     for vector in TEST_VECTORS {
-        let mnemonic = mnemonic::Phrase::new(vector.phrase, mnemonic::Language::English).unwrap();
+        let mnemonic = Mnemonic::new(vector.phrase, Default::default()).unwrap();
         assert_eq!(
             &vector.seed,
             mnemonic.to_seed(TEST_VECTOR_PASSWORD).as_bytes()
@@ -91,7 +90,7 @@ fn test_seed() {
 #[test]
 fn test_xprv() {
     for vector in TEST_VECTORS {
-        let seed = mnemonic::Seed::new(vector.seed);
+        let seed = Seed::new(vector.seed);
         let expected_xprv: XPrv = vector.xprv.parse().unwrap();
         let derived_xprv = XPrv::new(&seed).unwrap();
 
