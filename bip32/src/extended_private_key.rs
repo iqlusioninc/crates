@@ -6,17 +6,19 @@ use crate::{
 };
 use core::{
     convert::{TryFrom, TryInto},
+    fmt::{self, Debug},
     str::FromStr,
 };
 use hkd32::mnemonic::{Seed, BIP39_DOMAIN_SEPARATOR};
 use hmac::{Hmac, Mac, NewMac};
 use sha2::Sha512;
+use subtle::{Choice, ConstantTimeEq};
 
 /// Derivation depth.
 pub type Depth = u8;
 
 /// Extended private keys derived using BIP32.
-#[derive(Clone, Debug)]
+#[derive(Clone)]
 pub struct ExtendedPrivateKey<K: PrivateKey> {
     /// Derived private key
     private_key: K,
@@ -113,6 +115,44 @@ where
     /// Serialize this key as a byte array.
     pub fn to_bytes(&self) -> [u8; KEY_SIZE] {
         self.private_key.to_bytes()
+    }
+}
+
+impl<K> ConstantTimeEq for ExtendedPrivateKey<K>
+where
+    K: PrivateKey,
+{
+    fn ct_eq(&self, other: &Self) -> Choice {
+        // TODO(tarcieri): add `ConstantTimeEq` bound to `PrivateKey`
+        self.to_bytes().ct_eq(&other.to_bytes())
+            & self.chain_code.ct_eq(&other.chain_code)
+            & self.depth.ct_eq(&other.depth)
+    }
+}
+
+impl<K> Debug for ExtendedPrivateKey<K>
+where
+    K: PrivateKey,
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("ExtendedPrivateKey")
+            .field("private_key", &"...")
+            .field("chain_code", &"...")
+            .field("depth", &self.depth)
+            .finish()
+    }
+}
+
+/// NOTE: uses [`ConstantTimeEq`] internally
+impl<K> Eq for ExtendedPrivateKey<K> where K: PrivateKey {}
+
+/// NOTE: uses [`ConstantTimeEq`] internally
+impl<K> PartialEq for ExtendedPrivateKey<K>
+where
+    K: PrivateKey,
+{
+    fn eq(&self, other: &Self) -> bool {
+        self.ct_eq(other).into()
     }
 }
 
