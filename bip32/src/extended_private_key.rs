@@ -174,10 +174,10 @@ where
     type Error = Error;
 
     fn try_from(extended_key: ExtendedKey) -> Result<ExtendedPrivateKey<K>> {
-        if extended_key.prefix.is_private() {
+        if extended_key.prefix.is_private() && extended_key.key_bytes[0] == 0 {
             Ok(Self {
                 chain_code: extended_key.chain_code,
-                private_key: PrivateKey::from_bytes(&extended_key.key_bytes)?,
+                private_key: PrivateKey::from_bytes(extended_key.key_bytes[1..].try_into()?)?,
                 depth: extended_key.depth,
             })
         } else {
