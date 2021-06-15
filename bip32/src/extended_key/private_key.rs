@@ -53,11 +53,9 @@ where
     where
         S: AsRef<[u8; Seed::SIZE]>,
     {
-        path.as_ref()
-            .iter()
-            .fold(Self::new(seed), |sk, &child_num| {
-                sk?.derive_child(child_num)
-            })
+        path.iter().fold(Self::new(seed), |maybe_key, child_num| {
+            maybe_key.and_then(|key| key.derive_child(child_num))
+        })
     }
 
     /// Create the root extended key for the given seed value.
@@ -65,7 +63,6 @@ where
     where
         S: AsRef<[u8; Seed::SIZE]>,
     {
-        // TODO(tarcieri): unify this with the equivalent logic in `hkd32`
         let mut hmac = Hmac::<Sha512>::new_from_slice(&BIP39_DOMAIN_SEPARATOR)?;
         hmac.update(seed.as_ref());
 
@@ -102,8 +99,8 @@ where
         let (secret_key, chain_code) = result.split_at(KEY_SIZE);
 
         // We should technically loop here if a `secret_key` is zero or overflows
-        // the order of the underlying elliptic curve group, however per
-        // "Child key derivation (CKD) functions":
+        // the order of the underlying elliptic curve group, incrementing the
+        // index, however per "Child key derivation (CKD) functions":
         // https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki#child-key-derivation-ckd-functions
         //
         // > "Note: this has probability lower than 1 in 2^127."

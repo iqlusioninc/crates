@@ -35,7 +35,7 @@ features = ["arithmetic", "ecdsa", "zeroize"]
 hex-literal = "0.3"
 
 [features]
-default = ["secp256k1"]
+default = ["secp256k1", "std"]
 secp256k1 = ["k256"]
 std = []
 

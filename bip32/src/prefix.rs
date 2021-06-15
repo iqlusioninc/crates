@@ -3,7 +3,8 @@
 use crate::{Error, ExtendedKey, Result, Version};
 use core::{
     convert::{TryFrom, TryInto},
-    fmt, str,
+    fmt::{self, Debug, Display},
+    str,
 };
 
 /// Constant panicking assertion.
@@ -151,6 +152,21 @@ impl AsRef<str> for Prefix {
     }
 }
 
+impl Debug for Prefix {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("Prefix")
+            .field("chars", &self.as_str())
+            .field("version", &DebugVersion(self.version))
+            .finish()
+    }
+}
+
+impl Display for Prefix {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 impl From<Prefix> for Version {
     fn from(prefix: Prefix) -> Version {
         prefix.version()
@@ -179,26 +195,11 @@ impl TryFrom<&[u8]> for Prefix {
     }
 }
 
-impl fmt::Debug for Prefix {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.debug_struct("Prefix")
-            .field("chars", &self.as_str())
-            .field("version", &DebugVersion(self.version))
-            .finish()
-    }
-}
-
-impl fmt::Display for Prefix {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.write_str(self.as_str())
-    }
-}
-
 /// Debugging formatting helper for [`Version`] with a `Debug` impl that
 /// outputs hexadecimal instead of base 10.
 struct DebugVersion(Version);
 
-impl fmt::Debug for DebugVersion {
+impl Debug for DebugVersion {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{:#010x}", self.0)
     }
