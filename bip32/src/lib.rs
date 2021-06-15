@@ -19,16 +19,21 @@ mod derivation_path;
 mod error;
 mod extended_key;
 mod extended_private_key;
+mod extended_public_key;
 mod prefix;
 mod private_key;
+mod public_key;
 
 pub use self::{
     child_number::ChildNumber,
     derivation_path::DerivationPath,
     error::{Error, Result},
     extended_key::ExtendedKey,
-    extended_private_key::{Depth, ExtendedPrivateKey},
+    extended_private_key::ExtendedPrivateKey,
+    extended_public_key::ExtendedPublicKey,
     prefix::Prefix,
+    private_key::{PrivateKey, PrivateKeyBytes},
+    public_key::{PublicKey, PublicKeyBytes},
 };
 pub use hkd32::{
     mnemonic::{Language, Phrase as Mnemonic, Seed},
@@ -43,10 +48,21 @@ pub use k256 as secp256k1;
 /// additional 256-bits of entropy.
 pub type ChainCode = [u8; KEY_SIZE];
 
+/// Derivation depth.
+pub type Depth = u8;
+
+/// BIP32 key fingerprints.
+pub type KeyFingerprint = [u8; 4];
+
+/// BIP32 "versions": integer representation of the key prefix.
+pub type Version = u32;
+
 /// Extended private secp256k1 ECDSA signing key.
 #[cfg(feature = "secp256k1")]
 #[cfg_attr(docsrs, doc(cfg(feature = "secp256k1")))]
 pub type XPrv = ExtendedPrivateKey<secp256k1::ecdsa::SigningKey>;
 
-/// BIP32 "versions": integer representation of the key prefix.
-pub type Version = u32;
+/// Extended public secp256k1 ECDSA verification key.
+#[cfg(feature = "secp256k1")]
+#[cfg_attr(docsrs, doc(cfg(feature = "secp256k1")))]
+pub type XPub = ExtendedPublicKey<secp256k1::ecdsa::VerifyingKey>;
