@@ -22,7 +22,16 @@ const BIP39_DOMAIN_SEPARATOR: [u8; 12] = [
     0x42, 0x69, 0x74, 0x63, 0x6f, 0x69, 0x6e, 0x20, 0x73, 0x65, 0x65, 0x64,
 ];
 
+/// Extended private secp256k1 ECDSA signing key.
+#[cfg(feature = "secp256k1")]
+#[cfg_attr(docsrs, doc(cfg(feature = "secp256k1")))]
+pub type XPrv = ExtendedPrivateKey<k256::ecdsa::SigningKey>;
+
 /// Extended private keys derived using BIP32.
+///
+/// Generic around a [`PrivateKey`] type. When the `secp256k1` feature of this
+/// crate is enabled, the [`XPrv`] type provides a convenient alias for
+/// extended ECDSA/secp256k1 private keys.
 #[derive(Clone)]
 pub struct ExtendedPrivateKey<K: PrivateKey> {
     /// Derived private key

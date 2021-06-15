@@ -18,19 +18,15 @@ mod child_number;
 mod derivation_path;
 mod error;
 mod extended_key;
-mod extended_private_key;
-mod extended_public_key;
 mod prefix;
 mod private_key;
 mod public_key;
 
-pub use self::{
+pub use crate::{
     child_number::ChildNumber,
     derivation_path::DerivationPath,
     error::{Error, Result},
-    extended_key::ExtendedKey,
-    extended_private_key::ExtendedPrivateKey,
-    extended_public_key::ExtendedPublicKey,
+    extended_key::{private_key::ExtendedPrivateKey, public_key::ExtendedPublicKey, ExtendedKey},
     prefix::Prefix,
     private_key::{PrivateKey, PrivateKeyBytes},
     public_key::{PublicKey, PublicKeyBytes},
@@ -42,7 +38,10 @@ pub use hkd32::{
 
 #[cfg(feature = "secp256k1")]
 #[cfg_attr(docsrs, doc(cfg(feature = "secp256k1")))]
-pub use k256 as secp256k1;
+pub use {
+    crate::extended_key::{private_key::XPrv, public_key::XPub},
+    k256 as secp256k1,
+};
 
 /// Chain code: extension for both private and public keys which provides an
 /// additional 256-bits of entropy.
@@ -56,13 +55,3 @@ pub type KeyFingerprint = [u8; 4];
 
 /// BIP32 "versions": integer representation of the key prefix.
 pub type Version = u32;
-
-/// Extended private secp256k1 ECDSA signing key.
-#[cfg(feature = "secp256k1")]
-#[cfg_attr(docsrs, doc(cfg(feature = "secp256k1")))]
-pub type XPrv = ExtendedPrivateKey<secp256k1::ecdsa::SigningKey>;
-
-/// Extended public secp256k1 ECDSA verification key.
-#[cfg(feature = "secp256k1")]
-#[cfg_attr(docsrs, doc(cfg(feature = "secp256k1")))]
-pub type XPub = ExtendedPublicKey<secp256k1::ecdsa::VerifyingKey>;

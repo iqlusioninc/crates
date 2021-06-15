@@ -133,7 +133,6 @@ impl Phrase {
     /// Note: that this does not follow the normal BIP39 derivation, which
     /// first applies PBKDF2 along with a secondary password. Use `to_seed`
     /// if you are interested in BIP39 compatibility.
-    /// Derive a BIP32 subkey from this seed
     pub fn derive_subkey(self, path: impl AsRef<Path>) -> KeyMaterial {
         KeyMaterial::from(self).derive_subkey(path)
     }

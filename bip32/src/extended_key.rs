@@ -1,14 +1,19 @@
 //! Parser for extended key types (i.e. `xprv` and `xpub`)
 
-use crate::{
-    ChainCode, ChildNumber, Depth, Error, KeyFingerprint, Prefix, Result, Version, KEY_SIZE,
-};
 use core::{
     convert::TryInto,
     fmt::{self, Display},
     str::{self, FromStr},
 };
+
 use zeroize::Zeroize;
+
+use crate::{
+    ChainCode, ChildNumber, Depth, Error, KeyFingerprint, Prefix, Result, Version, KEY_SIZE,
+};
+
+pub mod private_key;
+pub mod public_key;
 
 /// Serialized extended key (e.g. `xprv` and `xpub`).
 pub struct ExtendedKey {
