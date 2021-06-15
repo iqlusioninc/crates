@@ -7,9 +7,13 @@ pub type Result<T> = core::result::Result<T, Error>;
 
 /// Error type.
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
+#[non_exhaustive]
 pub enum Error {
     /// Base58 errors.
     Base58,
+
+    /// Child number-related errors.
+    ChildNumber,
 
     /// Cryptographic errors.
     Crypto,
@@ -25,6 +29,7 @@ impl Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Error::Base58 => f.write_str("base58 error"),
+            Error::ChildNumber => f.write_str("invalid child number"),
             Error::Crypto => f.write_str("cryptographic error"),
             Error::Decode => f.write_str("decoding error"),
             Error::Depth => f.write_str("maximum derivation depth exceeded"),
