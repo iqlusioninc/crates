@@ -12,7 +12,7 @@ use super::{schema::ValueType, Schema, TypeName};
 use crate::{Address, Decimal, Error};
 use eyre::{Result, WrapErr};
 use prost_amino::encode_length_delimiter as encode_leb128; // Little-endian Base 128
-use std::{collections::BTreeMap, iter::FromIterator};
+use std::collections::BTreeMap;
 use subtle_encoding::hex;
 
 /// Tags are indexes which identify message fields
@@ -153,7 +153,7 @@ impl Msg {
 
         json.insert(
             "value".to_owned(),
-            serde_json::Map::from_iter(values.into_iter()).into(),
+            values.into_iter().collect::<serde_json::Map<_, _>>().into(),
         );
 
         serde_json::Value::Object(json)

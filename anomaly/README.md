@@ -52,7 +52,7 @@ from real-world libraries and applications, most notably [Abscissa].
 
 ## Minimum Supported Rust Version
 
-Rust **1.47** or newer.
+Rust **1.51** or newer.
 
 In the future, we reserve the right to change MSRV (i.e. MSRV is out-of-scope
 for this crate's SemVer guarantees), however when we do it will be accompanied by
@@ -81,7 +81,7 @@ without any additional terms or conditions.
 [docs-image]: https://docs.rs/anomaly/badge.svg
 [docs-link]: https://docs.rs/anomaly/
 [license-image]: https://img.shields.io/badge/license-Apache2.0/MIT-blue.svg
-[rustc-image]: https://img.shields.io/badge/rustc-1.47+-blue.svg
+[rustc-image]: https://img.shields.io/badge/rustc-1.51+-blue.svg
 [safety-image]: https://img.shields.io/badge/unsafe-forbidden-success.svg
 [safety-link]: https://github.com/rust-secure-code/safety-dance/
 [build-image]: https://github.com/iqlusioninc/crates/actions/workflows/anomaly.yml/badge.svg
