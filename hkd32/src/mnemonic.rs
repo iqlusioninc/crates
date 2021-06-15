@@ -15,4 +15,4 @@ pub(crate) mod seed;
 pub use self::{language::Language, phrase::Phrase};
 
 #[cfg(feature = "bip39")]
-pub use self::seed::{Seed, BIP39_DOMAIN_SEPARATOR};
+pub use self::seed::Seed;
