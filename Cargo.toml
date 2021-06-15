@@ -1,4 +1,5 @@
 [workspace]
+resolver = "2"
 members = [
     "anomaly",
     "bip32",
@@ -15,9 +16,3 @@ members = [
     "zeroize",
     "zeroize/derive"
 ]
-
-# Enable integer overflow checks in release builds
-# WARNING: DO NOT REMOVE THIS! We rely on this for panic-on-overflow semantics
-# in the event of integer arithmetic bugs.
-[profile.release]
-overflow-checks = true

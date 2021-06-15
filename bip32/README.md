@@ -15,7 +15,7 @@ BIP32 hierarchical key derivation.
 
 ## Minimum Supported Rust Version
 
-Rust **1.48** or newer.
+Rust **1.51** or newer.
 
 In the future, we reserve the right to change MSRV (i.e. MSRV is out-of-scope
 for this crate's SemVer guarantees), however when we do it will be accompanied by
@@ -45,7 +45,7 @@ without any additional terms or conditions.
 [docs-link]: https://docs.rs/bip32/
 [license-image]: https://img.shields.io/badge/license-Apache2.0-blue.svg
 [license-link]: https://github.com/iqlusioninc/crates/blob/main/LICENSE
-[rustc-image]: https://img.shields.io/badge/rustc-1.48+-blue.svg
+[rustc-image]: https://img.shields.io/badge/rustc-1.51+-blue.svg
 [safety-image]: https://img.shields.io/badge/unsafe-forbidden-success.svg
 [safety-link]: https://github.com/rust-secure-code/safety-dance/
 [build-image]: https://github.com/iqlusioninc/crates/actions/workflows/bip32.yml/badge.svg

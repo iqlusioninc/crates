@@ -25,7 +25,7 @@ jobs:
           - macos-latest
           - windows-latest
         toolchain:
-          - 1.47.0
+          - 1.51.0 # MSRV
           - stable
     runs-on: ${{ matrix.platform }}
     steps:
