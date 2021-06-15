@@ -1,14 +1,18 @@
 //! Parser for extended key types (i.e. `xprv` and `xpub`)
 
 use crate::{ChainCode, Depth, Error, Prefix, Result, Version, KEY_SIZE};
-use core::{convert::TryInto, str::FromStr};
+use core::{
+    convert::TryInto,
+    fmt::{self, Display},
+    str::{self, FromStr},
+};
 
 #[cfg(feature = "zeroize")]
 use zeroize::Zeroize;
 
 /// Serialized extended key (e.g. `xprv` and `xpub`).
 pub struct ExtendedKey {
-    /// [Prefix] (a.k.a. "version") of the key (e.g. `xprv`, `xpub`)
+    /// [`Prefix`] (a.k.a. "version") of the key (e.g. `xprv`, `xpub`)
     pub prefix: Prefix,
 
     /// Depth in the key derivation hierarchy.
@@ -24,7 +28,7 @@ pub struct ExtendedKey {
     pub chain_code: ChainCode,
 
     /// Key material.
-    pub key_bytes: [u8; KEY_SIZE],
+    pub key_bytes: [u8; KEY_SIZE + 1],
 }
 
 impl ExtendedKey {
@@ -35,6 +39,37 @@ impl ExtendedKey {
     ///
     /// Note that extended keys can also be 111-bytes.
     pub const MAX_BASE58_SIZE: usize = 112;
+
+    /// Write a Base58-encoded key to the provided buffer, returning a `&str`
+    /// containing the serialized data.
+    ///
+    /// Note that this type also impls [`Display`] and therefore you can
+    /// obtain an owned string by calling `to_string()`.
+    pub fn write_base58<'a>(&self, buffer: &'a mut [u8; Self::MAX_BASE58_SIZE]) -> Result<&'a str> {
+        let mut bytes = [0u8; Self::BYTE_SIZE]; // with 4-byte checksum
+        bytes[..4].copy_from_slice(&self.prefix.to_bytes());
+        bytes[4] = self.depth;
+        bytes[5..9].copy_from_slice(&self.parent_fingerprint.to_be_bytes());
+        bytes[9..13].copy_from_slice(&self.child_number.to_be_bytes());
+        bytes[13..45].copy_from_slice(&self.chain_code);
+        bytes[45..78].copy_from_slice(&self.key_bytes);
+
+        let base58_len = bs58::encode(&bytes).with_check().into(buffer.as_mut())?;
+
+        #[cfg(feature = "zeroize")]
+        bytes.zeroize();
+
+        str::from_utf8(&buffer[..base58_len]).map_err(|_| Error::Base58)
+    }
+}
+
+impl Display for ExtendedKey {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let mut buf = [0u8; Self::MAX_BASE58_SIZE];
+        self.write_base58(&mut buf)
+            .map_err(|_| fmt::Error)
+            .and_then(|base58| f.write_str(base58))
+    }
 }
 
 impl FromStr for ExtendedKey {
@@ -58,7 +93,7 @@ impl FromStr for ExtendedKey {
         let parent_fingerprint = u32::from_be_bytes(bytes[5..9].try_into()?);
         let child_number = u32::from_be_bytes(bytes[9..13].try_into()?);
         let chain_code = bytes[13..45].try_into()?;
-        let key_bytes = bytes[46..78].try_into()?;
+        let key_bytes = bytes[45..78].try_into()?;
 
         #[cfg(feature = "zeroize")]
         bytes.zeroize();
@@ -97,15 +132,15 @@ impl Drop for ExtendedKey {
 #[cfg(test)]
 mod tests {
     use super::ExtendedKey;
+    use alloc::string::ToString;
     use hex_literal::hex;
 
     #[test]
-    fn bip32_test_vector_1() {
-        let xprv: ExtendedKey = "xprv9s21ZrQH143K3QTDL4LXw2F7HEK3wJUD2nW2nRk4stbPy6cq3jPP\
-             qjiChkVvvNKmPGJxWUtg6LnF5kejMRNNU3TGtRBeJgk33yuGBxrMPHi"
-            .parse()
-            .unwrap();
+    fn bip32_test_vector_1_xprv() {
+        let xprv_base58 = "xprv9s21ZrQH143K3QTDL4LXw2F7HEK3wJUD2nW2nRk4stbPy6cq3jPP\
+             qjiChkVvvNKmPGJxWUtg6LnF5kejMRNNU3TGtRBeJgk33yuGBxrMPHi";
 
+        let xprv = xprv_base58.parse::<ExtendedKey>().unwrap();
         assert_eq!(xprv.prefix.as_str(), "xprv");
         assert_eq!(xprv.depth, 0);
         assert_eq!(xprv.parent_fingerprint, 0);
@@ -116,14 +151,17 @@ mod tests {
         );
         assert_eq!(
             xprv.key_bytes,
-            hex!("E8F32E723DECF4051AEFAC8E2C93C9C5B214313817CDB01A1494B917C8436B35")
+            hex!("00E8F32E723DECF4051AEFAC8E2C93C9C5B214313817CDB01A1494B917C8436B35")
         );
+        assert_eq!(&xprv.to_string(), xprv_base58);
+    }
 
-        let xpub: ExtendedKey = "xpub661MyMwAqRbcFtXgS5sYJABqqG9YLmC4Q1Rdap9gSE8NqtwybGhe\
-             PY2gZ29ESFjqJoCu1Rupje8YtGqsefD265TMg7usUDFdp6W1EGMcet8"
-            .parse()
-            .unwrap();
+    #[test]
+    fn bip32_test_vector_1_xpub() {
+        let xpub_base58 = "xpub661MyMwAqRbcFtXgS5sYJABqqG9YLmC4Q1Rdap9gSE8NqtwybGhe\
+             PY2gZ29ESFjqJoCu1Rupje8YtGqsefD265TMg7usUDFdp6W1EGMcet8";
 
+        let xpub = xpub_base58.parse::<ExtendedKey>().unwrap();
         assert_eq!(xpub.prefix.as_str(), "xpub");
         assert_eq!(xpub.depth, 0);
         assert_eq!(xpub.parent_fingerprint, 0);
@@ -134,7 +172,8 @@ mod tests {
         );
         assert_eq!(
             xpub.key_bytes,
-            hex!("39A36013301597DAEF41FBE593A02CC513D0B55527EC2DF1050E2E8FF49C85C2")
+            hex!("0339A36013301597DAEF41FBE593A02CC513D0B55527EC2DF1050E2E8FF49C85C2")
         );
+        assert_eq!(&xpub.to_string(), xpub_base58);
     }
 }

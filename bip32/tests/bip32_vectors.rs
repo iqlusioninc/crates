@@ -4,7 +4,7 @@
 //!
 //! Note: Test vector 1 is omitted (for now) because the seed is smaller than
 //! what we currently support.
-// TODO(tarcieri): test `xpub`s
+// TODO(tarcieri): test `xpub`s, add test vector 1, consolidate test vectors
 
 use bip32::{Seed, XPrv};
 use hex_literal::hex;

@@ -93,7 +93,7 @@ impl Prefix {
         let mut buffer = [0u8; ExtendedKey::MAX_BASE58_SIZE];
         bs58::encode(&bytes).with_check().into(buffer.as_mut())?;
 
-        let s = str::from_utf8(&buffer[..4]).map_err(|_| Error::Decode)?;
+        let s = str::from_utf8(&buffer[..4]).map_err(|_| Error::Base58)?;
         Self::validate_str(s)?;
         Ok(Self::from_parts_unchecked(s, version))
     }
@@ -113,9 +113,14 @@ impl Prefix {
         &self.chars[1..] == b"prv"
     }
 
-    /// Get the version number.
+    /// Get the [`Version`] number.
     pub fn version(&self) -> Version {
         self.version
+    }
+
+    /// Serialize the [`Version`] number as big-endian bytes.
+    pub fn to_bytes(&self) -> [u8; Self::LENGTH] {
+        self.version.to_be_bytes()
     }
 
     /// Validate that the given prefix string is well-formed.
