@@ -14,9 +14,10 @@ keywords    = ["crypto", "bip32", "bip39", "derivation", "mnemonic"]
 [dependencies]
 bs58 = { version = "0.4", default-features = false, features = ["check"] }
 hmac = "0.11"
+ripemd160 = "0.9"
 sha2 = "0.9"
 subtle = "2"
-zeroize = { version = "1", optional = true, default-features = false, path = "../zeroize" }
+zeroize = { version = "1", default-features = false, path = "../zeroize" }
 
 [dependencies.hkd32]
 version = "0.5"

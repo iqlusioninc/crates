@@ -1,13 +1,13 @@
 //! Parser for extended key types (i.e. `xprv` and `xpub`)
 
-use crate::{ChainCode, Depth, Error, Prefix, Result, Version, KEY_SIZE};
+use crate::{
+    ChainCode, ChildNumber, Depth, Error, KeyFingerprint, Prefix, Result, Version, KEY_SIZE,
+};
 use core::{
     convert::TryInto,
     fmt::{self, Display},
     str::{self, FromStr},
 };
-
-#[cfg(feature = "zeroize")]
 use zeroize::Zeroize;
 
 /// Serialized extended key (e.g. `xprv` and `xpub`).
@@ -19,15 +19,17 @@ pub struct ExtendedKey {
     pub depth: Depth,
 
     /// Parent fingerprint.
-    pub parent_fingerprint: u32,
+    pub parent_fingerprint: KeyFingerprint,
 
     /// Child number.
-    pub child_number: u32,
+    pub child_number: ChildNumber,
 
     /// Chain code.
     pub chain_code: ChainCode,
 
-    /// Key material.
+    /// Key material (may be public or private).
+    ///
+    /// Includes an extra byte for a public key's SEC1 tag.
     pub key_bytes: [u8; KEY_SIZE + 1],
 }
 
@@ -49,14 +51,12 @@ impl ExtendedKey {
         let mut bytes = [0u8; Self::BYTE_SIZE]; // with 4-byte checksum
         bytes[..4].copy_from_slice(&self.prefix.to_bytes());
         bytes[4] = self.depth;
-        bytes[5..9].copy_from_slice(&self.parent_fingerprint.to_be_bytes());
-        bytes[9..13].copy_from_slice(&self.child_number.to_be_bytes());
+        bytes[5..9].copy_from_slice(&self.parent_fingerprint);
+        bytes[9..13].copy_from_slice(&self.child_number.to_bytes());
         bytes[13..45].copy_from_slice(&self.chain_code);
         bytes[45..78].copy_from_slice(&self.key_bytes);
 
         let base58_len = bs58::encode(&bytes).with_check().into(buffer.as_mut())?;
-
-        #[cfg(feature = "zeroize")]
         bytes.zeroize();
 
         str::from_utf8(&buffer[..base58_len]).map_err(|_| Error::Base58)
@@ -90,12 +90,10 @@ impl FromStr for ExtendedKey {
         })?;
 
         let depth = bytes[4];
-        let parent_fingerprint = u32::from_be_bytes(bytes[5..9].try_into()?);
-        let child_number = u32::from_be_bytes(bytes[9..13].try_into()?);
+        let parent_fingerprint = bytes[5..9].try_into()?;
+        let child_number = ChildNumber::from_bytes(bytes[9..13].try_into()?);
         let chain_code = bytes[13..45].try_into()?;
         let key_bytes = bytes[45..78].try_into()?;
-
-        #[cfg(feature = "zeroize")]
         bytes.zeroize();
 
         Ok(ExtendedKey {
@@ -109,22 +107,14 @@ impl FromStr for ExtendedKey {
     }
 }
 
-#[cfg(feature = "zeroize")]
-impl Zeroize for ExtendedKey {
-    fn zeroize(&mut self) {
+impl Drop for ExtendedKey {
+    fn drop(&mut self) {
         // TODO(tarcieri): prefix?
         self.depth.zeroize();
         self.parent_fingerprint.zeroize();
-        self.child_number.zeroize();
+        self.child_number.0.zeroize();
         self.chain_code.zeroize();
         self.key_bytes.zeroize();
-    }
-}
-
-#[cfg(feature = "zeroize")]
-impl Drop for ExtendedKey {
-    fn drop(&mut self) {
-        self.zeroize();
     }
 }
 
@@ -143,8 +133,8 @@ mod tests {
         let xprv = xprv_base58.parse::<ExtendedKey>().unwrap();
         assert_eq!(xprv.prefix.as_str(), "xprv");
         assert_eq!(xprv.depth, 0);
-        assert_eq!(xprv.parent_fingerprint, 0);
-        assert_eq!(xprv.child_number, 0);
+        assert_eq!(xprv.parent_fingerprint, [0u8; 4]);
+        assert_eq!(xprv.child_number.0, 0);
         assert_eq!(
             xprv.chain_code,
             hex!("873DFF81C02F525623FD1FE5167EAC3A55A049DE3D314BB42EE227FFED37D508")
@@ -164,8 +154,8 @@ mod tests {
         let xpub = xpub_base58.parse::<ExtendedKey>().unwrap();
         assert_eq!(xpub.prefix.as_str(), "xpub");
         assert_eq!(xpub.depth, 0);
-        assert_eq!(xpub.parent_fingerprint, 0);
-        assert_eq!(xpub.child_number, 0);
+        assert_eq!(xpub.parent_fingerprint, [0u8; 4]);
+        assert_eq!(xpub.child_number.0, 0);
         assert_eq!(
             xpub.chain_code,
             hex!("873DFF81C02F525623FD1FE5167EAC3A55A049DE3D314BB42EE227FFED37D508")

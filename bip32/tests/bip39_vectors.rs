@@ -91,15 +91,8 @@ fn test_seed() {
 fn test_xprv() {
     for vector in TEST_VECTORS {
         let seed = Seed::new(vector.seed);
-        let expected_xprv: XPrv = vector.xprv.parse().unwrap();
+        let expected_xprv = vector.xprv.parse::<XPrv>().unwrap();
         let derived_xprv = XPrv::new(&seed).unwrap();
-
-        // TODO(tarcieri): `Eq` impl for `ExtendedPrivateKey`? (using `subtle` behind the scenes)
-        assert_eq!(
-            expected_xprv.private_key().to_bytes(),
-            derived_xprv.private_key().to_bytes()
-        );
-        assert_eq!(expected_xprv.chain_code(), derived_xprv.chain_code());
-        assert_eq!(expected_xprv.depth(), derived_xprv.depth());
+        assert_eq!(expected_xprv, derived_xprv);
     }
 }
