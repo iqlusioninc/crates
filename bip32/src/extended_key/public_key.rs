@@ -1,8 +1,8 @@
 //! Extended public keys
 
 use crate::{
-    ChainCode, ChildNumber, Depth, Error, ExtendedKey, ExtendedPrivateKey, KeyFingerprint, Prefix,
-    PrivateKey, PublicKey, PublicKeyBytes, Result,
+    Error, ExtendedKey, ExtendedKeyAttrs, ExtendedPrivateKey, KeyFingerprint, Prefix, PrivateKey,
+    PublicKey, PublicKeyBytes, Result,
 };
 use alloc::string::{String, ToString};
 use core::{
@@ -25,17 +25,8 @@ pub struct ExtendedPublicKey<K: PublicKey> {
     /// Derived public key
     public_key: K,
 
-    /// Derivation depth
-    depth: Depth,
-
-    /// Key fingerprint of this key's parent
-    parent_fingerprint: KeyFingerprint,
-
-    /// Child number.
-    child_number: ChildNumber,
-
-    /// Chain code
-    chain_code: ChainCode,
+    /// Extended key attributes.
+    attrs: ExtendedKeyAttrs,
 }
 
 impl<K> ExtendedPublicKey<K>
@@ -47,24 +38,15 @@ where
         &self.public_key
     }
 
-    /// Get the [`Depth`] of this extended private key.
-    pub fn depth(&self) -> Depth {
-        self.depth
+    /// Get attributes for this key such as depth, parent fingerprint,
+    /// child number, and chain code.
+    pub fn attrs(&self) -> &ExtendedKeyAttrs {
+        &self.attrs
     }
 
-    /// Key fingerprint of this key's parent.
-    pub fn parent_fingerprint(&self) -> KeyFingerprint {
-        self.parent_fingerprint
-    }
-
-    /// Child number used to derive this key from its parent.
-    pub fn child_number(&self) -> ChildNumber {
-        self.child_number
-    }
-
-    /// Borrow the chain code for this extended private key.
-    pub fn chain_code(&self) -> &ChainCode {
-        &self.chain_code
+    /// Compute a 4-byte key fingerprint for this extended public key.
+    pub fn fingerprint(&self) -> KeyFingerprint {
+        self.public_key().fingerprint()
     }
 
     /// Serialize the raw public key as a byte array (e.g. SEC1-encoded).
@@ -76,10 +58,7 @@ where
     pub fn to_extended_key(&self, prefix: Prefix) -> ExtendedKey {
         ExtendedKey {
             prefix,
-            depth: self.depth,
-            parent_fingerprint: self.parent_fingerprint,
-            child_number: self.child_number,
-            chain_code: self.chain_code,
+            attrs: self.attrs.clone(),
             key_bytes: self.to_bytes(),
         }
     }
@@ -97,10 +76,7 @@ where
     fn from(xprv: &ExtendedPrivateKey<K>) -> ExtendedPublicKey<K::PublicKey> {
         ExtendedPublicKey {
             public_key: xprv.private_key().public_key(),
-            depth: xprv.depth(),
-            parent_fingerprint: xprv.parent_fingerprint(),
-            child_number: xprv.child_number(),
-            chain_code: *xprv.chain_code(),
+            attrs: xprv.attrs().clone(),
         }
     }
 }
@@ -124,12 +100,9 @@ where
 
     fn try_from(extended_key: ExtendedKey) -> Result<ExtendedPublicKey<K>> {
         if extended_key.prefix.is_public() {
-            Ok(Self {
+            Ok(ExtendedPublicKey {
                 public_key: PublicKey::from_bytes(extended_key.key_bytes)?,
-                depth: extended_key.depth,
-                parent_fingerprint: extended_key.parent_fingerprint,
-                child_number: extended_key.child_number,
-                chain_code: extended_key.chain_code,
+                attrs: extended_key.attrs.clone(),
             })
         } else {
             Err(Error::Crypto)

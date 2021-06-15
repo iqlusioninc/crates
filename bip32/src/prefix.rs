@@ -66,7 +66,8 @@ impl Prefix {
     /// up to the caller to ensure that the version number matches the prefix.
     ///
     /// Panics if `s` is not 4 chars long, or any of the chars lie outside of
-    /// the supported range (lower case alphabetic characters `a..=z`).
+    /// the supported range: lower case (`a..=z`) or upper case (`A..=Z`)
+    /// letters.
     pub const fn from_parts_unchecked(s: &str, version: Version) -> Self {
         // TODO(tarcieri): return `Result` when const panic is stable
         const_assert!(Self::validate_str(s).is_ok(), "invalid prefix");

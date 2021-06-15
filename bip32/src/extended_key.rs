@@ -1,36 +1,25 @@
 //! Parser for extended key types (i.e. `xprv` and `xpub`)
 
+pub(crate) mod attrs;
+pub(crate) mod private_key;
+pub(crate) mod public_key;
+
+use crate::{ChildNumber, Error, ExtendedKeyAttrs, Prefix, Result, Version, KEY_SIZE};
 use core::{
     convert::TryInto,
     fmt::{self, Display},
     str::{self, FromStr},
 };
-
 use zeroize::Zeroize;
 
-use crate::{
-    ChainCode, ChildNumber, Depth, Error, KeyFingerprint, Prefix, Result, Version, KEY_SIZE,
-};
-
-pub mod private_key;
-pub mod public_key;
-
 /// Serialized extended key (e.g. `xprv` and `xpub`).
+#[derive(Clone)]
 pub struct ExtendedKey {
     /// [`Prefix`] (a.k.a. "version") of the key (e.g. `xprv`, `xpub`)
     pub prefix: Prefix,
 
-    /// Depth in the key derivation hierarchy.
-    pub depth: Depth,
-
-    /// Parent fingerprint.
-    pub parent_fingerprint: KeyFingerprint,
-
-    /// Child number.
-    pub child_number: ChildNumber,
-
-    /// Chain code.
-    pub chain_code: ChainCode,
+    /// Extended key attributes.
+    pub attrs: ExtendedKeyAttrs,
 
     /// Key material (may be public or private).
     ///
@@ -55,10 +44,10 @@ impl ExtendedKey {
     pub fn write_base58<'a>(&self, buffer: &'a mut [u8; Self::MAX_BASE58_SIZE]) -> Result<&'a str> {
         let mut bytes = [0u8; Self::BYTE_SIZE]; // with 4-byte checksum
         bytes[..4].copy_from_slice(&self.prefix.to_bytes());
-        bytes[4] = self.depth;
-        bytes[5..9].copy_from_slice(&self.parent_fingerprint);
-        bytes[9..13].copy_from_slice(&self.child_number.to_bytes());
-        bytes[13..45].copy_from_slice(&self.chain_code);
+        bytes[4] = self.attrs.depth;
+        bytes[5..9].copy_from_slice(&self.attrs.parent_fingerprint);
+        bytes[9..13].copy_from_slice(&self.attrs.child_number.to_bytes());
+        bytes[13..45].copy_from_slice(&self.attrs.chain_code);
         bytes[45..78].copy_from_slice(&self.key_bytes);
 
         let base58_len = bs58::encode(&bytes).with_check().into(buffer.as_mut())?;
@@ -101,12 +90,16 @@ impl FromStr for ExtendedKey {
         let key_bytes = bytes[45..78].try_into()?;
         bytes.zeroize();
 
-        Ok(ExtendedKey {
-            prefix,
+        let attrs = ExtendedKeyAttrs {
             depth,
             parent_fingerprint,
             child_number,
             chain_code,
+        };
+
+        Ok(ExtendedKey {
+            prefix,
+            attrs,
             key_bytes,
         })
     }
@@ -114,11 +107,6 @@ impl FromStr for ExtendedKey {
 
 impl Drop for ExtendedKey {
     fn drop(&mut self) {
-        // TODO(tarcieri): prefix?
-        self.depth.zeroize();
-        self.parent_fingerprint.zeroize();
-        self.child_number.0.zeroize();
-        self.chain_code.zeroize();
         self.key_bytes.zeroize();
     }
 }
@@ -137,11 +125,11 @@ mod tests {
 
         let xprv = xprv_base58.parse::<ExtendedKey>().unwrap();
         assert_eq!(xprv.prefix.as_str(), "xprv");
-        assert_eq!(xprv.depth, 0);
-        assert_eq!(xprv.parent_fingerprint, [0u8; 4]);
-        assert_eq!(xprv.child_number.0, 0);
+        assert_eq!(xprv.attrs.depth, 0);
+        assert_eq!(xprv.attrs.parent_fingerprint, [0u8; 4]);
+        assert_eq!(xprv.attrs.child_number.0, 0);
         assert_eq!(
-            xprv.chain_code,
+            xprv.attrs.chain_code,
             hex!("873DFF81C02F525623FD1FE5167EAC3A55A049DE3D314BB42EE227FFED37D508")
         );
         assert_eq!(
@@ -158,11 +146,11 @@ mod tests {
 
         let xpub = xpub_base58.parse::<ExtendedKey>().unwrap();
         assert_eq!(xpub.prefix.as_str(), "xpub");
-        assert_eq!(xpub.depth, 0);
-        assert_eq!(xpub.parent_fingerprint, [0u8; 4]);
-        assert_eq!(xpub.child_number.0, 0);
+        assert_eq!(xpub.attrs.depth, 0);
+        assert_eq!(xpub.attrs.parent_fingerprint, [0u8; 4]);
+        assert_eq!(xpub.attrs.child_number.0, 0);
         assert_eq!(
-            xpub.chain_code,
+            xpub.attrs.chain_code,
             hex!("873DFF81C02F525623FD1FE5167EAC3A55A049DE3D314BB42EE227FFED37D508")
         );
         assert_eq!(

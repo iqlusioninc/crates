@@ -1,7 +1,7 @@
 //! Extended private keys
 
 use crate::{
-    ChainCode, ChildNumber, Depth, DerivationPath, Error, ExtendedKey, ExtendedPublicKey,
+    ChildNumber, Depth, DerivationPath, Error, ExtendedKey, ExtendedKeyAttrs, ExtendedPublicKey,
     KeyFingerprint, Prefix, PrivateKey, PrivateKeyBytes, PublicKey, Result, KEY_SIZE,
 };
 use alloc::string::{String, ToString};
@@ -37,17 +37,8 @@ pub struct ExtendedPrivateKey<K: PrivateKey> {
     /// Derived private key
     private_key: K,
 
-    /// Derivation depth
-    depth: Depth,
-
-    /// Key fingerprint of this key's parent
-    parent_fingerprint: KeyFingerprint,
-
-    /// Child number.
-    child_number: ChildNumber,
-
-    /// Chain code
-    chain_code: ChainCode,
+    /// Extended key attributes.
+    attrs: ExtendedKeyAttrs,
 }
 
 impl<K> ExtendedPrivateKey<K>
@@ -80,22 +71,23 @@ where
 
         let result = hmac.finalize().into_bytes();
         let (secret_key, chain_code) = result.split_at(KEY_SIZE);
-
-        Ok(ExtendedPrivateKey {
-            private_key: PrivateKey::from_bytes(secret_key.try_into()?)?,
+        let private_key = PrivateKey::from_bytes(secret_key.try_into()?)?;
+        let attrs = ExtendedKeyAttrs {
             depth: 0,
             parent_fingerprint: KeyFingerprint::default(),
             child_number: ChildNumber::default(),
             chain_code: chain_code.try_into()?,
-        })
+        };
+
+        Ok(ExtendedPrivateKey { private_key, attrs })
     }
 
     /// Derive a child key for a particular [`ChildNumber`].
     pub fn derive_child(&self, child_number: ChildNumber) -> Result<Self> {
-        let depth = self.depth.checked_add(1).ok_or(Error::Depth)?;
+        let depth = self.attrs.depth.checked_add(1).ok_or(Error::Depth)?;
 
         let mut hmac =
-            Hmac::<Sha512>::new_from_slice(&self.chain_code).map_err(|_| Error::Crypto)?;
+            Hmac::<Sha512>::new_from_slice(&self.attrs.chain_code).map_err(|_| Error::Crypto)?;
 
         if child_number.is_hardened() {
             hmac.update(&[0]);
@@ -120,13 +112,14 @@ where
         // as the chances of it happening are vanishingly small.
         let private_key = self.private_key.derive_child(secret_key.try_into()?)?;
 
-        Ok(ExtendedPrivateKey {
-            private_key,
+        let attrs = ExtendedKeyAttrs {
             parent_fingerprint: self.private_key.public_key().fingerprint(),
             child_number,
             chain_code: chain_code.try_into()?,
             depth,
-        })
+        };
+
+        Ok(ExtendedPrivateKey { private_key, attrs })
     }
 
     /// Borrow the derived private key value.
@@ -139,24 +132,10 @@ where
         self.into()
     }
 
-    /// Key fingerprint of this key's parent.
-    pub fn parent_fingerprint(&self) -> KeyFingerprint {
-        self.parent_fingerprint
-    }
-
-    /// Child number used to derive this key from its parent.
-    pub fn child_number(&self) -> ChildNumber {
-        self.child_number
-    }
-
-    /// Borrow the chain code for this extended private key.
-    pub fn chain_code(&self) -> &ChainCode {
-        &self.chain_code
-    }
-
-    /// Get the [`Depth`] of this extended private key.
-    pub fn depth(&self) -> Depth {
-        self.depth
+    /// Get attributes for this key such as depth, parent fingerprint,
+    /// child number, and chain code.
+    pub fn attrs(&self) -> &ExtendedKeyAttrs {
+        &self.attrs
     }
 
     /// Serialize the raw private key as a byte array.
@@ -172,10 +151,7 @@ where
 
         ExtendedKey {
             prefix,
-            depth: self.depth,
-            parent_fingerprint: self.parent_fingerprint,
-            child_number: self.child_number,
-            chain_code: self.chain_code,
+            attrs: self.attrs.clone(),
             key_bytes,
         }
     }
@@ -193,10 +169,13 @@ where
     fn ct_eq(&self, other: &Self) -> Choice {
         // TODO(tarcieri): add `ConstantTimeEq` bound to `PrivateKey`
         self.to_bytes().ct_eq(&other.to_bytes())
-            & self.depth.ct_eq(&other.depth)
-            & self.parent_fingerprint.ct_eq(&other.parent_fingerprint)
-            & self.child_number.0.ct_eq(&other.child_number.0)
-            & self.chain_code.ct_eq(&other.chain_code)
+            & self.attrs.depth.ct_eq(&other.attrs.depth)
+            & self
+                .attrs
+                .parent_fingerprint
+                .ct_eq(&other.attrs.parent_fingerprint)
+            & self.attrs.child_number.0.ct_eq(&other.attrs.child_number.0)
+            & self.attrs.chain_code.ct_eq(&other.attrs.chain_code)
     }
 }
 
@@ -205,11 +184,10 @@ where
     K: PrivateKey,
 {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        // TODO(tarcieri): use `finish_non_exhaustive` when stable
         f.debug_struct("ExtendedPrivateKey")
             .field("private_key", &"...")
-            .field("depth", &self.depth)
-            .field("parent_fingerprint", &self.parent_fingerprint)
-            .field("chain_code", &self.chain_code)
+            .field("attrs", &self.attrs)
             .finish()
     }
 }
@@ -246,12 +224,9 @@ where
 
     fn try_from(extended_key: ExtendedKey) -> Result<ExtendedPrivateKey<K>> {
         if extended_key.prefix.is_private() && extended_key.key_bytes[0] == 0 {
-            Ok(Self {
+            Ok(ExtendedPrivateKey {
                 private_key: PrivateKey::from_bytes(extended_key.key_bytes[1..].try_into()?)?,
-                depth: extended_key.depth,
-                parent_fingerprint: extended_key.parent_fingerprint,
-                child_number: extended_key.child_number,
-                chain_code: extended_key.chain_code,
+                attrs: extended_key.attrs.clone(),
             })
         } else {
             Err(Error::Crypto)
