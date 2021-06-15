@@ -4,11 +4,13 @@ use crate::{
     Error, ExtendedKey, ExtendedKeyAttrs, ExtendedPrivateKey, KeyFingerprint, Prefix, PrivateKey,
     PublicKey, PublicKeyBytes, Result,
 };
-use alloc::string::{String, ToString};
 use core::{
     convert::{TryFrom, TryInto},
     str::FromStr,
 };
+
+#[cfg(feature = "alloc")]
+use alloc::string::{String, ToString};
 
 /// Extended public secp256k1 ECDSA verification key.
 #[cfg(feature = "secp256k1")]
@@ -64,6 +66,8 @@ where
     }
 
     /// Serialize this key as a `String`.
+    #[cfg(feature = "alloc")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "alloc")))]
     pub fn to_string(&self, prefix: Prefix) -> String {
         self.to_extended_key(prefix).to_string()
     }

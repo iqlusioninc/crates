@@ -1,23 +1,26 @@
 //! Extended private keys
 
 use crate::{
-    ChildNumber, Depth, DerivationPath, Error, ExtendedKey, ExtendedKeyAttrs, ExtendedPublicKey,
-    KeyFingerprint, Prefix, PrivateKey, PrivateKeyBytes, PublicKey, Result, KEY_SIZE,
+    ChildNumber, Depth, Error, ExtendedKey, ExtendedKeyAttrs, ExtendedPublicKey, KeyFingerprint,
+    Prefix, PrivateKey, PrivateKeyBytes, PublicKey, Result, KEY_SIZE,
 };
-use alloc::string::{String, ToString};
 use core::{
     convert::{TryFrom, TryInto},
     fmt::{self, Debug},
     str::FromStr,
 };
-use hkd32::mnemonic::Seed;
 use hmac::{Hmac, Mac, NewMac};
 use sha2::Sha512;
 use subtle::{Choice, ConstantTimeEq};
-use zeroize::Zeroizing;
+
+#[cfg(feature = "alloc")]
+use {
+    crate::DerivationPath,
+    alloc::string::{String, ToString},
+    zeroize::Zeroizing,
+};
 
 /// Derivation domain separator for BIP39 keys.
-#[cfg_attr(docsrs, doc(cfg(feature = "bip39")))]
 const BIP39_DOMAIN_SEPARATOR: [u8; 12] = [
     0x42, 0x69, 0x74, 0x63, 0x6f, 0x69, 0x6e, 0x20, 0x73, 0x65, 0x65, 0x64,
 ];
@@ -49,9 +52,11 @@ where
     pub const MAX_DEPTH: Depth = u8::MAX;
 
     /// Derive a child key from the given [`DerivationPath`].
-    pub fn derive_child_from_path<S>(seed: S, path: &DerivationPath) -> Result<Self>
+    #[cfg(feature = "alloc")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "alloc")))]
+    pub fn derive_child_from_seed<S>(seed: S, path: &DerivationPath) -> Result<Self>
     where
-        S: AsRef<[u8; Seed::SIZE]>,
+        S: AsRef<[u8; KEY_SIZE * 2]>,
     {
         path.iter().fold(Self::new(seed), |maybe_key, child_num| {
             maybe_key.and_then(|key| key.derive_child(child_num))
@@ -61,7 +66,7 @@ where
     /// Create the root extended key for the given seed value.
     pub fn new<S>(seed: S) -> Result<Self>
     where
-        S: AsRef<[u8; Seed::SIZE]>,
+        S: AsRef<[u8; KEY_SIZE * 2]>,
     {
         let mut hmac = Hmac::<Sha512>::new_from_slice(&BIP39_DOMAIN_SEPARATOR)?;
         hmac.update(seed.as_ref());
@@ -154,6 +159,8 @@ where
     }
 
     /// Serialize this key as a self-[`Zeroizing`] `String`.
+    #[cfg(feature = "alloc")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "alloc")))]
     pub fn to_string(&self, prefix: Prefix) -> Zeroizing<String> {
         Zeroizing::new(self.to_extended_key(prefix).to_string())
     }

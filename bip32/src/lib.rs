@@ -9,22 +9,24 @@
 #![forbid(unsafe_code, clippy::unwrap_used)]
 #![warn(missing_docs, rust_2018_idioms, unused_qualifications)]
 
+#[cfg(feature = "alloc")]
 extern crate alloc;
 
 #[cfg(feature = "std")]
 extern crate std;
 
 mod child_number;
-mod derivation_path;
 mod error;
 mod extended_key;
 mod prefix;
 mod private_key;
 mod public_key;
 
+#[cfg(feature = "alloc")]
+mod derivation_path;
+
 pub use crate::{
     child_number::ChildNumber,
-    derivation_path::DerivationPath,
     error::{Error, Result},
     extended_key::{
         attrs::ExtendedKeyAttrs, private_key::ExtendedPrivateKey, public_key::ExtendedPublicKey,
@@ -34,10 +36,14 @@ pub use crate::{
     private_key::{PrivateKey, PrivateKeyBytes},
     public_key::{PublicKey, PublicKeyBytes},
 };
-pub use hkd32::{
-    mnemonic::{Language, Phrase as Mnemonic, Seed},
-    KEY_SIZE,
-};
+pub use hkd32::KEY_SIZE;
+
+#[cfg(feature = "alloc")]
+pub use crate::derivation_path::DerivationPath;
+
+#[cfg(feature = "bip39")]
+#[cfg_attr(docsrs, doc(cfg(feature = "bip39")))]
+pub use hkd32::mnemonic::{Language, Phrase as Mnemonic, Seed};
 
 #[cfg(feature = "secp256k1")]
 #[cfg_attr(docsrs, doc(cfg(feature = "secp256k1")))]

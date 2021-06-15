@@ -4,29 +4,26 @@
 
 use core::convert::TryInto;
 use hkd32::mnemonic;
-use subtle_encoding::hex;
 
-fn test_mnemonic(entropy_hex: &str, expected_phrase: &str) {
-    let entropy_bytes = hex::decode(entropy_hex).unwrap();
+fn test_mnemonic(entropy_bytes: &[u8], expected_phrase: &str) {
     let mnemonic = mnemonic::Phrase::from_entropy(
-        entropy_bytes.as_slice().try_into().unwrap(),
+        entropy_bytes.try_into().unwrap(),
         mnemonic::Language::English,
     );
     assert_eq!(mnemonic.phrase(), expected_phrase);
 }
 
-fn test_seed(phrase: &str, password: &str, expected_seed_hex: &str) {
+fn test_seed(phrase: &str, password: &str, expected_seed_bytes: &[u8]) {
     let mnemonic = mnemonic::Phrase::new(phrase, mnemonic::Language::English).unwrap();
     let seed = mnemonic.to_seed(password);
     let actual_seed_bytes: &[u8] = seed.as_bytes();
-    let expected_seed_bytes = hex::decode(expected_seed_hex).unwrap();
 
     assert!(
-        actual_seed_bytes.eq(expected_seed_bytes.as_slice()),
+        actual_seed_bytes.eq(expected_seed_bytes),
         "Wrong seed for '{}'\nexp: {:?}\nact: {:?}\n",
         phrase,
-        expected_seed_hex,
-        String::from_utf8(hex::encode(actual_seed_bytes)).unwrap()
+        expected_seed_bytes,
+        actual_seed_bytes
     );
 }
 
@@ -36,7 +33,7 @@ macro_rules! tests {
             #[test]
             fn test_all() {
                 $(
-                    super::test_mnemonic($entropy_hex, $phrase);
+                    super::test_mnemonic(&hex_literal::hex!($entropy_hex), $phrase);
                 )*
             }
         }
@@ -45,7 +42,7 @@ macro_rules! tests {
             #[test]
             fn test_all() {
                 $(
-                    super::test_seed($phrase, "TREZOR", $seed_hex);
+                    super::test_seed($phrase, "TREZOR", &hex_literal::hex!($seed_hex));
                 )*
             }
         }

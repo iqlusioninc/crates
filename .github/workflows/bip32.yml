@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - "bip32/**"
+      - "hkd32/**"
       - "Cargo.*"
   push:
     branches: main
@@ -17,6 +18,30 @@ env:
   RUSTFLAGS: "-Dwarnings"
 
 jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        rust:
+          - 1.51.0 # MSRV
+          - stable
+        target:
+          - armv7a-none-eabi
+          - thumbv7em-none-eabi
+          - wasm32-unknown-unknown
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: ${{ matrix.rust }}
+          target: ${{ matrix.target }}
+          override: true
+          profile: minimal
+      - run: cargo build --target ${{ matrix.target }} --release --no-default-features
+      - run: cargo build --target ${{ matrix.target }} --release --no-default-features --features alloc
+      - run: cargo build --target ${{ matrix.target }} --release --no-default-features --features secp256k1
+      - run: cargo build --target ${{ matrix.target }} --release --no-default-features --features alloc,secp256k1
+
   test:
     strategy:
       matrix:
@@ -38,15 +63,3 @@ jobs:
       - run: cargo test --release --no-default-features
       - run: cargo test --release
       - run: cargo test --release --all-features
-
-  wasm:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          target: wasm32-unknown-unknown
-          override: true
-          profile: minimal
-      - run: cargo build --release --target wasm32-unknown-unknown --all-features

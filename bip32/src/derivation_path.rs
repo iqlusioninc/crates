@@ -11,6 +11,7 @@ use core::{
 const PREFIX: &str = "m";
 
 /// Derivation paths within a hierarchical keyspace.
+#[cfg_attr(docsrs, doc(cfg(feature = "alloc")))]
 #[derive(Clone, Debug, Default, Eq, PartialEq)]
 pub struct DerivationPath {
     path: Vec<ChildNumber>,
