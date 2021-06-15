@@ -112,7 +112,7 @@ impl Drop for ExtendedKey {
 }
 
 // TODO(tarcieri): consolidate test vectors
-#[cfg(test)]
+#[cfg(all(test, feature = "alloc"))]
 mod tests {
     use super::ExtendedKey;
     use alloc::string::ToString;

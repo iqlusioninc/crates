@@ -13,16 +13,15 @@ keywords    = ["crypto", "bip32", "bip39", "derivation", "mnemonic"]
 
 [dependencies]
 bs58 = { version = "0.4", default-features = false, features = ["check"] }
-hmac = "0.11"
-ripemd160 = "0.9"
-sha2 = "0.9"
-subtle = "2"
+hmac = { version = "0.11", default-features = false }
+ripemd160 = { version = "0.9", default-features = false }
+sha2 = { version = "0.9", default-features = false }
+subtle = { version = "2", default-features = false }
 zeroize = { version = "1", default-features = false, path = "../zeroize" }
 
 [dependencies.hkd32]
 version = "0.5"
 default-features = false
-features = ["bip39", "mnemonic"]
 path = "../hkd32"
 
 [dependencies.k256]
@@ -35,9 +34,11 @@ features = ["arithmetic", "ecdsa", "zeroize"]
 hex-literal = "0.3"
 
 [features]
-default = ["secp256k1", "std"]
+default = ["bip39", "secp256k1", "std"]
+alloc = ["zeroize/alloc"]
+bip39 = ["hkd32/bip39", "std"]
 secp256k1 = ["k256"]
-std = []
+std = ["alloc"]
 
 [package.metadata.docs.rs]
 all-features = true
