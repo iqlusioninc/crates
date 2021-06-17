@@ -28,7 +28,7 @@ zeroize = { version = "1", default-features = false, path = "../zeroize" }
 secp256k1-ffi = { package = "secp256k1", version = "0.20", optional = true }
 
 [dependencies.k256]
-version = "0.7"
+version = "0.9"
 optional = true
 default-features = false
 features = ["arithmetic", "ecdsa", "zeroize"]
