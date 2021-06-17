@@ -40,7 +40,7 @@
 
 #![no_std]
 #![cfg_attr(docsrs, feature(doc_cfg))]
-#![doc(html_root_url = "https://docs.rs/hkd32/0.5.0")]
+#![doc(html_root_url = "https://docs.rs/hkd32/0.6.0")]
 #![warn(missing_docs, rust_2018_idioms, unused_qualifications)]
 
 #[cfg(feature = "alloc")]
