@@ -12,6 +12,7 @@ use core::{
 use hmac::{Hmac, Mac, NewMac};
 use sha2::Sha512;
 use subtle::{Choice, ConstantTimeEq};
+use zeroize::Zeroize;
 
 #[cfg(feature = "alloc")]
 use {
@@ -56,7 +57,7 @@ where
     #[cfg_attr(docsrs, doc(cfg(feature = "alloc")))]
     pub fn derive_child_from_seed<S>(seed: S, path: &DerivationPath) -> Result<Self>
     where
-        S: AsRef<[u8; KEY_SIZE * 2]>,
+        S: AsRef<[u8]>,
     {
         path.iter().fold(Self::new(seed), |maybe_key, child_num| {
             maybe_key.and_then(|key| key.derive_child(child_num))
@@ -66,8 +67,12 @@ where
     /// Create the root extended key for the given seed value.
     pub fn new<S>(seed: S) -> Result<Self>
     where
-        S: AsRef<[u8; KEY_SIZE * 2]>,
+        S: AsRef<[u8]>,
     {
+        if ![16, 32, 64].contains(&seed.as_ref().len()) {
+            return Err(Error::SeedLength);
+        }
+
         let mut hmac = Hmac::<Sha512>::new_from_slice(&BIP39_DOMAIN_SEPARATOR)?;
         hmac.update(seed.as_ref());
 
@@ -171,15 +176,22 @@ where
     K: PrivateKey,
 {
     fn ct_eq(&self, other: &Self) -> Choice {
-        // TODO(tarcieri): add `ConstantTimeEq` bound to `PrivateKey`
-        self.to_bytes().ct_eq(&other.to_bytes())
+        let mut key_a = self.to_bytes();
+        let mut key_b = self.to_bytes();
+
+        let result = key_a.ct_eq(&key_b)
             & self.attrs.depth.ct_eq(&other.attrs.depth)
             & self
                 .attrs
                 .parent_fingerprint
                 .ct_eq(&other.attrs.parent_fingerprint)
             & self.attrs.child_number.0.ct_eq(&other.attrs.child_number.0)
-            & self.attrs.chain_code.ct_eq(&other.attrs.chain_code)
+            & self.attrs.chain_code.ct_eq(&other.attrs.chain_code);
+
+        key_a.zeroize();
+        key_b.zeroize();
+
+        result
     }
 }
 

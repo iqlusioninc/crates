@@ -106,22 +106,22 @@ impl Prefix {
     }
 
     /// Is this a public key?
-    pub fn is_public(&self) -> bool {
+    pub fn is_public(self) -> bool {
         &self.chars[1..] == b"pub"
     }
 
     /// Is this a private key?
-    pub fn is_private(&self) -> bool {
+    pub fn is_private(self) -> bool {
         &self.chars[1..] == b"prv"
     }
 
     /// Get the [`Version`] number.
-    pub fn version(&self) -> Version {
+    pub fn version(self) -> Version {
         self.version
     }
 
     /// Serialize the [`Version`] number as big-endian bytes.
-    pub fn to_bytes(&self) -> [u8; Self::LENGTH] {
+    pub fn to_bytes(self) -> [u8; Self::LENGTH] {
         self.version.to_be_bytes()
     }
 

@@ -7,11 +7,20 @@
 [![Safety Dance][safety-image]][safety-link]
 [![Build Status][build-image]][build-link]
 
-BIP32 hierarchical key derivation.
+BIP32 hierarchical key derivation implemented in a generic, `no_std`-friendly
+manner. Supports deriving keys using the pure Rust `k256` crate or the
+C library-backed `secp256k1` crate.
 
 ![Diagram](https://raw.githubusercontent.com/bitcoin/bips/4bc05ff903cb47eb18ce58a9836de1ac13ecf1b7/bip-0032/derivation.png)
 
 [Documentation][docs-link]
+
+## About
+
+BIP32 is an algorithm for generating a hierarchy of elliptic curve keys,
+a.k.a. "wallets", from a single seed value. A related algorithm also
+implemented by this crate, BIP39, provides a way to derive the seed value
+from a set of 24-words from a preset list, a.k.a. a "mnemonic".
 
 ## Minimum Supported Rust Version
 
@@ -50,3 +59,9 @@ without any additional terms or conditions.
 [safety-link]: https://github.com/rust-secure-code/safety-dance/
 [build-image]: https://github.com/iqlusioninc/crates/actions/workflows/bip32.yml/badge.svg
 [build-link]: https://github.com/iqlusioninc/crates/actions/workflows/bip32.yml
+
+[//]: # (links)
+
+[bip32]: https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki
+[libsecp256k1 C library]: https://github.com/bitcoin-core/secp256k1
+[`secp256k1` Rust crate]: https://github.com/rust-bitcoin/rust-secp256k1/
