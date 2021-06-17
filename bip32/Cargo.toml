@@ -17,7 +17,7 @@ readme     = "README.md"
 
 [dependencies]
 bs58 = { version = "0.4", default-features = false, features = ["check"] }
-hkd32 = { version = "0.5", default-features = false, path = "../hkd32" }
+hkd32 = { version = "0.6.0-pre", default-features = false, path = "../hkd32" }
 hmac = { version = "0.11", default-features = false }
 ripemd160 = { version = "0.9", default-features = false }
 sha2 = { version = "0.9", default-features = false }
