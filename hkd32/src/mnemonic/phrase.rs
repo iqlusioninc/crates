@@ -74,6 +74,10 @@ impl Phrase {
     ///
     /// The phrase supplied will be checked for word length and validated
     /// according to the checksum specified in BIP0039.
+    ///
+    /// To use the default language, English, (the only one supported by this
+    /// library and also the only one standardized for BIP39) you can supply
+    /// `Default::default()` as the language.
     pub fn new<S>(phrase: S, language: Language) -> Result<Self, Error>
     where
         S: AsRef<str>,

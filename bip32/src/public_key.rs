@@ -56,3 +56,39 @@ impl PublicKey for k256::ecdsa::VerifyingKey {
         self.to_bytes()
     }
 }
+
+#[cfg(feature = "secp256k1-ffi")]
+#[cfg_attr(docsrs, doc(cfg(feature = "secp256k1-ffi")))]
+impl PublicKey for secp256k1_ffi::PublicKey {
+    fn from_bytes(bytes: PublicKeyBytes) -> Result<Self> {
+        Ok(secp256k1_ffi::PublicKey::from_slice(&bytes)?)
+    }
+
+    fn to_bytes(&self) -> PublicKeyBytes {
+        self.serialize()
+    }
+}
+
+/// `secp256k1-ffi` smoke tests
+#[cfg(all(test, feature = "secp256k1-ffi"))]
+mod tests {
+    use hex_literal::hex;
+
+    type XPrv = crate::ExtendedPrivateKey<secp256k1_ffi::SecretKey>;
+
+    #[test]
+    fn secp256k1_ffi_derivation() {
+        let seed = hex!(
+            "fffcf9f6f3f0edeae7e4e1dedbd8d5d2cfccc9c6c3c0bdbab7b4b1aeaba8a5a2
+             9f9c999693908d8a8784817e7b7875726f6c696663605d5a5754514e4b484542"
+        );
+
+        let path = "m/0/2147483647'/1/2147483646'/2";
+        let xprv = XPrv::derive_child_from_seed(&seed, &path.parse().unwrap()).unwrap();
+
+        assert_eq!(
+            xprv.public_key(),
+            "xpub6FnCn6nSzZAw5Tw7cgR9bi15UV96gLZhjDstkXXxvCLsUXBGXPdSnLFbdpq8p9HmGsApME5hQTZ3emM2rnY5agb9rXpVGyy3bdW6EEgAtqt".parse().unwrap()
+        );
+    }
+}

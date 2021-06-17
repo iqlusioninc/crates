@@ -23,6 +23,9 @@ pub enum Error {
 
     /// Maximum derivation depth exceeded.
     Depth,
+
+    /// Seed length invalid.
+    SeedLength,
 }
 
 impl Display for Error {
@@ -33,6 +36,7 @@ impl Display for Error {
             Error::Crypto => f.write_str("cryptographic error"),
             Error::Decode => f.write_str("decoding error"),
             Error::Depth => f.write_str("maximum derivation depth exceeded"),
+            Error::SeedLength => f.write_str("seed length invalid"),
         }
     }
 }
@@ -77,6 +81,14 @@ impl From<k256::elliptic_curve::Error> for Error {
 #[cfg_attr(docsrs, doc(cfg(feature = "secp256k1")))]
 impl From<k256::ecdsa::Error> for Error {
     fn from(_: k256::ecdsa::Error) -> Error {
+        Error::Crypto
+    }
+}
+
+#[cfg(feature = "secp256k1-ffi")]
+#[cfg_attr(docsrs, doc(cfg(feature = "secp256k1-ffi")))]
+impl From<secp256k1_ffi::Error> for Error {
+    fn from(_: secp256k1_ffi::Error) -> Error {
         Error::Crypto
     }
 }
