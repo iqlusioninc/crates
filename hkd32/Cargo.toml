@@ -22,7 +22,7 @@ maintenance = { status = "passively-maintained" }
 
 [dependencies]
 hmac = { version = "0.11", default-features = false }
-rand_core = { version = "0.5", default-features = false }
+rand_core = { version = "0.6", default-features = false }
 sha2 = { version = "0.9", default-features = false }
 zeroize = { version = "1", default-features = false, features = ["zeroize_derive"], path = "../zeroize" }
 
@@ -33,7 +33,7 @@ subtle-encoding = { version = "0.5", optional = true, default-features = false, 
 
 [dev-dependencies]
 hex-literal = "0.3"
-rand_core = { version = "0.5", features = ["std"] }
+rand_core = { version = "0.6", features = ["std"] }
 
 [features]
 default = ["alloc", "bech32"]

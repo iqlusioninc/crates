@@ -15,9 +15,9 @@ edition     = "2018"
 circle-ci = { repository = "tendermint/kms" }
 
 [dependencies]
-ecdsa = { version = "0.10", features = ["std"] }
+ecdsa = { version = "0.12", features = ["std"] }
 eyre = "0.6"
-k256 = { version = "0.7", features = ["ecdsa", "sha256"] }
+k256 = { version = "0.9", features = ["ecdsa", "sha256"] }
 prost-amino = "0.6"
 prost-amino-derive = "0.6"
 rust_decimal = "1.13"
@@ -29,4 +29,4 @@ thiserror = "1"
 toml = "0.5"
 
 [dev-dependencies]
-rand_core = { version = "0.5", features = ["std"] }
+rand_core = { version = "0.6", features = ["std"] }

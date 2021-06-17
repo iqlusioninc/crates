@@ -42,10 +42,10 @@ impl PrivateKey for k256::SecretKey {
 
     fn derive_child(&self, left_half: PrivateKeyBytes) -> Result<Self> {
         let child_scalar = k256::NonZeroScalar::from_repr(left_half.into()).ok_or(Error::Crypto)?;
-        let derived_scalar = self.secret_scalar().as_ref() + child_scalar.as_ref();
+        let derived_scalar = self.to_secret_scalar().as_ref() + child_scalar.as_ref();
 
         k256::NonZeroScalar::new(derived_scalar)
-            .map(Self::new)
+            .map(Into::into)
             .ok_or(Error::Crypto)
     }
 
