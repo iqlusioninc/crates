@@ -7,7 +7,7 @@
 //! implemented by this crate, BIP39, provides a way to derive the seed value
 //! from a set of 24-words from a preset list, a.k.a. a "mnemonic".
 //!
-//! # Backends
+//! ## Backends
 //! This crate provides a generic implementation of BIP32 which can be used
 //! with any backing provider which implements the [`PrivateKey`] and
 //! [`PublicKey`] traits. The following providers are built into this crate,
@@ -17,6 +17,78 @@
 //!   crate, with [`XPrv`] and [`XPub`] type aliases.
 //! - `secp256k1-ffi`: support for Bitcoin Core's [libsecp256k1 C library],
 //!   as wrapped by the [`secp256k1` Rust crate].
+//!
+//! ## Limitations and further work
+//! - Deriving non-hardened [`XPub`]s from a parent [`XPub`] unsupported
+//! - Only 24-word BIP39 mnemonics are supported
+//! - BIP43, BIP44, BIP49, BIP84 not yet properly supported
+//!
+//! # Usage
+//! The following is an end-to-end example of how to generate a random BIP39
+//! mnemonic and use it to derive child keys according to a provided BIP32
+//! derivation path.
+//!
+//! ## Accessing `OsRng`
+//! The following example uses `OsRng` for cryptographically secure random
+//! number generation. To use it, you need to include `rand_core` with the
+//! `std` feature by adding the following to `Cargo.toml`:
+//!
+//! ```toml
+//! rand_core = { version = "0.6", features = ["std"] }
+//! ```
+//!
+//! (on embedded platforms, you will need to supply our own RNG)
+//!
+//! ## Rust code example
+//! ```
+//! # fn main() -> Result<(), Box<dyn std::error::Error>> {
+//! # #[cfg(all(feature = "bip39", feature = "secp256k1"))]
+//! # {
+//! use bip32::{Mnemonic, Prefix, XPrv};
+//! use rand_core::OsRng;
+//!
+//! // Generate random Mnemonic using the default language (English)
+//! let mnemonic = Mnemonic::random(&mut OsRng, Default::default());
+//!
+//! // Derive a BIP39 seed value using the given password
+//! let seed = mnemonic.to_seed("password");
+//!
+//! // Derive the root `XPrv` from the `seed` value
+//! let root_xprv = XPrv::new(&seed)?;
+//! assert_eq!(root_xprv, XPrv::derive_child_from_seed(&seed, &"m".parse()?)?);
+//!
+//! // Derive a child `XPrv` using the provided BIP32 derivation path
+//! let child_path = "m/0/2147483647'/1/2147483646'";
+//! let child_xprv = XPrv::derive_child_from_seed(&seed, &child_path.parse()?)?;
+//!
+//! // Get the `XPub` associated with `child_xprv`.
+//! let child_xpub = child_xprv.public_key();
+//!
+//! // Serialize `child_xprv` as a string with the `xprv` prefix.
+//! let child_xprv_str = child_xprv.to_string(Prefix::XPRV);
+//! assert!(child_xprv_str.starts_with("xprv"));
+//!
+//! // Serialize `child_xpub` as a string with the `xpub` prefix.
+//! let child_xpub_str = child_xpub.to_string(Prefix::XPUB);
+//! assert!(child_xprv_str.starts_with("xprv"));
+//!
+//! // Get the ECDSA/secp256k1 signing and verification keys for the xprv and xpub
+//! let signing_key = child_xprv.private_key();
+//! let verification_key = child_xpub.public_key();
+//!
+//! // Sign and verify an example message using the derived keys.
+//! use bip32::secp256k1::ecdsa::{
+//!     signature::{Signer, Verifier},
+//!     Signature
+//! };
+//!
+//! let example_msg = b"Hello, world!";
+//! let signature: Signature = signing_key.sign(example_msg);
+//! assert!(verification_key.verify(example_msg, &signature).is_ok());
+//! # }
+//! # Ok(())
+//! # }
+//! ```
 //!
 //! [bip32]: https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki
 //! [libsecp256k1 C library]: https://github.com/bitcoin-core/secp256k1

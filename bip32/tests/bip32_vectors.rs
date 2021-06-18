@@ -6,7 +6,7 @@
 //! what we currently support.
 // TODO(tarcieri): consolidate test vectors
 
-#![cfg(feature = "secp256k1")]
+#![cfg(all(feature = "alloc", feature = "secp256k1"))]
 
 use bip32::{Prefix, XPrv};
 use hex_literal::hex;
