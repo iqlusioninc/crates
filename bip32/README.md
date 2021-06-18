@@ -37,8 +37,8 @@ Copyright © 2020-2021 iqlusion
 **bip32.rs** is distributed under the terms of either the MIT license
 or the Apache License (Version 2.0), at your option.
 
-See [LICENSE] (Apache License, Version 2.0) file in the `iqlusioninc/crates`
-toplevel directory of this repository or [LICENSE-MIT] for details.
+See [LICENSE-APACHE] (Apache License, Version 2.0) and [LICENSE-MIT] for
+further details.
 
 ## Contribution
 
@@ -65,3 +65,5 @@ without any additional terms or conditions.
 [bip32]: https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki
 [libsecp256k1 C library]: https://github.com/bitcoin-core/secp256k1
 [`secp256k1` Rust crate]: https://github.com/rust-bitcoin/rust-secp256k1/
+[LICENSE-APACHE]: https://github.com/iqlusioninc/crates/blob/main/bip32/LICENSE-APACHE
+[LICENSE-MIT]: https://github.com/iqlusioninc/crates/blob/main/bip32/LICENSE-MIT

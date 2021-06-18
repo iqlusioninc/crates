@@ -1,6 +1,6 @@
 //! BIP39 test vectors
 
-#![cfg(feature = "secp256k1")]
+#![cfg(all(feature = "bip39", feature = "secp256k1"))]
 
 use bip32::{Mnemonic, Seed, XPrv};
 use hex_literal::hex;

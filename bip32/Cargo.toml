@@ -31,10 +31,11 @@ secp256k1-ffi = { package = "secp256k1", version = "0.20", optional = true }
 version = "0.9"
 optional = true
 default-features = false
-features = ["arithmetic", "ecdsa", "zeroize"]
+features = ["arithmetic", "ecdsa", "sha256", "keccak256", "zeroize"]
 
 [dev-dependencies]
 hex-literal = "0.3"
+rand_core = { version = "0.6", features = ["std"] }
 
 [features]
 default = ["bip39", "secp256k1", "std"]
