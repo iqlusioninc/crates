@@ -5,7 +5,7 @@ BIP32 hierarchical key derivation implemented in a generic, no_std-friendly
 manner. Supports deriving keys using the pure Rust k256 crate or the
 C library-backed secp256k1 crate
 """
-version    = "0.1.0" # Also update html_root_url in lib.rs when bumping this
+version    = "0.1.1" # Also update html_root_url in lib.rs when bumping this
 authors    = ["Tony Arcieri <tony@iqlusion.io>"]
 license    = "Apache-2.0 OR MIT"
 homepage   = "https://github.com/iqlusioninc/crates/"
