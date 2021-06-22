@@ -74,7 +74,7 @@ impl PrivateKey for k256::ecdsa::SigningKey {
     }
 
     fn public_key(&self) -> Self::PublicKey {
-        self.verify_key()
+        self.verifying_key()
     }
 }
 
