@@ -1,13 +1,14 @@
 //! Extended public keys
 
 use crate::{
-    Error, ExtendedKey, ExtendedKeyAttrs, ExtendedPrivateKey, KeyFingerprint, Prefix, PrivateKey,
-    PublicKey, PublicKeyBytes, Result,
+    ChildNumber, Error, ExtendedKey, ExtendedKeyAttrs, ExtendedPrivateKey, HmacSha512,
+    KeyFingerprint, Prefix, PrivateKey, PublicKey, PublicKeyBytes, Result, KEY_SIZE,
 };
 use core::{
     convert::{TryFrom, TryInto},
     str::FromStr,
 };
+use hmac::{Mac, NewMac};
 
 #[cfg(feature = "alloc")]
 use alloc::string::{String, ToString};
@@ -35,7 +36,7 @@ impl<K> ExtendedPublicKey<K>
 where
     K: PublicKey,
 {
-    /// Serialize the derived public key as bytes.
+    /// Obtain the non-extended public key value `K`.
     pub fn public_key(&self) -> &K {
         &self.public_key
     }
@@ -49,6 +50,35 @@ where
     /// Compute a 4-byte key fingerprint for this extended public key.
     pub fn fingerprint(&self) -> KeyFingerprint {
         self.public_key().fingerprint()
+    }
+
+    /// Derive a child key for a particular [`ChildNumber`].
+    pub fn derive_child(&self, child_number: ChildNumber) -> Result<Self> {
+        if child_number.is_hardened() {
+            // Cannot derive child public keys for hardened `ChildNumber`s
+            return Err(Error::ChildNumber);
+        }
+
+        let depth = self.attrs.depth.checked_add(1).ok_or(Error::Depth)?;
+
+        let mut hmac =
+            HmacSha512::new_from_slice(&self.attrs.chain_code).map_err(|_| Error::Crypto)?;
+
+        hmac.update(&self.public_key.to_bytes());
+        hmac.update(&child_number.to_bytes());
+
+        let result = hmac.finalize().into_bytes();
+        let (child_key, chain_code) = result.split_at(KEY_SIZE);
+        let public_key = self.public_key.derive_child(child_key.try_into()?)?;
+
+        let attrs = ExtendedKeyAttrs {
+            parent_fingerprint: self.public_key.fingerprint(),
+            child_number,
+            chain_code: chain_code.try_into()?,
+            depth,
+        };
+
+        Ok(ExtendedPublicKey { public_key, attrs })
     }
 
     /// Serialize the raw public key as a byte array (e.g. SEC1-encoded).

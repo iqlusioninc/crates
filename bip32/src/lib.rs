@@ -155,3 +155,6 @@ pub type KeyFingerprint = [u8; 4];
 
 /// BIP32 "versions": integer representation of the key prefix.
 pub type Version = u32;
+
+/// HMAC with SHA-512
+type HmacSha512 = hmac::Hmac<sha2::Sha512>;
