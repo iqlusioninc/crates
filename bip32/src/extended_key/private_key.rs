@@ -54,7 +54,7 @@ where
     /// Derive a child key from the given [`DerivationPath`].
     #[cfg(feature = "alloc")]
     #[cfg_attr(docsrs, doc(cfg(feature = "alloc")))]
-    pub fn derive_child_from_seed<S>(seed: S, path: &DerivationPath) -> Result<Self>
+    pub fn derive_from_path<S>(seed: S, path: &DerivationPath) -> Result<Self>
     where
         S: AsRef<[u8]>,
     {

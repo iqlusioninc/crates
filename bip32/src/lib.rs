@@ -55,11 +55,11 @@
 //!
 //! // Derive the root `XPrv` from the `seed` value
 //! let root_xprv = XPrv::new(&seed)?;
-//! assert_eq!(root_xprv, XPrv::derive_child_from_seed(&seed, &"m".parse()?)?);
+//! assert_eq!(root_xprv, XPrv::derive_from_path(&seed, &"m".parse()?)?);
 //!
 //! // Derive a child `XPrv` using the provided BIP32 derivation path
 //! let child_path = "m/0/2147483647'/1/2147483646'";
-//! let child_xprv = XPrv::derive_child_from_seed(&seed, &child_path.parse()?)?;
+//! let child_xprv = XPrv::derive_from_path(&seed, &child_path.parse()?)?;
 //!
 //! // Get the `XPub` associated with `child_xprv`.
 //! let child_xpub = child_xprv.public_key();
