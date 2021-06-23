@@ -120,7 +120,7 @@ mod tests {
         );
 
         let path = "m/0/2147483647'/1/2147483646'/2";
-        let xprv = XPrv::derive_child_from_seed(&seed, &path.parse().unwrap()).unwrap();
+        let xprv = XPrv::derive_from_path(&seed, &path.parse().unwrap()).unwrap();
 
         assert_eq!(
             xprv,

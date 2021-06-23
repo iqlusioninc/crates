@@ -114,7 +114,7 @@ mod tests {
     #[test]
     fn secp256k1_ffi_xprv_derivation() {
         let path = "m/0/2147483647'/1/2147483646'/2";
-        let xprv = XPrv::derive_child_from_seed(&SEED, &path.parse().unwrap()).unwrap();
+        let xprv = XPrv::derive_from_path(&SEED, &path.parse().unwrap()).unwrap();
 
         assert_eq!(
             xprv.public_key(),
@@ -125,7 +125,7 @@ mod tests {
     #[test]
     fn secp256k1_ffi_xpub_derivation() {
         let path = "m/0/2147483647'/1/2147483646'";
-        let xprv = XPrv::derive_child_from_seed(&SEED, &path.parse().unwrap()).unwrap();
+        let xprv = XPrv::derive_from_path(&SEED, &path.parse().unwrap()).unwrap();
         let xpub = xprv.public_key().derive_child(2.into()).unwrap();
 
         assert_eq!(

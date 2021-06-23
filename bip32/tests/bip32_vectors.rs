@@ -15,7 +15,7 @@ use hex_literal::hex;
 ///
 /// Panics if anything goes wrong.
 fn derive_xprv(seed: &[u8], path: &str) -> XPrv {
-    XPrv::derive_child_from_seed(&seed, &path.parse().unwrap()).unwrap()
+    XPrv::derive_from_path(&seed, &path.parse().unwrap()).unwrap()
 }
 
 /// BIP32 Test Vector 1
