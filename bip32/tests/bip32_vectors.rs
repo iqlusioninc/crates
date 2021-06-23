@@ -90,6 +90,11 @@ fn test_vector_1() {
         key_m_0h_1_2h_2_1000000000.public_key().to_string(Prefix::XPUB),
         "xpub6H1LXWLaKsWFhvm6RVpEL9P4KfRZSW7abD2ttkWP3SSQvnyA8FSVqNTEcYFgJS2UaFcxupHiYkro49S8yGasTvXEYBVPamhGW6cFJodrTHy"
     );
+
+    // Test non-hardened derivation from an xpub
+    let xpub = key_m_0h_1_2h_2.public_key();
+    let xpub_child = xpub.derive_child(1000000000.into()).unwrap();
+    assert_eq!(key_m_0h_1_2h_2_1000000000.public_key(), xpub_child);
 }
 
 /// BIP32 Test Vector 2
@@ -167,6 +172,11 @@ fn test_vector_2() {
         key_m_0_2147483647h_1_2147483646h_2.public_key().to_string(Prefix::XPUB),
         "xpub6FnCn6nSzZAw5Tw7cgR9bi15UV96gLZhjDstkXXxvCLsUXBGXPdSnLFbdpq8p9HmGsApME5hQTZ3emM2rnY5agb9rXpVGyy3bdW6EEgAtqt"
     );
+
+    // Test non-hardened derivation from an xpub
+    let xpub = key_m_0_2147483647h_1_2147483646h.public_key();
+    let xpub_child = xpub.derive_child(2.into()).unwrap();
+    assert_eq!(key_m_0_2147483647h_1_2147483646h_2.public_key(), xpub_child);
 }
 
 /// BIP32 Test Vector 3

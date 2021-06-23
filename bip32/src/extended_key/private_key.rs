@@ -1,16 +1,15 @@
 //! Extended private keys
 
 use crate::{
-    ChildNumber, Depth, Error, ExtendedKey, ExtendedKeyAttrs, ExtendedPublicKey, KeyFingerprint,
-    Prefix, PrivateKey, PrivateKeyBytes, PublicKey, Result, KEY_SIZE,
+    ChildNumber, Depth, Error, ExtendedKey, ExtendedKeyAttrs, ExtendedPublicKey, HmacSha512,
+    KeyFingerprint, Prefix, PrivateKey, PrivateKeyBytes, PublicKey, Result, KEY_SIZE,
 };
 use core::{
     convert::{TryFrom, TryInto},
     fmt::{self, Debug},
     str::FromStr,
 };
-use hmac::{Hmac, Mac, NewMac};
-use sha2::Sha512;
+use hmac::{Mac, NewMac};
 use subtle::{Choice, ConstantTimeEq};
 use zeroize::Zeroize;
 
@@ -73,7 +72,7 @@ where
             return Err(Error::SeedLength);
         }
 
-        let mut hmac = Hmac::<Sha512>::new_from_slice(&BIP39_DOMAIN_SEPARATOR)?;
+        let mut hmac = HmacSha512::new_from_slice(&BIP39_DOMAIN_SEPARATOR)?;
         hmac.update(seed.as_ref());
 
         let result = hmac.finalize().into_bytes();
@@ -94,7 +93,7 @@ where
         let depth = self.attrs.depth.checked_add(1).ok_or(Error::Depth)?;
 
         let mut hmac =
-            Hmac::<Sha512>::new_from_slice(&self.attrs.chain_code).map_err(|_| Error::Crypto)?;
+            HmacSha512::new_from_slice(&self.attrs.chain_code).map_err(|_| Error::Crypto)?;
 
         if child_number.is_hardened() {
             hmac.update(&[0]);
@@ -106,7 +105,7 @@ where
         hmac.update(&child_number.to_bytes());
 
         let result = hmac.finalize().into_bytes();
-        let (secret_key, chain_code) = result.split_at(KEY_SIZE);
+        let (child_key, chain_code) = result.split_at(KEY_SIZE);
 
         // We should technically loop here if a `secret_key` is zero or overflows
         // the order of the underlying elliptic curve group, incrementing the
@@ -117,7 +116,7 @@ where
         //
         // ...so instead, we simply return an error if this were ever to happen,
         // as the chances of it happening are vanishingly small.
-        let private_key = self.private_key.derive_child(secret_key.try_into()?)?;
+        let private_key = self.private_key.derive_child(child_key.try_into()?)?;
 
         let attrs = ExtendedKeyAttrs {
             parent_fingerprint: self.private_key.public_key().fingerprint(),

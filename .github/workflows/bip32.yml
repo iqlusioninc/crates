@@ -61,5 +61,7 @@ jobs:
           override: true
           profile: minimal
       - run: cargo test --release --no-default-features
+      - run: cargo test --release --no-default-features --features secp256k1,bip39
+      - run: cargo test --release --no-default-features --features secp256k1-ffi,bip39
       - run: cargo test --release
       - run: cargo test --release --all-features

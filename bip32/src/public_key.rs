@@ -1,12 +1,15 @@
 //! Trait for deriving child keys on a given type.
 
-use crate::{KeyFingerprint, Result, KEY_SIZE};
+use crate::{KeyFingerprint, PrivateKeyBytes, Result, KEY_SIZE};
 use core::convert::TryInto;
 use ripemd160::Ripemd160;
 use sha2::{Digest, Sha256};
 
 #[cfg(feature = "secp256k1")]
-use k256::elliptic_curve::sec1::ToEncodedPoint;
+use k256::elliptic_curve::{group::prime::PrimeCurveAffine, sec1::ToEncodedPoint};
+
+#[cfg(any(feature = "secp256k1", feature = "secp256k1-ffi"))]
+use crate::Error;
 
 /// Bytes which represent a public key.
 ///
@@ -20,6 +23,9 @@ pub trait PublicKey: Sized {
 
     /// Serialize this key as bytes.
     fn to_bytes(&self) -> PublicKeyBytes;
+
+    /// Derive a child key from a parent key and a provided tweak value.
+    fn derive_child(&self, other: PrivateKeyBytes) -> Result<Self>;
 
     /// Compute a 4-byte key fingerprint for this public key.
     ///
@@ -43,6 +49,12 @@ impl PublicKey for k256::PublicKey {
             .try_into()
             .expect("malformed public key")
     }
+
+    fn derive_child(&self, other: PrivateKeyBytes) -> Result<Self> {
+        let child_scalar = k256::NonZeroScalar::from_repr(other.into()).ok_or(Error::Crypto)?;
+        let child_point = self.to_projective() + (k256::AffinePoint::generator() * *child_scalar);
+        Self::from_affine(child_point.into()).map_err(|_| Error::Crypto)
+    }
 }
 
 #[cfg(feature = "secp256k1")]
@@ -54,6 +66,12 @@ impl PublicKey for k256::ecdsa::VerifyingKey {
 
     fn to_bytes(&self) -> PublicKeyBytes {
         self.to_bytes().as_ref().try_into().expect("malformed key")
+    }
+
+    fn derive_child(&self, other: PrivateKeyBytes) -> Result<Self> {
+        k256::PublicKey::from(self)
+            .derive_child(other)
+            .map(Into::into)
     }
 }
 
@@ -67,27 +85,51 @@ impl PublicKey for secp256k1_ffi::PublicKey {
     fn to_bytes(&self) -> PublicKeyBytes {
         self.serialize()
     }
+
+    fn derive_child(&self, other: PrivateKeyBytes) -> Result<Self> {
+        use secp256k1_ffi::{Secp256k1, VerifyOnly};
+        let engine = Secp256k1::<VerifyOnly>::verification_only();
+
+        let mut child_key = *self;
+        child_key
+            .add_exp_assign(&engine, &other)
+            .map_err(|_| Error::Crypto)?;
+
+        Ok(child_key)
+    }
 }
 
 /// `secp256k1-ffi` smoke tests
-#[cfg(all(test, feature = "secp256k1-ffi"))]
+#[cfg(all(test, feature = "bip39", feature = "secp256k1-ffi"))]
 mod tests {
     use hex_literal::hex;
+
+    const SEED: [u8; 64] = hex!(
+        "fffcf9f6f3f0edeae7e4e1dedbd8d5d2cfccc9c6c3c0bdbab7b4b1aeaba8a5a2
+         9f9c999693908d8a8784817e7b7875726f6c696663605d5a5754514e4b484542"
+    );
 
     type XPrv = crate::ExtendedPrivateKey<secp256k1_ffi::SecretKey>;
 
     #[test]
-    fn secp256k1_ffi_derivation() {
-        let seed = hex!(
-            "fffcf9f6f3f0edeae7e4e1dedbd8d5d2cfccc9c6c3c0bdbab7b4b1aeaba8a5a2
-             9f9c999693908d8a8784817e7b7875726f6c696663605d5a5754514e4b484542"
-        );
-
+    fn secp256k1_ffi_xprv_derivation() {
         let path = "m/0/2147483647'/1/2147483646'/2";
-        let xprv = XPrv::derive_child_from_seed(&seed, &path.parse().unwrap()).unwrap();
+        let xprv = XPrv::derive_child_from_seed(&SEED, &path.parse().unwrap()).unwrap();
 
         assert_eq!(
             xprv.public_key(),
+            "xpub6FnCn6nSzZAw5Tw7cgR9bi15UV96gLZhjDstkXXxvCLsUXBGXPdSnLFbdpq8p9HmGsApME5hQTZ3emM2rnY5agb9rXpVGyy3bdW6EEgAtqt".parse().unwrap()
+        );
+    }
+
+    #[test]
+    fn secp256k1_ffi_xpub_derivation() {
+        let path = "m/0/2147483647'/1/2147483646'";
+        let xprv = XPrv::derive_child_from_seed(&SEED, &path.parse().unwrap()).unwrap();
+        let xpub = xprv.public_key().derive_child(2.into()).unwrap();
+
+        assert_eq!(
+            xpub,
             "xpub6FnCn6nSzZAw5Tw7cgR9bi15UV96gLZhjDstkXXxvCLsUXBGXPdSnLFbdpq8p9HmGsApME5hQTZ3emM2rnY5agb9rXpVGyy3bdW6EEgAtqt".parse().unwrap()
         );
     }
