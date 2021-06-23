@@ -3,7 +3,7 @@
 use crate::{PublicKey, Result, KEY_SIZE};
 
 #[cfg(feature = "secp256k1")]
-use crate::Error;
+use crate::{Error, XPrv};
 
 /// Bytes which represent a private key.
 pub type PrivateKeyBytes = [u8; KEY_SIZE];
@@ -76,6 +76,22 @@ impl PrivateKey for k256::ecdsa::SigningKey {
 
     fn public_key(&self) -> Self::PublicKey {
         self.verifying_key()
+    }
+}
+
+#[cfg(feature = "secp256k1")]
+#[cfg_attr(docsrs, doc(cfg(feature = "secp256k1")))]
+impl From<XPrv> for k256::ecdsa::SigningKey {
+    fn from(xprv: XPrv) -> k256::ecdsa::SigningKey {
+        k256::ecdsa::SigningKey::from(&xprv)
+    }
+}
+
+#[cfg(feature = "secp256k1")]
+#[cfg_attr(docsrs, doc(cfg(feature = "secp256k1")))]
+impl From<&XPrv> for k256::ecdsa::SigningKey {
+    fn from(xprv: &XPrv) -> k256::ecdsa::SigningKey {
+        xprv.private_key().clone()
     }
 }
 
