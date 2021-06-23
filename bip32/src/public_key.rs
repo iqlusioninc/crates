@@ -6,7 +6,10 @@ use ripemd160::Ripemd160;
 use sha2::{Digest, Sha256};
 
 #[cfg(feature = "secp256k1")]
-use k256::elliptic_curve::{group::prime::PrimeCurveAffine, sec1::ToEncodedPoint};
+use {
+    crate::XPub,
+    k256::elliptic_curve::{group::prime::PrimeCurveAffine, sec1::ToEncodedPoint},
+};
 
 #[cfg(any(feature = "secp256k1", feature = "secp256k1-ffi"))]
 use crate::Error;
@@ -72,6 +75,22 @@ impl PublicKey for k256::ecdsa::VerifyingKey {
         k256::PublicKey::from(self)
             .derive_child(other)
             .map(Into::into)
+    }
+}
+
+#[cfg(feature = "secp256k1")]
+#[cfg_attr(docsrs, doc(cfg(feature = "secp256k1")))]
+impl From<XPub> for k256::ecdsa::VerifyingKey {
+    fn from(xpub: XPub) -> k256::ecdsa::VerifyingKey {
+        k256::ecdsa::VerifyingKey::from(&xpub)
+    }
+}
+
+#[cfg(feature = "secp256k1")]
+#[cfg_attr(docsrs, doc(cfg(feature = "secp256k1")))]
+impl From<&XPub> for k256::ecdsa::VerifyingKey {
+    fn from(xpub: &XPub) -> k256::ecdsa::VerifyingKey {
+        *xpub.public_key()
     }
 }
 
