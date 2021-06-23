@@ -19,7 +19,6 @@
 //!   as wrapped by the [`secp256k1` Rust crate].
 //!
 //! ## Limitations and further work
-//! - Deriving non-hardened [`XPub`]s from a parent [`XPub`] unsupported
 //! - Only 24-word BIP39 mnemonics are supported
 //! - BIP43, BIP44, BIP49, BIP84 not yet properly supported
 //!
