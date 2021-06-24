@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## 0.2.0 (2021-06-23)
 ### Added
+- `From` conversions to `k256::ecdsa::*Key` ([#777])
+
+[#777]: https://github.com/iqlusioninc/crates/pull/777
+
+## 0.2.0 (2021-06-23) [YANKED]
+### Added
 - Non-hardened derivation support with `XPub::derive_child` ([#772])
 
 ### Changed
