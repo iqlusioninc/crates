@@ -10,6 +10,7 @@ members = [
     "iqhttp",
     "mintscan",
     "secrecy",
+    "signatory",
     "stdtx",
     "subtle-encoding",
     "tai64",
