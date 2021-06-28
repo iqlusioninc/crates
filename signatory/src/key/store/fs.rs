@@ -28,7 +28,13 @@ pub struct FsKeyStore {
 }
 
 impl FsKeyStore {
-    /// Create a filesystem-backed keystore at the given path, creating a new
+    /// Attempt to open a filesystem-backed keystore at the given path,
+    /// creating it if it doesn't already exist.
+    pub fn create_or_open(dir_path: &Path) -> Result<Self> {
+        Self::open(dir_path).or_else(|_| Self::create(dir_path))
+    }
+
+    /// Create a filesystem-backed keystore at the given path, making a new
     /// directory and setting its file permissions.
     pub fn create(dir_path: &Path) -> Result<Self> {
         fs::create_dir_all(&dir_path)?;
@@ -135,7 +141,7 @@ mod tests {
     #[allow(dead_code)]
     fn create_example_keystore(example_key: &pkcs8::PrivateKeyDocument) -> FsStoreHandle {
         let dir = tempfile::tempdir().unwrap();
-        let keystore = FsKeyStore::create(&dir.path().join("keys")).unwrap();
+        let keystore = FsKeyStore::create_or_open(&dir.path().join("keys")).unwrap();
 
         keystore
             .store(&EXAMPLE_KEY.parse().unwrap(), &example_key)
