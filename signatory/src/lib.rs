@@ -20,8 +20,14 @@ mod key;
 pub use self::{
     algorithm::Algorithm,
     error::{Error, Result},
-    key::{info::KeyInfo, name::KeyName, ring::KeyRing, store::GeneratePkcs8},
+    key::{
+        info::KeyInfo,
+        name::KeyName,
+        ring::{KeyRing, LoadPkcs8},
+        store::GeneratePkcs8,
+    },
 };
+pub use pkcs8;
 pub use signature;
 
 #[cfg(feature = "std")]

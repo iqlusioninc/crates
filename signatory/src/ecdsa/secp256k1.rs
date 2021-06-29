@@ -1,14 +1,17 @@
 //! ECDSA/secp256k1 support.
 
-use crate::key::store::GeneratePkcs8;
+use crate::{
+    key::{ring::LoadPkcs8, store::GeneratePkcs8},
+    Result,
+};
 use alloc::{boxed::Box, vec::Vec};
 use core::fmt;
-use ecdsa::signature::{Error, Signer};
+use ecdsa::signature::Signer;
 pub use k256::ecdsa::{
     recoverable::{Id as RecoveryId, Signature as RecoverableSignature},
     Signature, VerifyingKey,
 };
-use pkcs8::ToPrivateKey;
+use pkcs8::{FromPrivateKey, ToPrivateKey};
 
 /// ECDSA/secp256k1 key ring.
 #[derive(Debug, Default)]
@@ -24,15 +27,42 @@ impl KeyRing {
     }
 }
 
+impl LoadPkcs8 for KeyRing {
+    fn load_pkcs8(&mut self, private_key: pkcs8::PrivateKeyInfo<'_>) -> Result<()> {
+        let _key = SigningKey::from_pkcs8_private_key_info(private_key)?;
+        Ok(())
+    }
+}
+
 /// Transaction signing key (ECDSA/secp256k1)
 pub struct SigningKey {
     inner: Box<dyn Secp256k1Signer>,
 }
 
 impl SigningKey {
+    /// Initialize from a provided signer object.
+    ///
+    /// Use [`SigningKey::from_bytes`] to initialize from a raw private key.
+    pub fn new(signer: Box<dyn Secp256k1Signer>) -> Self {
+        Self { inner: signer }
+    }
+
+    /// Initialize from a raw scalar value (big endian).
+    pub fn from_bytes(bytes: &[u8]) -> Result<Self> {
+        let signing_key = k256::ecdsa::SigningKey::from_bytes(bytes)?;
+        Ok(Self::new(Box::new(signing_key)))
+    }
+
     /// Get the verifying key that corresponds to this signing key.
     pub fn verifying_key(&self) -> VerifyingKey {
         self.inner.verifying_key()
+    }
+}
+
+impl FromPrivateKey for SigningKey {
+    fn from_pkcs8_private_key_info(private_key: pkcs8::PrivateKeyInfo<'_>) -> pkcs8::Result<Self> {
+        let signing_key = k256::ecdsa::SigningKey::from_pkcs8_private_key_info(private_key)?;
+        Ok(Self::new(Box::new(signing_key)))
     }
 }
 
@@ -47,13 +77,13 @@ impl GeneratePkcs8 for SigningKey {
 }
 
 impl Signer<Signature> for SigningKey {
-    fn try_sign(&self, msg: &[u8]) -> Result<Signature, Error> {
+    fn try_sign(&self, msg: &[u8]) -> signature::Result<Signature> {
         self.inner.try_sign(msg)
     }
 }
 
 impl Signer<RecoverableSignature> for SigningKey {
-    fn try_sign(&self, msg: &[u8]) -> Result<RecoverableSignature, Error> {
+    fn try_sign(&self, msg: &[u8]) -> signature::Result<RecoverableSignature> {
         let sig: Signature = self.inner.try_sign(msg)?;
         RecoverableSignature::from_trial_recovery(&self.verifying_key(), msg, &sig)
     }
