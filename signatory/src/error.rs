@@ -12,6 +12,10 @@ pub enum Error {
     /// Algorithm is invalid.
     AlgorithmInvalid,
 
+    /// ECDSA errors.
+    #[cfg(feature = "ecdsa")]
+    Ecdsa,
+
     /// Key name is invalid.
     KeyNameInvalid,
 
@@ -35,6 +39,8 @@ impl Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::AlgorithmInvalid => f.write_str("invalid algorithm"),
+            #[cfg(feature = "ecdsa")]
+            Self::Ecdsa => f.write_str("ECDSA error"),
             Self::KeyNameInvalid => f.write_str("invalid key name"),
             #[cfg(feature = "std")]
             Self::Io(err) => write!(f, "{}", err),
@@ -50,9 +56,22 @@ impl Display for Error {
 #[cfg(feature = "std")]
 impl std::error::Error for Error {}
 
+#[cfg(feature = "ecdsa")]
+impl From<ecdsa::Error> for Error {
+    fn from(_: ecdsa::Error) -> Error {
+        Error::Ecdsa
+    }
+}
+
 impl From<pkcs8::Error> for Error {
     fn from(err: pkcs8::Error) -> Error {
         Error::Pkcs8(err)
+    }
+}
+
+impl From<pkcs8::der::Error> for Error {
+    fn from(err: pkcs8::der::Error) -> Error {
+        Error::Pkcs8(err.into())
     }
 }
 
