@@ -1,7 +1,7 @@
 //! Signatory
 
 #![no_std]
-#![doc(html_root_url = "https://docs.rs/signatory/0.23.0-pre")]
+#![doc(html_root_url = "https://docs.rs/signatory/0.23.0-pre.1")]
 #![forbid(unsafe_code, clippy::unwrap_used)]
 #![warn(missing_docs, rust_2018_idioms, unused_qualifications)]
 
