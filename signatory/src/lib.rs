@@ -1,6 +1,7 @@
 //! Signatory
 
 #![no_std]
+#![cfg_attr(docsrs, feature(doc_cfg))]
 #![doc(html_root_url = "https://docs.rs/signatory/0.23.0-pre.1")]
 #![forbid(unsafe_code, clippy::unwrap_used)]
 #![warn(missing_docs, rust_2018_idioms, unused_qualifications)]
@@ -11,6 +12,7 @@ extern crate alloc;
 extern crate std;
 
 #[cfg(feature = "ecdsa")]
+#[cfg_attr(docsrs, doc(cfg(feature = "ecdsa")))]
 pub mod ecdsa;
 
 mod algorithm;
