@@ -27,3 +27,7 @@ tempfile = "3"
 default = ["std"]
 secp256k1 = ["ecdsa", "k256"]
 std = ["pkcs8/std", "rand_core/std", "signature/std"]
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]

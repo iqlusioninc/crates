@@ -10,6 +10,7 @@ use crate::ecdsa;
 pub struct KeyRing {
     /// ECDSA key ring.
     #[cfg(feature = "ecdsa")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "ecdsa")))]
     pub ecdsa: ecdsa::KeyRing,
 }
 

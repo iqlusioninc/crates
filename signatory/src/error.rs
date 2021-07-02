@@ -14,6 +14,7 @@ pub enum Error {
 
     /// ECDSA errors.
     #[cfg(feature = "ecdsa")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "ecdsa")))]
     Ecdsa,
 
     /// Key name is invalid.
@@ -21,14 +22,17 @@ pub enum Error {
 
     /// I/O errors
     #[cfg(feature = "std")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "std")))]
     Io(std::io::Error),
 
     /// Expected a directory, found something else
     #[cfg(feature = "std")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "std")))]
     NotADirectory,
 
     /// Permissions error, not required mode
     #[cfg(feature = "std")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "std")))]
     Permissions,
 
     /// PKCS#8 errors
@@ -54,9 +58,11 @@ impl Display for Error {
 }
 
 #[cfg(feature = "std")]
+#[cfg_attr(docsrs, doc(cfg(feature = "std")))]
 impl std::error::Error for Error {}
 
 #[cfg(feature = "ecdsa")]
+#[cfg_attr(docsrs, doc(cfg(feature = "ecdsa")))]
 impl From<ecdsa::Error> for Error {
     fn from(_: ecdsa::Error) -> Error {
         Error::Ecdsa
@@ -76,6 +82,7 @@ impl From<pkcs8::der::Error> for Error {
 }
 
 #[cfg(feature = "std")]
+#[cfg_attr(docsrs, doc(cfg(feature = "std")))]
 impl From<std::io::Error> for Error {
     fn from(err: std::io::Error) -> Error {
         Error::Io(err)
