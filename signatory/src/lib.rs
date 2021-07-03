@@ -2,7 +2,10 @@
 
 #![no_std]
 #![cfg_attr(docsrs, feature(doc_cfg))]
-#![doc(html_root_url = "https://docs.rs/signatory/0.23.0-pre.1")]
+#![doc(
+    html_root_url = "https://docs.rs/signatory/0.23.0-pre.1",
+    html_logo_url = "https://raw.githubusercontent.com/iqlusioninc/crates/main/signatory/img/signatory-rustacean.png"
+)]
 #![forbid(unsafe_code, clippy::unwrap_used)]
 #![warn(missing_docs, rust_2018_idioms, unused_qualifications)]
 
