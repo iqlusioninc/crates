@@ -1650,7 +1650,7 @@ dependencies = [
 
 [[package]]
 name = "signatory"
-version = "0.23.0-pre.1"
+version = "0.23.0-pre.2"
 dependencies = [
  "ecdsa",
  "k256",
