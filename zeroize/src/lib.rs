@@ -222,7 +222,9 @@ pub use zeroize_derive::Zeroize;
 #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
 mod x86;
 
-use core::{ops, ptr, slice::IterMut, sync::atomic};
+use core::mem::{self, MaybeUninit};
+use core::slice::{self, IterMut};
+use core::{ops, ptr, sync::atomic};
 
 #[cfg(feature = "alloc")]
 use alloc::{boxed::Box, string::String, vec::Vec};
@@ -327,6 +329,27 @@ where
         // done so by take().
         unsafe { ptr::write_volatile(self, Option::default()) }
 
+        atomic_fence();
+    }
+}
+
+/// Impl `Zeroize` on slices of MaybeUninit types
+/// This impl can eventually be optimized using an memset intrinsic,
+/// such as `core::intrinsics::volatile_set_memory`.
+/// This fills the slice with zeros
+/// Note that this ignore invariants that Z might have, becuase MaybeUninit removes all invariants.
+impl<Z> Zeroize for [MaybeUninit<Z>] {
+    fn zeroize(&mut self) {
+        let ptr = self.as_mut_ptr() as *mut MaybeUninit<u8>;
+        let size = self.len().checked_mul(mem::size_of::<Z>()).unwrap();
+        assert!(size <= core::isize::MAX as usize);
+        // Safety:
+        //
+        // This is safe, because every valid pointer is well aligned for u8
+        // and it is backed by a single allocated object for at least `self.len() * size_pf::<Z>()` bytes.
+        // and 0 is a valid value for `MaybeUninit<Z>`
+        // The memory of the slice should not wrap around the address space.
+        unsafe { volatile_set(ptr, MaybeUninit::new(0), size) }
         atomic_fence();
     }
 }
