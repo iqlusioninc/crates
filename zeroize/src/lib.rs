@@ -559,6 +559,14 @@ mod tests {
         assert_eq!(arr.as_ref(), [0u8; 64].as_ref());
     }
 
+    #[test]
+    fn zeroize_maybeuninit_byte_arrays() {
+        let mut arr = [MaybeUninit::new(42u64); 64];
+        arr.zeroize();
+        let arr_init: [u64; 64] = unsafe { core::mem::transmute(arr) };
+        assert_eq!(arr_init, [0u64; 64]);
+    }
+
     #[cfg(feature = "alloc")]
     #[test]
     fn zeroize_vec() {
