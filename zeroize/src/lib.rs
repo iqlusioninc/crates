@@ -315,7 +315,7 @@ where
         // The memory pointed to by `self` is valid for `mem::size_of::<Self>()` bytes.
         // It is also properly aligned, because `u8` has an alignment of `1`.
         unsafe {
-            volatile_set(self as *mut _ as *mut u8, 0, core::mem::size_of::<Self>());
+            volatile_set(self as *mut _ as *mut u8, 0, mem::size_of::<Self>());
         }
 
         // Ensures self is overwritten with the default bit pattern. volatile_write can't be
@@ -389,37 +389,23 @@ where
     /// Ensures the entire capacity of the `Vec` is zeroed. Cannot ensure that
     /// previous reallocations did not leave values on the heap.
     fn zeroize(&mut self) {
+        use core::slice;
+        // Zeroize all the initialized elements.
         self.iter_mut().zeroize();
 
-        // Zero the capacity of the `Vec` that is not initialized.
-        {
-            // Safety:
-            //
-            // This is safe, because `Vec` never allocates more than `isize::MAX` bytes.
-            // This exact use case is even mentioned in the documentation of `pointer::add`.
-            let extra_capacity_start = unsafe { self.as_mut_ptr().add(self.len()) as *mut u8 };
-            let extra_capacity_len = self.capacity().saturating_sub(self.len());
-
-            // Safety:
-            // The memory pointed to by `extra_capacity_start` is valid for `extra_capacity_len *
-            // mem::size_of::<Z>()` bytes, because the allocation of the `Vec` has enough reported
-            // capacity for elements of type `Z`.
-            // It is also properly aligned, because the `T` here is `u8`, which has an alignment of
-            // `1`.
-            // `extra_capacity_len` is not larger than an `isize`, because `Vec` never allocates
-            // more than `isize::MAX` bytes.
-            // The `Vec` allocation also guarantees to never wrap around the address space.
-            unsafe {
-                volatile_set(
-                    extra_capacity_start,
-                    0,
-                    extra_capacity_len * core::mem::size_of::<Z>(),
-                )
-            };
-            atomic_fence();
-        }
-
+        // Set the Vec's length to 0 and drop all the elements.
         self.clear();
+        // Zero the full capacity of `Vec`.
+        // Safety:
+        //
+        // This is safe, because `Vec` never allocates more than `isize::MAX` bytes.
+        // This exact use case is even mentioned in the documentation of `pointer::add`.
+        // This is safe because MaybeUninit ignores all invariants,
+        // so we can create a slice of MaybeUninit<Z> using the full capacity of the Vec
+        let uninit_slice = unsafe {
+            slice::from_raw_parts_mut(self.as_mut_ptr() as *mut MaybeUninit<Z>, self.capacity())
+        };
+        uninit_slice.zeroize();
     }
 }
 
