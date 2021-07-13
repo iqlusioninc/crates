@@ -1,23 +1,23 @@
 //! ECDSA/secp256k1 support.
 
-use crate::{
-    key::{ring::LoadPkcs8, store::GeneratePkcs8},
-    Result,
-};
-use alloc::{boxed::Box, vec::Vec};
-use core::fmt;
-use ecdsa::signature::Signer;
 pub use k256::ecdsa::{
     recoverable::{Id as RecoveryId, Signature as RecoverableSignature},
     Signature, VerifyingKey,
 };
+
+use crate::{
+    key::{ring::LoadPkcs8, store::GeneratePkcs8},
+    Error, KeyHandle, Map, Result,
+};
+use alloc::boxed::Box;
+use core::fmt;
+use ecdsa::signature::Signer;
 use pkcs8::{FromPrivateKey, ToPrivateKey};
 
 /// ECDSA/secp256k1 key ring.
 #[derive(Debug, Default)]
 pub struct KeyRing {
-    // TODO(tarcieri): map of verifying key -> signing key (needs Ord impl)
-    keys: Vec<SigningKey>,
+    keys: Map<VerifyingKey, SigningKey>,
 }
 
 impl KeyRing {
@@ -25,12 +25,30 @@ impl KeyRing {
     pub fn new() -> Self {
         Self::default()
     }
+
+    /// Get the [`SigningKey`] that corresponds to the provided [`VerifyingKey`]
+    /// (i.e. public key)
+    pub fn get(&self, verifying_key: &VerifyingKey) -> Option<&SigningKey> {
+        self.keys.get(verifying_key)
+    }
+
+    /// Iterate over the keys in the keyring.
+    pub fn iter(&self) -> impl Iterator<Item = &SigningKey> {
+        self.keys.values()
+    }
 }
 
 impl LoadPkcs8 for KeyRing {
-    fn load_pkcs8(&mut self, private_key: pkcs8::PrivateKeyInfo<'_>) -> Result<()> {
-        let _key = SigningKey::from_pkcs8_private_key_info(private_key)?;
-        Ok(())
+    fn load_pkcs8(&mut self, private_key: pkcs8::PrivateKeyInfo<'_>) -> Result<KeyHandle> {
+        let signing_key = SigningKey::from_pkcs8_private_key_info(private_key)?;
+        let verifying_key = signing_key.verifying_key();
+
+        if self.keys.contains_key(&verifying_key) {
+            return Err(Error::DuplicateKey);
+        }
+
+        self.keys.insert(verifying_key, signing_key);
+        Ok(KeyHandle::EcdsaSecp256k1(verifying_key))
     }
 }
 
@@ -86,6 +104,8 @@ impl Signer<Signature> for SigningKey {
 impl Signer<RecoverableSignature> for SigningKey {
     fn try_sign(&self, msg: &[u8]) -> signature::Result<RecoverableSignature> {
         let sig: Signature = self.inner.try_sign(msg)?;
+
+        // TODO(tarcieri): optimized support for `k256`
         RecoverableSignature::from_trial_recovery(&self.verifying_key(), msg, &sig)
     }
 }
