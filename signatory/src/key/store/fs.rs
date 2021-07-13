@@ -1,6 +1,6 @@
 //! Filesystem-backed keystore
 
-use crate::{Error, KeyInfo, KeyName, KeyRing, LoadPkcs8, Result};
+use crate::{Error, KeyHandle, KeyInfo, KeyName, KeyRing, LoadPkcs8, Result};
 use core::convert::TryInto;
 use std::{
     fs,
@@ -94,7 +94,7 @@ impl FsKeyStore {
     }
 
     /// Import a key with a given name into the provided keyring.
-    pub fn import(&self, name: &KeyName, key_ring: &mut KeyRing) -> Result<()> {
+    pub fn import(&self, name: &KeyName, key_ring: &mut KeyRing) -> Result<KeyHandle> {
         key_ring.load_pkcs8(self.load(name)?.private_key_info())
     }
 

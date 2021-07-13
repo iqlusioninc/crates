@@ -12,6 +12,9 @@ pub enum Error {
     /// Algorithm is invalid.
     AlgorithmInvalid,
 
+    /// Duplicate key in keyring.
+    DuplicateKey,
+
     /// ECDSA errors.
     #[cfg(feature = "ecdsa")]
     #[cfg_attr(docsrs, doc(cfg(feature = "ecdsa")))]
@@ -43,6 +46,7 @@ impl Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::AlgorithmInvalid => f.write_str("invalid algorithm"),
+            Self::DuplicateKey => f.write_str("duplicate key"),
             #[cfg(feature = "ecdsa")]
             Self::Ecdsa => f.write_str("ECDSA error"),
             Self::KeyNameInvalid => f.write_str("invalid key name"),

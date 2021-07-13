@@ -26,6 +26,7 @@ pub use self::{
     algorithm::Algorithm,
     error::{Error, Result},
     key::{
+        handle::KeyHandle,
         info::KeyInfo,
         name::KeyName,
         ring::{KeyRing, LoadPkcs8},
@@ -37,3 +38,6 @@ pub use signature;
 
 #[cfg(feature = "std")]
 pub use key::store::fs::FsKeyStore;
+
+/// Map type.
+pub type Map<K, V> = alloc::collections::BTreeMap<K, V>;
