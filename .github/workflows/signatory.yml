@@ -37,5 +37,6 @@ jobs:
       - run: cargo test --release --no-default-features
       - run: cargo test --release
       - run: cargo test --release --features ecdsa
+      - run: cargo test --release --features nistp256
       - run: cargo test --release --features secp256k1
       - run: cargo test --release --all-features

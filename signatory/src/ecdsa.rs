@@ -1,5 +1,9 @@
 //! Elliptic Curve Digital Signature Algorithm (ECDSA) support.
 
+#[cfg(feature = "nistp256")]
+#[cfg_attr(docsrs, doc(cfg(feature = "nistp256")))]
+pub mod nistp256;
+
 #[cfg(feature = "secp256k1")]
 #[cfg_attr(docsrs, doc(cfg(feature = "secp256k1")))]
 pub mod secp256k1;
