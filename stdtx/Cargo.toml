@@ -28,5 +28,8 @@ subtle-encoding = { version = "0.5", features = ["bech32-preview"], path = "../s
 thiserror = "1"
 toml = "0.5"
 
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+getrandom = { version = "0.2", features = ["js"] }
+
 [dev-dependencies]
 rand_core = { version = "0.6", features = ["std"] }
