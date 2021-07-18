@@ -1535,7 +1535,7 @@ dependencies = [
 
 [[package]]
 name = "secrecy"
-version = "0.7.0"
+version = "0.8.0"
 dependencies = [
  "bytes 1.0.1",
  "serde",
