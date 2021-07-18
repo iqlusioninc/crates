@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 1.4.0 (2021-07-18)
+
+NOTE: This release includes an MSRV bump to Rust 1.51. Please use `zeroize = "1.3.0"`
+if you would like to support older Rust versions.
+
+### Added
+- Use const generics to impl `Zeroize` for `[Z; N]`; MSRV 1.51 ([#794])
+- `Zeroizing::clone_from` now zeroizes the destination before cloning ([#801])
+
+[#794]: https://github.com/iqlusioninc/crates/pull/794
+[#801]: https://github.com/iqlusioninc/crates/pull/801
+
 ## 1.3.0 (2021-04-19)
 ### Added
 - impl `Zeroize` for `Box<[Z]>` ([#615])
