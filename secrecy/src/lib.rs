@@ -72,7 +72,7 @@
 
 #![no_std]
 #![cfg_attr(docsrs, feature(doc_cfg))]
-#![doc(html_root_url = "https://docs.rs/secrecy/0.7.1")]
+#![doc(html_root_url = "https://docs.rs/secrecy/0.8.0")]
 #![forbid(unsafe_code)]
 #![warn(missing_docs, rust_2018_idioms, unused_qualifications)]
 

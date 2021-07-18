@@ -4,6 +4,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.8.0 (2021-07-18)
+
+NOTE: This release includes an MSRV bump to Rust 1.51. Please use `secrecy = "0.7.0"`
+if you would like to support older Rust versions.
+
+### Added
+- impl `From<T>` for `Secret` ([#482])
+
+### Changed
+- Bump `bytes` to v1.0 ([#592])
+- Switch to `resolver = "2"`; MSRV 1.51 ([#755])
+
+[#482]: https://github.com/iqlusioninc/crates/pull/482
+[#592]: https://github.com/iqlusioninc/crates/pull/592
+[#755]: https://github.com/iqlusioninc/crates/pull/755
+
 ## 0.7.0 (2020-07-08)
 ### Added
 - Re-export zeroize ([#466])
