@@ -222,6 +222,7 @@ pub use zeroize_derive::Zeroize;
 #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
 mod x86;
 
+use core::mem::{self, MaybeUninit};
 use core::{ops, ptr, slice::IterMut, sync::atomic};
 
 #[cfg(feature = "alloc")]
@@ -301,7 +302,7 @@ where
         // The memory pointed to by `self` is valid for `mem::size_of::<Self>()` bytes.
         // It is also properly aligned, because `u8` has an alignment of `1`.
         unsafe {
-            volatile_set(self as *mut _ as *mut u8, 0, core::mem::size_of::<Self>());
+            volatile_set(self as *mut _ as *mut u8, 0, mem::size_of::<Self>());
         }
 
         // Ensures self is overwritten with the default bit pattern. volatile_write can't be
@@ -314,6 +315,27 @@ where
         // done so by take().
         unsafe { ptr::write_volatile(self, Option::default()) }
 
+        atomic_fence();
+    }
+}
+
+/// Impl `Zeroize` on slices of MaybeUninit types
+/// This impl can eventually be optimized using an memset intrinsic,
+/// such as `core::intrinsics::volatile_set_memory`.
+/// This fills the slice with zeros
+/// Note that this ignore invariants that Z might have, because MaybeUninit removes all invariants.
+impl<Z> Zeroize for [MaybeUninit<Z>] {
+    fn zeroize(&mut self) {
+        let ptr = self.as_mut_ptr() as *mut MaybeUninit<u8>;
+        let size = self.len().checked_mul(mem::size_of::<Z>()).unwrap();
+        assert!(size <= core::isize::MAX as usize);
+        // Safety:
+        //
+        // This is safe, because every valid pointer is well aligned for u8
+        // and it is backed by a single allocated object for at least `self.len() * size_pf::<Z>()` bytes.
+        // and 0 is a valid value for `MaybeUninit<Z>`
+        // The memory of the slice should not wrap around the address space.
+        unsafe { volatile_set(ptr, MaybeUninit::new(0), size) }
         atomic_fence();
     }
 }
@@ -354,37 +376,23 @@ where
     /// Ensures the entire capacity of the `Vec` is zeroed. Cannot ensure that
     /// previous reallocations did not leave values on the heap.
     fn zeroize(&mut self) {
+        use core::slice;
+        // Zeroize all the initialized elements.
         self.iter_mut().zeroize();
 
-        // Zero the capacity of the `Vec` that is not initialized.
-        {
-            // Safety:
-            //
-            // This is safe, because `Vec` never allocates more than `isize::MAX` bytes.
-            // This exact use case is even mentioned in the documentation of `pointer::add`.
-            let extra_capacity_start = unsafe { self.as_mut_ptr().add(self.len()) as *mut u8 };
-            let extra_capacity_len = self.capacity().saturating_sub(self.len());
-
-            // Safety:
-            // The memory pointed to by `extra_capacity_start` is valid for `extra_capacity_len *
-            // mem::size_of::<Z>()` bytes, because the allocation of the `Vec` has enough reported
-            // capacity for elements of type `Z`.
-            // It is also properly aligned, because the `T` here is `u8`, which has an alignment of
-            // `1`.
-            // `extra_capacity_len` is not larger than an `isize`, because `Vec` never allocates
-            // more than `isize::MAX` bytes.
-            // The `Vec` allocation also guarantees to never wrap around the address space.
-            unsafe {
-                volatile_set(
-                    extra_capacity_start,
-                    0,
-                    extra_capacity_len * core::mem::size_of::<Z>(),
-                )
-            };
-            atomic_fence();
-        }
-
+        // Set the Vec's length to 0 and drop all the elements.
         self.clear();
+        // Zero the full capacity of `Vec`.
+        // Safety:
+        //
+        // This is safe, because `Vec` never allocates more than `isize::MAX` bytes.
+        // This exact use case is even mentioned in the documentation of `pointer::add`.
+        // This is safe because MaybeUninit ignores all invariants,
+        // so we can create a slice of MaybeUninit<Z> using the full capacity of the Vec
+        let uninit_slice = unsafe {
+            slice::from_raw_parts_mut(self.as_mut_ptr() as *mut MaybeUninit<Z>, self.capacity())
+        };
+        uninit_slice.zeroize();
     }
 }
 
@@ -547,6 +555,14 @@ mod tests {
         let mut arr = [42u8; 137];
         arr.zeroize();
         assert_eq!(arr.as_ref(), [0u8; 137].as_ref());
+    }
+
+    #[test]
+    fn zeroize_maybeuninit_byte_arrays() {
+        let mut arr = [MaybeUninit::new(42u64); 64];
+        arr.zeroize();
+        let arr_init: [u64; 64] = unsafe { core::mem::transmute(arr) };
+        assert_eq!(arr_init, [0u64; 64]);
     }
 
     #[cfg(feature = "alloc")]
