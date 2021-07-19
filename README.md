@@ -2,6 +2,7 @@
 
 [![Apache 2.0 Licensed][license-image]][license-link]
 ![MSRV][msrv-image]
+[![dependency status][deps-image]][deps-link]
 
 This repository contains a set of Apache 2.0-licensed packages (a.k.a.  "crates")
 for the [Rust](https://www.rust-lang.org/) programming language, contributed
@@ -60,6 +61,8 @@ without any additional terms or conditions.
 [license-image]: https://img.shields.io/badge/license-Apache2.0-blue.svg
 [license-link]: https://github.com/iqlusioninc/crates/blob/main/LICENSE
 [msrv-image]: https://img.shields.io/badge/rustc-1.51+-blue.svg
+[deps-image]: https://deps.rs/repo/github/iqlusioninc/crates/status.svg
+[deps-link]: https://deps.rs/repo/github/iqlusioninc/crates
 
 [//]: # (crates)
 
