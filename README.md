@@ -24,6 +24,7 @@ This repository contains the following crates:
 | [harp]            | ![][harp-crate]            | ![][harp-build]            | Minimalist HTTP library                |
 | [hkd32]           | ![][hkd32-crate]           | ![][hkd32-build]           | HMAC-based Hierarchical Key Derivation |
 | [secrecy]         | ![][secrecy-crate]         | ![][secrecy-build]         | Simple secret-keeping library          |
+| [signatory]       | ![][signatory-crate]       | ![][signatory-build]       | Signature library with ECDSA+Ed25519   |
 | [stdtx]           | ![][stdtx-crate]           | ![][stdtx-build]           | Cosmos StdTx builder/signer/serializer |
 | [subtle‑encoding] | ![][subtle-encoding-crate] | ![][subtle-encoding-build] | Constant-time hex/bech32/base64        |
 | [tai64]           | ![][tai64-crate]           | ![][tai64-build]           | TAI64(N) timestamp format              |
@@ -80,6 +81,8 @@ without any additional terms or conditions.
 [hkd32-crate]: https://img.shields.io/crates/v/hkd32.svg
 [secrecy]: https://github.com/iqlusioninc/crates/tree/main/secrecy
 [secrecy-crate]: https://img.shields.io/crates/v/secrecy.svg
+[signatory]: https://github.com/iqlusioninc/crates/tree/main/signatory
+[signatory-crate]: https://img.shields.io/crates/v/signatory.svg
 [stdtx]: https://github.com/iqlusioninc/crates/tree/main/stdtx
 [stdtx-crate]: https://img.shields.io/crates/v/stdtx.svg
 [subtle‑encoding]: https://github.com/iqlusioninc/crates/tree/main/subtle-encoding
@@ -98,6 +101,7 @@ without any additional terms or conditions.
 [harp-build]: https://github.com/iqlusioninc/crates/actions/workflows/harp.yml/badge.svg
 [hkd32-build]: https://github.com/iqlusioninc/crates/actions/workflows/hkd32.yml/badge.svg
 [secrecy-build]: https://github.com/iqlusioninc/crates/actions/workflows/secrecy.yml/badge.svg
+[signatory-build]: https://github.com/iqlusioninc/crates/actions/workflows/signatory.yml/badge.svg
 [stdtx-build]: https://github.com/iqlusioninc/crates/actions/workflows/stdtx.yml/badge.svg
 [subtle-encoding-build]: https://github.com/iqlusioninc/crates/actions/workflows/subtle-encoding.yml/badge.svg
 [tai64-build]: https://github.com/iqlusioninc/crates/actions/workflows/tai64.yml/badge.svg
