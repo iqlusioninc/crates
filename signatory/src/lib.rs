@@ -18,6 +18,10 @@ extern crate std;
 #[cfg_attr(docsrs, doc(cfg(feature = "ecdsa")))]
 pub mod ecdsa;
 
+#[cfg(feature = "ed25519")]
+#[cfg_attr(docsrs, doc(cfg(feature = "ed25519")))]
+pub mod ed25519;
+
 mod algorithm;
 mod error;
 mod key;

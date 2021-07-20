@@ -1,0 +1,79 @@
+//! Ed25519 keys.
+
+use super::{Signature, ALGORITHM_ID, ALGORITHM_OID};
+use crate::{Error, Result};
+use core::{cmp::Ordering, convert::TryFrom};
+use pkcs8::{FromPublicKey, ToPublicKey};
+use signature::Verifier;
+
+/// Ed25519 verifying key.
+#[derive(Copy, Clone, Debug, Eq, PartialEq)]
+pub struct VerifyingKey {
+    inner: ed25519_dalek::PublicKey,
+}
+
+impl VerifyingKey {
+    /// Parse an Ed25519 public key from raw bytes
+    /// (i.e. compressed Edwards-y coordinate)
+    pub fn from_bytes(bytes: &[u8]) -> Result<Self> {
+        ed25519_dalek::PublicKey::from_bytes(bytes)
+            .map(|inner| VerifyingKey { inner })
+            .map_err(|_| Error::Parse)
+    }
+}
+
+impl From<&ed25519_dalek::Keypair> for VerifyingKey {
+    fn from(keypair: &ed25519_dalek::Keypair) -> VerifyingKey {
+        Self {
+            inner: keypair.public,
+        }
+    }
+}
+
+impl FromPublicKey for VerifyingKey {
+    fn from_spki(spki: pkcs8::SubjectPublicKeyInfo<'_>) -> pkcs8::Result<Self> {
+        spki.algorithm.assert_algorithm_oid(ALGORITHM_OID)?;
+
+        if spki.algorithm.parameters.is_some() {
+            return Err(pkcs8::Error::ParametersMalformed);
+        }
+
+        Self::from_bytes(spki.subject_public_key).map_err(|_| pkcs8::Error::KeyMalformed)
+    }
+}
+
+impl ToPublicKey for VerifyingKey {
+    fn to_public_key_der(&self) -> pkcs8::Result<pkcs8::PublicKeyDocument> {
+        Ok(pkcs8::SubjectPublicKeyInfo {
+            algorithm: ALGORITHM_ID,
+            subject_public_key: self.inner.as_bytes(),
+        }
+        .into())
+    }
+}
+
+impl TryFrom<&[u8]> for VerifyingKey {
+    type Error = Error;
+
+    fn try_from(bytes: &[u8]) -> Result<Self> {
+        Self::from_bytes(bytes)
+    }
+}
+
+impl Verifier<Signature> for VerifyingKey {
+    fn verify(&self, msg: &[u8], sig: &Signature) -> signature::Result<()> {
+        self.inner.verify(msg, sig)
+    }
+}
+
+impl Ord for VerifyingKey {
+    fn cmp(&self, other: &Self) -> Ordering {
+        self.inner.as_bytes().cmp(other.inner.as_bytes())
+    }
+}
+
+impl PartialOrd for VerifyingKey {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}

@@ -1,4 +1,4 @@
-//! ECDSA key ring.
+//! ECDSA keyring.
 
 use crate::{Error, KeyHandle, LoadPkcs8, Result};
 
@@ -11,7 +11,7 @@ use super::nistp256;
 #[cfg(feature = "secp256k1")]
 use super::secp256k1;
 
-/// ECDSA key ring.
+/// ECDSA keyring.
 #[derive(Debug, Default)]
 pub struct KeyRing {
     /// ECDSA/P-256 keys.

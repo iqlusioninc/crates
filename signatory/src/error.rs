@@ -33,6 +33,9 @@ pub enum Error {
     #[cfg_attr(docsrs, doc(cfg(feature = "std")))]
     NotADirectory,
 
+    /// Parse errors for raw/non-PKCS#8 keys.
+    Parse,
+
     /// Permissions error, not required mode
     #[cfg(feature = "std")]
     #[cfg_attr(docsrs, doc(cfg(feature = "std")))]
@@ -54,6 +57,7 @@ impl Display for Error {
             Self::Io(err) => write!(f, "{}", err),
             #[cfg(feature = "std")]
             Self::NotADirectory => f.write_str("not a directory"),
+            Self::Parse => f.write_str("parse error"),
             #[cfg(feature = "std")]
             Self::Permissions => f.write_str("invalid file permissions"),
             Self::Pkcs8(err) => write!(f, "{}", err),
