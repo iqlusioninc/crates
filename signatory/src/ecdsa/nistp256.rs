@@ -1,4 +1,4 @@
-//! ECDSA/P-256 support.
+//! ECDSA/NIST P-256 support.
 
 pub use p256::ecdsa::{Signature, VerifyingKey};
 
@@ -7,9 +7,9 @@ use crate::{
     Error, KeyHandle, Map, Result,
 };
 use alloc::boxed::Box;
-use core::fmt;
-use ecdsa::signature::Signer;
+use core::{convert::TryFrom, fmt};
 use pkcs8::{FromPrivateKey, ToPrivateKey};
+use signature::Signer;
 
 /// ECDSA/P-256 key ring.
 #[derive(Debug, Default)]
@@ -18,7 +18,7 @@ pub struct KeyRing {
 }
 
 impl KeyRing {
-    /// Create new ECDSA/P-256 keystore.
+    /// Create new ECDSA/NIST P-256 keyring.
     pub fn new() -> Self {
         Self::default()
     }
@@ -49,7 +49,7 @@ impl LoadPkcs8 for KeyRing {
     }
 }
 
-/// Transaction signing key (ECDSA/P-256)
+/// ECDSA/NIST P-256 signing key.
 pub struct SigningKey {
     inner: Box<dyn NistP256Signer>,
 }
@@ -81,6 +81,14 @@ impl FromPrivateKey for SigningKey {
     }
 }
 
+impl TryFrom<&[u8]> for SigningKey {
+    type Error = Error;
+
+    fn try_from(bytes: &[u8]) -> Result<Self> {
+        Self::from_bytes(bytes)
+    }
+}
+
 #[cfg(feature = "std")]
 #[cfg_attr(docsrs, doc(cfg(feature = "std")))]
 impl GeneratePkcs8 for SigningKey {
@@ -106,7 +114,7 @@ impl fmt::Debug for SigningKey {
     }
 }
 
-/// ECDSA/P-256 signer
+/// ECDSA/NIST P-256 signer.
 pub trait NistP256Signer: Signer<Signature> {
     /// Get the ECDSA verifying key for this signer
     fn verifying_key(&self) -> VerifyingKey;

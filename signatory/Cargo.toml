@@ -13,13 +13,14 @@ edition     = "2018"
 autobenches = false
 
 [dependencies]
-pkcs8 = { version = "0.7", features = ["alloc", "pem"] }
+pkcs8 = { version = "0.7.2", features = ["alloc", "pem"] }
 rand_core = "0.6"
 signature = "1.3.1"
-zeroize = { version = "1", path = "../zeroize" }
+zeroize = { version = "1.4", path = "../zeroize" }
 
 # optional dependencies
-ecdsa = { version = "0.12", optional = true, features = ["pem", "pkcs8"] }
+ecdsa = { version = "0.12.3", optional = true, features = ["pem", "pkcs8"] }
+ed25519-dalek = { version = "1", optional = true, default-features = false, features = ["u64_backend"] }
 k256 = { version = "0.9", optional = true, features = ["ecdsa", "sha256", "keccak256"] }
 p256 = { version = "0.9", optional = true, features = ["ecdsa", "sha256"] }
 
@@ -28,6 +29,7 @@ tempfile = "3"
 
 [features]
 default = ["std"]
+ed25519 = ["ed25519-dalek"]
 nistp256 = ["ecdsa", "p256"]
 secp256k1 = ["ecdsa", "k256"]
 std = ["pkcs8/std", "rand_core/std", "signature/std"]

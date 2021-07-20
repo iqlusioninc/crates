@@ -10,11 +10,11 @@ use crate::{
     Error, KeyHandle, Map, Result,
 };
 use alloc::boxed::Box;
-use core::fmt;
-use ecdsa::signature::Signer;
+use core::{convert::TryFrom, fmt};
 use pkcs8::{FromPrivateKey, ToPrivateKey};
+use signature::Signer;
 
-/// ECDSA/secp256k1 key ring.
+/// ECDSA/secp256k1 keyring.
 #[derive(Debug, Default)]
 pub struct KeyRing {
     keys: Map<VerifyingKey, SigningKey>,
@@ -52,7 +52,7 @@ impl LoadPkcs8 for KeyRing {
     }
 }
 
-/// Transaction signing key (ECDSA/secp256k1)
+/// ECDSA/secp256k1 signing key.
 pub struct SigningKey {
     inner: Box<dyn Secp256k1Signer>,
 }
@@ -81,6 +81,14 @@ impl FromPrivateKey for SigningKey {
     fn from_pkcs8_private_key_info(private_key: pkcs8::PrivateKeyInfo<'_>) -> pkcs8::Result<Self> {
         let signing_key = k256::ecdsa::SigningKey::from_pkcs8_private_key_info(private_key)?;
         Ok(Self::new(Box::new(signing_key)))
+    }
+}
+
+impl TryFrom<&[u8]> for SigningKey {
+    type Error = Error;
+
+    fn try_from(bytes: &[u8]) -> Result<Self> {
+        Self::from_bytes(bytes)
     }
 }
 

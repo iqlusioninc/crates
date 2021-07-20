@@ -4,6 +4,9 @@
 #[allow(unused_imports)]
 use crate::ecdsa;
 
+#[cfg(feature = "ed25519")]
+use crate::ed25519;
+
 /// Handle to a particular key.
 ///
 /// Uniquely identifies a particular key in the keyring.
@@ -19,10 +22,15 @@ pub enum KeyHandle {
     #[cfg(feature = "secp256k1")]
     #[cfg_attr(docsrs, doc(cfg(feature = "secp256k1")))]
     EcdsaSecp256k1(ecdsa::secp256k1::VerifyingKey),
+
+    /// Ed25519.
+    #[cfg(feature = "ed25519")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "ed25519")))]
+    Ed25519(ed25519::VerifyingKey),
 }
 
 impl KeyHandle {
-    /// Get the ECDSA/P-256 verifying key, if this is an ECDSA/P-256 key
+    /// Get ECDSA/P-256 verifying key, if this is an ECDSA/P-256 key.
     #[cfg(feature = "nistp256")]
     #[cfg_attr(docsrs, doc(cfg(feature = "nistp256")))]
     pub fn ecdsa_nistp256(&self) -> Option<ecdsa::nistp256::VerifyingKey> {
@@ -33,12 +41,23 @@ impl KeyHandle {
         }
     }
 
-    /// Get the ECDSA/secp256k1 verifying key, if this is an ECDSA/secp256k1 key
+    /// Get ECDSA/secp256k1 verifying key, if this is an ECDSA/secp256k1 key.
     #[cfg(feature = "secp256k1")]
     #[cfg_attr(docsrs, doc(cfg(feature = "secp256k1")))]
     pub fn ecdsa_secp256k1(&self) -> Option<ecdsa::secp256k1::VerifyingKey> {
         match self {
             KeyHandle::EcdsaSecp256k1(pk) => Some(*pk),
+            #[allow(unreachable_patterns)]
+            _ => None,
+        }
+    }
+
+    /// Get Ed25519 verifying key, if this is an Ed25519 key.
+    #[cfg(feature = "ed25519")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "ed25519")))]
+    pub fn ed25519(&self) -> Option<ed25519::VerifyingKey> {
+        match self {
+            KeyHandle::Ed25519(pk) => Some(*pk),
             #[allow(unreachable_patterns)]
             _ => None,
         }
