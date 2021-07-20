@@ -7,7 +7,7 @@ operation will not be 'optimized away' by the compiler.
 Uses a portable pure Rust implementation that works everywhere,
 even WASM!
 """
-version     = "1.4.0" # Also update html_root_url in lib.rs when bumping this
+version     = "1.4.1" # Also update html_root_url in lib.rs when bumping this
 authors     = ["Tony Arcieri <tony@iqlusion.io>"]
 license     = "Apache-2.0 OR MIT"
 edition     = "2018"
@@ -26,4 +26,4 @@ alloc = []
 
 [package.metadata.docs.rs]
 all-features = true
-rustdoc-args = ["--cfg", "docsrs", "-Ctarget_cpu=sandybridge"]
+rustdoc-args = ["--cfg", "docsrs"]
