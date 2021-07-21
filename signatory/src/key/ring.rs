@@ -1,6 +1,7 @@
 //! Signature key ring.
 
-use crate::{Error, KeyHandle, Result};
+use crate::{Algorithm, Error, KeyHandle, Result};
+use core::convert::TryFrom;
 
 #[cfg(feature = "ecdsa")]
 use crate::ecdsa;
@@ -37,12 +38,19 @@ pub trait LoadPkcs8 {
 
 impl LoadPkcs8 for KeyRing {
     fn load_pkcs8(&mut self, private_key: pkcs8::PrivateKeyInfo<'_>) -> Result<KeyHandle> {
-        match private_key.algorithm.oid {
-            #[cfg(feature = "ecdsa")]
-            ecdsa::elliptic_curve::ALGORITHM_OID => self.ecdsa.load_pkcs8(private_key),
-            #[cfg(feature = "ed25519")]
-            ed25519::ALGORITHM_OID => self.ed25519.load_pkcs8(private_key),
-            _ => Err(Error::AlgorithmInvalid),
+        #[allow(unused_variables)]
+        let algorithm = Algorithm::try_from(private_key.algorithm)?;
+
+        #[cfg(feature = "ecdsa")]
+        if algorithm.is_ecdsa() {
+            return self.ecdsa.load_pkcs8(private_key);
         }
+
+        #[cfg(feature = "ed25519")]
+        if algorithm == Algorithm::Ed25519 {
+            return self.ed25519.load_pkcs8(private_key);
+        }
+
+        Err(Error::AlgorithmInvalid)
     }
 }

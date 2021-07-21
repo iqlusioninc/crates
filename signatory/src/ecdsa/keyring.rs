@@ -1,6 +1,7 @@
 //! ECDSA keyring.
 
-use crate::{Error, KeyHandle, LoadPkcs8, Result};
+use crate::{Algorithm, Error, KeyHandle, LoadPkcs8, Result};
+use core::convert::TryFrom;
 
 #[allow(unused_imports)]
 use ecdsa::elliptic_curve::AlgorithmParameters;
@@ -27,15 +28,12 @@ pub struct KeyRing {
 
 impl LoadPkcs8 for KeyRing {
     fn load_pkcs8(&mut self, private_key: pkcs8::PrivateKeyInfo<'_>) -> Result<KeyHandle> {
-        if private_key.algorithm.oid != ecdsa::elliptic_curve::ALGORITHM_OID {
-            return Err(Error::AlgorithmInvalid);
-        }
-
-        match private_key.algorithm.parameters_oid()? {
+        match Algorithm::try_from(private_key.algorithm)? {
             #[cfg(feature = "nistp256")]
-            p256::NistP256::OID => self.nistp256.load_pkcs8(private_key),
+            Algorithm::EcdsaNistP256 => self.nistp256.load_pkcs8(private_key),
             #[cfg(feature = "secp256k1")]
-            k256::Secp256k1::OID => self.secp256k1.load_pkcs8(private_key),
+            Algorithm::EcdsaSecp256k1 => self.secp256k1.load_pkcs8(private_key),
+            #[allow(unreachable_patterns)]
             _ => Err(Error::AlgorithmInvalid),
         }
     }
