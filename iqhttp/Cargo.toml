@@ -18,7 +18,7 @@ readme     = "README.md"
 edition    = "2018"
 
 [dependencies]
-hyper = "0.14.10"
+hyper = "0.14.11"
 hyper-rustls = { version = "0.22", features = ["rustls-native-certs"] }
 
 # optional dependencies
