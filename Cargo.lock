@@ -1160,6 +1160,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "pem-rfc7468"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "801ef81ab8a21fdd738a9de457509b5c0aef72efa93ffdfc80f3329a1588405b"
+dependencies = [
+ "base64ct",
+]
+
+[[package]]
 name = "percent-encoding"
 version = "2.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1179,12 +1188,12 @@ checksum = "8b870d8c151b6f2fb93e84a13146138f05d02ed11c7e7c54f8826aaaf7c9f184"
 
 [[package]]
 name = "pkcs8"
-version = "0.7.2"
+version = "0.7.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "87bb2d5c68b7505a3a89eb2f3583a4d56303863005226c2ef99319930a262be4"
+checksum = "ba46ebe1b203bb103292a7f38ec3aeba9023b88165a9a6b3c3b60ac891d04fe1"
 dependencies = [
- "base64ct",
  "der",
+ "pem-rfc7468",
  "spki",
  "zeroize 1.4.0",
 ]
