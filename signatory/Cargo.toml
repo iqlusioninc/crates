@@ -1,7 +1,7 @@
 [package]
 name        = "signatory"
 description = "Multi-provider elliptic curve digital signature library with ECDSA and Ed25519 support"
-version     = "0.23.1" # Also update html_root_url in lib.rs when bumping this
+version     = "0.23.2" # Also update html_root_url in lib.rs when bumping this
 license     = "Apache-2.0 OR MIT"
 authors     = ["Tony Arcieri <tony@iqlusion.io>"]
 homepage    = "https://github.com/iqlusioninc/crates"
