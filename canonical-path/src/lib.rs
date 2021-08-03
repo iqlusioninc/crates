@@ -352,9 +352,11 @@ mod tests {
     /// A directory full of test fixtures
     struct TestFixtureDir {
         /// The temporary directory itself (i.e. root directory of our tests)
+        #[allow(dead_code)]
         pub tempdir: TempDir,
 
         /// Canonical path to the test directory
+        #[allow(dead_code)]
         pub base_path: PathBuf,
 
         /// Path to a canonical file in our test fixture directory
