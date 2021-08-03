@@ -42,7 +42,7 @@ impl FsKeyStore {
         #[cfg(unix)]
         fs::set_permissions(&dir_path, Permissions::from_mode(REQUIRED_DIR_MODE))?;
 
-        Self::open(&dir_path)
+        Self::open(dir_path)
     }
 
     /// Initialize filesystem-backed keystore, opening the directory at the
