@@ -13,12 +13,26 @@ pub struct VerifyingKey {
 }
 
 impl VerifyingKey {
+    /// Size of a serialized Ed25519 verifying key in bytes.
+    pub const BYTE_SIZE: usize = 32;
+
     /// Parse an Ed25519 public key from raw bytes
     /// (i.e. compressed Edwards-y coordinate)
     pub fn from_bytes(bytes: &[u8]) -> Result<Self> {
         ed25519_dalek::PublicKey::from_bytes(bytes)
             .map(|inner| VerifyingKey { inner })
             .map_err(|_| Error::Parse)
+    }
+
+    /// Serialize this key as a byte array.
+    pub fn to_bytes(self) -> [u8; Self::BYTE_SIZE] {
+        self.inner.to_bytes()
+    }
+}
+
+impl AsRef<[u8; Self::BYTE_SIZE]> for VerifyingKey {
+    fn as_ref(&self) -> &[u8; Self::BYTE_SIZE] {
+        self.inner.as_bytes()
     }
 }
 
