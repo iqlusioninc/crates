@@ -7,7 +7,7 @@
 use proc_macro2::TokenStream;
 use quote::quote;
 use syn::{Attribute, Meta, NestedMeta};
-use synstructure::{decl_derive, BindStyle};
+use synstructure::{decl_derive, BindStyle, BindingInfo, VariantInfo};
 
 decl_derive!(
     [Zeroize, attributes(zeroize)] =>
@@ -49,9 +49,17 @@ impl ZeroizeAttrs {
     fn parse(s: &synstructure::Structure<'_>) -> Self {
         let mut result = Self::default();
 
+        for attr in s.ast().attrs.iter() {
+            result.parse_attr(attr, None, None);
+        }
         for v in s.variants().iter() {
             for attr in v.ast().attrs.iter() {
-                result.parse_attr(attr);
+                result.parse_attr(attr, Some(v), None);
+            }
+            for binding in v.bindings().iter() {
+                for attr in binding.ast().attrs.iter() {
+                    result.parse_attr(attr, Some(v), Some(binding));
+                }
             }
         }
 
@@ -59,7 +67,12 @@ impl ZeroizeAttrs {
     }
 
     /// Parse attribute and handle `#[zeroize(...)]` attributes
-    fn parse_attr(&mut self, attr: &Attribute) {
+    fn parse_attr(
+        &mut self,
+        attr: &Attribute,
+        variant: Option<&VariantInfo<'_>>,
+        binding: Option<&BindingInfo<'_>>,
+    ) {
         let meta_list = match attr
             .parse_meta()
             .unwrap_or_else(|e| panic!("error parsing attribute: {:?} ({})", attr, e))
@@ -75,7 +88,7 @@ impl ZeroizeAttrs {
 
         for nested_meta in &meta_list.nested {
             if let NestedMeta::Meta(meta) = nested_meta {
-                self.parse_meta(meta);
+                self.parse_meta(meta, variant, binding);
             } else {
                 panic!("malformed #[zeroize] attribute: {:?}", nested_meta);
             }
@@ -83,9 +96,35 @@ impl ZeroizeAttrs {
     }
 
     /// Parse `#[zeroize(...)]` attribute metadata (e.g. `drop`)
-    fn parse_meta(&mut self, meta: &Meta) {
+    fn parse_meta(
+        &mut self,
+        meta: &Meta,
+        variant: Option<&VariantInfo<'_>>,
+        binding: Option<&BindingInfo<'_>>,
+    ) {
+        let item_kind = match variant.and_then(|variant| variant.prefix) {
+            Some(_) => "enum",
+            None => "struct",
+        };
+
         if meta.path().is_ident("drop") {
             assert!(!self.drop, "duplicate #[zeroize] drop flags");
+
+            match (variant, binding) {
+                (_variant, Some(_binding)) => panic!(
+                    concat!(
+                        "The #[zeroize(drop)] attribute is not allowed on {} fields. ",
+                        "Use it on the containing {} instead.",
+                    ),
+                    item_kind, item_kind,
+                ),
+                (Some(_variant), None) => panic!(concat!(
+                    "The #[zeroize(drop)] attribute is not allowed on enum variants. ",
+                    "Use it on the containing enum instead.",
+                )),
+                (None, None) => (),
+            };
+
             self.drop = true;
         } else {
             panic!("unknown #[zeroize] attribute type: {:?}", meta.path());
@@ -134,7 +173,8 @@ fn derive_zeroize_with_drop(s: synstructure::Structure<'_>) -> TokenStream {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use synstructure::test_derive;
+    use syn::parse_str;
+    use synstructure::{test_derive, Structure};
 
     #[test]
     fn zeroize_without_drop() {
@@ -215,5 +255,113 @@ mod tests {
             }
             no_build // tests the code compiles are in the `zeroize` crate
         }
+    }
+
+    #[test]
+    #[should_panic(expected = "#[zeroize(drop)] attribute is not allowed on struct fields")]
+    fn zeroize_on_struct_field() {
+        parse_zeroize_test(stringify!(
+            struct Z {
+                #[zeroize(drop)]
+                a: String,
+                b: Vec<u8>,
+                c: [u8; 3],
+            }
+        ));
+    }
+
+    #[test]
+    #[should_panic(expected = "#[zeroize(drop)] attribute is not allowed on struct fields")]
+    fn zeroize_on_tuple_struct_field() {
+        parse_zeroize_test(stringify!(
+            struct Z(#[zeroize(drop)] String);
+        ));
+    }
+
+    #[test]
+    #[should_panic(expected = "#[zeroize(drop)] attribute is not allowed on struct fields")]
+    fn zeroize_on_second_field() {
+        parse_zeroize_test(stringify!(
+            struct Z {
+                a: String,
+                #[zeroize(drop)]
+                b: Vec<u8>,
+                c: [u8; 3],
+            }
+        ));
+    }
+
+    #[test]
+    #[should_panic(expected = "#[zeroize(drop)] attribute is not allowed on enum fields")]
+    fn zeroize_on_tuple_enum_variant_field() {
+        parse_zeroize_test(stringify!(
+            enum Z {
+                Variant(#[zeroize(drop)] String),
+            }
+        ));
+    }
+
+    #[test]
+    #[should_panic(expected = "#[zeroize(drop)] attribute is not allowed on enum fields")]
+    fn zeroize_on_enum_variant_field() {
+        parse_zeroize_test(stringify!(
+            enum Z {
+                Variant {
+                    #[zeroize(drop)]
+                    a: String,
+                    b: Vec<u8>,
+                    c: [u8; 3],
+                },
+            }
+        ));
+    }
+
+    #[test]
+    #[should_panic(expected = "#[zeroize(drop)] attribute is not allowed on enum fields")]
+    fn zeroize_on_enum_second_variant_field() {
+        parse_zeroize_test(stringify!(
+            enum Z {
+                Variant1 {
+                    a: String,
+                    b: Vec<u8>,
+                    c: [u8; 3],
+                },
+                Variant2 {
+                    #[zeroize(drop)]
+                    a: String,
+                    b: Vec<u8>,
+                    c: [u8; 3],
+                },
+            }
+        ));
+    }
+
+    #[test]
+    #[should_panic(expected = "#[zeroize(drop)] attribute is not allowed on enum variants")]
+    fn zeroize_on_enum_variant() {
+        parse_zeroize_test(stringify!(
+            enum Z {
+                #[zeroize(drop)]
+                Variant,
+            }
+        ));
+    }
+
+    #[test]
+    #[should_panic(expected = "#[zeroize(drop)] attribute is not allowed on enum variants")]
+    fn zeroize_on_enum_second_variant() {
+        parse_zeroize_test(stringify!(
+            enum Z {
+                Variant1,
+                #[zeroize(drop)]
+                Variant2,
+            }
+        ));
+    }
+
+    fn parse_zeroize_test(unparsed: &str) -> TokenStream {
+        derive_zeroize(Structure::new(
+            &parse_str(unparsed).expect("Failed to parse test input"),
+        ))
     }
 }
