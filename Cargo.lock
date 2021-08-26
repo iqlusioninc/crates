@@ -169,9 +169,9 @@ checksum = "0e4cec68f03f32e44924783795810fa50a7035d8c8ebe78580ad7e6c703fba38"
 
 [[package]]
 name = "bytes"
-version = "1.0.1"
+version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b700ce4376041dcd0a327fd0097c41095743c4c8af8887265942faf1100bd040"
+checksum = "c4872d67bab6358e59559027aa3b9157c53d9358c51423c17554809a8858e0f8"
 
 [[package]]
 name = "canonical-path"
@@ -591,7 +591,7 @@ version = "0.3.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "825343c4eef0b63f541f8903f395dc5beb362a979b5799a84062527ef1e37726"
 dependencies = [
- "bytes 1.0.1",
+ "bytes 1.1.0",
  "fnv",
  "futures-core",
  "futures-sink",
@@ -625,7 +625,7 @@ checksum = "f0b7591fb62902706ae8e7aaff416b1b0fa2c0fd0878b46dc13baa3712d8a855"
 dependencies = [
  "base64",
  "bitflags",
- "bytes 1.0.1",
+ "bytes 1.1.0",
  "headers-core",
  "http",
  "mime",
@@ -698,7 +698,7 @@ version = "0.2.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "527e8c9ac747e28542699a951517aa9a6945af506cd1f2e1b53a576c17b6cc11"
 dependencies = [
- "bytes 1.0.1",
+ "bytes 1.1.0",
  "fnv",
  "itoa",
 ]
@@ -709,7 +709,7 @@ version = "0.4.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "60daa14be0e0786db0f03a9e57cb404c9d756eed2b6c62b9ea98ec5743ec75a9"
 dependencies = [
- "bytes 1.0.1",
+ "bytes 1.1.0",
  "http",
  "pin-project-lite",
 ]
@@ -732,7 +732,7 @@ version = "0.14.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0b61cf2d1aebcf6e6352c97b81dc2244ca29194be1b276f5d8ad5c6330fffb11"
 dependencies = [
- "bytes 1.0.1",
+ "bytes 1.1.0",
  "futures-channel",
  "futures-core",
  "futures-util",
@@ -756,7 +756,7 @@ version = "0.9.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ca815a891b24fdfb243fa3239c86154392b0953ee584aa1a2a1f66d20cbe75cc"
 dependencies = [
- "bytes 1.0.1",
+ "bytes 1.1.0",
  "futures",
  "headers",
  "http",
@@ -791,7 +791,7 @@ version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d6183ddfa99b85da61a140bea0efc93fdf56ceaa041b37d553518030827f9905"
 dependencies = [
- "bytes 1.0.1",
+ "bytes 1.1.0",
  "hyper",
  "native-tls",
  "tokio",
@@ -1237,7 +1237,7 @@ version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9e6984d2f1a23009bd270b8bb56d0926810a3d483f59c987d77969e9d8e840b2"
 dependencies = [
- "bytes 1.0.1",
+ "bytes 1.1.0",
  "prost-derive",
 ]
 
@@ -1284,7 +1284,7 @@ version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b518d7cdd93dab1d1122cf07fa9a60771836c668dde9d9e2a139f957f0d9f1bb"
 dependencies = [
- "bytes 1.0.1",
+ "bytes 1.1.0",
  "prost",
 ]
 
@@ -1546,7 +1546,7 @@ dependencies = [
 name = "secrecy"
 version = "0.8.0"
 dependencies = [
- "bytes 1.0.1",
+ "bytes 1.1.0",
  "serde",
  "zeroize 1.4.1",
 ]
@@ -1837,7 +1837,7 @@ checksum = "0752808f59b612916614e92e43be64e9ba566b762a266bcfcf7dce1b324e9319"
 dependencies = [
  "anomaly 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "async-trait",
- "bytes 1.0.1",
+ "bytes 1.1.0",
  "chrono",
  "ed25519",
  "ed25519-dalek",
@@ -1868,7 +1868,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "bfd0371c6b0c7fc4f6b053b8a1bc868a2a47c49a1408c4cd6f595d9f3bd3c238"
 dependencies = [
  "anomaly 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "bytes 1.0.1",
+ "bytes 1.1.0",
  "chrono",
  "num-derive",
  "num-traits",
@@ -1932,7 +1932,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4b7b349f11a7047e6d1276853e612d152f5e8a352c61917887cc2169e2366b4c"
 dependencies = [
  "autocfg",
- "bytes 1.0.1",
+ "bytes 1.1.0",
  "libc",
  "memchr",
  "mio",
@@ -1983,7 +1983,7 @@ version = "0.6.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1caa0b0c8d94a049db56b5acf8cba99dc0623aab1b26d5b5f5e2d945846b3592"
 dependencies = [
- "bytes 1.0.1",
+ "bytes 1.1.0",
  "futures-core",
  "futures-sink",
  "log",
