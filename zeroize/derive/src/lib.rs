@@ -53,8 +53,11 @@ impl ZeroizeAttrs {
             result.parse_attr(attr, None, None);
         }
         for v in s.variants().iter() {
-            for attr in v.ast().attrs.iter() {
-                result.parse_attr(attr, Some(v), None);
+            // only process actual enum variants here, as we don't want to process struct attributes twice
+            if v.prefix.is_some() {
+                for attr in v.ast().attrs.iter() {
+                    result.parse_attr(attr, Some(v), None);
+                }
             }
             for binding in v.bindings().iter() {
                 for attr in binding.ast().attrs.iter() {
@@ -102,22 +105,24 @@ impl ZeroizeAttrs {
         variant: Option<&VariantInfo<'_>>,
         binding: Option<&BindingInfo<'_>>,
     ) {
-        let item_kind = match variant.and_then(|variant| variant.prefix) {
-            Some(_) => "enum",
-            None => "struct",
-        };
-
         if meta.path().is_ident("drop") {
             assert!(!self.drop, "duplicate #[zeroize] drop flags");
 
             match (variant, binding) {
-                (_variant, Some(_binding)) => panic!(
-                    concat!(
-                        "The #[zeroize(drop)] attribute is not allowed on {} fields. ",
-                        "Use it on the containing {} instead.",
-                    ),
-                    item_kind, item_kind,
-                ),
+                (_variant, Some(_binding)) => {
+                    // structs don't have a variant prefix, and only structs have bindings outside of a variant
+                    let item_kind = match variant.and_then(|variant| variant.prefix) {
+                        Some(_) => "enum",
+                        None => "struct",
+                    };
+                    panic!(
+                        concat!(
+                            "The #[zeroize(drop)] attribute is not allowed on {} fields. ",
+                            "Use it on the containing {} instead.",
+                        ),
+                        item_kind, item_kind,
+                    )
+                }
                 (Some(_variant), None) => panic!(concat!(
                     "The #[zeroize(drop)] attribute is not allowed on enum variants. ",
                     "Use it on the containing enum instead.",
@@ -255,6 +260,28 @@ mod tests {
             }
             no_build // tests the code compiles are in the `zeroize` crate
         }
+    }
+
+    #[test]
+    fn zeroize_on_struct() {
+        parse_zeroize_test(stringify!(
+            #[zeroize(drop)]
+            struct Z {
+                a: String,
+                b: Vec<u8>,
+                c: [u8; 3],
+            }
+        ));
+    }
+
+    #[test]
+    fn zeroize_on_enum() {
+        parse_zeroize_test(stringify!(
+            #[zeroize(drop)]
+            enum Z {
+                Variant1 { a: String, b: Vec<u8>, c: [u8; 3] },
+            }
+        ));
     }
 
     #[test]
