@@ -28,7 +28,7 @@ zeroize = { version = "1", default-features = false, features = ["zeroize_derive
 
 # optional dependencies
 once_cell = { version = "1", optional = true }
-pbkdf2 = { version = "0.8", optional = true, default-features = false }
+pbkdf2 = { version = "0.9", optional = true, default-features = false }
 subtle-encoding = { version = "0.5", optional = true, default-features = false, path = "../subtle-encoding" }
 
 [dev-dependencies]
