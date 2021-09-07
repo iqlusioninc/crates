@@ -68,7 +68,10 @@ impl PublicKey for k256::ecdsa::VerifyingKey {
     }
 
     fn to_bytes(&self) -> PublicKeyBytes {
-        self.to_bytes().as_ref().try_into().expect("malformed key")
+        self.to_bytes()
+            .as_slice()
+            .try_into()
+            .expect("malformed key")
     }
 
     fn derive_child(&self, other: PrivateKeyBytes) -> Result<Self> {
