@@ -1,4 +1,4 @@
-# BIP32
+# BIP32: HD Wallets
 
 [![Crate][crate-image]][crate-link]
 [![Docs][docs-image]][docs-link]
