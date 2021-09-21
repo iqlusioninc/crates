@@ -424,7 +424,7 @@ pub trait TryZeroize {
 
 /// `Zeroizing` is a a wrapper for any `Z: Zeroize` type which implements a
 /// `Drop` handler which zeroizes dropped values.
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Default, Eq, PartialEq)]
 pub struct Zeroizing<Z: Zeroize>(Z);
 
 impl<Z> Zeroizing<Z>
