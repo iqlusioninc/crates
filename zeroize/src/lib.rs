@@ -1,4 +1,4 @@
-//! Securely zero memory with a simple trait ([Zeroize]) built on stable Rust
+//! Securely zero memory with a simple trait ([`Zeroize`]) built on stable Rust
 //! primitives which guarantee the operation will not be "optimized away".
 //!
 //! ## About
@@ -8,8 +8,8 @@
 //! many documented "tricks" to attempt to avoid these optimizations and ensure
 //! that a zeroing routine is performed reliably.
 //!
-//! This crate isn't about tricks: it uses [core::ptr::write_volatile]
-//! and [core::sync::atomic] memory fences to provide easy-to-use, portable
+//! This crate isn't about tricks: it uses [`core::ptr::write_volatile`]
+//! and [`core::sync::atomic`] memory fences to provide easy-to-use, portable
 //! zeroing behavior which works on all of Rust's core number types and slices
 //! thereof, implemented in pure Rust with no usage of FFI or assembly.
 //!
@@ -44,19 +44,19 @@
 //! }
 //! ```
 //!
-//! The [Zeroize] trait is impl'd on all of Rust's core scalar types including
+//! The [`Zeroize`] trait is impl'd on all of Rust's core scalar types including
 //! integers, floats, `bool`, and `char`.
 //!
 //! Additionally, it's implemented on slices and `IterMut`s of the above types.
 //!
 //! When the `alloc` feature is enabled (which it is by default), it's also
 //! impl'd for `Vec<T>` for the above types as well as `String`, where it provides
-//! [Vec::clear()] / [String::clear()]-like behavior (truncating to zero-length)
+//! [`Vec::clear`] / [`String::clear`]-like behavior (truncating to zero-length)
 //! but ensures the backing memory is securely zeroed with some caveats.
 //! (NOTE: see "Stack/Heap Zeroing Notes" for important `Vec`/`String` details)
 //!
-//! The [DefaultIsZeroes] marker trait can be impl'd on types which also
-//! impl [Default], which implements [Zeroize] by overwriting a value with
+//! The [`DefaultIsZeroes`] marker trait can be impl'd on types which also
+//! impl [`Default`], which implements [`Zeroize`] by overwriting a value with
 //! the default value.
 //!
 //! ## Custom Derive Support
@@ -135,10 +135,11 @@
 //! [these remarks have been removed] and the specific usage pattern in this
 //! crate is considered to be well-defined.
 //!
-//! Additionally this crate leverages [compiler_fence] from
-//! [core::sync::atomic] with the strictest ordering ([Ordering::SeqCst])
-//! as a precaution to help ensure reads are not reordered before memory has
-//! been zeroed.
+//! Additionally this crate leverages [`core::sync::atomic::compiler_fence`]
+//! with the strictest ordering
+//! ([`Ordering::SeqCst`]) as a
+//! precaution to help ensure reads are not reordered before memory has been
+//! zeroed.
 //!
 //! All of that said, there is still potential for microarchitectural attacks
 //! (ala Spectre/Meltdown) to leak "zeroized" secrets through covert channels.
@@ -152,12 +153,12 @@
 //! However, be aware several operations in Rust can unintentionally leave
 //! copies of data in memory. This includes but is not limited to:
 //!
-//! - Moves and `Copy`
-//! - Heap reallocation when using `Vec` and `String`
+//! - Moves and [`Copy`]
+//! - Heap reallocation when using [`Vec`] and [`String`]
 //! - Borrowers of a reference making copies of the data
 //!
-//! [`Pin`][pin] can be leveraged in conjunction with this crate to ensure
-//! data kept on the stack isn't moved.
+//! [`Pin`][`core::pin::Pin`] can be leveraged in conjunction with this crate
+//! to ensure data kept on the stack isn't moved.
 //!
 //! The `Zeroize` impls for `Vec` and `String` zeroize the entire capacity of
 //! their backing buffer, but cannot guarantee copies of the data were not
@@ -191,20 +192,11 @@
 //! `unsafe` memory protection systems and just trying to make the best memory
 //! zeroing crate available.
 //!
-//! [Zeroize]: https://docs.rs/zeroize/latest/zeroize/trait.Zeroize.html
 //! [Zeroing memory securely is hard]: http://www.daemonology.net/blog/2014-09-04-how-to-zero-a-buffer.html
-//! [Vec::clear()]: https://doc.rust-lang.org/std/vec/struct.Vec.html#method.clear
-//! [String::clear()]: https://doc.rust-lang.org/std/string/struct.String.html#method.clear
-//! [DefaultIsZeroes]: https://docs.rs/zeroize/latest/zeroize/trait.DefaultIsZeroes.html
-//! [Default]: https://doc.rust-lang.org/std/default/trait.Default.html
-//! [core::ptr::write_volatile]: https://doc.rust-lang.org/core/ptr/fn.write_volatile.html
 //! [Unsafe Code Guidelines Working Group]: https://github.com/rust-lang/unsafe-code-guidelines
 //! [these remarks have been removed]: https://github.com/rust-lang/rust/pull/60972
-//! [core::sync::atomic]: https://doc.rust-lang.org/stable/core/sync/atomic/index.html
-//! [Ordering::SeqCst]: https://doc.rust-lang.org/std/sync/atomic/enum.Ordering.html#variant.SeqCst
-//! [compiler_fence]: https://doc.rust-lang.org/stable/core/sync/atomic/fn.compiler_fence.html
-//! [pin]: https://doc.rust-lang.org/std/pin/struct.Pin.html
 //! [good cryptographic hygiene]: https://github.com/veorq/cryptocoding#clean-memory-of-secret-data
+//! [`Ordering::SeqCst`]: core::sync::atomic::Ordering::SeqCst
 
 #![no_std]
 #![cfg_attr(docsrs, feature(doc_cfg))]
