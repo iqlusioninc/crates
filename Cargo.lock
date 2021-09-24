@@ -36,15 +36,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "anomaly"
-version = "0.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "550632e31568ae1a5f47998c3aa48563030fc49b9ec91913ca337cf64fbc5ccb"
-dependencies = [
- "backtrace",
-]
-
-[[package]]
 name = "anyhow"
 version = "1.0.44"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -407,6 +398,16 @@ checksum = "d0f40b2dcd8bc322217a5f6559ae5f9e9d1de202a2ecee2e9eafcbece7562a4f"
 dependencies = [
  "rand_core 0.6.3",
  "subtle",
+]
+
+[[package]]
+name = "flex-error"
+version = "0.4.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d8754b6f51ccfe4ff91bd54f34f3b46a3027007e29d7f42d56ef814f96010dd9"
+dependencies = [
+ "eyre",
+ "paste",
 ]
 
 [[package]]
@@ -1151,6 +1152,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "paste"
+version = "1.0.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "acbf547ad0c65e31259204bd90935776d1c693cec2f4ff7abb7a1bbbd40dfe58"
+
+[[package]]
 name = "pbkdf2"
 version = "0.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1831,16 +1838,16 @@ dependencies = [
 
 [[package]]
 name = "tendermint"
-version = "0.21.0"
+version = "0.22.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0752808f59b612916614e92e43be64e9ba566b762a266bcfcf7dce1b324e9319"
+checksum = "fa5354dfcc3bbd8bf3b000b9cfb19afcb4e1bbaed9d6b2d6bc2fa05e027bd7e1"
 dependencies = [
- "anomaly 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "async-trait",
  "bytes 1.1.0",
  "chrono",
  "ed25519",
  "ed25519-dalek",
+ "flex-error",
  "futures",
  "num-traits",
  "once_cell",
@@ -1855,7 +1862,7 @@ dependencies = [
  "subtle",
  "subtle-encoding 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "tendermint-proto",
- "thiserror",
+ "time",
  "toml",
  "url",
  "zeroize 1.4.2 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1863,13 +1870,13 @@ dependencies = [
 
 [[package]]
 name = "tendermint-proto"
-version = "0.21.0"
+version = "0.22.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bfd0371c6b0c7fc4f6b053b8a1bc868a2a47c49a1408c4cd6f595d9f3bd3c238"
+checksum = "4c36f58bd68be7a6e3221c49cc1a14cbc619c189bb26a43425f544831922d2be"
 dependencies = [
- "anomaly 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "bytes 1.1.0",
  "chrono",
+ "flex-error",
  "num-derive",
  "num-traits",
  "prost",
@@ -1877,7 +1884,6 @@ dependencies = [
  "serde",
  "serde_bytes",
  "subtle-encoding 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "thiserror",
 ]
 
 [[package]]
