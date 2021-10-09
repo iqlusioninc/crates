@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#755]: https://github.com/iqlusioninc/crates/pull/755
 [#847]: https://github.com/iqlusioninc/crates/pull/847
 
+## 1.1.1 (2021-10-09)
+### Changed
+- Backport [#847] but with a 1.47+ MSRV.
+
 ## 1.1.0 (2021-04-19)
 ### Changed
 - Bump MSRV to 1.47+ ([#685])
