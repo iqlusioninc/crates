@@ -3,5 +3,7 @@
 [advisories]
 ignore = [
     "RUSTSEC-2020-0036", # failure
+    "RUSTSEC-2020-0071", # time
+    "RUSTSEC-2020-0159", # chrono
     "RUSTSEC-2021-0073", # prost-type
 ] # advisory IDs to ignore e.g. ["RUSTSEC-2019-0001", ...]
