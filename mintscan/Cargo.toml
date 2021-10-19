@@ -16,7 +16,7 @@ edition    = "2018"
 [dependencies]
 iqhttp = { version = "0.1", features = ["json"], path = "../iqhttp" }
 serde = { version = "1", features = ["serde_derive"] }
-tendermint = { version = "0.21", default-features = false }
+tendermint = { version = "0.22", default-features = false }
 
 [dev-dependencies]
 tokio = { version = "1", features = ["macros"] }

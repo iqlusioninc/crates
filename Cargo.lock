@@ -36,15 +36,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "anomaly"
-version = "0.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "550632e31568ae1a5f47998c3aa48563030fc49b9ec91913ca337cf64fbc5ccb"
-dependencies = [
- "backtrace",
-]
-
-[[package]]
 name = "anyhow"
 version = "1.0.44"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -410,6 +401,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "flex-error"
+version = "0.4.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3e8de6bf49fb8856ee814e288a518e0d45598b6f78a95c1233b96eedba8bc06a"
+dependencies = [
+ "eyre",
+ "paste",
+]
+
+[[package]]
 name = "fnv"
 version = "1.0.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -564,7 +565,7 @@ dependencies = [
  "cfg-if",
  "js-sys",
  "libc",
- "wasi 0.10.2+wasi-snapshot-preview1",
+ "wasi 0.10.0+wasi-snapshot-preview1",
  "wasm-bindgen",
 ]
 
@@ -619,18 +620,18 @@ checksum = "ab5ef0d4909ef3724cc8cce6ccc8572c5c817592e9285f5464f8e86f8bd3726e"
 
 [[package]]
 name = "headers"
-version = "0.3.4"
+version = "0.3.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f0b7591fb62902706ae8e7aaff416b1b0fa2c0fd0878b46dc13baa3712d8a855"
+checksum = "a4c4eb0471fcb85846d8b0690695ef354f9afb11cb03cac2e1d7c9253351afb0"
 dependencies = [
  "base64",
  "bitflags",
  "bytes 1.1.0",
  "headers-core",
  "http",
+ "httpdate",
  "mime",
  "sha-1",
- "time",
 ]
 
 [[package]]
@@ -1149,6 +1150,12 @@ dependencies = [
  "smallvec",
  "winapi",
 ]
+
+[[package]]
+name = "paste"
+version = "1.0.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "acbf547ad0c65e31259204bd90935776d1c693cec2f4ff7abb7a1bbbd40dfe58"
 
 [[package]]
 name = "pbkdf2"
@@ -1831,16 +1838,16 @@ dependencies = [
 
 [[package]]
 name = "tendermint"
-version = "0.21.0"
+version = "0.22.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0752808f59b612916614e92e43be64e9ba566b762a266bcfcf7dce1b324e9319"
+checksum = "fa5354dfcc3bbd8bf3b000b9cfb19afcb4e1bbaed9d6b2d6bc2fa05e027bd7e1"
 dependencies = [
- "anomaly 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "async-trait",
  "bytes 1.1.0",
  "chrono",
  "ed25519",
  "ed25519-dalek",
+ "flex-error",
  "futures",
  "num-traits",
  "once_cell",
@@ -1855,7 +1862,7 @@ dependencies = [
  "subtle",
  "subtle-encoding 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "tendermint-proto",
- "thiserror",
+ "time",
  "toml",
  "url",
  "zeroize 1.4.2 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1863,13 +1870,13 @@ dependencies = [
 
 [[package]]
 name = "tendermint-proto"
-version = "0.21.0"
+version = "0.22.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bfd0371c6b0c7fc4f6b053b8a1bc868a2a47c49a1408c4cd6f595d9f3bd3c238"
+checksum = "4c36f58bd68be7a6e3221c49cc1a14cbc619c189bb26a43425f544831922d2be"
 dependencies = [
- "anomaly 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "bytes 1.1.0",
  "chrono",
+ "flex-error",
  "num-derive",
  "num-traits",
  "prost",
@@ -1877,7 +1884,6 @@ dependencies = [
  "serde",
  "serde_bytes",
  "subtle-encoding 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "thiserror",
 ]
 
 [[package]]
@@ -1902,11 +1908,12 @@ dependencies = [
 
 [[package]]
 name = "time"
-version = "0.1.43"
+version = "0.1.44"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ca8a50ef2360fbd1eeb0ecd46795a87a19024eb4b53c5dc916ca1fd95fe62438"
+checksum = "6db9e6914ab8b1ae1c260a4ae7a49b6c5611b40328a735b21862567685e73255"
 dependencies = [
  "libc",
+ "wasi 0.10.0+wasi-snapshot-preview1",
  "winapi",
 ]
 
@@ -2107,9 +2114,9 @@ checksum = "cccddf32554fecc6acb585f82a32a72e28b48f8c4c1883ddfeeeaa96f7d8e519"
 
 [[package]]
 name = "wasi"
-version = "0.10.2+wasi-snapshot-preview1"
+version = "0.10.0+wasi-snapshot-preview1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fd6fbd9a79829dd1ad0cc20627bf1ed606756a7f77edff7b66b7064f9cb327c6"
+checksum = "1a143597ca7c7793eff794def352d41792a93c481eb1042423ff7ff72ba2c31f"
 
 [[package]]
 name = "wasm-bindgen"
