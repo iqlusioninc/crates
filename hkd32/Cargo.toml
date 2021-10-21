@@ -12,10 +12,11 @@ authors    = ["Tony Arcieri <tony@iqlusion.io>"]
 license    = "Apache-2.0 OR MIT"
 homepage   = "https://github.com/iqlusioninc/crates/"
 repository = "https://github.com/iqlusioninc/crates/tree/main/hkd32"
-edition    = "2018"
 readme     = "README.md"
 categories = ["cryptography", "no-std"]
 keywords   = ["crypto", "bip32", "bip39", "derivation", "mnemonic"]
+edition     = "2021"
+rust-version = "1.56"
 
 [badges]
 maintenance = { status = "passively-maintained" }

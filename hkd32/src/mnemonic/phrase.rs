@@ -89,7 +89,7 @@ impl Phrase {
         let mut bits = BitWriter::with_capacity(264);
 
         for word in phrase.split(' ') {
-            bits.push(wordmap.get_bits(&word)?);
+            bits.push(wordmap.get_bits(word)?);
         }
 
         let mut entropy = Zeroizing::new(bits.into_bytes());
@@ -148,7 +148,7 @@ impl Phrase {
         let salt = Zeroizing::new(format!("mnemonic{}", password));
         let mut seed = [0u8; Seed::SIZE];
         pbkdf2::pbkdf2::<Hmac<Sha512>>(
-            &self.phrase.as_bytes(),
+            self.phrase.as_bytes(),
             salt.as_bytes(),
             PBKDF2_ROUNDS,
             &mut seed,

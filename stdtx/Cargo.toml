@@ -9,7 +9,8 @@ repository  = "https://github.com/iqlusioninc/crates/tree/main/stdtx"
 readme      = "README.md"
 categories  = ["cryptography", "encoding"]
 keywords    = ["amino", "crypto", "cosmos", "transaction", "tendermint"]
-edition     = "2018"
+edition     = "2021"
+rust-version = "1.56"
 
 [badges]
 circle-ci = { repository = "tendermint/kms" }

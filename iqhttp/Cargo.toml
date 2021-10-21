@@ -15,7 +15,8 @@ license    = "Apache-2.0 OR MIT"
 categories = ["network-programming", "web-programming::http-client"]
 keywords   = ["api", "client", "http", "rest", "web"]
 readme     = "README.md"
-edition    = "2018"
+edition     = "2021"
+rust-version = "1.56"
 
 [dependencies]
 hyper = "0.14.10"
