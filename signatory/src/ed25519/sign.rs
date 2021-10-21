@@ -25,7 +25,7 @@ impl SigningKey {
 
     /// Initialize from a raw scalar value (big endian).
     pub fn from_bytes(bytes: &[u8]) -> Result<Self> {
-        let secret = ed25519_dalek::SecretKey::from_bytes(&bytes).map_err(|_| Error::Parse)?;
+        let secret = ed25519_dalek::SecretKey::from_bytes(bytes).map_err(|_| Error::Parse)?;
         let public = ed25519_dalek::PublicKey::from(&secret);
         let keypair = ed25519_dalek::Keypair { secret, public };
         Ok(Self::new(Box::new(keypair)))
