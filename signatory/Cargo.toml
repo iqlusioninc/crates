@@ -9,8 +9,9 @@ repository  = "https://github.com/iqlusioninc/crates/tree/main/signatory"
 readme      = "README.md"
 categories  = ["authentication", "cryptography"]
 keywords    = ["cryptography", "ecdsa", "ed25519", "signing", "signatures"]
-edition     = "2018"
 autobenches = false
+edition     = "2021"
+rust-version = "1.56"
 
 [dependencies]
 pkcs8 = { version = "0.7.2", features = ["alloc", "pem"] }

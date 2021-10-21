@@ -2,9 +2,10 @@
 name = "datadog"
 version = "0.1.0"
 authors = ["Shella Stephens <shella@iqlusion.io>"]
-edition = "2018"
 homepage = "https://github.com/iqlusioninc/crates/"
 categories  = ["api-bindings"]
+edition     = "2021"
+rust-version = "1.56"
 
 [dependencies]
 hostname = "0.3"

@@ -11,7 +11,8 @@ license    = "Apache-2.0 OR MIT"
 categories = ["api-bindings", "cryptography::cryptocurrencies"]
 keywords   = ["api", "client", "cosmos", "explorer", "tendermint"]
 readme     = "README.md"
-edition    = "2018"
+edition     = "2021"
+rust-version = "1.56"
 
 [dependencies]
 iqhttp = { version = "0.1", features = ["json"], path = "../iqhttp" }

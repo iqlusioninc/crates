@@ -9,12 +9,13 @@ from memory when dropped.
 version     = "0.8.0" # Also update html_root_url in lib.rs when bumping this
 authors     = ["Tony Arcieri <tony@iqlusion.io>"]
 license     = "Apache-2.0 OR MIT"
-edition     = "2018"
 homepage    = "https://github.com/iqlusioninc/crates/"
 repository  = "https://github.com/iqlusioninc/crates/tree/main/secrecy"
 readme      = "README.md"
 categories  = ["cryptography", "memory-management", "no-std", "os"]
 keywords    = ["clear", "memory", "secret", "secure", "wipe"]
+edition     = "2021"
+rust-version = "1.56"
 
 [dependencies]
 zeroize = { version = "1.4", path = "../zeroize", default-features = false }

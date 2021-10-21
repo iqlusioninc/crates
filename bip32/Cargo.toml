@@ -12,8 +12,9 @@ homepage   = "https://github.com/iqlusioninc/crates/"
 repository = "https://github.com/iqlusioninc/crates/tree/main/bip32"
 categories = ["cryptography", "no-std"]
 keywords   = ["crypto", "bip32", "bip39", "derivation", "mnemonic"]
-edition    = "2018"
 readme     = "README.md"
+edition     = "2021"
+rust-version = "1.56"
 
 [dependencies]
 bs58 = { version = "0.4", default-features = false, features = ["check"] }
