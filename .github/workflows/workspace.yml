@@ -12,7 +12,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions-rs/toolchain@v1
         with:
-          toolchain: stable
+          toolchain: stables
           override: true
           profile: minimal
       - uses: actions-rs/cargo@v1
