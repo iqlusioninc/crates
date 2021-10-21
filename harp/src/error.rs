@@ -113,10 +113,10 @@ macro_rules! err {
 /// Create and return an error with a formatted message
 macro_rules! fail {
     ($kind:ident, $msg:expr) => {
-        return Err(err!($kind, $msg).into());
+        return Err(err!($kind, $msg).into())
     };
     ($kind:ident, $fmt:expr, $($arg:tt)+) => {
-        fail!($kind, &format!($fmt, $($arg)+));
+        fail!($kind, &format!($fmt, $($arg)+))
     };
 }
 
