@@ -255,11 +255,11 @@ impl_zeroize_with_default!(u8, u16, u32, u64, u128, usize);
 impl_zeroize_with_default!(f32, f64, char, bool);
 
 macro_rules! impl_zeroize_for_non_zero {
-    ($($type1:ty => $type2:ty),+) => {
-        $(impl Zeroize for $type1
+    ($($type:ty),+) => {
+        $(impl Zeroize for $type
         {
             fn zeroize(&mut self) {
-                volatile_write(self, unsafe { <$type1>::new_unchecked(<$type2>::MAX) });
+                volatile_write(self, unsafe { <$type>::new_unchecked(1) });
                 atomic_fence();
             }
         })+
@@ -267,20 +267,20 @@ macro_rules! impl_zeroize_for_non_zero {
 }
 
 impl_zeroize_for_non_zero!(
-    NonZeroI8 => i8,
-    NonZeroI16 => i16,
-    NonZeroI32 => i32,
-    NonZeroI64 => i64,
-    NonZeroI128 => i128,
-    NonZeroIsize => isize
+    NonZeroI8,
+    NonZeroI16,
+    NonZeroI32,
+    NonZeroI64,
+    NonZeroI128,
+    NonZeroIsize
 );
 impl_zeroize_for_non_zero!(
-    NonZeroU8 => u8,
-    NonZeroU16 => u16,
-    NonZeroU32 => u32,
-    NonZeroU64 => u64,
-    NonZeroU128 => u128,
-    NonZeroUsize => usize
+    NonZeroU8,
+    NonZeroU16,
+    NonZeroU32,
+    NonZeroU64,
+    NonZeroU128,
+    NonZeroUsize
 );
 
 /// Implement `Zeroize` on arrays of types that impl `Zeroize`
@@ -578,28 +578,28 @@ mod tests {
     #[test]
     fn non_zero() {
         macro_rules! non_zero_test {
-            ($($type1:ty => $type2:ty),+) => {
-                $(let mut value = <$type1>::new(42).unwrap();
+            ($($type:ty),+) => {
+                $(let mut value = <$type>::new(42).unwrap();
                 value.zeroize();
-                assert_eq!(value.get(), <$type2>::MAX);)+
+                assert_eq!(value.get(), 1);)+
             };
         }
 
         non_zero_test!(
-            NonZeroI8 => i8,
-            NonZeroI16 => i16,
-            NonZeroI32 => i32,
-            NonZeroI64 => i64,
-            NonZeroI128 => i128,
-            NonZeroIsize => isize
+            NonZeroI8,
+            NonZeroI16,
+            NonZeroI32,
+            NonZeroI64,
+            NonZeroI128,
+            NonZeroIsize
         );
         non_zero_test!(
-            NonZeroU8 => u8,
-            NonZeroU16 => u16,
-            NonZeroU32 => u32,
-            NonZeroU64 => u64,
-            NonZeroU128 => u128,
-            NonZeroUsize => usize
+            NonZeroU8,
+            NonZeroU16,
+            NonZeroU32,
+            NonZeroU64,
+            NonZeroU128,
+            NonZeroUsize
         );
     }
 
