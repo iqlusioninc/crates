@@ -215,6 +215,10 @@ pub use zeroize_derive::Zeroize;
 mod x86;
 
 use core::mem::{self, MaybeUninit};
+use core::num::{
+    NonZeroI128, NonZeroI16, NonZeroI32, NonZeroI64, NonZeroI8, NonZeroIsize, NonZeroU128,
+    NonZeroU16, NonZeroU32, NonZeroU64, NonZeroU8, NonZeroUsize,
+};
 use core::{ops, ptr, slice::IterMut, sync::atomic};
 
 #[cfg(feature = "alloc")]
@@ -249,6 +253,35 @@ macro_rules! impl_zeroize_with_default {
 impl_zeroize_with_default!(i8, i16, i32, i64, i128, isize);
 impl_zeroize_with_default!(u8, u16, u32, u64, u128, usize);
 impl_zeroize_with_default!(f32, f64, char, bool);
+
+macro_rules! impl_zeroize_for_non_zero {
+    ($($type1:ty => $type2:ty),+) => {
+        $(impl Zeroize for $type1
+        {
+            fn zeroize(&mut self) {
+                volatile_write(self, unsafe { <$type1>::new_unchecked(<$type2>::MAX) });
+                atomic_fence();
+            }
+        })+
+    };
+}
+
+impl_zeroize_for_non_zero!(
+    NonZeroI8 => i8,
+    NonZeroI16 => i16,
+    NonZeroI32 => i32,
+    NonZeroI64 => i64,
+    NonZeroI128 => i128,
+    NonZeroIsize => isize
+);
+impl_zeroize_for_non_zero!(
+    NonZeroU8 => u8,
+    NonZeroU16 => u16,
+    NonZeroU32 => u32,
+    NonZeroU64 => u64,
+    NonZeroU128 => u128,
+    NonZeroUsize => usize
+);
 
 /// Implement `Zeroize` on arrays of types that impl `Zeroize`
 impl<Z, const N: usize> Zeroize for [Z; N]
@@ -541,6 +574,34 @@ mod tests {
     use super::*;
     #[cfg(feature = "alloc")]
     use alloc::boxed::Box;
+
+    #[test]
+    fn non_zero() {
+        macro_rules! non_zero_test {
+            ($($type1:ty => $type2:ty),+) => {
+                $(let mut value = <$type1>::new(42).unwrap();
+                value.zeroize();
+                assert_eq!(value.get(), <$type2>::MAX);)+
+            };
+        }
+
+        non_zero_test!(
+            NonZeroI8 => i8,
+            NonZeroI16 => i16,
+            NonZeroI32 => i32,
+            NonZeroI64 => i64,
+            NonZeroI128 => i128,
+            NonZeroIsize => isize
+        );
+        non_zero_test!(
+            NonZeroU8 => u8,
+            NonZeroU16 => u16,
+            NonZeroU32 => u32,
+            NonZeroU64 => u64,
+            NonZeroU128 => u128,
+            NonZeroUsize => usize
+        );
+    }
 
     #[test]
     fn zeroize_byte_arrays() {
