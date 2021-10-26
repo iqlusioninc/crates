@@ -215,6 +215,10 @@ pub use zeroize_derive::Zeroize;
 mod x86;
 
 use core::mem::{self, MaybeUninit};
+use core::num::{
+    NonZeroI128, NonZeroI16, NonZeroI32, NonZeroI64, NonZeroI8, NonZeroIsize, NonZeroU128,
+    NonZeroU16, NonZeroU32, NonZeroU64, NonZeroU8, NonZeroUsize,
+};
 use core::{ops, ptr, slice::IterMut, sync::atomic};
 
 #[cfg(feature = "alloc")]
@@ -249,6 +253,35 @@ macro_rules! impl_zeroize_with_default {
 impl_zeroize_with_default!(i8, i16, i32, i64, i128, isize);
 impl_zeroize_with_default!(u8, u16, u32, u64, u128, usize);
 impl_zeroize_with_default!(f32, f64, char, bool);
+
+macro_rules! impl_zeroize_for_non_zero {
+    ($($type:ty),+) => {
+        $(impl Zeroize for $type
+        {
+            fn zeroize(&mut self) {
+                volatile_write(self, unsafe { <$type>::new_unchecked(1) });
+                atomic_fence();
+            }
+        })+
+    };
+}
+
+impl_zeroize_for_non_zero!(
+    NonZeroI8,
+    NonZeroI16,
+    NonZeroI32,
+    NonZeroI64,
+    NonZeroI128,
+    NonZeroIsize
+);
+impl_zeroize_for_non_zero!(
+    NonZeroU8,
+    NonZeroU16,
+    NonZeroU32,
+    NonZeroU64,
+    NonZeroU128,
+    NonZeroUsize
+);
 
 /// Implement `Zeroize` on arrays of types that impl `Zeroize`
 impl<Z, const N: usize> Zeroize for [Z; N]
@@ -541,6 +574,34 @@ mod tests {
     use super::*;
     #[cfg(feature = "alloc")]
     use alloc::boxed::Box;
+
+    #[test]
+    fn non_zero() {
+        macro_rules! non_zero_test {
+            ($($type:ty),+) => {
+                $(let mut value = <$type>::new(42).unwrap();
+                value.zeroize();
+                assert_eq!(value.get(), 1);)+
+            };
+        }
+
+        non_zero_test!(
+            NonZeroI8,
+            NonZeroI16,
+            NonZeroI32,
+            NonZeroI64,
+            NonZeroI128,
+            NonZeroIsize
+        );
+        non_zero_test!(
+            NonZeroU8,
+            NonZeroU16,
+            NonZeroU32,
+            NonZeroU64,
+            NonZeroU128,
+            NonZeroUsize
+        );
+    }
 
     #[test]
     fn zeroize_byte_arrays() {
