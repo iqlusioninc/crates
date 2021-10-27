@@ -1,6 +1,6 @@
 [package]
 name = "mintscan"
-version = "0.1.0" # Also update html_root_url in lib.rs when bumping this
+version = "0.2.0" # Also update html_root_url in lib.rs when bumping this
 description = """
 API client for the Mintscan Cosmos explorer by Cosmostation
 """
