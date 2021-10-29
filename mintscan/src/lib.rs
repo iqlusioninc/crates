@@ -3,7 +3,7 @@
 //! [Mintscan]: https://www.mintscan.io/
 //! [Cosmostation]: https://www.cosmostation.io/
 
-#![doc(html_root_url = "https://docs.rs/mintscan/0.2.0")]
+#![doc(html_root_url = "https://docs.rs/mintscan/0.3.0")]
 #![forbid(unsafe_code, clippy::unwrap_used)]
 #![warn(missing_docs, rust_2018_idioms, unused_qualifications)]
 
