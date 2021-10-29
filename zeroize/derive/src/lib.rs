@@ -146,36 +146,43 @@ impl ZeroizeAttrs {
     }
 }
 
+fn filter_skip(attrs: &[Attribute], start: bool) -> bool {
+    let mut result = start;
+
+    for attr in attrs.iter().filter_map(|attr| attr.parse_meta().ok()) {
+        if let Meta::List(list) = attr {
+            if list.path.is_ident(ZEROIZE_ATTR) {
+                for nested in list.nested {
+                    if let NestedMeta::Meta(Meta::Path(path)) = nested {
+                        if path.is_ident("skip") {
+                            assert!(result, "duplicate #[zeroize] skip flags");
+                            result = false;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    result
+}
+
 /// Custom derive for `Zeroize` (without `Drop`)
 fn derive_zeroize_without_drop(mut s: synstructure::Structure<'_>) -> TokenStream {
     s.bind_with(|_| BindStyle::RefMut);
 
     let zeroizers = s
-        .filter(|bi| {
-            let mut result = true;
+        .filter_variants(|vi| {
+            let result = filter_skip(vi.ast().attrs, true);
 
-            for attr in bi
-                .ast()
-                .attrs
-                .iter()
-                .filter_map(|attr| attr.parse_meta().ok())
-            {
-                if let Meta::List(list) = attr {
-                    if list.path.is_ident(ZEROIZE_ATTR) {
-                        for nested in list.nested {
-                            if let NestedMeta::Meta(Meta::Path(path)) = nested {
-                                if path.is_ident("skip") {
-                                    assert!(result, "duplicate #[zeroize] skip flags");
-                                    result = false;
-                                }
-                            }
-                        }
-                    }
-                }
+            // check for duplicate `#[zeroize(skip)]` attributes in nested variants
+            for field in vi.ast().fields {
+                filter_skip(&field.attrs, result);
             }
 
             result
         })
+        .filter(|bi| filter_skip(&bi.ast().attrs, true))
         .each(|bi| quote! { #bi.zeroize(); });
 
     s.bound_impl(
@@ -509,6 +516,22 @@ mod tests {
                 #[zeroize(skip, skip)]
                 b: Vec<u8>,
                 c: [u8; 3],
+            }
+        ));
+    }
+
+    #[test]
+    #[should_panic(expected = "duplicate #[zeroize] skip flags")]
+    fn zeroize_duplicate_skip_enum() {
+        parse_zeroize_test(stringify!(
+            enum Z {
+                #[zeroize(skip)]
+                Variant {
+                    a: String,
+                    #[zeroize(skip)]
+                    b: Vec<u8>,
+                    c: [u8; 3],
+                },
             }
         ));
     }
