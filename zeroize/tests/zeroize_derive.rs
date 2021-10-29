@@ -104,4 +104,34 @@ mod custom_derive_tests {
     impl Drop for ZeroizeNoDropEnum {
         fn drop(&mut self) {}
     }
+
+    #[test]
+    fn derive_skip() {
+        #[derive(Zeroize)]
+        #[zeroize(drop)]
+        struct Z {
+            string: String,
+            vec: Vec<u8>,
+            #[zeroize(skip)]
+            bytearray: [u8; 3],
+            number: usize,
+            boolean: bool,
+        }
+
+        let mut value = Z {
+            string: String::from("Hello, world!"),
+            vec: vec![1, 2, 3],
+            bytearray: [4, 5, 6],
+            number: 42,
+            boolean: true,
+        };
+
+        value.zeroize();
+
+        assert!(value.string.is_empty());
+        assert!(value.vec.is_empty());
+        assert_eq!(&value.bytearray, &[4, 5, 6]);
+        assert_eq!(value.number, 0);
+        assert!(!value.boolean);
+    }
 }
