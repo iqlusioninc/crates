@@ -26,7 +26,6 @@ This repository contains the following crates:
 | [signatory]       | ![][signatory-crate]       | ![][signatory-build]       | Signature library with ECDSA+Ed25519   |
 | [stdtx]           | ![][stdtx-crate]           | ![][stdtx-build]           | Cosmos StdTx builder/signer/serializer |
 | [subtle‑encoding] | ![][subtle-encoding-crate] | ![][subtle-encoding-build] | Constant-time hex/bech32/base64        |
-| [tai64]           | ![][tai64-crate]           | ![][tai64-build]           | TAI64(N) timestamp format              |
 
 ## License
 
@@ -83,8 +82,6 @@ without any additional terms or conditions.
 [stdtx-crate]: https://img.shields.io/crates/v/stdtx.svg
 [subtle‑encoding]: https://github.com/iqlusioninc/crates/tree/main/subtle-encoding
 [subtle-encoding-crate]: https://img.shields.io/crates/v/subtle-encoding.svg
-[tai64]: https://github.com/iqlusioninc/crates/tree/main/tai64
-[tai64-crate]: https://img.shields.io/crates/v/tai64.svg
 
 [//]: # (build)
 
