@@ -21,7 +21,6 @@ rust-version = "1.56"
 version = "1"
 optional = true
 default-features = false
-path = "../zeroize"
 
 [features]
 default = ["base64", "hex", "std"]

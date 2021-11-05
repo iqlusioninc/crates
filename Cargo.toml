@@ -13,6 +13,4 @@ members = [
     "stdtx",
     "subtle-encoding",
     "tai64",
-    "zeroize",
-    "zeroize/derive"
 ]
