@@ -12,5 +12,4 @@ members = [
     "signatory",
     "stdtx",
     "subtle-encoding",
-    "tai64",
 ]
