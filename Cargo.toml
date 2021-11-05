@@ -5,7 +5,6 @@ members = [
     "bip32",
     "canonical-path",
     "datadog",
-    "harp",
     "hkd32",
     "iqhttp",
     "mintscan",
