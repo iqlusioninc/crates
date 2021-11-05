@@ -18,7 +18,7 @@ edition     = "2021"
 rust-version = "1.56"
 
 [dependencies]
-zeroize = { version = "1.4", path = "../zeroize", default-features = false }
+zeroize = { version = "1.4", default-features = false }
 
 # optional dependencies
 bytes = { version = "1", optional = true }

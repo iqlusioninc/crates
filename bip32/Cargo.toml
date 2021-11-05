@@ -23,7 +23,7 @@ hmac = { version = "0.11", default-features = false }
 ripemd160 = { version = "0.9", default-features = false }
 sha2 = { version = "0.9", default-features = false }
 subtle = { version = "2", default-features = false }
-zeroize = { version = "1", default-features = false, path = "../zeroize" }
+zeroize = { version = "1", default-features = false }
 
 # optional dependencies
 secp256k1-ffi = { package = "secp256k1", version = "0.20", optional = true }
