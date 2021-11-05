@@ -27,7 +27,6 @@ This repository contains the following crates:
 | [stdtx]           | ![][stdtx-crate]           | ![][stdtx-build]           | Cosmos StdTx builder/signer/serializer |
 | [subtle‑encoding] | ![][subtle-encoding-crate] | ![][subtle-encoding-build] | Constant-time hex/bech32/base64        |
 | [tai64]           | ![][tai64-crate]           | ![][tai64-build]           | TAI64(N) timestamp format              |
-| [zeroize]         | ![][zeroize-crate]         | ![][zeroize-build]         | Securely zero memory                   |
 
 ## License
 
@@ -86,8 +85,6 @@ without any additional terms or conditions.
 [subtle-encoding-crate]: https://img.shields.io/crates/v/subtle-encoding.svg
 [tai64]: https://github.com/iqlusioninc/crates/tree/main/tai64
 [tai64-crate]: https://img.shields.io/crates/v/tai64.svg
-[zeroize]: https://github.com/iqlusioninc/crates/tree/main/zeroize
-[zeroize-crate]: https://img.shields.io/crates/v/zeroize.svg
 
 [//]: # (build)
 
@@ -101,4 +98,3 @@ without any additional terms or conditions.
 [stdtx-build]: https://github.com/iqlusioninc/crates/actions/workflows/stdtx.yml/badge.svg
 [subtle-encoding-build]: https://github.com/iqlusioninc/crates/actions/workflows/subtle-encoding.yml/badge.svg
 [tai64-build]: https://github.com/iqlusioninc/crates/actions/workflows/tai64.yml/badge.svg
-[zeroize-build]: https://github.com/iqlusioninc/crates/actions/workflows/zeroize.yml/badge.svg
