@@ -115,6 +115,9 @@ mod public_key;
 #[cfg(feature = "alloc")]
 mod derivation_path;
 
+#[cfg(feature = "mnemonic")]
+mod mnemonic;
+
 pub use crate::{
     child_number::ChildNumber,
     error::{Error, Result},
@@ -126,14 +129,13 @@ pub use crate::{
     private_key::{PrivateKey, PrivateKeyBytes},
     public_key::{PublicKey, PublicKeyBytes},
 };
-pub use hkd32::KEY_SIZE;
 
 #[cfg(feature = "alloc")]
 pub use crate::derivation_path::DerivationPath;
 
 #[cfg(feature = "bip39")]
 #[cfg_attr(docsrs, doc(cfg(feature = "bip39")))]
-pub use hkd32::mnemonic::{Language, Phrase as Mnemonic, Seed};
+pub use crate::mnemonic::{Language, Phrase as Mnemonic, Seed};
 
 #[cfg(feature = "secp256k1")]
 #[cfg_attr(docsrs, doc(cfg(feature = "secp256k1")))]
@@ -157,3 +159,6 @@ pub type Version = u32;
 
 /// HMAC with SHA-512
 type HmacSha512 = hmac::Hmac<sha2::Sha512>;
+
+/// Size of input key material and derived keys.
+pub const KEY_SIZE: usize = 32;

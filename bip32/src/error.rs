@@ -12,6 +12,9 @@ pub enum Error {
     /// Base58 errors.
     Base58,
 
+    /// BIP39-related errors.
+    Bip39,
+
     /// Child number-related errors.
     ChildNumber,
 
@@ -32,6 +35,7 @@ impl Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Error::Base58 => f.write_str("base58 error"),
+            Error::Bip39 => f.write_str("bip39 error"),
             Error::ChildNumber => f.write_str("invalid child number"),
             Error::Crypto => f.write_str("cryptographic error"),
             Error::Decode => f.write_str("decoding error"),

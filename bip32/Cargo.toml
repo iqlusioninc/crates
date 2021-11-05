@@ -5,27 +5,29 @@ BIP32 hierarchical key derivation implemented in a generic, no_std-friendly
 manner. Supports deriving keys using the pure Rust k256 crate or the
 C library-backed secp256k1 crate
 """
-version    = "0.2.2" # Also update html_root_url in lib.rs when bumping this
-authors    = ["Tony Arcieri <tony@iqlusion.io>"]
-license    = "Apache-2.0 OR MIT"
-homepage   = "https://github.com/iqlusioninc/crates/"
+version = "0.2.2" # Also update html_root_url in lib.rs when bumping this
+authors = ["Tony Arcieri <tony@iqlusion.io>"]
+license = "Apache-2.0 OR MIT"
+homepage = "https://github.com/iqlusioninc/crates/"
 repository = "https://github.com/iqlusioninc/crates/tree/main/bip32"
 categories = ["cryptography", "no-std"]
-keywords   = ["crypto", "bip32", "bip39", "derivation", "mnemonic"]
-readme     = "README.md"
-edition     = "2021"
+keywords = ["crypto", "bip32", "bip39", "derivation", "mnemonic"]
+readme = "README.md"
+edition  = "2021"
 rust-version = "1.56"
 
 [dependencies]
 bs58 = { version = "0.4", default-features = false, features = ["check"] }
-hkd32 = { version = "0.6", default-features = false, path = "../hkd32" }
 hmac = { version = "0.11", default-features = false }
+rand_core = { version = "0.6", default-features = false }
 ripemd160 = { version = "0.9", default-features = false }
 sha2 = { version = "0.9", default-features = false }
 subtle = { version = "2", default-features = false }
 zeroize = { version = "1", default-features = false }
 
 # optional dependencies
+once_cell = { version = "1", optional = true }
+pbkdf2 = { version = "0.9", optional = true, default-features = false }
 secp256k1-ffi = { package = "secp256k1", version = "0.20", optional = true }
 
 [dependencies.k256]
@@ -41,7 +43,8 @@ rand_core = { version = "0.6", features = ["std"] }
 [features]
 default = ["bip39", "secp256k1", "std"]
 alloc = ["zeroize/alloc"]
-bip39 = ["hkd32/bip39", "std"]
+bip39 = ["mnemonic", "pbkdf2", "std"]
+mnemonic = ["alloc", "once_cell"]
 secp256k1 = ["k256"]
 std = ["alloc"]
 

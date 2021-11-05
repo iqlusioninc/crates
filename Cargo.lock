@@ -98,9 +98,10 @@ version = "0.2.2"
 dependencies = [
  "bs58",
  "hex-literal",
- "hkd32",
  "hmac",
  "k256",
+ "once_cell",
+ "pbkdf2",
  "rand_core 0.6.3",
  "ripemd160",
  "secp256k1",
