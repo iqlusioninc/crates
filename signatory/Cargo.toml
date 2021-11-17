@@ -14,7 +14,7 @@ edition     = "2021"
 rust-version = "1.56"
 
 [dependencies]
-pkcs8 = { version = "0.7.2", features = ["alloc", "pem"] }
+pkcs8 = { version = "0.8.0", features = ["alloc", "pem"] }
 rand_core = "0.6"
 signature = "1.3.1"
 zeroize = "1.4"
