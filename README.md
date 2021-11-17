@@ -17,7 +17,6 @@ This repository contains the following crates:
 
 | Name              | Version                    | Build                      | Description                            |
 |-------------------|----------------------------|----------------------------|----------------------------------------|
-| [anomaly]         | ![][anomaly-crate]         | ![][anomaly-build]         | Error context library                  |
 | [bip32]           | ![][bip32-crate]           | ![][bip32-build]           | Hierarchical key derivation            |
 | [canonical‑path]  | ![][canonical-path-crate]  | ![][canonical-path-build]  | Canonical filesystem path support      |
 | [datadog]         | ![][datadog-crate]         | ![][datadog-build]         | Datadog client library                 |
@@ -64,8 +63,6 @@ without any additional terms or conditions.
 
 [//]: # (crates)
 
-[anomaly]: https://github.com/iqlusioninc/crates/tree/main/anomaly
-[anomaly-crate]: https://img.shields.io/crates/v/anomaly.svg
 [bip32]: https://github.com/iqlusioninc/crates/tree/main/bip32
 [bip32-crate]: https://img.shields.io/crates/v/bip32.svg
 [canonical‑path]: https://github.com/iqlusioninc/crates/tree/main/canonical-path
@@ -85,7 +82,6 @@ without any additional terms or conditions.
 
 [//]: # (build)
 
-[anomaly-build]: https://github.com/iqlusioninc/crates/actions/workflows/anomaly.yml/badge.svg
 [bip32-build]: https://github.com/iqlusioninc/crates/actions/workflows/bip32.yml/badge.svg
 [canonical-path-build]: https://github.com/iqlusioninc/crates/actions/workflows/canonical-path.yml/badge.svg
 [datadog-build]: https://github.com/iqlusioninc/crates/actions/workflows/datadog.yml/badge.svg
