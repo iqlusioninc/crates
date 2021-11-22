@@ -16,7 +16,7 @@ rust-version = "1.56"
 circle-ci = { repository = "tendermint/kms" }
 
 [dependencies]
-ecdsa = { version = "0.12", features = ["std"] }
+ecdsa = { version = "0.13", features = ["std"] }
 eyre = "0.6"
 k256 = { version = "0.9", features = ["ecdsa", "sha256"] }
 prost-amino = "0.6"
