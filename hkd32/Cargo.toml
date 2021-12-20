@@ -42,6 +42,7 @@ alloc = ["zeroize/alloc"]
 bech32 = ["alloc", "subtle-encoding/bech32-preview"]
 bip39 = ["mnemonic", "pbkdf2"]
 mnemonic = ["alloc", "once_cell"]
+std = [ ]
 
 [package.metadata.docs.rs]
 all-features = true
