@@ -1,29 +1,29 @@
 [package]
-name        = "signatory"
-description = "Multi-provider elliptic curve digital signature library with ECDSA and Ed25519 support"
-version     = "0.23.2" # Also update html_root_url in lib.rs when bumping this
-license     = "Apache-2.0 OR MIT"
-authors     = ["Tony Arcieri <tony@iqlusion.io>"]
-homepage    = "https://github.com/iqlusioninc/crates"
-repository  = "https://github.com/iqlusioninc/crates/tree/main/signatory"
-readme      = "README.md"
-categories  = ["authentication", "cryptography"]
-keywords    = ["cryptography", "ecdsa", "ed25519", "signing", "signatures"]
-autobenches = false
-edition     = "2021"
+name         = "signatory"
+description  = "Multi-provider elliptic curve digital signature library with ECDSA and Ed25519 support"
+version      = "0.23.2" # Also update html_root_url in lib.rs when bumping this
+license      = "Apache-2.0 OR MIT"
+authors      = ["Tony Arcieri <tony@iqlusion.io>"]
+homepage     = "https://github.com/iqlusioninc/crates"
+repository   = "https://github.com/iqlusioninc/crates/tree/main/signatory"
+readme       = "README.md"
+categories   = ["authentication", "cryptography"]
+keywords     = ["cryptography", "ecdsa", "ed25519", "signing", "signatures"]
+autobenches  = false
+edition      = "2021"
 rust-version = "1.56"
 
 [dependencies]
-pkcs8 = { version = "0.7.2", features = ["alloc", "pem"] }
+pkcs8 = { version = "0.8", features = ["alloc", "pem"] }
 rand_core = "0.6"
-signature = "1.3.1"
+signature = "1.4"
 zeroize = "1.4"
 
 # optional dependencies
-ecdsa = { version = "0.12.3", optional = true, features = ["pem", "pkcs8"] }
+ecdsa = { version = "0.13", optional = true, features = ["pem", "pkcs8"] }
 ed25519-dalek = { version = "1", optional = true, default-features = false, features = ["u64_backend"] }
-k256 = { version = "0.9", optional = true, features = ["ecdsa", "sha256", "keccak256"] }
-p256 = { version = "0.9", optional = true, features = ["ecdsa", "sha256"] }
+k256 = { version = "0.10", optional = true, features = ["ecdsa", "sha256", "keccak256"] }
+p256 = { version = "0.10", optional = true, features = ["ecdsa", "sha256"] }
 
 [dev-dependencies]
 tempfile = "3"

@@ -2,7 +2,6 @@
 
 use super::{SigningKey, VerifyingKey};
 use crate::{Error, KeyHandle, LoadPkcs8, Map, Result};
-use pkcs8::FromPrivateKey;
 
 /// Ed25519 keyring.
 #[derive(Debug, Default)]
@@ -30,7 +29,7 @@ impl KeyRing {
 
 impl LoadPkcs8 for KeyRing {
     fn load_pkcs8(&mut self, private_key: pkcs8::PrivateKeyInfo<'_>) -> Result<KeyHandle> {
-        let signing_key = SigningKey::from_pkcs8_private_key_info(private_key)?;
+        let signing_key = SigningKey::try_from(private_key)?;
         let verifying_key = signing_key.verifying_key();
 
         if self.keys.contains_key(&verifying_key) {

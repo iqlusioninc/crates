@@ -1,6 +1,7 @@
 //! Filesystem-backed keystore
 
 use crate::{Error, KeyHandle, KeyInfo, KeyName, KeyRing, LoadPkcs8, Result};
+use pkcs8::der::Document;
 use std::{
     fs,
     path::{Path, PathBuf},
@@ -72,14 +73,14 @@ impl FsKeyStore {
         } else if pem_data.starts_with(PRIVATE_KEY_BOUNDARY) {
             false
         } else {
-            return Err(pkcs8::Error::Pem.into());
+            return Err(pkcs8::Error::KeyMalformed.into());
         };
 
         let algorithm = if encrypted {
             None
         } else {
             pkcs8::PrivateKeyDocument::from_pem(&pem_data)?
-                .private_key_info()
+                .decode()
                 .algorithm
                 .try_into()
                 .ok()
@@ -94,7 +95,7 @@ impl FsKeyStore {
 
     /// Import a key with a given name into the provided keyring.
     pub fn import(&self, name: &KeyName, key_ring: &mut KeyRing) -> Result<KeyHandle> {
-        key_ring.load_pkcs8(self.load(name)?.private_key_info())
+        key_ring.load_pkcs8(self.load(name)?.decode())
     }
 
     /// Load a PKCS#8 key from the keystore.
@@ -106,7 +107,7 @@ impl FsKeyStore {
 
     /// Import a PKCS#8 key into the keystore.
     pub fn store(&self, name: &KeyName, der: &pkcs8::PrivateKeyDocument) -> Result<()> {
-        der.write_pem_file(&self.key_path(name))?;
+        der.write_pem_file(&self.key_path(name), Default::default())?;
         Ok(())
     }
 

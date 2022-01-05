@@ -5,7 +5,7 @@ use crate::{key::store::GeneratePkcs8, Error, Result};
 use alloc::boxed::Box;
 use core::fmt;
 use ed25519_dalek::SECRET_KEY_LENGTH;
-use pkcs8::FromPrivateKey;
+use pkcs8::DecodePrivateKey;
 use rand_core::{OsRng, RngCore};
 use signature::Signer;
 use zeroize::Zeroizing;
@@ -37,8 +37,14 @@ impl SigningKey {
     }
 }
 
-impl FromPrivateKey for SigningKey {
-    fn from_pkcs8_private_key_info(private_key: pkcs8::PrivateKeyInfo<'_>) -> pkcs8::Result<Self> {
+impl DecodePrivateKey for SigningKey {}
+
+// TODO(tarcieri): use upstream decoder from `ed25519` crate.
+// See: https://docs.rs/ed25519/latest/ed25519/pkcs8/struct.KeypairBytes.html
+impl TryFrom<pkcs8::PrivateKeyInfo<'_>> for SigningKey {
+    type Error = pkcs8::Error;
+
+    fn try_from(private_key: pkcs8::PrivateKeyInfo<'_>) -> pkcs8::Result<Self> {
         private_key.algorithm.assert_algorithm_oid(ALGORITHM_OID)?;
 
         if private_key.algorithm.parameters.is_some() {
@@ -56,7 +62,9 @@ impl GeneratePkcs8 for SigningKey {
     fn generate_pkcs8() -> pkcs8::PrivateKeyDocument {
         let mut private_key = Zeroizing::new([0u8; SECRET_KEY_LENGTH]);
         OsRng.fill_bytes(&mut *private_key);
-        pkcs8::PrivateKeyInfo::new(ALGORITHM_ID, &*private_key).to_der()
+        pkcs8::PrivateKeyInfo::new(ALGORITHM_ID, &*private_key)
+            .to_der()
+            .expect("DER encoding error")
     }
 }
 
