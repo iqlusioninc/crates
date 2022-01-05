@@ -6,7 +6,6 @@ use super::{
 };
 use crate::{Error, KEY_SIZE};
 use alloc::{format, string::String};
-use core::convert::TryInto;
 use rand_core::{CryptoRng, RngCore};
 use sha2::{Digest, Sha256};
 use zeroize::{Zeroize, Zeroizing};

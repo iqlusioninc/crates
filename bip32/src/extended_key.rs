@@ -6,7 +6,6 @@ pub(crate) mod public_key;
 
 use crate::{ChildNumber, Error, ExtendedKeyAttrs, Prefix, Result, Version, KEY_SIZE};
 use core::{
-    convert::TryInto,
     fmt::{self, Display},
     str::{self, FromStr},
 };

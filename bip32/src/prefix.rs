@@ -2,7 +2,6 @@
 
 use crate::{Error, ExtendedKey, Result, Version};
 use core::{
-    convert::{TryFrom, TryInto},
     fmt::{self, Debug, Display},
     str,
 };
@@ -208,7 +207,6 @@ impl Debug for DebugVersion {
 #[cfg(test)]
 mod tests {
     use super::Prefix;
-    use core::convert::TryFrom;
 
     #[test]
     fn constants() {

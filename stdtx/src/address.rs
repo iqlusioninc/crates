@@ -3,7 +3,6 @@
 use crate::Error;
 use eyre::{Result, WrapErr};
 use serde::{de, Deserialize};
-use std::convert::TryInto;
 use subtle_encoding::bech32;
 
 /// Size of an address

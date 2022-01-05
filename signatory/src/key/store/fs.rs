@@ -1,7 +1,6 @@
 //! Filesystem-backed keystore
 
 use crate::{Error, KeyHandle, KeyInfo, KeyName, KeyRing, LoadPkcs8, Result};
-use core::convert::TryInto;
 use std::{
     fs,
     path::{Path, PathBuf},

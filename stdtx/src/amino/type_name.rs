@@ -5,7 +5,6 @@ use eyre::{Result, WrapErr};
 use serde::{de, Deserialize};
 use sha2::{Digest, Sha256};
 use std::{
-    convert::TryFrom,
     fmt::{self, Display},
     str::FromStr,
 };

@@ -1,7 +1,6 @@
 //! Signature key ring.
 
 use crate::{Algorithm, Error, KeyHandle, Result};
-use core::convert::TryFrom;
 
 #[cfg(feature = "ecdsa")]
 use crate::ecdsa;

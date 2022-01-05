@@ -2,7 +2,7 @@
 
 use super::{Signature, ALGORITHM_ID, ALGORITHM_OID};
 use crate::{Error, Result};
-use core::{cmp::Ordering, convert::TryFrom};
+use core::cmp::Ordering;
 use pkcs8::{FromPublicKey, ToPublicKey};
 use signature::Verifier;
 

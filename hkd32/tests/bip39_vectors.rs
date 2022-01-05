@@ -2,7 +2,6 @@
 
 #![cfg(feature = "bip39")]
 
-use core::convert::TryInto;
 use hkd32::mnemonic;
 
 fn test_mnemonic(entropy_bytes: &[u8], expected_phrase: &str) {

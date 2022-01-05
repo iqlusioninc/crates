@@ -10,7 +10,7 @@ use crate::{
     Error, KeyHandle, Map, Result,
 };
 use alloc::boxed::Box;
-use core::{convert::TryFrom, fmt};
+use core::fmt;
 use pkcs8::{FromPrivateKey, ToPrivateKey};
 use signature::Signer;
 

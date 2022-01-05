@@ -1,7 +1,6 @@
 //! ECDSA keyring.
 
 use crate::{Algorithm, Error, KeyHandle, LoadPkcs8, Result};
-use core::convert::TryFrom;
 
 #[allow(unused_imports)]
 use ecdsa::elliptic_curve::AlgorithmParameters;

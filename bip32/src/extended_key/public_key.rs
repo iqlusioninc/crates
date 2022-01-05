@@ -4,10 +4,7 @@ use crate::{
     ChildNumber, Error, ExtendedKey, ExtendedKeyAttrs, ExtendedPrivateKey, HmacSha512,
     KeyFingerprint, Prefix, PrivateKey, PublicKey, PublicKeyBytes, Result, KEY_SIZE,
 };
-use core::{
-    convert::{TryFrom, TryInto},
-    str::FromStr,
-};
+use core::str::FromStr;
 use hmac::{Mac, NewMac};
 
 #[cfg(feature = "alloc")]
