@@ -5,7 +5,6 @@
 use crate::Error;
 use eyre::{Result, WrapErr};
 use std::{
-    convert::{TryFrom, TryInto},
     fmt::{self, Debug, Display},
     str::FromStr,
 };

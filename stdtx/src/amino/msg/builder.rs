@@ -9,7 +9,6 @@ use crate::{
     Address, Decimal, Error,
 };
 use eyre::{Result, WrapErr};
-use std::convert::TryInto;
 
 /// Transaction message builder
 pub struct Builder<'a> {

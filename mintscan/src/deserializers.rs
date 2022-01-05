@@ -1,6 +1,5 @@
 //! Deserialization helpers
 
-use core::convert::TryInto;
 use serde::{de, Deserialize};
 use tendermint::block;
 

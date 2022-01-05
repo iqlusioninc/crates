@@ -1,7 +1,6 @@
 //! Trait for deriving child keys on a given type.
 
 use crate::{KeyFingerprint, PrivateKeyBytes, Result, KEY_SIZE};
-use core::convert::TryInto;
 use ripemd160::Ripemd160;
 use sha2::{Digest, Sha256};
 

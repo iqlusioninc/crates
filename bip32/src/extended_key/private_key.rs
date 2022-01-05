@@ -5,7 +5,6 @@ use crate::{
     KeyFingerprint, Prefix, PrivateKey, PrivateKeyBytes, PublicKey, Result, KEY_SIZE,
 };
 use core::{
-    convert::{TryFrom, TryInto},
     fmt::{self, Debug},
     str::FromStr,
 };

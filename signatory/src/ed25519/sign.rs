@@ -3,7 +3,7 @@
 use super::{Signature, VerifyingKey, ALGORITHM_ID, ALGORITHM_OID};
 use crate::{key::store::GeneratePkcs8, Error, Result};
 use alloc::boxed::Box;
-use core::{convert::TryFrom, fmt};
+use core::fmt;
 use ed25519_dalek::SECRET_KEY_LENGTH;
 use pkcs8::FromPrivateKey;
 use rand_core::{OsRng, RngCore};

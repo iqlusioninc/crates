@@ -32,7 +32,7 @@ async fn validator() {
     assert_eq!(validator.operator_address, VALIDATOR_ADDR);
     assert_eq!(
         validator.consensus_pubkey,
-        "cosmosvalconspub1zcjduepqdgvppnyr5c9pulsrmzr9e9rp7qpgm9jwp5yu8g3aumekgjugxacq8a9p2c"
+        "cosmosvalconspub1dgvppnyr5c9pulsrmzr9e9rp7qpgm9jwp5yu8g3aumekgjugxacqg9u7gq"
     );
     assert_eq!(validator.moniker.as_ref(), "iqlusion");
     assert_eq!(validator.identity, "DCB176E79AE7D51F");

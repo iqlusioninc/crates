@@ -1,7 +1,6 @@
 //! Algorithms supported by this library.
 
 use crate::{Error, Result};
-use core::convert::TryFrom;
 
 #[cfg(feature = "ed25519")]
 use crate::ed25519;
