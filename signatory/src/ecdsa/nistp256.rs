@@ -8,7 +8,7 @@ use crate::{
 };
 use alloc::boxed::Box;
 use core::fmt;
-use pkcs8::{FromPrivateKey, ToPrivateKey};
+use pkcs8::{DecodePrivateKey, EncodePrivateKey};
 use signature::Signer;
 
 /// ECDSA/P-256 key ring.
@@ -37,7 +37,7 @@ impl KeyRing {
 
 impl LoadPkcs8 for KeyRing {
     fn load_pkcs8(&mut self, private_key: pkcs8::PrivateKeyInfo<'_>) -> Result<KeyHandle> {
-        let signing_key = SigningKey::from_pkcs8_private_key_info(private_key)?;
+        let signing_key = SigningKey::try_from(private_key)?;
         let verifying_key = signing_key.verifying_key();
 
         if self.keys.contains_key(&verifying_key) {
@@ -74,10 +74,13 @@ impl SigningKey {
     }
 }
 
-impl FromPrivateKey for SigningKey {
-    fn from_pkcs8_private_key_info(private_key: pkcs8::PrivateKeyInfo<'_>) -> pkcs8::Result<Self> {
-        let signing_key = p256::ecdsa::SigningKey::from_pkcs8_private_key_info(private_key)?;
-        Ok(Self::new(Box::new(signing_key)))
+impl DecodePrivateKey for SigningKey {}
+
+impl TryFrom<pkcs8::PrivateKeyInfo<'_>> for SigningKey {
+    type Error = pkcs8::Error;
+
+    fn try_from(private_key_info: pkcs8::PrivateKeyInfo<'_>) -> pkcs8::Result<Self> {
+        p256::ecdsa::SigningKey::try_from(private_key_info).map(|key| Self::new(Box::new(key)))
     }
 }
 

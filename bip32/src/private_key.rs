@@ -34,18 +34,21 @@ impl PrivateKey for k256::SecretKey {
     type PublicKey = k256::PublicKey;
 
     fn from_bytes(bytes: &PrivateKeyBytes) -> Result<Self> {
-        Ok(k256::SecretKey::from_bytes(bytes)?)
+        Ok(k256::SecretKey::from_be_bytes(bytes)?)
     }
 
     fn to_bytes(&self) -> PrivateKeyBytes {
-        k256::SecretKey::to_bytes(self).into()
+        k256::SecretKey::to_be_bytes(self).into()
     }
 
     fn derive_child(&self, other: PrivateKeyBytes) -> Result<Self> {
-        let child_scalar = k256::NonZeroScalar::from_repr(other.into()).ok_or(Error::Crypto)?;
-        let derived_scalar = self.to_secret_scalar().as_ref() + child_scalar.as_ref();
+        let child_scalar =
+            Option::<k256::NonZeroScalar>::from(k256::NonZeroScalar::from_repr(other.into()))
+                .ok_or(Error::Crypto)?;
 
-        k256::NonZeroScalar::new(derived_scalar)
+        let derived_scalar = self.to_nonzero_scalar().as_ref() + child_scalar.as_ref();
+
+        Option::<k256::NonZeroScalar>::from(k256::NonZeroScalar::new(derived_scalar))
             .map(Into::into)
             .ok_or(Error::Crypto)
     }

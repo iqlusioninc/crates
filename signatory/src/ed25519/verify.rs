@@ -3,7 +3,7 @@
 use super::{Signature, ALGORITHM_ID, ALGORITHM_OID};
 use crate::{Error, Result};
 use core::cmp::Ordering;
-use pkcs8::{FromPublicKey, ToPublicKey};
+use pkcs8::{DecodePublicKey, EncodePublicKey};
 use signature::Verifier;
 
 /// Ed25519 verifying key.
@@ -44,25 +44,31 @@ impl From<&ed25519_dalek::Keypair> for VerifyingKey {
     }
 }
 
-impl FromPublicKey for VerifyingKey {
-    fn from_spki(spki: pkcs8::SubjectPublicKeyInfo<'_>) -> pkcs8::Result<Self> {
-        spki.algorithm.assert_algorithm_oid(ALGORITHM_OID)?;
+impl DecodePublicKey for VerifyingKey {}
 
-        if spki.algorithm.parameters.is_some() {
-            return Err(pkcs8::Error::ParametersMalformed);
-        }
-
-        Self::from_bytes(spki.subject_public_key).map_err(|_| pkcs8::Error::KeyMalformed)
-    }
-}
-
-impl ToPublicKey for VerifyingKey {
-    fn to_public_key_der(&self) -> pkcs8::Result<pkcs8::PublicKeyDocument> {
-        Ok(pkcs8::SubjectPublicKeyInfo {
+impl EncodePublicKey for VerifyingKey {
+    fn to_public_key_der(&self) -> pkcs8::spki::Result<pkcs8::PublicKeyDocument> {
+        pkcs8::SubjectPublicKeyInfo {
             algorithm: ALGORITHM_ID,
             subject_public_key: self.inner.as_bytes(),
         }
-        .into())
+        .try_into()
+    }
+}
+
+impl TryFrom<pkcs8::SubjectPublicKeyInfo<'_>> for VerifyingKey {
+    type Error = pkcs8::spki::Error;
+
+    fn try_from(spki: pkcs8::SubjectPublicKeyInfo<'_>) -> pkcs8::spki::Result<Self> {
+        spki.algorithm.assert_algorithm_oid(ALGORITHM_OID)?;
+
+        if spki.algorithm.parameters.is_some() {
+            return Err(pkcs8::spki::Error::OidUnknown {
+                oid: spki.algorithm.parameters_oid()?,
+            });
+        }
+
+        Self::from_bytes(spki.subject_public_key).map_err(|_| pkcs8::spki::Error::KeyMalformed)
     }
 }
 

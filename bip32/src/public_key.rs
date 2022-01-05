@@ -53,7 +53,10 @@ impl PublicKey for k256::PublicKey {
     }
 
     fn derive_child(&self, other: PrivateKeyBytes) -> Result<Self> {
-        let child_scalar = k256::NonZeroScalar::from_repr(other.into()).ok_or(Error::Crypto)?;
+        let child_scalar =
+            Option::<k256::NonZeroScalar>::from(k256::NonZeroScalar::from_repr(other.into()))
+                .ok_or(Error::Crypto)?;
+
         let child_point = self.to_projective() + (k256::AffinePoint::generator() * *child_scalar);
         Self::from_affine(child_point.into()).map_err(|_| Error::Crypto)
     }
