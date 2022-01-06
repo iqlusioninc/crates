@@ -1538,7 +1538,7 @@ dependencies = [
 
 [[package]]
 name = "signatory"
-version = "0.23.2"
+version = "0.24.0"
 dependencies = [
  "ecdsa",
  "ed25519-dalek",

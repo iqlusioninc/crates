@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.24.0 (2022-01-05)
+### Changed
+- Rust 2021 edition upgrade ([#889])
+- Bump `k256` dependency to v0.10 ([#938])
+
+[#889]: https://github.com/iqlusioninc/crates/pull/889
+[#938]: https://github.com/iqlusioninc/crates/pull/938
+
 ## 0.23.2 (2021-08-02)
 ### Added
 - `ed25519::VerifyingKey::to_bytes` ([#834])
