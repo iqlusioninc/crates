@@ -47,6 +47,9 @@
 #[cfg_attr(any(feature = "bip39", test), macro_use)]
 extern crate alloc;
 
+#[cfg(feature = "std")]
+extern crate std;
+
 #[cfg(feature = "mnemonic")]
 pub mod mnemonic;
 
@@ -72,3 +75,14 @@ pub const KEY_SIZE: usize = 32;
 /// Opaque error type
 #[derive(Copy, Clone, Debug)]
 pub struct Error;
+
+#[cfg(feature = "std")]
+impl std::error::Error for Error {}
+
+use core::fmt;
+
+impl fmt::Display for Error {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "Error")
+    }
+}
