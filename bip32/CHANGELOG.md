@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.3.0 (2022-01-05)
+### Changed
+- Rust 2021 edition upgrade ([#889])
+- Decouple from `hkd32` ([#907])
+- Bump `k256` dependency to v0.10 ([#938])
+- Bump `secp256k1` (FFI) dependency to v0.21 ([#942])
+
+[#889]: https://github.com/iqlusioninc/crates/pull/889
+[#907]: https://github.com/iqlusioninc/crates/pull/907
+[#938]: https://github.com/iqlusioninc/crates/pull/938
+[#942]: https://github.com/iqlusioninc/crates/pull/942
+
 ## 0.2.2 (2021-09-07)
 ### Changed
 - Avoid `AsRef` ambiguity with `generic-array` ([#859])

@@ -1,12 +1,10 @@
-//! Pure Rust implementation of
-//! [BIP-0032: Hierarchical Deterministic Wallets][bip32].
-//!
-//! # About
-//! BIP32 is an algorithm for generating a hierarchy of elliptic curve keys,
-//! a.k.a. "wallets", from a single seed value. A related algorithm also
-//! implemented by this crate, BIP39, provides a way to derive the seed value
-//! from a set of 24-words from a preset list, a.k.a. a "mnemonic".
-//!
+#![no_std]
+#![cfg_attr(docsrs, feature(doc_cfg))]
+#![doc(html_root_url = "https://docs.rs/bip32/0.3.0")]
+#![doc = include_str!("../README.md")]
+#![forbid(unsafe_code, clippy::unwrap_used)]
+#![warn(missing_docs, rust_2018_idioms, unused_qualifications)]
+
 //! ## Backends
 //! This crate provides a generic implementation of BIP32 which can be used
 //! with any backing provider which implements the [`PrivateKey`] and
@@ -92,12 +90,6 @@
 //! [bip32]: https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki
 //! [libsecp256k1 C library]: https://github.com/bitcoin-core/secp256k1
 //! [`secp256k1` Rust crate]: https://github.com/rust-bitcoin/rust-secp256k1/
-
-#![no_std]
-#![cfg_attr(docsrs, feature(doc_cfg))]
-#![doc(html_root_url = "https://docs.rs/bip32/0.2.2")]
-#![forbid(unsafe_code, clippy::unwrap_used)]
-#![warn(missing_docs, rust_2018_idioms, unused_qualifications)]
 
 #[cfg(feature = "alloc")]
 extern crate alloc;

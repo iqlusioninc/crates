@@ -75,7 +75,7 @@ checksum = "392c772b012d685a640cdad68a5a21f4a45e696f85a2c2c907aab2fe49a91e19"
 
 [[package]]
 name = "bip32"
-version = "0.3.0-pre"
+version = "0.3.0"
 dependencies = [
  "bs58",
  "hex-literal",
