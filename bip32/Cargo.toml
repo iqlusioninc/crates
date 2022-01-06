@@ -28,7 +28,7 @@ zeroize = { version = "1", default-features = false }
 # optional dependencies
 k256 = { version = "0.10", optional = true, default-features = false, features = ["ecdsa", "sha256", "keccak256"] }
 once_cell = { version = "1", optional = true }
-pbkdf2 = { version = "0.9", optional = true, default-features = false }
+pbkdf2 = { version = "0.10", optional = true, default-features = false }
 secp256k1-ffi = { package = "secp256k1", version = "0.20", optional = true }
 
 [dev-dependencies]
