@@ -1601,7 +1601,7 @@ dependencies = [
 
 [[package]]
 name = "stdtx"
-version = "0.6.0-pre"
+version = "0.6.0"
 dependencies = [
  "ecdsa",
  "eyre",
