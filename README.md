@@ -57,7 +57,7 @@ without any additional terms or conditions.
 
 [license-image]: https://img.shields.io/badge/license-Apache2.0-blue.svg
 [license-link]: https://github.com/iqlusioninc/crates/blob/main/LICENSE
-[msrv-image]: https://img.shields.io/badge/rustc-1.51+-blue.svg
+[msrv-image]: https://img.shields.io/badge/rustc-1.56+-blue.svg
 [deps-image]: https://deps.rs/repo/github/iqlusioninc/crates/status.svg
 [deps-link]: https://deps.rs/repo/github/iqlusioninc/crates
 

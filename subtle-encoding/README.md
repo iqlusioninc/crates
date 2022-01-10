@@ -21,7 +21,7 @@ Useful for encoding/decoding secret values such as cryptographic keys.
 
 ## Minimum Supported Rust Version
 
-Rust **1.51** or newer.
+Rust **1.56** or newer.
 
 In the future, we reserve the right to change MSRV (i.e. MSRV is out-of-scope
 for this crate's SemVer guarantees), however when we do it will be accompanied by
@@ -55,7 +55,7 @@ toplevel directory of this repository or [LICENSE-MIT] for details.
 [docs-image]: https://docs.rs/subtle-encoding/badge.svg
 [docs-link]: https://docs.rs/subtle-encoding/
 [license-image]: https://img.shields.io/badge/license-Apache2.0/MIT-blue.svg
-[rustc-image]: https://img.shields.io/badge/rustc-1.51+-blue.svg
+[rustc-image]: https://img.shields.io/badge/rustc-1.56+-blue.svg
 [safety-image]: https://img.shields.io/badge/unsafe-forbidden-success.svg
 [safety-link]: https://github.com/rust-secure-code/safety-dance/
 [build-image]: https://github.com/iqlusioninc/crates/actions/workflows/subtle-encoding.yml/badge.svg

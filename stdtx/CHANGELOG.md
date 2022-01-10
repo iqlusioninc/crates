@@ -14,7 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## 0.5.0 (2021-06-23)
 ### Changed
-- MSRV 1.51+ ([#755])
+- MSRV 1.56+ ([#755])
 - Bump `k256` to v0.9 ([#759])
 - `rand_core` to v0.6 ([#759])
 
