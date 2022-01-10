@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## 0.8.0 (2021-07-18)
 
-NOTE: This release includes an MSRV bump to Rust 1.51. Please use `secrecy = "0.7.0"`
+NOTE: This release includes an MSRV bump to Rust 1.56. Please use `secrecy = "0.7.0"`
 if you would like to support older Rust versions.
 
 ### Added
@@ -14,7 +14,7 @@ if you would like to support older Rust versions.
 
 ### Changed
 - Bump `bytes` to v1.0 ([#592])
-- Switch to `resolver = "2"`; MSRV 1.51 ([#755])
+- Switch to `resolver = "2"`; MSRV 1.56 ([#755])
 
 [#482]: https://github.com/iqlusioninc/crates/pull/482
 [#592]: https://github.com/iqlusioninc/crates/pull/592

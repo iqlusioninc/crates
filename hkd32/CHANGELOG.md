@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `hmac` to v0.11 ([#704])
 - `pbkdf2` to v0.8 ([#704])
 - Rename `SEED_SIZE` to `Seed::SIZE` ([#728])
-- MSRV 1.51 ([#755])
+- MSRV 1.56 ([#755])
 - Bump `rand_core` to v0.6 ([#759])
 
 ### Removed
