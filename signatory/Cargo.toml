@@ -17,7 +17,7 @@ rust-version = "1.56"
 pkcs8 = { version = "0.8", features = ["alloc", "pem"] }
 rand_core = "0.6"
 signature = "1.4"
-zeroize = "1.4"
+zeroize = "1.5"
 
 # optional dependencies
 ecdsa = { version = "0.13", optional = true, features = ["pem", "pkcs8"] }
