@@ -67,7 +67,7 @@
 //!
 //! // Serialize `child_xpub` as a string with the `xpub` prefix.
 //! let child_xpub_str = child_xpub.to_string(Prefix::XPUB);
-//! assert!(child_xprv_str.starts_with("xprv"));
+//! assert!(child_xpub_str.starts_with("xpub"));
 //!
 //! // Get the ECDSA/secp256k1 signing and verification keys for the xprv and xpub
 //! let signing_key = child_xprv.private_key();
