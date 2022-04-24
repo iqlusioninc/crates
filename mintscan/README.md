@@ -12,11 +12,11 @@ API client for the [Mintscan] Cosmos explorer by [Cosmostation].
 
 ## Minimum Supported Rust Version
 
-- Rust **1.56**
+Rust **1.56**
 
 ## License
 
-Copyright © 2021 iqlusion
+Copyright © 2021-2022 iqlusion
 
 **mintscan.rs** is distributed under the terms of either the MIT license
 or the Apache License (Version 2.0), at your option.

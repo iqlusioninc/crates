@@ -1,11 +1,11 @@
-//! API client for the [Mintscan] Cosmos explorer by [Cosmostation].
-//!
-//! [Mintscan]: https://www.mintscan.io/
-//! [Cosmostation]: https://www.cosmostation.io/
-
-#![doc(html_root_url = "https://docs.rs/mintscan/0.3.0")]
-#![forbid(unsafe_code, clippy::unwrap_used)]
-#![warn(missing_docs, rust_2018_idioms, unused_qualifications)]
+#![doc = include_str!("../README.md")]
+#![forbid(unsafe_code)]
+#![warn(
+    clippy::unwrap_used,
+    missing_docs,
+    rust_2018_idioms,
+    unused_qualifications
+)]
 
 pub mod coin;
 pub mod v1;

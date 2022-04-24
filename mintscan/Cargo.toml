@@ -1,17 +1,15 @@
 [package]
-name = "mintscan"
-version = "0.3.0" # Also update html_root_url in lib.rs when bumping this
-description = """
-API client for the Mintscan Cosmos explorer by Cosmostation
-"""
-authors = ["Tony Arcieri <tony@iqlusion.io>", ]
-homepage = "https://github.com/iqlusioninc/crates/"
-repository = "https://github.com/iqlusioninc/crates/tree/main/mintscan"
-license = "Apache-2.0 OR MIT"
-categories = ["api-bindings", "cryptography::cryptocurrencies"]
-keywords = ["api", "client", "cosmos", "explorer", "tendermint"]
-readme = "README.md"
-edition = "2021"
+name         = "mintscan"
+version      = "0.4.0"
+description  = "API client for the Mintscan Cosmos explorer by Cosmostation"
+authors      = ["Tony Arcieri <tony@iqlusion.io>", ]
+homepage     = "https://github.com/iqlusioninc/crates/"
+repository   = "https://github.com/iqlusioninc/crates/tree/main/mintscan"
+license      = "Apache-2.0 OR MIT"
+categories   = ["api-bindings", "cryptography::cryptocurrencies"]
+keywords     = ["api", "client", "cosmos", "explorer", "tendermint"]
+readme       = "README.md"
+edition      = "2021"
 rust-version = "1.56"
 
 [dependencies]
