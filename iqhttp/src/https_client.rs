@@ -4,7 +4,8 @@ use crate::{Path, Query, Result, USER_AGENT};
 use hyper::{
     body::Buf,
     client::{Client, HttpConnector},
-    header, Body, Request, Response,
+    header::{self, HeaderMap, HeaderName, HeaderValue},
+    Body, Request, Response,
 };
 use hyper_rustls::HttpsConnector;
 
@@ -22,8 +23,14 @@ use {
 /// This type provides a persistent connection to a particular hostname and
 /// allows requests by path and query string.
 pub struct HttpsClient {
+    /// Enum over possible `hyper` clients.
     inner: InnerClient,
+
+    /// Hostname this client is making requests to.
     hostname: String,
+
+    /// Headers to send in the request.
+    headers: HeaderMap,
 }
 
 impl HttpsClient {
@@ -34,6 +41,7 @@ impl HttpsClient {
         Self {
             inner: InnerClient::Https(client),
             hostname: hostname.into(),
+            headers: default_headers(),
         }
     }
 
@@ -51,13 +59,29 @@ impl HttpsClient {
         Ok(Self {
             inner: InnerClient::HttpsViaProxy(client),
             hostname: hostname.into(),
+            headers: default_headers(),
         })
+    }
+
+    /// Borrow the request headers mutably.
+    pub fn headers_mut(&mut self) -> &mut HeaderMap {
+        &mut self.headers
+    }
+
+    /// Add a header to this request context.
+    pub fn add_header(&mut self, name: HeaderName, value: &str) -> Result<Option<HeaderValue>> {
+        Ok(self.headers.insert(name, value.parse()?))
     }
 
     /// Perform a low-level request using hyper's types directly.
     pub async fn request(&self, mut request: Request<Body>) -> Result<Response<Body>> {
-        // TODO(tarcieri): avoid clobbering existing User-Agent header?
-        add_header(&mut request, header::USER_AGENT, USER_AGENT)?;
+        if request.headers().is_empty() {
+            *request.headers_mut() = self.headers.clone();
+        } else {
+            for (name, value) in &self.headers {
+                request.headers_mut().append(name, value.clone());
+            }
+        }
 
         Ok(match &self.inner {
             InnerClient::Https(client) => client.request(request),
@@ -101,7 +125,9 @@ impl HttpsClient {
             .uri(&uri)
             .body(Body::empty())?;
 
-        add_header(&mut request, header::CONTENT_TYPE, "application/json")?;
+        request
+            .headers_mut()
+            .append(header::CONTENT_TYPE, "application/json".parse()?);
 
         let response = self.request(request).await?;
         let body = hyper::body::aggregate(response.into_body()).await?;
@@ -124,9 +150,12 @@ enum InnerClient {
     HttpsViaProxy(Client<ProxyConnector<HttpsConnector<HttpConnector>>, Body>),
 }
 
-/// Add an HTTP header to a request
-// TODO(tarcieri): factor this onto a request wrapper type? better value type?
-fn add_header(req: &mut Request<Body>, name: header::HeaderName, value: &str) -> Result<bool> {
-    let headers = req.headers_mut();
-    Ok(headers.insert(name, value.parse()?).is_some())
+/// Default headers to send with requests.
+fn default_headers() -> HeaderMap {
+    let mut headers = HeaderMap::new();
+    headers.insert(
+        header::USER_AGENT,
+        USER_AGENT.parse().expect("USER_AGENT invalid"),
+    );
+    headers
 }

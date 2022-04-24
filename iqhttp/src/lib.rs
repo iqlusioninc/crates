@@ -24,7 +24,7 @@ pub use self::{
     https_client::HttpsClient,
     query::Query,
 };
-pub use hyper::{self, Uri};
+pub use hyper::{self, header, HeaderMap, Uri};
 
 /// User-Agent to send in HTTP request
 pub const USER_AGENT: &str = concat!("iqhttp/", env!("CARGO_PKG_VERSION"));
