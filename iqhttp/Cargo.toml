@@ -1,21 +1,18 @@
 [package]
-name = "iqhttp"
-version = "0.1.0" # Also update html_root_url in lib.rs when bumping this
+name    = "iqhttp"
+version = "0.2.0"
 description = """
 iqlusion's HTTPS toolkit. Provides a high-level wrapper around hyper, with
 built-in SSL/TLS support based on rustls.
 """
-authors = [
-    "Tony Arcieri <tony@iqlusion.io>",
-    "Shella Stephens <shella@iqlusion.io>"
-]
-homepage   = "https://github.com/iqlusioninc/crates/"
-repository = "https://github.com/iqlusioninc/crates/tree/main/iqhttp"
-license    = "Apache-2.0 OR MIT"
-categories = ["network-programming", "web-programming::http-client"]
-keywords   = ["api", "client", "http", "rest", "web"]
-readme     = "README.md"
-edition     = "2021"
+authors      = ["Tony Arcieri <tony@iqlusion.io>", "Shella Stephens <shella@iqlusion.io>"]
+homepage     = "https://github.com/iqlusioninc/crates/"
+repository   = "https://github.com/iqlusioninc/crates/tree/main/iqhttp"
+license      = "Apache-2.0 OR MIT"
+categories   = ["network-programming", "web-programming::http-client"]
+keywords     = ["api", "client", "http", "rest", "web"]
+readme       = "README.md"
+edition      = "2021"
 rust-version = "1.56"
 
 [dependencies]

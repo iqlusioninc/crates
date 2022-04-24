@@ -2,9 +2,9 @@
 
 [![Crate][crate-image]][crate-link]
 [![Docs][docs-image]][docs-link]
+[![Build Status][build-image]][build-link]
 [![Apache 2.0 Licensed][license-image]][license-link]
 ![MSRV][rustc-image]
-[![Build Status][build-image]][build-link]
 
 iqlusion's HTTPS toolkit. Provides a high-level wrapper around [`hyper`], with
 built-in SSL/TLS support based on [`rustls`].
@@ -13,11 +13,11 @@ built-in SSL/TLS support based on [`rustls`].
 
 ## Minimum Supported Rust Version
 
-- Rust **1.56**
+Rust **1.56**
 
 ## License
 
-Copyright © 2021 iqlusion
+Copyright © 2021-2022 iqlusion
 
 **iqhttp** is distributed under the terms of either the MIT license
 or the Apache License (Version 2.0), at your option.
@@ -33,15 +33,15 @@ without any additional terms or conditions.
 
 [//]: # (badges)
 
-[crate-image]: https://img.shields.io/crates/v/iqhttp.svg
+[crate-image]: https://img.shields.io/crates/v/iqhttp.svg?logo=rust
 [crate-link]: https://crates.io/crates/iqhttp
 [docs-image]: https://docs.rs/iqhttp/badge.svg
 [docs-link]: https://docs.rs/iqhttp/
+[build-image]: https://github.com/iqlusioninc/crates/actions/workflows/iqhttp.yml/badge.svg
+[build-link]: https://github.com/iqlusioninc/crates/actions/workflows/iqhttp.yml
 [license-image]: https://img.shields.io/badge/license-Apache2.0/MIT-blue.svg
 [license-link]: https://github.com/iqlusioninc/crates/blob/main/LICENSE
 [rustc-image]: https://img.shields.io/badge/rustc-1.56+-blue.svg
-[build-image]: https://github.com/iqlusioninc/crates/actions/workflows/iqhttp.yml/badge.svg
-[build-link]: https://github.com/iqlusioninc/crates/actions/workflows/iqhttp.yml
 
 [//]: # (general links)
 
