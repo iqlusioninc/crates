@@ -101,7 +101,7 @@ impl HttpsClient {
             .uri(&uri)
             .body(Body::empty())?;
 
-        Ok(self.request(request).await?)
+        self.request(request).await
     }
 
     /// Perform HTTP GET request and return the response body.

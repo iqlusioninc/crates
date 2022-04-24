@@ -35,9 +35,11 @@ impl Mintscan {
     /// Create a new Mintscan client for the given API hostname
     /// (e.g. `api.cosmostation.io`)
     pub fn new(hostname: impl Into<String>) -> Self {
-        Self {
-            client: HttpsClient::new(hostname),
-        }
+        let mut client = HttpsClient::new(hostname);
+        client
+            .add_header(iqhttp::header::REFERER, "https://mintscan.io/")
+            .expect("couldn't add referer header");
+        Self { client }
     }
 
     /// Get `/v1/status` endpoint.
