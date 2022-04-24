@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.4.0 (2022-04-23)
+### Added
+- `Referer` header ([#982])
+
+### Changed
+- Bump `iqhttp` dependency to v0.2.0 ([#984]) 
+
+[#982]: https://github.com/iqlusioninc/crates/pull/982
+[#984]: https://github.com/iqlusioninc/crates/pull/984
+
 ## 0.3.0 (2021-10-29)
 ### Changed
 - Bump `tendermint` crate from 0.22.0 to 0.23.0 ([#897])
