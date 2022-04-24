@@ -15,7 +15,7 @@ edition = "2021"
 rust-version = "1.56"
 
 [dependencies]
-iqhttp = { version = "0.1", features = ["json"], path = "../iqhttp" }
+iqhttp = { version = "0.2", features = ["json"], path = "../iqhttp" }
 serde = { version = "1", features = ["serde_derive"] }
 tendermint = { version = "0.23", default-features = false }
 
