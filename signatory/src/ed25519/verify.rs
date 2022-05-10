@@ -47,7 +47,7 @@ impl From<&ed25519_dalek::Keypair> for VerifyingKey {
 impl DecodePublicKey for VerifyingKey {}
 
 impl EncodePublicKey for VerifyingKey {
-    fn to_public_key_der(&self) -> pkcs8::spki::Result<pkcs8::PublicKeyDocument> {
+    fn to_public_key_der(&self) -> pkcs8::spki::Result<pkcs8::Document> {
         pkcs8::SubjectPublicKeyInfo {
             algorithm: ALGORITHM_ID,
             subject_public_key: self.inner.as_bytes(),

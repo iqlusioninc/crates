@@ -22,7 +22,7 @@ an initial 32-bytes of input key material.
 
 ## Minimum Supported Rust Version
 
-- Rust **1.56**
+- Rust **1.57**
 
 ## License
 

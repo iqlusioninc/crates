@@ -12,7 +12,8 @@ pub use self::{
 pub use ed25519_dalek::ed25519::Signature;
 
 /// Ed25519 Object Identifier (OID).
-pub const ALGORITHM_OID: pkcs8::ObjectIdentifier = pkcs8::ObjectIdentifier::new("1.3.101.112");
+pub const ALGORITHM_OID: pkcs8::ObjectIdentifier =
+    pkcs8::ObjectIdentifier::new_unwrap("1.3.101.112");
 
 /// Ed25519 Algorithm Identifier.
 pub const ALGORITHM_ID: pkcs8::AlgorithmIdentifier<'static> = pkcs8::AlgorithmIdentifier {

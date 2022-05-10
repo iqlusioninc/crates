@@ -59,11 +59,10 @@ impl TryFrom<pkcs8::PrivateKeyInfo<'_>> for SigningKey {
 #[cfg_attr(docsrs, doc(cfg(feature = "std")))]
 impl GeneratePkcs8 for SigningKey {
     /// Randomly generate a new PKCS#8 private key.
-    fn generate_pkcs8() -> pkcs8::PrivateKeyDocument {
+    fn generate_pkcs8() -> pkcs8::SecretDocument {
         let mut private_key = Zeroizing::new([0u8; SECRET_KEY_LENGTH]);
         OsRng.fill_bytes(&mut *private_key);
-        pkcs8::PrivateKeyInfo::new(ALGORITHM_ID, &*private_key)
-            .to_der()
+        pkcs8::SecretDocument::encode_msg(&pkcs8::PrivateKeyInfo::new(ALGORITHM_ID, &*private_key))
             .expect("DER encoding error")
     }
 }

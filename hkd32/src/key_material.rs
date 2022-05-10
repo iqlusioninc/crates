@@ -7,8 +7,7 @@
 //! material, and is the primary type useful for deriving other keys.
 
 use crate::{path::Path, Error, KEY_SIZE};
-use hmac::crypto_mac::{Mac, NewMac};
-use hmac::Hmac;
+use hmac::{Hmac, Mac};
 use rand_core::{CryptoRng, RngCore};
 use sha2::Sha512;
 use zeroize::Zeroize;

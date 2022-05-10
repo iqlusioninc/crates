@@ -1,7 +1,7 @@
 //! Trait for deriving child keys on a given type.
 
 use crate::{KeyFingerprint, PrivateKeyBytes, Result, KEY_SIZE};
-use ripemd160::Ripemd160;
+use ripemd::Ripemd160;
 use sha2::{Digest, Sha256};
 
 #[cfg(feature = "secp256k1")]

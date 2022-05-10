@@ -26,7 +26,7 @@ uses the [StdTx] format without requiring upstream modifications.
 
 ## Minimum Supported Rust Version
 
-Rust **1.56** or newer.
+Rust **1.57** or newer.
 
 In the future, we reserve the right to change MSRV (i.e. MSRV is out-of-scope
 for this crate's SemVer guarantees), however when we do it will be accompanied by
@@ -34,7 +34,7 @@ a minor version bump.
 
 ## License
 
-Copyright © 2020-21 iqlusion
+Copyright © 2020-2022 iqlusion
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

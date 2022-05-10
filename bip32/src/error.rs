@@ -67,8 +67,8 @@ impl From<core::array::TryFromSliceError> for Error {
     }
 }
 
-impl From<hmac::crypto_mac::InvalidKeyLength> for Error {
-    fn from(_: hmac::crypto_mac::InvalidKeyLength) -> Error {
+impl From<hmac::digest::InvalidLength> for Error {
+    fn from(_: hmac::digest::InvalidLength) -> Error {
         Error::Crypto
     }
 }

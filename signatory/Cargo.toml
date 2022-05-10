@@ -1,7 +1,7 @@
 [package]
 name         = "signatory"
 description  = "Multi-provider elliptic curve digital signature library with ECDSA and Ed25519 support"
-version      = "0.24.0" # Also update html_root_url in lib.rs when bumping this
+version      = "0.25.0-pre"
 license      = "Apache-2.0 OR MIT"
 authors      = ["Tony Arcieri <tony@iqlusion.io>"]
 homepage     = "https://github.com/iqlusioninc/crates"
@@ -11,19 +11,19 @@ categories   = ["authentication", "cryptography"]
 keywords     = ["cryptography", "ecdsa", "ed25519", "signing", "signatures"]
 autobenches  = false
 edition      = "2021"
-rust-version = "1.56"
+rust-version = "1.57"
 
 [dependencies]
-pkcs8 = { version = "0.8", features = ["alloc", "pem"] }
+pkcs8 = { version = "0.9", features = ["alloc", "pem"] }
 rand_core = "0.6"
 signature = "1.4"
 zeroize = "1.4"
 
 # optional dependencies
-ecdsa = { version = "0.13", optional = true, features = ["pem", "pkcs8"] }
+ecdsa = { version = "0.14", optional = true, features = ["pem", "pkcs8"] }
 ed25519-dalek = { version = "1", optional = true, default-features = false, features = ["u64_backend"] }
-k256 = { version = "0.10", optional = true, features = ["ecdsa", "sha256", "keccak256"] }
-p256 = { version = "0.10", optional = true, features = ["ecdsa", "sha256"] }
+k256 = { version = "0.11", optional = true, features = ["ecdsa", "sha256", "keccak256"] }
+p256 = { version = "0.11", optional = true, features = ["ecdsa", "sha256"] }
 
 [dev-dependencies]
 tempfile = "3"

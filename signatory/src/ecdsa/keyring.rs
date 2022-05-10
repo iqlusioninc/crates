@@ -2,9 +2,6 @@
 
 use crate::{Algorithm, Error, KeyHandle, LoadPkcs8, Result};
 
-#[allow(unused_imports)]
-use ecdsa::elliptic_curve::AlgorithmParameters;
-
 #[cfg(feature = "nistp256")]
 use super::nistp256;
 
