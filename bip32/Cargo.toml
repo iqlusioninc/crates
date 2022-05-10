@@ -1,11 +1,11 @@
 [package]
 name = "bip32"
+version = "0.4.0-pre"
 description = """
 BIP32 hierarchical key derivation implemented in a generic, no_std-friendly
 manner. Supports deriving keys using the pure Rust k256 crate or the
 C library-backed secp256k1 crate
 """
-version = "0.3.0" # Also update html_root_url in lib.rs when bumping this
 authors = ["Tony Arcieri <tony@iqlusion.io>"]
 license = "Apache-2.0 OR MIT"
 homepage = "https://github.com/iqlusioninc/crates/"
@@ -14,21 +14,21 @@ categories = ["cryptography", "no-std"]
 keywords = ["crypto", "bip32", "bip39", "derivation", "mnemonic"]
 readme = "README.md"
 edition  = "2021"
-rust-version = "1.56"
+rust-version = "1.57"
 
 [dependencies]
 bs58 = { version = "0.4", default-features = false, features = ["check"] }
-hmac = { version = "0.11", default-features = false }
+hmac = { version = "0.12", default-features = false }
 rand_core = { version = "0.6", default-features = false }
-ripemd160 = { version = "0.9", default-features = false }
-sha2 = { version = "0.9", default-features = false }
+ripemd = { version = "0.1", default-features = false }
+sha2 = { version = "0.10", default-features = false }
 subtle = { version = "2", default-features = false }
 zeroize = { version = "1", default-features = false }
 
 # optional dependencies
-k256 = { version = "0.10", optional = true, default-features = false, features = ["ecdsa", "sha256", "keccak256"] }
+k256 = { version = "0.11", optional = true, default-features = false, features = ["ecdsa", "sha256", "keccak256"] }
 once_cell = { version = "1", optional = true }
-pbkdf2 = { version = "0.9", optional = true, default-features = false }
+pbkdf2 = { version = "0.10", optional = true, default-features = false }
 secp256k1-ffi = { package = "secp256k1", version = "0.21", optional = true }
 
 [dev-dependencies]

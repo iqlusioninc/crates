@@ -8,7 +8,7 @@ use core::{
     fmt::{self, Debug},
     str::FromStr,
 };
-use hmac::{Mac, NewMac};
+use hmac::Mac;
 use subtle::{Choice, ConstantTimeEq};
 use zeroize::Zeroize;
 

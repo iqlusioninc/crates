@@ -25,7 +25,7 @@ The following algorithms are supported:
 
 ## Minimum Supported Rust Version
 
-Rust **1.56** or newer.
+Rust **1.57** or newer.
 
 In the future, we reserve the right to change MSRV (i.e. MSRV is out-of-scope
 for this crate's SemVer guarantees), however when we do it will be accompanied by

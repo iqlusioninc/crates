@@ -1,7 +1,7 @@
 //! Filesystem-backed keystore
 
 use crate::{Error, KeyHandle, KeyInfo, KeyName, KeyRing, LoadPkcs8, Result};
-use pkcs8::der::Document;
+use pkcs8::der::pem::PemLabel;
 use std::{
     fs,
     path::{Path, PathBuf},
@@ -79,8 +79,9 @@ impl FsKeyStore {
         let algorithm = if encrypted {
             None
         } else {
-            pkcs8::PrivateKeyDocument::from_pem(&pem_data)?
-                .decode()
+            let (label, der) = pkcs8::SecretDocument::from_pem(&pem_data)?;
+            pkcs8::PrivateKeyInfo::validate_pem_label(label)?;
+            der.decode_msg::<pkcs8::PrivateKeyInfo<'_>>()?
                 .algorithm
                 .try_into()
                 .ok()
@@ -95,19 +96,23 @@ impl FsKeyStore {
 
     /// Import a key with a given name into the provided keyring.
     pub fn import(&self, name: &KeyName, key_ring: &mut KeyRing) -> Result<KeyHandle> {
-        key_ring.load_pkcs8(self.load(name)?.decode())
+        key_ring.load_pkcs8(self.load(name)?.decode_msg()?)
     }
 
     /// Load a PKCS#8 key from the keystore.
-    pub fn load(&self, name: &KeyName) -> Result<pkcs8::PrivateKeyDocument> {
-        Ok(pkcs8::PrivateKeyDocument::read_pem_file(
-            &self.key_path(name),
-        )?)
+    pub fn load(&self, name: &KeyName) -> Result<pkcs8::SecretDocument> {
+        let (label, doc) = pkcs8::SecretDocument::read_pem_file(&self.key_path(name))?;
+        pkcs8::PrivateKeyInfo::validate_pem_label(&label)?;
+        Ok(doc)
     }
 
     /// Import a PKCS#8 key into the keystore.
-    pub fn store(&self, name: &KeyName, der: &pkcs8::PrivateKeyDocument) -> Result<()> {
-        der.write_pem_file(&self.key_path(name), Default::default())?;
+    pub fn store(&self, name: &KeyName, der: &pkcs8::SecretDocument) -> Result<()> {
+        der.write_pem_file(
+            &self.key_path(name),
+            pkcs8::PrivateKeyInfo::PEM_LABEL,
+            Default::default(),
+        )?;
         Ok(())
     }
 
@@ -144,7 +149,7 @@ mod tests {
 
     /// Create a keystore containing one key named `example_key` with the given content
     #[allow(dead_code)]
-    fn create_example_keystore(example_key: &pkcs8::PrivateKeyDocument) -> FsStoreHandle {
+    fn create_example_keystore(example_key: &pkcs8::SecretDocument) -> FsStoreHandle {
         let dir = tempfile::tempdir().unwrap();
         let keystore = FsKeyStore::create_or_open(&dir.path().join("keys")).unwrap();
 
@@ -163,7 +168,7 @@ mod tests {
         let ks = create_example_keystore(&example_key);
 
         let example_key2 = ks.keystore.load(&key_name).unwrap();
-        assert_eq!(example_key.as_ref(), example_key2.as_ref());
+        assert_eq!(example_key.as_bytes(), example_key2.as_bytes());
 
         ks.keystore.delete(&key_name).unwrap();
     }

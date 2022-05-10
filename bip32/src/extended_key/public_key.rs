@@ -5,7 +5,7 @@ use crate::{
     KeyFingerprint, Prefix, PrivateKey, PublicKey, PublicKeyBytes, Result, KEY_SIZE,
 };
 use core::str::FromStr;
-use hmac::{Mac, NewMac};
+use hmac::Mac;
 
 #[cfg(feature = "alloc")]
 use alloc::string::{String, ToString};

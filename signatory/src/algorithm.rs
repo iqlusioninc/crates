@@ -51,7 +51,7 @@ impl TryFrom<pkcs8::AlgorithmIdentifier<'_>> for Algorithm {
         #[cfg(feature = "ecdsa")]
         if pkcs8_alg_id.oid == ecdsa::elliptic_curve::ALGORITHM_OID {
             #[cfg(any(feature = "nistp256", feature = "secp256k1"))]
-            use ecdsa::elliptic_curve::AlgorithmParameters;
+            use pkcs8::AssociatedOid;
 
             #[cfg(feature = "nistp256")]
             if pkcs8_alg_id.parameters_oid() == Ok(crate::ecdsa::NistP256::OID) {

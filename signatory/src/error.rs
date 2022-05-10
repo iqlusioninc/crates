@@ -89,6 +89,12 @@ impl From<pkcs8::der::Error> for Error {
     }
 }
 
+impl From<pkcs8::der::pem::Error> for Error {
+    fn from(err: pkcs8::der::pem::Error) -> Error {
+        pkcs8::der::Error::from(err).into()
+    }
+}
+
 #[cfg(feature = "std")]
 #[cfg_attr(docsrs, doc(cfg(feature = "std")))]
 impl From<std::io::Error> for Error {
