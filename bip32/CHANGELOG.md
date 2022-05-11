@@ -4,6 +4,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.4.0 (2022-05-10)
+### Changed
+- Bump `pbkdf2` to 0.11.0 ([#983])
+- Bump `hmac` to v0.12 ([#994])
+- Bump `k256` to v0.11 ([#994])
+- Bump `p256` to v0.11 ([#994])
+- Bump `pbkdf2` to v0.10 ([#994])
+- Bump `sha2` to v0.10 ([#994])
+- Replace `ripemd160` dependency with `ripemd` ([#994])
+- MSRV 1.57 ([#994], [#995])
+- Use const panic for `Prefix::from_parts_unchecked` ([#995])
+
+[#983]: https://github.com/iqlusioninc/crates/pull/983
+[#994]: https://github.com/iqlusioninc/crates/pull/994
+[#995]: https://github.com/iqlusioninc/crates/pull/995
+
 ## 0.3.0 (2022-01-05)
 ### Changed
 - Rust 2021 edition upgrade ([#889])
