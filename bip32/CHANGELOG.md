@@ -10,7 +10,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Bump `hmac` to v0.12 ([#994])
 - Bump `k256` to v0.11 ([#994])
 - Bump `p256` to v0.11 ([#994])
-- Bump `pbkdf2` to v0.10 ([#994])
 - Bump `sha2` to v0.10 ([#994])
 - Replace `ripemd160` dependency with `ripemd` ([#994])
 - MSRV 1.57 ([#994], [#995])
