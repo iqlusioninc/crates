@@ -1,7 +1,7 @@
 [package]
 name         = "signatory"
 description  = "Multi-provider elliptic curve digital signature library with ECDSA and Ed25519 support"
-version      = "0.25.0-pre"
+version      = "0.25.0"
 license      = "Apache-2.0 OR MIT"
 authors      = ["Tony Arcieri <tony@iqlusion.io>"]
 homepage     = "https://github.com/iqlusioninc/crates"
@@ -9,14 +9,13 @@ repository   = "https://github.com/iqlusioninc/crates/tree/main/signatory"
 readme       = "README.md"
 categories   = ["authentication", "cryptography"]
 keywords     = ["cryptography", "ecdsa", "ed25519", "signing", "signatures"]
-autobenches  = false
 edition      = "2021"
 rust-version = "1.57"
 
 [dependencies]
 pkcs8 = { version = "0.9", features = ["alloc", "pem"] }
 rand_core = "0.6"
-signature = "1.4"
+signature = "1.5"
 zeroize = "1.4"
 
 # optional dependencies
