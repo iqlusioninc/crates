@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.25.0 (2022-05-17)
+### Changed
+- Bump `ecdsa` to v0.14 ([#994])
+- Bump `k256` to v0.11 ([#994])
+- Bump `p256` to v0.11 ([#994])
+- Bump `pkcs8` to v0.9 ([#994])
+- Bump `sha2` to v0.10 ([#994])
+- MSRV 1.57 ([#994])
+
+[#994]: https://github.com/iqlusioninc/crates/pull/994
+
 ## 0.24.0 (2022-01-05)
 ### Changed
 - Rust 2021 edition upgrade ([#889])

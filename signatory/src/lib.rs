@@ -1,26 +1,16 @@
-//! Signatory: a multi-algorithm digital signature library.
-//!
-//! This crate provides a thread-and-object-safe API for both creating and
-//! verifying elliptic curve digital signatures, using either software-based
-//! or hardware-based providers.
-//!
-//! The following algorithms are supported:
-//!
-//! - [ecdsa]: Elliptic Curve Digital Signature Algorithm ([FIPS 186-4])
-//! - [ed25519]: Edwards Digital Signature Algorithm (EdDSA) instantiated using
-//!   the twisted Edwards form of Curve25519 ([RFC 8032]).
-//!
-//! [FIPS 186-4]: https://csrc.nist.gov/publications/detail/fips/186/4/final
-//! [RFC 8032]: https://tools.ietf.org/html/rfc8032
-
 #![no_std]
 #![cfg_attr(docsrs, feature(doc_cfg))]
+#![doc = include_str!("../README.md")]
 #![doc(
-    html_root_url = "https://docs.rs/signatory/0.24.0",
-    html_logo_url = "https://raw.githubusercontent.com/iqlusioninc/crates/main/signatory/img/signatory-rustacean.png"
+    html_logo_url = "https://raw.githubusercontent.com/iqlusioninc/crates/main/signatory/img/signatory-rustacean.svg"
 )]
-#![forbid(unsafe_code, clippy::unwrap_used)]
-#![warn(missing_docs, rust_2018_idioms, unused_qualifications)]
+#![forbid(unsafe_code)]
+#![warn(
+    clippy::unwrap_used,
+    missing_docs,
+    rust_2018_idioms,
+    unused_qualifications
+)]
 
 extern crate alloc;
 
