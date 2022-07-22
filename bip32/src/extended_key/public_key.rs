@@ -129,6 +129,30 @@ where
 {
     type Error = Error;
 
+    #[cfg(any(feature = "secp256k1", feature = "secp256k1-ffi"))]
+    fn try_from(extended_key: ExtendedKey) -> Result<ExtendedPublicKey<K>> {
+        if extended_key.prefix.is_public() {
+            Ok(ExtendedPublicKey {
+                public_key: PublicKey::from_bytes(extended_key.key_bytes)?,
+                attrs: extended_key.attrs.clone(),
+            })
+        } else if extended_key.prefix.is_private() {
+            #[cfg(feature = "secp256k1")]
+            let private_key = crate::XPrv::try_from(extended_key)?;
+            #[cfg(all(feature = "secp256k1-ffi", not(feature = "secp256k1")))]
+            let private_key =
+                ExtendedPrivateKey::<secp256k1_ffi::SecretKey>::try_from(extended_key)?;
+            let pubkey_bytes = private_key.public_key().to_bytes();
+            Ok(ExtendedPublicKey {
+                public_key: PublicKey::from_bytes(pubkey_bytes)?,
+                attrs: private_key.attrs().clone(),
+            })
+        } else {
+            Err(Error::Crypto)
+        }
+    }
+
+    #[cfg(not(any(feature = "secp256k1", feature = "secp256k1-ffi")))]
     fn try_from(extended_key: ExtendedKey) -> Result<ExtendedPublicKey<K>> {
         if extended_key.prefix.is_public() {
             Ok(ExtendedPublicKey {
@@ -138,5 +162,63 @@ where
         } else {
             Err(Error::Crypto)
         }
+    }
+}
+
+#[cfg(any(feature = "secp256k1", feature = "secp256k1-ffi"))]
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use hex_literal::hex;
+
+    const CHAIN_CODE: [u8; 32] =
+        hex!("873DFF81C02F525623FD1FE5167EAC3A55A049DE3D314BB42EE227FFED37D508");
+    #[cfg(feature = "secp256k1")]
+    const XPUB_BASE58: &'static str = "xpub661MyMwAqRbcFtXgS5sYJABqqG9YLmC4Q1Rdap9gSE8NqtwybGhe\
+                                       PY2gZ29ESFjqJoCu1Rupje8YtGqsefD265TMg7usUDFdp6W1EGMcet8";
+    const XPRV_BASE58: &'static str = "xprv9s21ZrQH143K3QTDL4LXw2F7HEK3wJUD2nW2nRk4stbPy6cq3jPP\
+                                       qjiChkVvvNKmPGJxWUtg6LnF5kejMRNNU3TGtRBeJgk33yuGBxrMPHi";
+    const PUB_KEY_BYTES: PublicKeyBytes =
+        hex!("0339A36013301597DAEF41FBE593A02CC513D0B55527EC2DF1050E2E8FF49C85C2");
+
+    #[cfg(feature = "secp256k1")]
+    #[test]
+    fn extendedpub_from_pub_xkey() {
+        let xkey: ExtendedKey = XPUB_BASE58.parse().unwrap();
+        let xpub = XPub::try_from(xkey).unwrap();
+
+        assert_eq!(xpub.attrs.depth, 0);
+        assert_eq!(xpub.attrs.parent_fingerprint, [0u8; 4]);
+        assert_eq!(xpub.attrs.child_number.0, 0);
+        assert_eq!(xpub.attrs.chain_code, CHAIN_CODE);
+        assert_eq!(xpub.to_bytes(), PUB_KEY_BYTES);
+    }
+
+    #[cfg(feature = "secp256k1")]
+    #[test]
+    fn extendedpub_from_priv_xkey() {
+        let xkey: ExtendedKey = XPRV_BASE58.parse().unwrap();
+        let xpub = XPub::try_from(xkey).unwrap();
+
+        assert_eq!(xpub.attrs.depth, 0);
+        assert_eq!(xpub.attrs.parent_fingerprint, [0u8; 4]);
+        assert_eq!(xpub.attrs.child_number.0, 0);
+        assert_eq!(xpub.attrs.chain_code, CHAIN_CODE);
+        assert_eq!(xpub.to_bytes(), PUB_KEY_BYTES);
+    }
+
+    #[cfg(feature = "secp256k1-ffi")]
+    #[test]
+    fn extendedpub_from_priv_xkey_secp() {
+        use secp256k1_ffi::PublicKey;
+
+        let xkey: ExtendedKey = XPRV_BASE58.parse().unwrap();
+        let xpub = ExtendedPublicKey::<PublicKey>::try_from(xkey).unwrap();
+
+        assert_eq!(xpub.attrs.depth, 0);
+        assert_eq!(xpub.attrs.parent_fingerprint, [0u8; 4]);
+        assert_eq!(xpub.attrs.child_number.0, 0);
+        assert_eq!(xpub.attrs.chain_code, CHAIN_CODE);
+        assert_eq!(xpub.to_bytes(), PUB_KEY_BYTES);
     }
 }
