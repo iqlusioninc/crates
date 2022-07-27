@@ -10,7 +10,7 @@ categories   = ["api-bindings", "cryptography::cryptocurrencies"]
 keywords     = ["api", "client", "cosmos", "explorer", "tendermint"]
 readme       = "README.md"
 edition      = "2021"
-rust-version = "1.56"
+rust-version = "1.57"
 
 [dependencies]
 iqhttp = { version = "0.2", features = ["json"], path = "../iqhttp" }
