@@ -18,6 +18,11 @@ pub enum KeyHandle {
     #[cfg_attr(docsrs, doc(cfg(feature = "nistp256")))]
     EcdsaNistP256(ecdsa::nistp256::VerifyingKey),
 
+    /// ECDSA/P-384.
+    #[cfg(feature = "nistp384")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "nistp384")))]
+    EcdsaNistP384(ecdsa::nistp384::VerifyingKey),
+
     /// ECDSA/secp256k1.
     #[cfg(feature = "secp256k1")]
     #[cfg_attr(docsrs, doc(cfg(feature = "secp256k1")))]
@@ -36,6 +41,17 @@ impl KeyHandle {
     pub fn ecdsa_nistp256(&self) -> Option<ecdsa::nistp256::VerifyingKey> {
         match self {
             KeyHandle::EcdsaNistP256(pk) => Some(*pk),
+            #[allow(unreachable_patterns)]
+            _ => None,
+        }
+    }
+
+    /// Get ECDSA/P-384 verifying key, if this is an ECDSA/P-384 key.
+    #[cfg(feature = "nistp384")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "nistp384")))]
+    pub fn ecdsa_nistp384(&self) -> Option<ecdsa::nistp384::VerifyingKey> {
+        match self {
+            KeyHandle::EcdsaNistP384(pk) => Some(*pk),
             #[allow(unreachable_patterns)]
             _ => None,
         }
