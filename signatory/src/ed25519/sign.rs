@@ -12,14 +12,14 @@ use zeroize::Zeroizing;
 
 /// Ed25519 signing key.
 pub struct SigningKey {
-    inner: Box<dyn Ed25519Signer>,
+    inner: Box<dyn Ed25519Signer + Send + Sync>,
 }
 
 impl SigningKey {
     /// Initialize from a provided signer object.
     ///
     /// Use [`SigningKey::from_bytes`] to initialize from a raw private key.
-    pub fn new(signer: Box<dyn Ed25519Signer>) -> Self {
+    pub fn new(signer: Box<dyn Ed25519Signer + Send + Sync>) -> Self {
         Self { inner: signer }
     }
 
