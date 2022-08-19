@@ -54,14 +54,14 @@ impl LoadPkcs8 for KeyRing {
 
 /// ECDSA/secp256k1 signing key.
 pub struct SigningKey {
-    inner: Box<dyn Secp256k1Signer>,
+    inner: Box<dyn Secp256k1Signer + Send + Sync>,
 }
 
 impl SigningKey {
     /// Initialize from a provided signer object.
     ///
     /// Use [`SigningKey::from_bytes`] to initialize from a raw private key.
-    pub fn new(signer: Box<dyn Secp256k1Signer>) -> Self {
+    pub fn new(signer: Box<dyn Secp256k1Signer + Send + Sync>) -> Self {
         Self { inner: signer }
     }
 
