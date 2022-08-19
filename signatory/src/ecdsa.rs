@@ -4,6 +4,10 @@
 #[cfg_attr(docsrs, doc(cfg(feature = "nistp256")))]
 pub mod nistp256;
 
+#[cfg(feature = "nistp384")]
+#[cfg_attr(docsrs, doc(cfg(feature = "nistp384")))]
+pub mod nistp384;
+
 #[cfg(feature = "secp256k1")]
 #[cfg_attr(docsrs, doc(cfg(feature = "secp256k1")))]
 pub mod secp256k1;
@@ -16,6 +20,10 @@ pub use ecdsa::{elliptic_curve, Signature};
 #[cfg(feature = "nistp256")]
 #[cfg_attr(docsrs, doc(cfg(feature = "nistp256")))]
 pub use {self::nistp256::NistP256Signer, p256::NistP256};
+
+#[cfg(feature = "nistp384")]
+#[cfg_attr(docsrs, doc(cfg(feature = "nistp384")))]
+pub use {self::nistp384::NistP384Signer, p384::NistP384};
 
 #[cfg(feature = "secp256k1")]
 #[cfg_attr(docsrs, doc(cfg(feature = "secp256k1")))]

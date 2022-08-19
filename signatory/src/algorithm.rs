@@ -14,6 +14,11 @@ pub enum Algorithm {
     #[cfg_attr(docsrs, doc(cfg(feature = "nistp256")))]
     EcdsaNistP256,
 
+    /// ECDSA with NIST P-384.
+    #[cfg(feature = "nistp384")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "nistp384")))]
+    EcdsaNistP384,
+
     /// ECDSA with secp256k1.
     #[cfg(feature = "secp256k1")]
     #[cfg_attr(docsrs, doc(cfg(feature = "secp256k1")))]
@@ -31,6 +36,11 @@ impl Algorithm {
     pub fn is_ecdsa(self) -> bool {
         #[cfg(feature = "nistp256")]
         if self == Algorithm::EcdsaNistP256 {
+            return true;
+        }
+
+        #[cfg(feature = "nistp384")]
+        if self == Algorithm::EcdsaNistP384 {
             return true;
         }
 
@@ -56,6 +66,11 @@ impl TryFrom<pkcs8::AlgorithmIdentifier<'_>> for Algorithm {
             #[cfg(feature = "nistp256")]
             if pkcs8_alg_id.parameters_oid() == Ok(crate::ecdsa::NistP256::OID) {
                 return Ok(Self::EcdsaNistP256);
+            }
+
+            #[cfg(feature = "nistp384")]
+            if pkcs8_alg_id.parameters_oid() == Ok(crate::ecdsa::NistP384::OID) {
+                return Ok(Self::EcdsaNistP384);
             }
 
             #[cfg(feature = "secp256k1")]
