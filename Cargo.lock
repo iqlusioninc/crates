@@ -1539,7 +1539,7 @@ dependencies = [
 
 [[package]]
 name = "signatory"
-version = "0.25.0"
+version = "0.26.0"
 dependencies = [
  "ecdsa",
  "ed25519-dalek",
@@ -1769,9 +1769,9 @@ checksum = "42657b1a6f4d817cda8e7a0ace261fe0cc946cf3a80314390b22cc61ae080792"
 
 [[package]]
 name = "tokio"
-version = "1.20.1"
+version = "1.21.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7a8325f63a7d4774dd041e363b2409ed1c5cbbd0f867795e661df066b2b0a581"
+checksum = "0020c875007ad96677dcc890298f4b942882c5d4eb7cc8f439fc3bf813dc9c95"
 dependencies = [
  "autocfg",
  "bytes 1.2.1",
