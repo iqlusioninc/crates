@@ -1539,7 +1539,7 @@ dependencies = [
 
 [[package]]
 name = "signatory"
-version = "0.25.0"
+version = "0.26.0"
 dependencies = [
  "ecdsa",
  "ed25519-dalek",
@@ -1555,9 +1555,9 @@ dependencies = [
 
 [[package]]
 name = "signature"
-version = "1.6.0"
+version = "1.6.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f0ea32af43239f0d353a7dd75a22d94c329c8cdaafdcb4c1c1335aa10c298a4a"
+checksum = "a622c5fc69cf2a070d3217981bded5071cdd1b1ac17ae906646debae83579b54"
 dependencies = [
  "digest 0.10.3",
  "rand_core 0.6.3",
