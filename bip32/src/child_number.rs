@@ -82,7 +82,10 @@ impl FromStr for ChildNumber {
     fn from_str(child: &str) -> Result<ChildNumber> {
         let (child, hardened) = match child.strip_suffix('\'') {
             Some(c) => (c, true),
-            None => (child, false),
+            None => match child.strip_suffix('h') {
+                Some(c) => (c, true),
+                None => (child, false),
+            },
         };
 
         let index = child.parse().map_err(|_| Error::ChildNumber)?;
@@ -106,6 +109,14 @@ mod tests {
     #[test]
     fn parse_hardened() {
         let n = "42'".parse::<ChildNumber>().unwrap();
+        assert_eq!(n, ChildNumber::new(42, true).unwrap());
+        assert_eq!(n.index(), 42);
+        assert!(n.is_hardened());
+    }
+
+    #[test]
+    fn parse_hardened_h() {
+        let n = "42h".parse::<ChildNumber>().unwrap();
         assert_eq!(n, ChildNumber::new(42, true).unwrap());
         assert_eq!(n.index(), 42);
         assert!(n.is_hardened());
