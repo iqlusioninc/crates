@@ -5,14 +5,14 @@
 use mintscan::Mintscan;
 
 /// API host to test against.
-const API_HOST: &str = "api.cosmostation.io";
+const API_HOST: &str = "api.mintscan.io";
 
 /// Example validator (iqlusion).
 const VALIDATOR_ADDR: &str = "cosmosvaloper1grgelyng2v6v3t8z87wu3sxgt9m5s03xfytvz7";
 
 #[tokio::test]
 async fn status() {
-    let result = Mintscan::new(API_HOST).status().await;
+    let result = Mintscan::new(API_HOST).status("cosmos").await;
 
     // TODO(tarcieri): better assertions
     assert!(result.is_ok());
@@ -21,7 +21,7 @@ async fn status() {
 #[tokio::test]
 async fn validator() {
     let validator = Mintscan::new(API_HOST)
-        .validator(VALIDATOR_ADDR)
+        .validator("cosmos", VALIDATOR_ADDR)
         .await
         .unwrap();
 
@@ -42,7 +42,7 @@ async fn validator() {
 #[tokio::test]
 async fn validator_uptime() {
     let result = Mintscan::new(API_HOST)
-        .validator_uptime(VALIDATOR_ADDR)
+        .validator_uptime("cosmos", VALIDATOR_ADDR)
         .await;
 
     // TODO(tarcieri): better assertions

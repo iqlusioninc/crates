@@ -43,18 +43,22 @@ impl Mintscan {
     }
 
     /// Get `/v1/status` endpoint.
-    pub async fn status(&self) -> Result<v1::Status> {
+    pub async fn status(&self, network: &str) -> Result<v1::Status> {
         self.client
-            .get_json("/v1/status", &Default::default())
+            .get_json(&format!("/v1/{}/status", network), &Default::default())
             .await
     }
 
     /// Get `/v1/staking/validator` endpoint.
     ///
     /// Accepts a Bech32-encoded account address for the validator.
-    pub async fn validator(&self, addr: impl Into<Address>) -> Result<v1::staking::Validator> {
+    pub async fn validator(
+        &self,
+        network: &str,
+        addr: impl Into<Address>,
+    ) -> Result<v1::staking::Validator> {
         // TODO(tarcieri): path construction with proper escaping
-        let path = format!("/v1/staking/validator/{}", &addr.into());
+        let path = format!("/v1/{}/validators/{}", &network, &addr.into());
         self.client.get_json(&path, &Default::default()).await
     }
 
@@ -63,10 +67,11 @@ impl Mintscan {
     /// Accepts a Bech32-encoded account address for the validator.
     pub async fn validator_uptime(
         &self,
+        network: &str,
         addr: impl Into<Address>,
     ) -> Result<v1::staking::validator::Uptime> {
         // TODO(tarcieri): path construction with proper escaping
-        let path = format!("/v1/staking/validator/uptime/{}", &addr.into());
+        let path = format!("/v1/{}/validators/{}/uptime", &network, &addr.into());
         self.client.get_json(&path, &Default::default()).await
     }
 }
