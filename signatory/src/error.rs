@@ -69,6 +69,9 @@ impl Display for Error {
 #[cfg_attr(docsrs, doc(cfg(feature = "std")))]
 impl std::error::Error for Error {}
 
+#[cfg(not(feature = "std"))]
+impl core::error::Error for Error {}
+
 #[cfg(feature = "ecdsa")]
 #[cfg_attr(docsrs, doc(cfg(feature = "ecdsa")))]
 impl From<ecdsa::Error> for Error {
