@@ -11,6 +11,7 @@
     rust_2018_idioms,
     unused_qualifications
 )]
+#![feature(error_in_core)]
 
 extern crate alloc;
 

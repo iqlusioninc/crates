@@ -8,6 +8,7 @@
     rust_2018_idioms,
     unused_qualifications
 )]
+#![feature(error_in_core)]
 
 //! ## Backends
 //! This crate provides a generic implementation of BIP32 which can be used

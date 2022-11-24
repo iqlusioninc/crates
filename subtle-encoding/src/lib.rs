@@ -16,6 +16,7 @@
 #![doc(html_root_url = "https://docs.rs/subtle-encoding/0.5.1")]
 #![forbid(unsafe_code)]
 #![warn(missing_docs, rust_2018_idioms, unused_qualifications)]
+#![feature(error_in_core)]
 
 #[cfg(feature = "alloc")]
 #[macro_use]
