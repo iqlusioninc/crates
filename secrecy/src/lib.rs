@@ -177,6 +177,15 @@ where
 {
     fn drop(&mut self) {
         // Zero the secret out from memory
+        self.zeroize();
+    }
+}
+
+impl<S> Zeroize for Secret<S>
+where
+    S: Zeroize,
+{
+    fn zeroize(&mut self) {
         self.inner_secret.zeroize();
     }
 }
@@ -281,5 +290,20 @@ where
         S: ser::Serializer,
     {
         self.expose_secret().serialize(serializer)
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use zeroize::Zeroize;
+
+    use crate::{ExposeSecret, Secret};
+
+    #[test]
+    fn zeroize_secret() {
+        // Make sure we can explicitly zero out a secret
+        let mut x = Secret::new(42);
+        x.zeroize();
+        assert_eq!(*x.expose_secret(), 0);
     }
 }
