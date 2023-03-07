@@ -23,12 +23,11 @@ This repository contains the following crates:
 | [hkd32]           | ![][hkd32-crate]           | ![][hkd32-build]           | HMAC-based Hierarchical Key Derivation |
 | [secrecy]         | ![][secrecy-crate]         | ![][secrecy-build]         | Simple secret-keeping library          |
 | [signatory]       | ![][signatory-crate]       | ![][signatory-build]       | Signature library with ECDSA+Ed25519   |
-| [stdtx]           | ![][stdtx-crate]           | ![][stdtx-build]           | Cosmos StdTx builder/signer/serializer |
 | [subtle‑encoding] | ![][subtle-encoding-crate] | ![][subtle-encoding-build] | Constant-time hex/bech32/base64        |
 
 ## License
 
-Copyright © 2018-2021 iqlusion
+Copyright © 2018-2023 iqlusion
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -75,8 +74,6 @@ without any additional terms or conditions.
 [secrecy-crate]: https://img.shields.io/crates/v/secrecy.svg
 [signatory]: https://github.com/iqlusioninc/crates/tree/main/signatory
 [signatory-crate]: https://img.shields.io/crates/v/signatory.svg
-[stdtx]: https://github.com/iqlusioninc/crates/tree/main/stdtx
-[stdtx-crate]: https://img.shields.io/crates/v/stdtx.svg
 [subtle‑encoding]: https://github.com/iqlusioninc/crates/tree/main/subtle-encoding
 [subtle-encoding-crate]: https://img.shields.io/crates/v/subtle-encoding.svg
 
@@ -88,6 +85,5 @@ without any additional terms or conditions.
 [hkd32-build]: https://github.com/iqlusioninc/crates/actions/workflows/hkd32.yml/badge.svg
 [secrecy-build]: https://github.com/iqlusioninc/crates/actions/workflows/secrecy.yml/badge.svg
 [signatory-build]: https://github.com/iqlusioninc/crates/actions/workflows/signatory.yml/badge.svg
-[stdtx-build]: https://github.com/iqlusioninc/crates/actions/workflows/stdtx.yml/badge.svg
 [subtle-encoding-build]: https://github.com/iqlusioninc/crates/actions/workflows/subtle-encoding.yml/badge.svg
 [tai64-build]: https://github.com/iqlusioninc/crates/actions/workflows/tai64.yml/badge.svg
