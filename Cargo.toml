@@ -8,6 +8,5 @@ members = [
     "iqhttp",
     "secrecy",
     "signatory",
-    "stdtx",
     "subtle-encoding",
 ]
