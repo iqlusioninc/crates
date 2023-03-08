@@ -34,27 +34,6 @@ jobs:
           command: clippy
           args: --all --all-features -- -D warnings
 
-  coverage:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          override: true
-          profile: minimal
-      - uses: actions-rs/tarpaulin@v0.1
-        env:
-          CARGO_INCREMENTAL: 0
-        with:
-          version: latest # switch to `latest` when we bump `k256` to v0.9
-          args: --all -- --test-threads 1
-      - uses: codecov/codecov-action@v1
-      - uses: actions/upload-artifact@v1
-        with:
-          name: code-coverage-report
-          path: cobertura.xml
-
   rustfmt:
     runs-on: ubuntu-latest
     steps:
