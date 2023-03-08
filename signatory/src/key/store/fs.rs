@@ -37,10 +37,10 @@ impl FsKeyStore {
     /// Create a filesystem-backed keystore at the given path, making a new
     /// directory and setting its file permissions.
     pub fn create(dir_path: &Path) -> Result<Self> {
-        fs::create_dir_all(&dir_path)?;
+        fs::create_dir_all(dir_path)?;
 
         #[cfg(unix)]
-        fs::set_permissions(&dir_path, Permissions::from_mode(REQUIRED_DIR_MODE))?;
+        fs::set_permissions(dir_path, Permissions::from_mode(REQUIRED_DIR_MODE))?;
 
         Self::open(dir_path)
     }
@@ -101,7 +101,7 @@ impl FsKeyStore {
 
     /// Load a PKCS#8 key from the keystore.
     pub fn load(&self, name: &KeyName) -> Result<pkcs8::SecretDocument> {
-        let (label, doc) = pkcs8::SecretDocument::read_pem_file(&self.key_path(name))?;
+        let (label, doc) = pkcs8::SecretDocument::read_pem_file(self.key_path(name))?;
         pkcs8::PrivateKeyInfo::validate_pem_label(&label)?;
         Ok(doc)
     }
@@ -109,7 +109,7 @@ impl FsKeyStore {
     /// Import a PKCS#8 key into the keystore.
     pub fn store(&self, name: &KeyName, der: &pkcs8::SecretDocument) -> Result<()> {
         der.write_pem_file(
-            &self.key_path(name),
+            self.key_path(name),
             pkcs8::PrivateKeyInfo::PEM_LABEL,
             Default::default(),
         )?;
@@ -118,7 +118,7 @@ impl FsKeyStore {
 
     /// Delete a PKCS#8 key from the keystore.
     pub fn delete(&self, name: &KeyName) -> Result<()> {
-        fs::remove_file(&self.key_path(name))?;
+        fs::remove_file(self.key_path(name))?;
 
         Ok(())
     }
@@ -154,7 +154,7 @@ mod tests {
         let keystore = FsKeyStore::create_or_open(&dir.path().join("keys")).unwrap();
 
         keystore
-            .store(&EXAMPLE_KEY.parse().unwrap(), &example_key)
+            .store(&EXAMPLE_KEY.parse().unwrap(), example_key)
             .unwrap();
 
         FsStoreHandle { keystore, dir }

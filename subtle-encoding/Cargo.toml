@@ -6,7 +6,7 @@ which avoid data-dependent branching/table lookups and therefore
 provide "best effort" constant time. Useful for encoding/decoding
 secret values such as cryptographic keys.
 """
-version     = "0.5.1" # Also update html_root_url in lib.rs when bumping this
+version     = "0.6.0-pre" # Also update html_root_url in lib.rs when bumping this
 authors     = ["Tony Arcieri <tony@iqlusion.io>"]
 license     = "Apache-2.0 OR MIT"
 homepage    = "https://github.com/iqlusioninc/crates/"
@@ -15,7 +15,7 @@ readme      = "README.md"
 categories  = ["cryptography", "encoding", "no-std"]
 keywords    = ["base64", "bech32", "constant-time", "hex", "security"]
 edition     = "2021"
-rust-version = "1.56"
+rust-version = "1.60"
 
 [dependencies.zeroize]
 version = "1"

@@ -158,13 +158,8 @@ mod tests {
     const TEST_DATA: &[u8] = b"Testing 1, 2, 3...";
 
     /// Dummy encoding we use to test `Encoding` methods
+    #[derive(Default)]
     struct TestEncoding {}
-
-    impl Default for TestEncoding {
-        fn default() -> Self {
-            Self {}
-        }
-    }
 
     impl Encoding for TestEncoding {
         fn encode_to_slice(&self, src: &[u8], dst: &mut [u8]) -> Result<usize, Error> {
@@ -199,6 +194,6 @@ mod tests {
     fn test_decode() {
         let encoding = TestEncoding::default();
         let encoded = encoding.encode(TEST_DATA);
-        encoding.decode(&encoded).unwrap();
+        encoding.decode(encoded).unwrap();
     }
 }

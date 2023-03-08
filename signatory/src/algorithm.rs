@@ -53,11 +53,11 @@ impl Algorithm {
     }
 }
 
-impl TryFrom<pkcs8::AlgorithmIdentifier<'_>> for Algorithm {
+impl TryFrom<pkcs8::AlgorithmIdentifierRef<'_>> for Algorithm {
     type Error = Error;
 
     #[allow(unused_variables)]
-    fn try_from(pkcs8_alg_id: pkcs8::AlgorithmIdentifier<'_>) -> Result<Self> {
+    fn try_from(pkcs8_alg_id: pkcs8::AlgorithmIdentifierRef<'_>) -> Result<Self> {
         #[cfg(feature = "ecdsa")]
         if pkcs8_alg_id.oid == ecdsa::elliptic_curve::ALGORITHM_OID {
             #[cfg(any(feature = "nistp256", feature = "secp256k1"))]

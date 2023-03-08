@@ -25,7 +25,7 @@ The following algorithms are supported:
 
 ## Minimum Supported Rust Version
 
-Rust **1.57** or newer.
+Rust **1.65** or newer.
 
 In the future, we reserve the right to change MSRV (i.e. MSRV is out-of-scope
 for this crate's SemVer guarantees), however when we do it will be accompanied by
@@ -52,7 +52,7 @@ without any additional terms or conditions.
 [docs-image]: https://docs.rs/signatory/badge.svg
 [docs-link]: https://docs.rs/signatory/
 [license-image]: https://img.shields.io/badge/license-Apache2.0/MIT-blue.svg
-[rustc-image]: https://img.shields.io/badge/rustc-1.56+-blue.svg
+[rustc-image]: https://img.shields.io/badge/rustc-1.65+-blue.svg
 [build-image]: https://github.com/iqlusioninc/crates/workflows/signatory/badge.svg?branch=main&event=push
 [build-link]: https://github.com/iqlusioninc/crates/actions
 

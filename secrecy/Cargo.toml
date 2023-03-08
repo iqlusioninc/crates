@@ -6,7 +6,7 @@ they aren't accidentally copied, logged, or otherwise exposed
 (as much as possible), and also ensure secrets are securely wiped
 from memory when dropped.
 """
-version     = "0.8.0" # Also update html_root_url in lib.rs when bumping this
+version     = "0.9.0-pre" # Also update html_root_url in lib.rs when bumping this
 authors     = ["Tony Arcieri <tony@iqlusion.io>"]
 license     = "Apache-2.0 OR MIT"
 homepage    = "https://github.com/iqlusioninc/crates/"
@@ -15,7 +15,7 @@ readme      = "README.md"
 categories  = ["cryptography", "memory-management", "no-std", "os"]
 keywords    = ["clear", "memory", "secret", "secure", "wipe"]
 edition     = "2021"
-rust-version = "1.56"
+rust-version = "1.60"
 
 [dependencies]
 zeroize = { version = "1.4", default-features = false }

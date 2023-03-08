@@ -11,7 +11,7 @@ use sha2::{Digest, Sha256};
 use zeroize::{Zeroize, Zeroizing};
 
 #[cfg(feature = "bip39")]
-use {super::seed::Seed, hmac::Hmac, sha2::Sha512};
+use {super::seed::Seed, sha2::Sha512};
 
 /// Number of PBKDF2 rounds to perform when deriving the seed
 #[cfg(feature = "bip39")]
@@ -146,7 +146,7 @@ impl Phrase {
     pub fn to_seed(&self, password: &str) -> Seed {
         let salt = Zeroizing::new(format!("mnemonic{}", password));
         let mut seed = [0u8; Seed::SIZE];
-        pbkdf2::pbkdf2::<Hmac<Sha512>>(
+        pbkdf2::pbkdf2_hmac::<Sha512>(
             self.phrase.as_bytes(),
             salt.as_bytes(),
             PBKDF2_ROUNDS,

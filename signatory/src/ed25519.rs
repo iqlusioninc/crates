@@ -16,7 +16,7 @@ pub const ALGORITHM_OID: pkcs8::ObjectIdentifier =
     pkcs8::ObjectIdentifier::new_unwrap("1.3.101.112");
 
 /// Ed25519 Algorithm Identifier.
-pub const ALGORITHM_ID: pkcs8::AlgorithmIdentifier<'static> = pkcs8::AlgorithmIdentifier {
+pub const ALGORITHM_ID: pkcs8::AlgorithmIdentifierRef<'static> = pkcs8::AlgorithmIdentifierRef {
     oid: ALGORITHM_OID,
     parameters: None,
 };
