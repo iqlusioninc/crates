@@ -22,11 +22,11 @@ an initial 32-bytes of input key material.
 
 ## Minimum Supported Rust Version
 
-- Rust **1.57**
+- Rust **1.60**
 
 ## License
 
-Copyright © 2019-2021 iqlusion
+Copyright © 2019-2023 iqlusion
 
 Includes code from the `bip39` crate. Copyright © 2017-2018 Stephen Oliver,
 with contributions by Maciej Hirsz.

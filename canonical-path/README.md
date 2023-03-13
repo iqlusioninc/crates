@@ -17,7 +17,7 @@ are canonical, or at least, were canonical at the time they were created.
 
 ## Minimum Supported Rust Version
 
-Rust **1.56** or newer.
+Rust **1.60** or newer.
 
 In the future, we reserve the right to change MSRV (i.e. MSRV is out-of-scope
 for this crate's SemVer guarantees), however when we do it will be accompanied by
@@ -25,7 +25,7 @@ a minor version bump.
 
 ## License
 
-Copyright © 2018-2021 iqlusion
+Copyright © 2018-2023 iqlusion
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -53,6 +53,6 @@ without any additional terms or conditions.
 [docs-link]: https://docs.rs/canonical-path/
 [license-image]: https://img.shields.io/badge/license-Apache2.0-blue.svg
 [license-link]: https://github.com/iqlusioninc/crates/blob/main/LICENSE
-[rustc-image]: https://img.shields.io/badge/rustc-1.56+-blue.svg
+[rustc-image]: https://img.shields.io/badge/rustc-1.60+-blue.svg
 [build-image]: https://github.com/iqlusioninc/crates/actions/workflows/canonical-path.yml/badge.svg
 [build-link]: https://github.com/iqlusioninc/crates/actions/workflows/canonical-path.yml

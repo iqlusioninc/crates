@@ -1,9 +1,6 @@
 //! ECDSA/secp256k1 support.
 
-pub use k256::ecdsa::{
-    recoverable::{Id as RecoveryId, Signature as RecoverableSignature},
-    Signature, VerifyingKey,
-};
+pub use k256::ecdsa::{Signature, VerifyingKey};
 
 use crate::{
     key::{ring::LoadPkcs8, store::GeneratePkcs8},
@@ -11,7 +8,7 @@ use crate::{
 };
 use alloc::boxed::Box;
 use core::fmt;
-use pkcs8::{DecodePrivateKey, EncodePrivateKey};
+use pkcs8::EncodePrivateKey;
 use signature::Signer;
 
 /// ECDSA/secp256k1 keyring.
@@ -67,7 +64,7 @@ impl SigningKey {
 
     /// Initialize from a raw scalar value (big endian).
     pub fn from_bytes(bytes: &[u8]) -> Result<Self> {
-        let signing_key = k256::ecdsa::SigningKey::from_bytes(bytes)?;
+        let signing_key = k256::ecdsa::SigningKey::from_slice(bytes)?;
         Ok(Self::new(Box::new(signing_key)))
     }
 
@@ -76,8 +73,6 @@ impl SigningKey {
         self.inner.verifying_key()
     }
 }
-
-impl DecodePrivateKey for SigningKey {}
 
 impl TryFrom<pkcs8::PrivateKeyInfo<'_>> for SigningKey {
     type Error = pkcs8::Error;
@@ -109,15 +104,6 @@ impl GeneratePkcs8 for SigningKey {
 impl Signer<Signature> for SigningKey {
     fn try_sign(&self, msg: &[u8]) -> signature::Result<Signature> {
         self.inner.try_sign(msg)
-    }
-}
-
-impl Signer<RecoverableSignature> for SigningKey {
-    fn try_sign(&self, msg: &[u8]) -> signature::Result<RecoverableSignature> {
-        let sig: Signature = self.inner.try_sign(msg)?;
-
-        // TODO(tarcieri): optimized support for `k256`
-        RecoverableSignature::from_trial_recovery(&self.verifying_key(), msg, &sig)
     }
 }
 

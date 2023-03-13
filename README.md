@@ -19,7 +19,6 @@ This repository contains the following crates:
 |-------------------|----------------------------|----------------------------|----------------------------------------|
 | [bip32]           | ![][bip32-crate]           | ![][bip32-build]           | Hierarchical key derivation            |
 | [canonical‑path]  | ![][canonical-path-crate]  | ![][canonical-path-build]  | Canonical filesystem path support      |
-| [datadog]         | ![][datadog-crate]         | ![][datadog-build]         | Datadog client library                 |
 | [hkd32]           | ![][hkd32-crate]           | ![][hkd32-build]           | HMAC-based Hierarchical Key Derivation |
 | [secrecy]         | ![][secrecy-crate]         | ![][secrecy-build]         | Simple secret-keeping library          |
 | [signatory]       | ![][signatory-crate]       | ![][signatory-build]       | Signature library with ECDSA+Ed25519   |
@@ -66,8 +65,6 @@ without any additional terms or conditions.
 [bip32-crate]: https://img.shields.io/crates/v/bip32.svg
 [canonical‑path]: https://github.com/iqlusioninc/crates/tree/main/canonical-path
 [canonical-path-crate]: https://img.shields.io/crates/v/canonical-path.svg
-[datadog]: https://github.com/iqlusioninc/crates/tree/main/datadog
-[datadog-crate]: https://img.shields.io/crates/v/datadog.svg
 [hkd32]: https://github.com/iqlusioninc/crates/tree/main/hkd32
 [hkd32-crate]: https://img.shields.io/crates/v/hkd32.svg
 [secrecy]: https://github.com/iqlusioninc/crates/tree/main/secrecy
@@ -81,7 +78,6 @@ without any additional terms or conditions.
 
 [bip32-build]: https://github.com/iqlusioninc/crates/actions/workflows/bip32.yml/badge.svg
 [canonical-path-build]: https://github.com/iqlusioninc/crates/actions/workflows/canonical-path.yml/badge.svg
-[datadog-build]: https://github.com/iqlusioninc/crates/actions/workflows/datadog.yml/badge.svg
 [hkd32-build]: https://github.com/iqlusioninc/crates/actions/workflows/hkd32.yml/badge.svg
 [secrecy-build]: https://github.com/iqlusioninc/crates/actions/workflows/secrecy.yml/badge.svg
 [signatory-build]: https://github.com/iqlusioninc/crates/actions/workflows/signatory.yml/badge.svg

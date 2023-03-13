@@ -34,11 +34,11 @@ impl PrivateKey for k256::SecretKey {
     type PublicKey = k256::PublicKey;
 
     fn from_bytes(bytes: &PrivateKeyBytes) -> Result<Self> {
-        Ok(k256::SecretKey::from_be_bytes(bytes)?)
+        Ok(k256::SecretKey::from_slice(bytes)?)
     }
 
     fn to_bytes(&self) -> PrivateKeyBytes {
-        k256::SecretKey::to_be_bytes(self).into()
+        k256::SecretKey::to_bytes(self).into()
     }
 
     fn derive_child(&self, other: PrivateKeyBytes) -> Result<Self> {
@@ -64,7 +64,7 @@ impl PrivateKey for k256::ecdsa::SigningKey {
     type PublicKey = k256::ecdsa::VerifyingKey;
 
     fn from_bytes(bytes: &PrivateKeyBytes) -> Result<Self> {
-        Ok(k256::ecdsa::SigningKey::from_bytes(bytes)?)
+        Ok(k256::ecdsa::SigningKey::from_slice(bytes)?)
     }
 
     fn to_bytes(&self) -> PrivateKeyBytes {
@@ -78,7 +78,7 @@ impl PrivateKey for k256::ecdsa::SigningKey {
     }
 
     fn public_key(&self) -> Self::PublicKey {
-        self.verifying_key()
+        *self.verifying_key()
     }
 }
 
@@ -111,10 +111,9 @@ impl PrivateKey for secp256k1_ffi::SecretKey {
         *self.as_ref()
     }
 
-    fn derive_child(&self, other: PrivateKeyBytes) -> Result<Self> {
-        let mut child = *self;
-        child.add_assign(&other)?;
-        Ok(child)
+    fn derive_child(&self, bytes: PrivateKeyBytes) -> Result<Self> {
+        let scalar = secp256k1_ffi::Scalar::from_be_bytes(bytes)?;
+        Ok(self.add_tweak(&scalar)?)
     }
 
     fn public_key(&self) -> Self::PublicKey {

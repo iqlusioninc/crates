@@ -96,3 +96,11 @@ impl From<secp256k1_ffi::Error> for Error {
         Error::Crypto
     }
 }
+
+#[cfg(feature = "secp256k1-ffi")]
+#[cfg_attr(docsrs, doc(cfg(feature = "secp256k1-ffi")))]
+impl From<secp256k1_ffi::scalar::OutOfRangeError> for Error {
+    fn from(_: secp256k1_ffi::scalar::OutOfRangeError) -> Error {
+        Error::Crypto
+    }
+}

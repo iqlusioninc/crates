@@ -10,7 +10,6 @@
     unused_lifetimes,
     unused_qualifications
 )]
-#![doc(html_root_url = "https://docs.rs/canonical-path/2.0.2")]
 
 use std::{
     borrow::Borrow,
@@ -416,7 +415,7 @@ mod tests {
     #[test]
     fn reject_canonical_path_buf_symlinks() {
         let test_fixtures = TestFixtureDir::new();
-        let result = CanonicalPathBuf::new(&test_fixtures.symlink_path);
+        let result = CanonicalPathBuf::new(test_fixtures.symlink_path);
         assert!(result.is_err(), "symlinks aren't canonical paths!");
     }
 }

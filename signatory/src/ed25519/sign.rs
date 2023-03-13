@@ -5,7 +5,6 @@ use crate::{key::store::GeneratePkcs8, Error, Result};
 use alloc::boxed::Box;
 use core::fmt;
 use ed25519_dalek::SECRET_KEY_LENGTH;
-use pkcs8::DecodePrivateKey;
 use rand_core::{OsRng, RngCore};
 use signature::Signer;
 use zeroize::Zeroizing;
@@ -25,10 +24,8 @@ impl SigningKey {
 
     /// Initialize from a raw scalar value (big endian).
     pub fn from_bytes(bytes: &[u8]) -> Result<Self> {
-        let secret = ed25519_dalek::SecretKey::from_bytes(bytes).map_err(|_| Error::Parse)?;
-        let public = ed25519_dalek::PublicKey::from(&secret);
-        let keypair = ed25519_dalek::Keypair { secret, public };
-        Ok(Self::new(Box::new(keypair)))
+        let signing_key = ed25519_dalek::SigningKey::try_from(bytes).map_err(|_| Error::Parse)?;
+        Ok(Self::new(Box::new(signing_key)))
     }
 
     /// Get the verifying key that corresponds to this signing key.
@@ -36,8 +33,6 @@ impl SigningKey {
         self.inner.verifying_key()
     }
 }
-
-impl DecodePrivateKey for SigningKey {}
 
 // TODO(tarcieri): use upstream decoder from `ed25519` crate.
 // See: https://docs.rs/ed25519/latest/ed25519/pkcs8/struct.KeypairBytes.html

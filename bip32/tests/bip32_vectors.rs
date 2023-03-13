@@ -15,7 +15,7 @@ use hex_literal::hex;
 ///
 /// Panics if anything goes wrong.
 fn derive_xprv(seed: &[u8], path: &str) -> XPrv {
-    XPrv::derive_from_path(&seed, &path.parse().unwrap()).unwrap()
+    XPrv::derive_from_path(seed, &path.parse().unwrap()).unwrap()
 }
 
 /// BIP32 Test Vector 1
@@ -26,7 +26,7 @@ fn test_vector_1() {
 
     // Chain m
     let key_m = derive_xprv(&seed, "m");
-    assert_eq!(key_m, XPrv::new(&seed).unwrap());
+    assert_eq!(key_m, XPrv::new(seed).unwrap());
     assert_eq!(
         &*key_m.to_string(Prefix::XPRV),
         "xprv9s21ZrQH143K3QTDL4LXw2F7HEK3wJUD2nW2nRk4stbPy6cq3jPPqjiChkVvvNKmPGJxWUtg6LnF5kejMRNNU3TGtRBeJgk33yuGBxrMPHi"
@@ -108,7 +108,7 @@ fn test_vector_2() {
 
     // Chain m
     let key_m = derive_xprv(&seed, "m");
-    assert_eq!(key_m, XPrv::new(&seed).unwrap());
+    assert_eq!(key_m, XPrv::new(seed).unwrap());
     assert_eq!(
         &*key_m.to_string(Prefix::XPRV),
         "xprv9s21ZrQH143K31xYSDQpPDxsXRTUcvj2iNHm5NUtrGiGG5e2DtALGdso3pGz6ssrdK4PFmM8NSpSBHNqPqm55Qn3LqFtT2emdEXVYsCzC2U"
@@ -194,7 +194,7 @@ fn test_vector_3() {
 
     // Chain m
     let key_m = derive_xprv(&seed, "m");
-    assert_eq!(key_m, XPrv::new(&seed).unwrap());
+    assert_eq!(key_m, XPrv::new(seed).unwrap());
     assert_eq!(
         &*key_m.to_string(Prefix::XPRV),
         "xprv9s21ZrQH143K25QhxbucbDDuQ4naNntJRi4KUfWT7xo4EKsHt2QJDu7KXp1A3u7Bi1j8ph3EGsZ9Xvz9dGuVrtHHs7pXeTzjuxBrCmmhgC6"
@@ -227,7 +227,7 @@ fn test_vector_4() {
 
     // Chain m
     let key_m = derive_xprv(&seed, "m");
-    assert_eq!(key_m, XPrv::new(&seed).unwrap());
+    assert_eq!(key_m, XPrv::new(seed).unwrap());
     assert_eq!(
         &*key_m.to_string(Prefix::XPRV),
         "xprv9s21ZrQH143K48vGoLGRPxgo2JNkJ3J3fqkirQC2zVdk5Dgd5w14S7fRDyHH4dWNHUgkvsvNDCkvAwcSHNAQwhwgNMgZhLtQC63zxwhQmRv"

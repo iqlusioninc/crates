@@ -6,12 +6,9 @@ use sha2::{Digest, Sha256};
 
 #[cfg(feature = "secp256k1")]
 use {
-    crate::XPub,
+    crate::{Error, XPub},
     k256::elliptic_curve::{group::prime::PrimeCurveAffine, sec1::ToEncodedPoint},
 };
-
-#[cfg(any(feature = "secp256k1", feature = "secp256k1-ffi"))]
-use crate::Error;
 
 /// Bytes which represent a public key.
 ///
@@ -33,7 +30,7 @@ pub trait PublicKey: Sized {
     ///
     /// Default implementation uses `RIPEMD160(SHA256(public_key))`.
     fn fingerprint(&self) -> KeyFingerprint {
-        let digest = Ripemd160::digest(&Sha256::digest(&self.to_bytes()));
+        let digest = Ripemd160::digest(Sha256::digest(self.to_bytes()));
         digest[..4].try_into().expect("digest truncated")
     }
 }
@@ -70,7 +67,7 @@ impl PublicKey for k256::ecdsa::VerifyingKey {
     }
 
     fn to_bytes(&self) -> PublicKeyBytes {
-        self.to_bytes()
+        k256::CompressedPoint::from(self)
             .as_slice()
             .try_into()
             .expect("malformed key")
@@ -110,16 +107,12 @@ impl PublicKey for secp256k1_ffi::PublicKey {
         self.serialize()
     }
 
-    fn derive_child(&self, other: PrivateKeyBytes) -> Result<Self> {
+    fn derive_child(&self, bytes: PrivateKeyBytes) -> Result<Self> {
         use secp256k1_ffi::{Secp256k1, VerifyOnly};
+
         let engine = Secp256k1::<VerifyOnly>::verification_only();
-
-        let mut child_key = *self;
-        child_key
-            .add_exp_assign(&engine, &other)
-            .map_err(|_| Error::Crypto)?;
-
-        Ok(child_key)
+        let scalar = secp256k1_ffi::Scalar::from_be_bytes(bytes)?;
+        Ok(self.add_exp_tweak(&engine, &scalar)?)
     }
 }
 

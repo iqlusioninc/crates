@@ -1,6 +1,6 @@
 [package]
 name    = "iqhttp"
-version = "0.2.0"
+version = "0.3.0-pre"
 description = """
 iqlusion's HTTPS toolkit. Provides a high-level wrapper around hyper, with
 built-in SSL/TLS support based on rustls.
@@ -13,7 +13,7 @@ categories   = ["network-programming", "web-programming::http-client"]
 keywords     = ["api", "client", "http", "rest", "web"]
 readme       = "README.md"
 edition      = "2021"
-rust-version = "1.56"
+rust-version = "1.60"
 
 [dependencies]
 hyper = "0.14.10"
