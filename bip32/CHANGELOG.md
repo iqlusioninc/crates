@@ -4,6 +4,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.5.0 (2023-03-28)
+### Added
+- Support for private `ExtendedKey` conversion to `ExtendedPublicKey` ([#1021])
+
+### Changed
+- Upgrade elliptic curve crates; MSRV 1.65 ([#1105])
+  - `ecdsa` v0.16
+  - `ed25519-dalek` v2.0.0-pre.0
+  - `k256` v0.13
+  - `p256` v0.13
+  - `p384` v0.13
+- Bump `secp256k1` crate dependency to v0.27 ([#1115])
+
+[#1021]: https://github.com/iqlusioninc/crates/pull/1021
+[#1105]: https://github.com/iqlusioninc/crates/pull/1105
+[#1115]: https://github.com/iqlusioninc/crates/pull/1115
+
 ## 0.4.0 (2022-05-10)
 ### Changed
 - Bump `pbkdf2` to 0.11.0 ([#983])
