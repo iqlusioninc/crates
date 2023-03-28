@@ -11,7 +11,6 @@ pub type Result<T> = std::result::Result<T, Error>;
 pub enum Error {
     /// JSON errors
     #[cfg(feature = "json")]
-    #[cfg_attr(docsrs, doc(cfg(feature = "json")))]
     Json(serde_json::Error),
 
     /// Invalid header value
@@ -26,7 +25,6 @@ pub enum Error {
 
     /// Proxy errors
     #[cfg(feature = "proxy")]
-    #[cfg_attr(docsrs, doc(cfg(feature = "proxy")))]
     Proxy(std::io::Error),
 }
 
@@ -65,7 +63,6 @@ impl From<hyper::Error> for Error {
 }
 
 #[cfg(feature = "json")]
-#[cfg_attr(docsrs, doc(cfg(feature = "json")))]
 impl From<serde_json::Error> for Error {
     fn from(err: serde_json::Error) -> Error {
         Error::Json(err)

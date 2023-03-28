@@ -12,7 +12,6 @@ use alloc::string::{String, ToString};
 
 /// Extended public secp256k1 ECDSA verification key.
 #[cfg(feature = "secp256k1")]
-#[cfg_attr(docsrs, doc(cfg(feature = "secp256k1")))]
 pub type XPub = ExtendedPublicKey<k256::ecdsa::VerifyingKey>;
 
 /// Extended public keys derived using BIP32.
@@ -94,7 +93,6 @@ where
 
     /// Serialize this key as a `String`.
     #[cfg(feature = "alloc")]
-    #[cfg_attr(docsrs, doc(cfg(feature = "alloc")))]
     pub fn to_string(&self, prefix: Prefix) -> String {
         self.to_extended_key(prefix).to_string()
     }

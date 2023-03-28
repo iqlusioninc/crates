@@ -49,7 +49,6 @@ impl HttpsClient {
     /// via the provided HTTP CONNECT proxy.
     // TODO(tarcieri): proxy auth
     #[cfg(feature = "proxy")]
-    #[cfg_attr(docsrs, doc(cfg(feature = "proxy")))]
     pub fn new_with_proxy(hostname: impl Into<String>, proxy_uri: Uri) -> Result<Self> {
         let connector = Self::https_connector();
         let proxy = Proxy::new(Intercept::All, proxy_uri);
@@ -113,7 +112,6 @@ impl HttpsClient {
 
     /// Perform HTTP GET request and parse the response as JSON.
     #[cfg(feature = "json")]
-    #[cfg_attr(docsrs, doc(cfg(feature = "json")))]
     pub async fn get_json<T>(&self, path: &Path, query: &Query) -> Result<T>
     where
         T: DeserializeOwned,

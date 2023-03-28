@@ -5,7 +5,6 @@ use alloc::str::FromStr;
 use alloc::string::{String, ToString};
 
 /// Secret strings
-#[cfg_attr(docsrs, doc(cfg(feature = "alloc")))]
 pub type SecretString = Secret<String>;
 
 impl DebugSecret for String {}

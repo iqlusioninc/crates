@@ -1,5 +1,5 @@
 #![no_std]
-#![cfg_attr(docsrs, feature(doc_cfg))]
+#![cfg_attr(docsrs, feature(doc_auto_cfg))]
 #![doc = include_str!("../README.md")]
 #![doc(
     html_logo_url = "https://raw.githubusercontent.com/iqlusioninc/crates/main/signatory/img/signatory-rustacean.svg"
@@ -18,11 +18,9 @@ extern crate alloc;
 extern crate std;
 
 #[cfg(feature = "ecdsa")]
-#[cfg_attr(docsrs, doc(cfg(feature = "ecdsa")))]
 pub mod ecdsa;
 
 #[cfg(feature = "ed25519")]
-#[cfg_attr(docsrs, doc(cfg(feature = "ed25519")))]
 pub mod ed25519;
 
 mod algorithm;

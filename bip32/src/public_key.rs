@@ -36,7 +36,6 @@ pub trait PublicKey: Sized {
 }
 
 #[cfg(feature = "secp256k1")]
-#[cfg_attr(docsrs, doc(cfg(feature = "secp256k1")))]
 impl PublicKey for k256::PublicKey {
     fn from_bytes(bytes: PublicKeyBytes) -> Result<Self> {
         Ok(k256::PublicKey::from_sec1_bytes(&bytes)?)
@@ -60,7 +59,6 @@ impl PublicKey for k256::PublicKey {
 }
 
 #[cfg(feature = "secp256k1")]
-#[cfg_attr(docsrs, doc(cfg(feature = "secp256k1")))]
 impl PublicKey for k256::ecdsa::VerifyingKey {
     fn from_bytes(bytes: PublicKeyBytes) -> Result<Self> {
         Ok(k256::ecdsa::VerifyingKey::from_sec1_bytes(&bytes)?)
@@ -81,7 +79,6 @@ impl PublicKey for k256::ecdsa::VerifyingKey {
 }
 
 #[cfg(feature = "secp256k1")]
-#[cfg_attr(docsrs, doc(cfg(feature = "secp256k1")))]
 impl From<XPub> for k256::ecdsa::VerifyingKey {
     fn from(xpub: XPub) -> k256::ecdsa::VerifyingKey {
         k256::ecdsa::VerifyingKey::from(&xpub)
@@ -89,7 +86,6 @@ impl From<XPub> for k256::ecdsa::VerifyingKey {
 }
 
 #[cfg(feature = "secp256k1")]
-#[cfg_attr(docsrs, doc(cfg(feature = "secp256k1")))]
 impl From<&XPub> for k256::ecdsa::VerifyingKey {
     fn from(xpub: &XPub) -> k256::ecdsa::VerifyingKey {
         *xpub.public_key()
@@ -97,7 +93,6 @@ impl From<&XPub> for k256::ecdsa::VerifyingKey {
 }
 
 #[cfg(feature = "secp256k1-ffi")]
-#[cfg_attr(docsrs, doc(cfg(feature = "secp256k1-ffi")))]
 impl PublicKey for secp256k1_ffi::PublicKey {
     fn from_bytes(bytes: PublicKeyBytes) -> Result<Self> {
         Ok(secp256k1_ffi::PublicKey::from_slice(&bytes)?)

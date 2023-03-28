@@ -1,5 +1,5 @@
 #![no_std]
-#![cfg_attr(docsrs, feature(doc_cfg))]
+#![cfg_attr(docsrs, feature(doc_auto_cfg))]
 #![doc = include_str!("../README.md")]
 #![forbid(unsafe_code)]
 #![warn(
@@ -130,11 +130,9 @@ pub use crate::{
 pub use crate::derivation_path::DerivationPath;
 
 #[cfg(feature = "bip39")]
-#[cfg_attr(docsrs, doc(cfg(feature = "bip39")))]
 pub use crate::mnemonic::{Language, Phrase as Mnemonic, Seed};
 
 #[cfg(feature = "secp256k1")]
-#[cfg_attr(docsrs, doc(cfg(feature = "secp256k1")))]
 pub use {
     crate::extended_key::{private_key::XPrv, public_key::XPub},
     k256 as secp256k1,
