@@ -39,7 +39,7 @@
 //! [bip32]: https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki
 
 #![no_std]
-#![cfg_attr(docsrs, feature(doc_cfg))]
+#![cfg_attr(docsrs, feature(doc_auto_cfg))]
 #![warn(missing_docs, rust_2018_idioms, unused_qualifications)]
 
 #[cfg(feature = "alloc")]

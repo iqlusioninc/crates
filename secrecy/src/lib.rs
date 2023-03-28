@@ -71,8 +71,7 @@
 //! the [`SerializableSecret`] marker trait on `T`.
 
 #![no_std]
-#![cfg_attr(docsrs, feature(doc_cfg))]
-#![doc(html_root_url = "https://docs.rs/secrecy/0.8.0")]
+#![cfg_attr(docsrs, feature(doc_auto_cfg))]
 #![forbid(unsafe_code)]
 #![warn(missing_docs, rust_2018_idioms, unused_qualifications)]
 
@@ -255,7 +254,6 @@ impl_debug_secret_for_array!(
 /// [1]: https://docs.rs/secrecy/latest/secrecy/struct.Secret.html#implementations
 /// [2]: https://serde.rs/field-attrs.html#serialize_with
 #[cfg(feature = "serde")]
-#[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
 pub trait SerializableSecret: Serialize {}
 
 #[cfg(feature = "serde")]

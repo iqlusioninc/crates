@@ -91,7 +91,6 @@ impl TryFrom<&[u8]> for SigningKey {
 }
 
 #[cfg(feature = "std")]
-#[cfg_attr(docsrs, doc(cfg(feature = "std")))]
 impl GeneratePkcs8 for SigningKey {
     /// Randomly generate a new PKCS#8 private key.
     fn generate_pkcs8() -> pkcs8::SecretDocument {

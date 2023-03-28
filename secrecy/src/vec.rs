@@ -5,7 +5,6 @@ use alloc::vec::Vec;
 use zeroize::Zeroize;
 
 /// `Vec` types containing secret value
-#[cfg_attr(docsrs, doc(cfg(feature = "alloc")))]
 pub type SecretVec<S> = Secret<Vec<S>>;
 
 impl<S: CloneableSecret + Zeroize> CloneableSecret for Vec<S> {}

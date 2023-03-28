@@ -29,7 +29,6 @@ pub trait PrivateKey: Sized {
 }
 
 #[cfg(feature = "secp256k1")]
-#[cfg_attr(docsrs, doc(cfg(feature = "secp256k1")))]
 impl PrivateKey for k256::SecretKey {
     type PublicKey = k256::PublicKey;
 
@@ -59,7 +58,6 @@ impl PrivateKey for k256::SecretKey {
 }
 
 #[cfg(feature = "secp256k1")]
-#[cfg_attr(docsrs, doc(cfg(feature = "secp256k1")))]
 impl PrivateKey for k256::ecdsa::SigningKey {
     type PublicKey = k256::ecdsa::VerifyingKey;
 
@@ -83,7 +81,6 @@ impl PrivateKey for k256::ecdsa::SigningKey {
 }
 
 #[cfg(feature = "secp256k1")]
-#[cfg_attr(docsrs, doc(cfg(feature = "secp256k1")))]
 impl From<XPrv> for k256::ecdsa::SigningKey {
     fn from(xprv: XPrv) -> k256::ecdsa::SigningKey {
         k256::ecdsa::SigningKey::from(&xprv)
@@ -91,7 +88,6 @@ impl From<XPrv> for k256::ecdsa::SigningKey {
 }
 
 #[cfg(feature = "secp256k1")]
-#[cfg_attr(docsrs, doc(cfg(feature = "secp256k1")))]
 impl From<&XPrv> for k256::ecdsa::SigningKey {
     fn from(xprv: &XPrv) -> k256::ecdsa::SigningKey {
         xprv.private_key().clone()
@@ -99,7 +95,6 @@ impl From<&XPrv> for k256::ecdsa::SigningKey {
 }
 
 #[cfg(feature = "secp256k1-ffi")]
-#[cfg_attr(docsrs, doc(cfg(feature = "secp256k1-ffi")))]
 impl PrivateKey for secp256k1_ffi::SecretKey {
     type PublicKey = secp256k1_ffi::PublicKey;
 

@@ -13,12 +13,10 @@ use crate::ed25519;
 pub struct KeyRing {
     /// ECDSA key ring.
     #[cfg(feature = "ecdsa")]
-    #[cfg_attr(docsrs, doc(cfg(feature = "ecdsa")))]
     pub ecdsa: ecdsa::KeyRing,
 
     /// Ed25519 key ring.
     #[cfg(feature = "ed25519")]
-    #[cfg_attr(docsrs, doc(cfg(feature = "ed25519")))]
     pub ed25519: ed25519::KeyRing,
 }
 

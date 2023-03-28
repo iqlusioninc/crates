@@ -22,7 +22,6 @@ const PRIVATE_KEY_BOUNDARY: &str = "-----BEGIN PRIVATE KEY-----";
 const ENCRYPTED_PRIVATE_KEY_BOUNDARY: &str = "-----BEGIN ENCRYPTED PRIVATE KEY-----";
 
 /// Filesystem-backed keystore.
-#[cfg_attr(docsrs, doc(cfg(feature = "std")))]
 pub struct FsKeyStore {
     path: PathBuf,
 }

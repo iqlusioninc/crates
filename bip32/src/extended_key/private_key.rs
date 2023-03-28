@@ -26,7 +26,6 @@ const BIP39_DOMAIN_SEPARATOR: [u8; 12] = [
 
 /// Extended private secp256k1 ECDSA signing key.
 #[cfg(feature = "secp256k1")]
-#[cfg_attr(docsrs, doc(cfg(feature = "secp256k1")))]
 pub type XPrv = ExtendedPrivateKey<k256::ecdsa::SigningKey>;
 
 /// Extended private keys derived using BIP32.
@@ -52,7 +51,6 @@ where
 
     /// Derive a child key from the given [`DerivationPath`].
     #[cfg(feature = "alloc")]
-    #[cfg_attr(docsrs, doc(cfg(feature = "alloc")))]
     pub fn derive_from_path<S>(seed: S, path: &DerivationPath) -> Result<Self>
     where
         S: AsRef<[u8]>,
@@ -163,7 +161,6 @@ where
 
     /// Serialize this key as a self-[`Zeroizing`] `String`.
     #[cfg(feature = "alloc")]
-    #[cfg_attr(docsrs, doc(cfg(feature = "alloc")))]
     pub fn to_string(&self, prefix: Prefix) -> Zeroizing<String> {
         Zeroizing::new(self.to_extended_key(prefix).to_string())
     }
