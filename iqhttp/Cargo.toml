@@ -17,7 +17,7 @@ rust-version = "1.60"
 
 [dependencies]
 hyper = "0.14.10"
-hyper-rustls = { version = "0.22", features = ["rustls-native-certs"] }
+hyper-rustls = { version = "0.24", features = ["rustls-native-certs"] }
 
 # optional dependencies
 hyper-proxy = { version = "=0.9.1", optional = true } # carefully vet changes before bumping version
