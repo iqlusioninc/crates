@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.27.0 (2023-04-05)
+### Changed
+- Bump `ecdsa`to v0.16 ([#1105])
+- Bump `k256` to v0.13 ([#1105])
+- Bump `p256` to v0.13 ([#1105])
+- Bump `p384` to v0.13 ([#1105])
+- Bump `ed25519-dalek` to 2.0.0-rc.2 ([#1113])
+
+[#1105]: https://github.com/iqlusioninc/crates/pull/1105
+[#1113]: https://github.com/iqlusioninc/crates/pull/1113
+
 ## 0.26.0 (2022-08-19)
 ### Added
 - `Send + Sync` bounds to inner `Box` for signer types ([#1037])
