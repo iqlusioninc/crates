@@ -218,9 +218,9 @@ dependencies = [
 
 [[package]]
 name = "ecdsa"
-version = "0.16.3"
+version = "0.16.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a64d2e9c561b39b2de83c0387baffecfbc62ad116c4fc8f4e5b040b8e0737d7c"
+checksum = "a48e5d537b8a30c0b023116d981b16334be1485af7ca68db3a2b7024cbc957fd"
 dependencies = [
  "der",
  "digest 0.10.6",
