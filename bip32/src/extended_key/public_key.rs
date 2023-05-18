@@ -32,6 +32,11 @@ impl<K> ExtendedPublicKey<K>
 where
     K: PublicKey,
 {
+    /// Create a new extended public key from a public key and attributes.
+    pub fn new(public_key: K, attrs: ExtendedKeyAttrs) -> Self {
+        Self { public_key, attrs }
+    }
+
     /// Obtain the non-extended public key value `K`.
     pub fn public_key(&self) -> &K {
         &self.public_key
