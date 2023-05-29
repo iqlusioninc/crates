@@ -49,7 +49,7 @@ impl ExtendedKey {
         bytes[13..45].copy_from_slice(&self.attrs.chain_code);
         bytes[45..78].copy_from_slice(&self.key_bytes);
 
-        let base58_len = bs58::encode(&bytes).with_check().into(buffer.as_mut())?;
+        let base58_len = bs58::encode(&bytes).with_check().onto(buffer.as_mut())?;
         bytes.zeroize();
 
         str::from_utf8(&buffer[..base58_len]).map_err(|_| Error::Base58)
@@ -70,7 +70,7 @@ impl FromStr for ExtendedKey {
 
     fn from_str(base58: &str) -> Result<Self> {
         let mut bytes = [0u8; Self::BYTE_SIZE + 4]; // with 4-byte checksum
-        let decoded_len = bs58::decode(base58).with_check(None).into(&mut bytes)?;
+        let decoded_len = bs58::decode(base58).with_check(None).onto(&mut bytes)?;
 
         if decoded_len != Self::BYTE_SIZE {
             return Err(Error::Decode);
