@@ -206,6 +206,12 @@ pub trait ExposeSecret<S> {
     fn expose_secret(&self) -> &S;
 }
 
+/// Expose a mutable reference to an inner secret
+pub trait ExposeSecretMut<S> {
+    /// Expose secret: this is the only method providing access to a secret.
+    fn expose_secret(&mut self) -> &mut S;
+}
+
 /// Debugging trait which is specialized for handling secret values
 pub trait DebugSecret {
     /// Format information about the secret's type.
