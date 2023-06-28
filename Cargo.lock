@@ -1091,7 +1091,6 @@ dependencies = [
 name = "secrecy"
 version = "0.9.0-pre"
 dependencies = [
- "bytes",
  "serde",
  "zeroize",
 ]

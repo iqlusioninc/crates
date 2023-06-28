@@ -18,15 +18,10 @@ edition     = "2021"
 rust-version = "1.60"
 
 [dependencies]
-zeroize = { version = "1.6", default-features = false }
+zeroize = { version = "1.6", default-features = false, features = ["alloc"] }
 
 # optional dependencies
-bytes = { version = "1", optional = true }
 serde = { version = "1", optional = true }
-
-[features]
-default = ["alloc"]
-alloc = ["zeroize/alloc"]
 
 [package.metadata.docs.rs]
 all-features = true
