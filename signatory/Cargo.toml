@@ -20,7 +20,7 @@ zeroize = "1.5"
 
 # optional dependencies
 ecdsa = { version = "0.16", optional = true, features = ["pem", "pkcs8"] }
-ed25519-dalek = { version = "2.0.0-rc.3", optional = true, default-features = false }
+ed25519-dalek = { version = "2", optional = true, default-features = false }
 k256 = { version = "0.13", optional = true, features = ["ecdsa", "sha256"] }
 p256 = { version = "0.13", optional = true, features = ["ecdsa", "sha256"] }
 p384 = { version = "0.13", optional = true, features = ["ecdsa", "sha384"] }
