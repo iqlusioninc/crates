@@ -22,7 +22,7 @@ zeroize = { version = "1.6", default-features = false }
 
 # optional dependencies
 bytes = { version = "1", optional = true }
-serde = { version = "1", optional = true }
+serde = { version = "1", default-features = false, optional = true }
 
 [features]
 default = ["alloc"]
