@@ -13,6 +13,7 @@ contributions under the terms of the [Apache License, Version 2.0]
 * Armin Ronacher ([@mitsuhiko](https://github.com/mitsuhiko))
 * Boats ([@withoutboats](https://github.com/withoutboats))
 * David Tolnay ([@dtolnay](https://github.com/dtolnay))
+* Eric Holk ([@eholk](https://github.com/eholk))
 * Kai Ren ([@tyranron](https://github.com/tyranron))
 * Murarth ([@murarth](https://github.com/murarth))
 * Niclas Schwarzlose ([@aticu](https://github.com/aticu))
