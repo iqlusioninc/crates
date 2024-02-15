@@ -39,7 +39,7 @@ pub struct Phrase {
     nwords: Words,
 
     /// Source entropy for this phrase
-    entropy:  Vec<u8>,//Entropy,
+    entropy:  Vec<u8>,
 
     /// Mnemonic phrase
     phrase: String,
@@ -50,7 +50,7 @@ pub struct Phrase {
 impl Phrase {
     /// Create a random BIP39 mnemonic phrase.
     pub fn random(mut rng: impl RngCore + CryptoRng, language: Language) -> Self {
-        let mut entropy: Vec<u8> = Vec::with_capacity(32); //Entropy::default();
+        let mut entropy: Vec<u8> = Vec::with_capacity(32); 
         rng.fill_bytes(&mut entropy);
         Self::from_entropy(entropy, language).unwrap()
     }
