@@ -15,6 +15,19 @@ pub enum Error {
     /// BIP39-related errors.
     Bip39,
 
+    /// BIP39 can't find the word in the selected wordlist.
+    Bip39InvalidWord,
+
+    /// BIP39-related errors.
+    Bip39InvalidPhraseSize,
+
+    ///BIP39 entropy must have 16 or 32 bytes
+    Bip39InvalidEntropySize,
+    
+    ///BIP39 invalid checksum
+    Bip39InvalidChecksum,
+
+
     /// Child number-related errors.
     ChildNumber,
 
@@ -36,6 +49,10 @@ impl Display for Error {
         match self {
             Error::Base58 => f.write_str("base58 error"),
             Error::Bip39 => f.write_str("bip39 error"),
+            Error::Bip39InvalidPhraseSize => f.write_str("bip39 invalid phrase size error"),
+            Error::Bip39InvalidEntropySize => f.write_str("bip39 entropy must have 16 or 32 bytes"),
+            Error::Bip39InvalidChecksum => f.write_str("bip39 invalid checksum"),
+            Error::Bip39InvalidWord => f.write_str("bip39 can't find the word in the selected wordlist"),
             Error::ChildNumber => f.write_str("invalid child number"),
             Error::Crypto => f.write_str("cryptographic error"),
             Error::Decode => f.write_str("decoding error"),
