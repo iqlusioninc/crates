@@ -88,23 +88,11 @@ where
     /// Derive a child key for a particular [`ChildNumber`].
     pub fn derive_child(&self, child_number: ChildNumber) -> Result<Self> {
         let depth = self.attrs.depth.checked_add(1).ok_or(Error::Depth)?;
+        let (tweak, chain_code) = self
+            .private_key
+            .derive_tweak(&self.attrs.chain_code, child_number)?;
 
-        let mut hmac =
-            HmacSha512::new_from_slice(&self.attrs.chain_code).map_err(|_| Error::Crypto)?;
-
-        if child_number.is_hardened() {
-            hmac.update(&[0]);
-            hmac.update(&self.private_key.to_bytes());
-        } else {
-            hmac.update(&self.private_key.public_key().to_bytes());
-        }
-
-        hmac.update(&child_number.to_bytes());
-
-        let result = hmac.finalize().into_bytes();
-        let (child_key, chain_code) = result.split_at(KEY_SIZE);
-
-        // We should technically loop here if a `secret_key` is zero or overflows
+        // We should technically loop here if the tweak is zero or overflows
         // the order of the underlying elliptic curve group, incrementing the
         // index, however per "Child key derivation (CKD) functions":
         // https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki#child-key-derivation-ckd-functions
@@ -113,12 +101,12 @@ where
         //
         // ...so instead, we simply return an error if this were ever to happen,
         // as the chances of it happening are vanishingly small.
-        let private_key = self.private_key.derive_child(child_key.try_into()?)?;
+        let private_key = self.private_key.derive_child(tweak)?;
 
         let attrs = ExtendedKeyAttrs {
             parent_fingerprint: self.private_key.public_key().fingerprint(),
             child_number,
-            chain_code: chain_code.try_into()?,
+            chain_code,
             depth,
         };
 

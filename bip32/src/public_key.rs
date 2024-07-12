@@ -1,12 +1,15 @@
 //! Trait for deriving child keys on a given type.
 
-use crate::{KeyFingerprint, PrivateKeyBytes, Result, KEY_SIZE};
+use crate::{
+    ChainCode, ChildNumber, Error, HmacSha512, KeyFingerprint, PrivateKeyBytes, Result, KEY_SIZE,
+};
+use hmac::Mac;
 use ripemd::Ripemd160;
 use sha2::{Digest, Sha256};
 
 #[cfg(feature = "secp256k1")]
 use {
-    crate::{Error, XPub},
+    crate::XPub,
     k256::elliptic_curve::{group::prime::PrimeCurveAffine, sec1::ToEncodedPoint},
 };
 
@@ -32,6 +35,44 @@ pub trait PublicKey: Sized {
     fn fingerprint(&self) -> KeyFingerprint {
         let digest = Ripemd160::digest(Sha256::digest(self.to_bytes()));
         digest[..4].try_into().expect("digest truncated")
+    }
+
+    /// Derive a tweak value that can be used to generate the child key (see [`derive_child`]).
+    ///
+    /// The `chain_code` is either a newly initialized one,
+    /// or one obtained from the previous invocation of `derive_tweak()`
+    /// (for a multi-level derivation).
+    ///
+    /// **Warning:** make sure that if you are creating a new `chain_code`, you are doing so
+    /// in a cryptographically safe way.
+    /// Normally this would be done according to BIP-39 (within [`ExtendedPrivateKey::new`]).
+    ///
+    /// **Note:** `child_number` cannot be a hardened one (will result in an error).
+    fn derive_tweak(
+        &self,
+        chain_code: &ChainCode,
+        child_number: ChildNumber,
+    ) -> Result<(PrivateKeyBytes, ChainCode)> {
+        if child_number.is_hardened() {
+            // Cannot derive child public keys for hardened `ChildNumber`s
+            return Err(Error::ChildNumber);
+        }
+
+        let mut hmac = HmacSha512::new_from_slice(chain_code).map_err(|_| Error::Crypto)?;
+
+        hmac.update(&self.to_bytes());
+        hmac.update(&child_number.to_bytes());
+
+        let result = hmac.finalize().into_bytes();
+        let (tweak_bytes, chain_code_bytes) = result.split_at(KEY_SIZE);
+
+        // Note that at this point we are only asserting that `tweak_bytes` have the expected size.
+        // Checking if it actually fits the curve scalar happens in `derive_child()`.
+        let tweak = tweak_bytes.try_into()?;
+
+        let chain_code = chain_code_bytes.try_into()?;
+
+        Ok((tweak, chain_code))
     }
 }
 

@@ -1,9 +1,10 @@
 //! Trait for deriving child keys on a given type.
 
-use crate::{PublicKey, Result, KEY_SIZE};
+use crate::{ChainCode, ChildNumber, Error, HmacSha512, PublicKey, Result, KEY_SIZE};
+use hmac::Mac;
 
 #[cfg(feature = "secp256k1")]
-use crate::{Error, XPrv};
+use crate::XPrv;
 
 /// Bytes which represent a private key.
 pub type PrivateKeyBytes = [u8; KEY_SIZE];
@@ -26,6 +27,43 @@ pub trait PrivateKey: Sized {
 
     /// Get the [`Self::PublicKey`] that corresponds to this private key.
     fn public_key(&self) -> Self::PublicKey;
+
+    /// Derive a tweak value that can be used to generate the child key (see [`derive_child`]).
+    ///
+    /// The `chain_code` is either a newly initialized one,
+    /// or one obtained from the previous invocation of `derive_tweak()`
+    /// (for a multi-level derivation).
+    ///
+    /// **Warning:** make sure that if you are creating a new `chain_code`, you are doing so
+    /// in a cryptographically safe way.
+    /// Normally this would be done according to BIP-39 (within [`ExtendedPrivateKey::new`]).
+    fn derive_tweak(
+        &self,
+        chain_code: &ChainCode,
+        child_number: ChildNumber,
+    ) -> Result<(PrivateKeyBytes, ChainCode)> {
+        let mut hmac = HmacSha512::new_from_slice(chain_code).map_err(|_| Error::Crypto)?;
+
+        if child_number.is_hardened() {
+            hmac.update(&[0]);
+            hmac.update(&self.to_bytes());
+        } else {
+            hmac.update(&self.public_key().to_bytes());
+        }
+
+        hmac.update(&child_number.to_bytes());
+
+        let result = hmac.finalize().into_bytes();
+        let (tweak_bytes, chain_code_bytes) = result.split_at(KEY_SIZE);
+
+        // Note that at this point we are only asserting that `tweak_bytes` have the expected size.
+        // Checking if it actually fits the curve scalar happens in `derive_child()`.
+        let tweak = tweak_bytes.try_into()?;
+
+        let chain_code = chain_code_bytes.try_into()?;
+
+        Ok((tweak, chain_code))
+    }
 }
 
 #[cfg(feature = "secp256k1")]
