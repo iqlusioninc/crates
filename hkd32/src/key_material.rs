@@ -23,8 +23,7 @@ use crate::mnemonic;
 ///
 /// This type provides the main key derivation functionality and is used to
 /// represent both input and output key material.
-#[derive(Clone, Zeroize)]
-#[zeroize(drop)]
+#[derive(Clone)]
 pub struct KeyMaterial([u8; KEY_SIZE]);
 
 impl KeyMaterial {
@@ -125,6 +124,12 @@ impl KeyMaterial {
     }
 }
 
+impl Drop for KeyMaterial {
+    fn drop(&mut self) {
+        self.zeroize();
+    }
+}
+
 impl From<[u8; KEY_SIZE]> for KeyMaterial {
     fn from(bytes: [u8; KEY_SIZE]) -> Self {
         Self::new(bytes)
@@ -136,5 +141,12 @@ impl<'a> TryFrom<&'a [u8]> for KeyMaterial {
 
     fn try_from(slice: &'a [u8]) -> Result<Self, Error> {
         Self::from_bytes(slice)
+    }
+}
+
+// TODO(tarcieri): remove this impl in favor of `ZeroizeOnDrop` in next breaking release
+impl Zeroize for KeyMaterial {
+    fn zeroize(&mut self) {
+        self.0.zeroize();
     }
 }
