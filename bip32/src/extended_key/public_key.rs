@@ -1,11 +1,10 @@
 //! Extended public keys
 
 use crate::{
-    ChildNumber, Error, ExtendedKey, ExtendedKeyAttrs, ExtendedPrivateKey, HmacSha512,
-    KeyFingerprint, Prefix, PrivateKey, PublicKey, PublicKeyBytes, Result, KEY_SIZE,
+    ChildNumber, Error, ExtendedKey, ExtendedKeyAttrs, ExtendedPrivateKey, KeyFingerprint, Prefix,
+    PrivateKey, PublicKey, PublicKeyBytes, Result,
 };
 use core::str::FromStr;
-use hmac::Mac;
 
 #[cfg(feature = "alloc")]
 use alloc::string::{String, ToString};
@@ -55,27 +54,26 @@ where
 
     /// Derive a child key for a particular [`ChildNumber`].
     pub fn derive_child(&self, child_number: ChildNumber) -> Result<Self> {
-        if child_number.is_hardened() {
-            // Cannot derive child public keys for hardened `ChildNumber`s
-            return Err(Error::ChildNumber);
-        }
-
         let depth = self.attrs.depth.checked_add(1).ok_or(Error::Depth)?;
+        let (tweak, chain_code) = self
+            .public_key
+            .derive_tweak(&self.attrs.chain_code, child_number)?;
 
-        let mut hmac =
-            HmacSha512::new_from_slice(&self.attrs.chain_code).map_err(|_| Error::Crypto)?;
-
-        hmac.update(&self.public_key.to_bytes());
-        hmac.update(&child_number.to_bytes());
-
-        let result = hmac.finalize().into_bytes();
-        let (child_key, chain_code) = result.split_at(KEY_SIZE);
-        let public_key = self.public_key.derive_child(child_key.try_into()?)?;
+        // We should technically loop here if the tweak is zero or overflows
+        // the order of the underlying elliptic curve group, incrementing the
+        // index, however per "Child key derivation (CKD) functions":
+        // https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki#child-key-derivation-ckd-functions
+        //
+        // > "Note: this has probability lower than 1 in 2^127."
+        //
+        // ...so instead, we simply return an error if this were ever to happen,
+        // as the chances of it happening are vanishingly small.
+        let public_key = self.public_key.derive_child(tweak)?;
 
         let attrs = ExtendedKeyAttrs {
             parent_fingerprint: self.public_key.fingerprint(),
             child_number,
-            chain_code: chain_code.try_into()?,
+            chain_code,
             depth,
         };
 
