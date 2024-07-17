@@ -141,6 +141,8 @@ mod tests {
 
     pub const EXAMPLE_KEY: &str = "example-key";
 
+    /// We need this to live as long as the test case, so store it here for RAII purposes
+    #[allow(dead_code)]
     pub struct FsStoreHandle {
         pub keystore: FsKeyStore,
         pub dir: tempfile::TempDir,
