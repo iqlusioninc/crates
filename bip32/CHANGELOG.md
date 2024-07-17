@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.5.2 (2023-07-17)
+### Added
+- `PrivateKey::derive_tweak()` and `PublicKey::derive_tweak()` ([#1186])
+
+[#1186]: https://github.com/iqlusioninc/crates/pull/1186
+
 ## 0.5.1 (2023-05-29)
 ### Added
 - `ExtendedPublicKey::new` ([#1136])
