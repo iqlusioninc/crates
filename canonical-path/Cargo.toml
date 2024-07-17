@@ -10,7 +10,7 @@ readme      = "README.md"
 categories  = ["filesystem"]
 keywords    = ["filesystem", "path", "canonicalization"]
 edition     = "2021"
-rust-version = "1.60"
+rust-version = "1.63"
 
 [badges]
 maintenance = { status = "passively-maintained" }
