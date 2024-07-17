@@ -17,9 +17,8 @@ use zeroize::Zeroize;
 ///
 /// This is the owned path type. The corresponding reference type is
 /// `hkd32::Path` (ala the corresponding types in `std`).
-#[derive(Clone, Default, Eq, Hash, PartialEq, PartialOrd, Ord, Zeroize)]
+#[derive(Clone, Default, Eq, Hash, PartialEq, PartialOrd, Ord)]
 #[repr(transparent)]
-#[zeroize(drop)]
 pub struct PathBuf(Vec<u8>);
 
 impl PathBuf {
@@ -91,6 +90,12 @@ impl Deref for PathBuf {
     }
 }
 
+impl Drop for PathBuf {
+    fn drop(&mut self) {
+        self.0.zeroize();
+    }
+}
+
 impl FromStr for PathBuf {
     type Err = Error;
 
@@ -133,6 +138,13 @@ impl ToOwned for Path {
 
     fn to_owned(&self) -> PathBuf {
         PathBuf::from_bytes(self.as_bytes()).unwrap()
+    }
+}
+
+// TODO(tarcieri): remove this impl in favor of `ZeroizeOnDrop` in next breaking release
+impl Zeroize for PathBuf {
+    fn zeroize(&mut self) {
+        self.0.zeroize();
     }
 }
 
