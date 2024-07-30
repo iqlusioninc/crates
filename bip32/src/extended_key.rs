@@ -49,7 +49,9 @@ impl ExtendedKey {
         bytes[13..45].copy_from_slice(&self.attrs.chain_code);
         bytes[45..78].copy_from_slice(&self.key_bytes);
 
-        let base58_len = bs58::encode(&bytes).with_check().onto(buffer.as_mut())?;
+        let base58_len = bs58::encode(&bytes)
+            .with_check()
+            .onto(<[u8; Self::MAX_BASE58_SIZE] as AsMut<[u8]>>::as_mut(buffer))?;
         bytes.zeroize();
 
         str::from_utf8(&buffer[..base58_len]).map_err(|_| Error::Base58)
