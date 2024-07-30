@@ -1069,7 +1069,7 @@ dependencies = [
 
 [[package]]
 name = "secrecy"
-version = "0.9.0-pre"
+version = "0.9.0-pre.0"
 dependencies = [
  "serde",
  "zeroize",
