@@ -36,7 +36,7 @@
 
 extern crate alloc;
 
-use alloc::boxed::Box;
+use alloc::{boxed::Box, string::String};
 use core::{
     any,
     fmt::{self, Debug},
@@ -55,31 +55,31 @@ pub use zeroize;
 ///
 /// Access to the secret inner value occurs through the [`ExposeSecret`]
 /// or [`ExposeSecretMut`] traits, which provide methods for accessing the inner secret value.
-pub struct SecretBox<S: Zeroize> {
+pub struct SecretBox<S: Zeroize + ?Sized> {
     inner_secret: Box<S>,
 }
 
-impl<S: Zeroize> Zeroize for SecretBox<S> {
+impl<S: Zeroize + ?Sized> Zeroize for SecretBox<S> {
     fn zeroize(&mut self) {
         self.inner_secret.as_mut().zeroize()
     }
 }
 
-impl<S: Zeroize> Drop for SecretBox<S> {
+impl<S: Zeroize + ?Sized> Drop for SecretBox<S> {
     fn drop(&mut self) {
         self.zeroize()
     }
 }
 
-impl<S: Zeroize> ZeroizeOnDrop for SecretBox<S> {}
+impl<S: Zeroize + ?Sized> ZeroizeOnDrop for SecretBox<S> {}
 
-impl<S: Zeroize> From<Box<S>> for SecretBox<S> {
+impl<S: Zeroize + ?Sized> From<Box<S>> for SecretBox<S> {
     fn from(source: Box<S>) -> Self {
         Self::new(source)
     }
 }
 
-impl<S: Zeroize> SecretBox<S> {
+impl<S: Zeroize + ?Sized> SecretBox<S> {
     /// Create a secret value using a pre-boxed value.
     pub fn new(boxed_secret: Box<S>) -> Self {
         Self {
@@ -88,24 +88,24 @@ impl<S: Zeroize> SecretBox<S> {
     }
 }
 
-impl<S: Zeroize + Default> SecretBox<S> {
-    /// Create a secret value using a function that can initialize the vale in-place.
-    pub fn new_with_mut(ctr: impl FnOnce(&mut S)) -> Self {
+impl<S: Zeroize + Default + ?Sized> SecretBox<S> {
+    /// Create a secret value using a function that can initialize the value in-place.
+    pub fn init_with_mut(ctr: impl FnOnce(&mut S)) -> Self {
         let mut secret = Self::default();
         ctr(secret.expose_secret_mut());
         secret
     }
 }
 
-impl<S: Zeroize + Clone> SecretBox<S> {
+impl<S: Zeroize + Clone + ?Sized> SecretBox<S> {
     /// Create a secret value using the provided function as a constructor.
     ///
     /// The implementation makes an effort to zeroize the locally constructed value
     /// before it is copied to the heap, and constructing it inside the closure minimizes
     /// the possibility of it being accidentally copied by other code.
     ///
-    /// **Note:** using [`Self::new`] or [`Self::new_with_mut`] is preferable when possible,
-    /// since this method's safety relies on empyric evidence and may be violated on some targets.
+    /// **Note:** using [`Self::new`] or [`Self::init_with_mut`] is preferable when possible,
+    /// since this method's safety relies on empiric evidence and may be violated on some targets.
     pub fn init_with(ctr: impl FnOnce() -> S) -> Self {
         let mut data = ctr();
         let secret = Self {
@@ -118,7 +118,7 @@ impl<S: Zeroize + Clone> SecretBox<S> {
     /// Same as [`Self::init_with`], but the constructor can be fallible.
     ///
     ///
-    /// **Note:** using [`Self::new`] or [`Self::new_with_mut`] is preferable when possible,
+    /// **Note:** using [`Self::new`] or [`Self::init_with_mut`] is preferable when possible,
     /// since this method's safety relies on empyric evidence and may be violated on some targets.
     pub fn try_init_with<E>(ctr: impl FnOnce() -> Result<S, E>) -> Result<Self, E> {
         let mut data = ctr()?;
@@ -130,7 +130,7 @@ impl<S: Zeroize + Clone> SecretBox<S> {
     }
 }
 
-impl<S: Zeroize + Default> Default for SecretBox<S> {
+impl<S: Zeroize + ?Sized + Default> Default for SecretBox<S> {
     fn default() -> Self {
         Self {
             inner_secret: Box::<S>::default(),
@@ -138,7 +138,7 @@ impl<S: Zeroize + Default> Default for SecretBox<S> {
     }
 }
 
-impl<S: Zeroize> Debug for SecretBox<S> {
+impl<S: Zeroize + ?Sized> Debug for SecretBox<S> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "SecretBox<{}>([REDACTED])", any::type_name::<S>())
     }
@@ -155,15 +155,28 @@ where
     }
 }
 
-impl<S: Zeroize> ExposeSecret<S> for SecretBox<S> {
+impl<S: Zeroize + ?Sized> ExposeSecret<S> for SecretBox<S> {
     fn expose_secret(&self) -> &S {
         self.inner_secret.as_ref()
     }
 }
 
-impl<S: Zeroize> ExposeSecretMut<S> for SecretBox<S> {
+impl<S: Zeroize + ?Sized> ExposeSecretMut<S> for SecretBox<S> {
     fn expose_secret_mut(&mut self) -> &mut S {
         self.inner_secret.as_mut()
+    }
+}
+
+/// Secret string type.
+///
+/// This is a type alias for [`SecretBox<str>`] which supports some helpful trait impls.
+///
+/// Notably it has a [`From<String>`] impl which is the preferred method for construction.
+pub type SecretString = SecretBox<str>;
+
+impl From<String> for SecretString {
+    fn from(s: String) -> Self {
+        Self::from(s.into_boxed_str())
     }
 }
 
@@ -171,13 +184,13 @@ impl<S: Zeroize> ExposeSecretMut<S> for SecretBox<S> {
 pub trait CloneableSecret: Clone + Zeroize {}
 
 /// Expose a reference to an inner secret
-pub trait ExposeSecret<S> {
+pub trait ExposeSecret<S: ?Sized> {
     /// Expose secret: this is the only method providing access to a secret.
     fn expose_secret(&self) -> &S;
 }
 
 /// Expose a mutable reference to an inner secret
-pub trait ExposeSecretMut<S> {
+pub trait ExposeSecretMut<S: ?Sized> {
     /// Expose secret: this is the only method providing access to a secret.
     fn expose_secret_mut(&mut self) -> &mut S;
 }
