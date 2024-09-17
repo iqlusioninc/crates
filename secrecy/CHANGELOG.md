@@ -4,6 +4,49 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.10.0 (2024-09-17)
+
+This release represents a significant redesign of the `secrecy` crate. We will update this section
+with upgrade instructions based on feedback from people upgrading, as it's been a long time since
+the previous release, and this release includes a number of breaking changes.
+
+The most notable change is the generic `Secret<T>` type has been removed: instead use `SecretBox<T>`
+which stores secrets on the heap instead of the stack. Many of the other changes fall out of this
+change and things which were previously type aliases of `Secret<T>` are now type aliases of
+`SecretBox<T>`.
+
+This unfortunately means this crate no longer has support for "heapless" `no_std` targets. We don't
+have a good solution for these targets, which was a motivation for this change in the first place.
+
+### Added
+- `SecretBox::{init_with, try_init_with}` ([#1212])
+- `SecretBox::init_with_mut` ([#1213])
+- `?Sized` bounds for `SecretBox` ([#1213])
+- `SecretSlice<T>` ([#1214])
+
+### Changed
+- Rust 2021 edition upgrade ([#889])
+- MSRV 1.60 ([#1105])
+- `SecretBox<T>` is now a newtype rather than a type alias of `Secret<Box<T>> ([#1140])
+- `SecretString` is now a type alias for `SecretBox<str>` ([#1213])
+- Disable `serde` default features ([#1194])
+
+### Removed
+- `alloc` feature: now a hard dependency ([#1140])
+- `bytes` crate integration: no replacement ([#1140])
+- `DebugSecret` trait: no replacement ([#1140])
+- `Secret<T>`: use `SecretBox<T>` instead ([#1140])
+
+[#889]: https://github.com/iqlusioninc/crates/pull/889
+[#1105]: https://github.com/iqlusioninc/crates/pull/1105
+[#1140]: https://github.com/iqlusioninc/crates/pull/1140
+[#1194]: https://github.com/iqlusioninc/crates/pull/1194
+[#1212]: https://github.com/iqlusioninc/crates/pull/1212
+[#1213]: https://github.com/iqlusioninc/crates/pull/1213
+[#1214]: https://github.com/iqlusioninc/crates/pull/1214
+
+## 0.9.0 (Skipped)
+
 ## 0.8.0 (2021-07-18)
 
 NOTE: This release includes an MSRV bump to Rust 1.56. Please use `secrecy = "0.7.0"`
