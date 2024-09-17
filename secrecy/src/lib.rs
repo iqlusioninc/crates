@@ -106,7 +106,7 @@ impl<S: Zeroize + Clone> SecretBox<S> {
     ///
     /// **Note:** using [`Self::new`] or [`Self::new_with_mut`] is preferable when possible,
     /// since this method's safety relies on empyric evidence and may be violated on some targets.
-    pub fn new_with_ctr(ctr: impl FnOnce() -> S) -> Self {
+    pub fn init_with(ctr: impl FnOnce() -> S) -> Self {
         let mut data = ctr();
         let secret = Self {
             inner_secret: Box::new(data.clone()),
@@ -115,12 +115,12 @@ impl<S: Zeroize + Clone> SecretBox<S> {
         secret
     }
 
-    /// Same as [`Self::new_with_ctr`], but the constructor can be fallible.
+    /// Same as [`Self::init_with`], but the constructor can be fallible.
     ///
     ///
     /// **Note:** using [`Self::new`] or [`Self::new_with_mut`] is preferable when possible,
     /// since this method's safety relies on empyric evidence and may be violated on some targets.
-    pub fn try_new_with_ctr<E>(ctr: impl FnOnce() -> Result<S, E>) -> Result<Self, E> {
+    pub fn try_init_with<E>(ctr: impl FnOnce() -> Result<S, E>) -> Result<Self, E> {
         let mut data = ctr()?;
         let secret = Self {
             inner_secret: Box::new(data.clone()),
@@ -209,7 +209,7 @@ where
     where
         D: de::Deserializer<'de>,
     {
-        Self::try_new_with_ctr(|| T::deserialize(deserializer))
+        Self::try_init_with(|| T::deserialize(deserializer))
     }
 }
 
