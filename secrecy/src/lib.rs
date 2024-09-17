@@ -36,7 +36,7 @@
 
 extern crate alloc;
 
-use alloc::{boxed::Box, string::String};
+use alloc::{boxed::Box, string::String, vec::Vec};
 use core::{
     any,
     fmt::{self, Debug},
@@ -164,6 +164,23 @@ impl<S: Zeroize + ?Sized> ExposeSecret<S> for SecretBox<S> {
 impl<S: Zeroize + ?Sized> ExposeSecretMut<S> for SecretBox<S> {
     fn expose_secret_mut(&mut self) -> &mut S {
         self.inner_secret.as_mut()
+    }
+}
+
+/// Secret slice type.
+///
+/// This is a type alias for [`SecretBox<[S]>`] which supports some helpful trait impls.
+///
+/// Notably it has a [`From<Vec<S>>`] impl which is the preferred method for construction.
+pub type SecretSlice<S> = SecretBox<[S]>;
+
+impl<S> From<Vec<S>> for SecretSlice<S>
+where
+    S: Zeroize,
+    [S]: Zeroize,
+{
+    fn from(vec: Vec<S>) -> Self {
+        Self::from(vec.into_boxed_slice())
     }
 }
 
