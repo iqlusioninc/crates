@@ -197,6 +197,14 @@ impl From<String> for SecretString {
     }
 }
 
+impl Clone for SecretString {
+    fn clone(&self) -> Self {
+        SecretBox {
+            inner_secret: self.inner_secret.clone(),
+        }
+    }
+}
+
 /// Marker trait for secrets which are allowed to be cloned
 pub trait CloneableSecret: Clone + Zeroize {}
 
