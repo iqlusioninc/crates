@@ -6,7 +6,7 @@ they aren't accidentally copied, logged, or otherwise exposed
 (as much as possible), and also ensure secrets are securely wiped
 from memory when dropped.
 """
-version     = "0.10.0"
+version     = "0.10.1"
 authors     = ["Tony Arcieri <tony@iqlusion.io>"]
 license     = "Apache-2.0 OR MIT"
 homepage    = "https://github.com/iqlusioninc/crates/"
