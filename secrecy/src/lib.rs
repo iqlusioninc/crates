@@ -252,6 +252,16 @@ where
 }
 
 #[cfg(feature = "serde")]
+impl<'de> Deserialize<'de> for SecretString {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: de::Deserializer<'de>,
+    {
+        String::deserialize(deserializer).map(Into::into)
+    }
+}
+
+#[cfg(feature = "serde")]
 impl<T> Serialize for SecretBox<T>
 where
     T: Zeroize + SerializableSecret + Serialize + Sized,

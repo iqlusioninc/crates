@@ -21,7 +21,7 @@ rust-version = "1.60"
 zeroize = { version = "1.6", default-features = false, features = ["alloc"] }
 
 # optional dependencies
-serde = { version = "1", optional = true, default-features = false }
+serde = { version = "1", optional = true, default-features = false, features = ["alloc"] }
 
 [package.metadata.docs.rs]
 all-features = true
