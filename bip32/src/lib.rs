@@ -156,3 +156,4 @@ type HmacSha512 = hmac::Hmac<sha2::Sha512>;
 
 /// Size of input key material and derived keys.
 pub const KEY_SIZE: usize = 32;
+pub const WORD_SIZE_24: usize = 32;

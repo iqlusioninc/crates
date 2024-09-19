@@ -1,13 +1,16 @@
 //! BIP39 mnemonic phrases
 
+use core::borrow::Borrow;
+use std::println;
+
 use super::{
     bits::{BitWriter, IterExt},
     language::Language,
 };
-use crate::{Error, KEY_SIZE};
-use alloc::{format, string::String};
+use crate::{Error, KEY_SIZE, WORD_SIZE_24};
+use alloc::{format, string::String, vec::{self, Vec}};
 use rand_core::{CryptoRng, RngCore};
-use sha2::{Digest, Sha256};
+use sha2::{digest::typenum::Bit, Digest, Sha256};
 use zeroize::{Zeroize, Zeroizing};
 
 #[cfg(feature = "bip39")]
@@ -17,8 +20,14 @@ use {super::seed::Seed, sha2::Sha512};
 #[cfg(feature = "bip39")]
 const PBKDF2_ROUNDS: u32 = 2048;
 
-/// Source entropy for a BIP39 mnemonic phrase
-pub type Entropy = [u8; KEY_SIZE];
+#[derive(Copy, Clone)]
+pub enum Words {
+    Use12 = 16,
+    Use24 = 32
+}
+fn usize(words: &Words) -> usize {
+    *words as usize
+}
 
 /// BIP39 mnemonic phrases: sequences of words representing cryptographic keys.
 #[derive(Clone)]
@@ -26,26 +35,37 @@ pub struct Phrase {
     /// Language
     language: Language,
 
+    /// Number of words used in entropy 12 or 24
+    nwords: Words,
+
     /// Source entropy for this phrase
-    entropy: Entropy,
+    entropy:  Vec<u8>,
 
     /// Mnemonic phrase
     phrase: String,
+
 }
+
 
 impl Phrase {
     /// Create a random BIP39 mnemonic phrase.
     pub fn random(mut rng: impl RngCore + CryptoRng, language: Language) -> Self {
-        let mut entropy = Entropy::default();
+        let mut entropy: Vec<u8> = Vec::with_capacity(32); 
         rng.fill_bytes(&mut entropy);
-        Self::from_entropy(entropy, language)
+        Self::from_entropy(entropy, language).unwrap()
     }
 
-    /// Create a new BIP39 mnemonic phrase from the given entropy
-    pub fn from_entropy(entropy: Entropy, language: Language) -> Self {
-        let wordlist = language.wordlist();
-        let checksum_byte = Sha256::digest(entropy.as_ref()).as_slice()[0];
 
+    /// Create a new BIP39 mnemonic phrase from the given entropy
+    pub fn from_entropy(entropy: Vec<u8> , language: Language) -> Result<Self, Error> {
+        let wordlist = language.wordlist();
+        let nwords = match entropy.capacity() {
+            16 => Words::Use12,
+            32 => Words::Use24,
+            _ => return Err(Error::Bip39InvalidEntropySize) 
+        };
+        let checksum_byte = Sha256::digest(entropy.clone()).as_slice()[0];
+        
         // First, create a byte iterator for the given entropy and the first byte of the
         // hash of the entropy that will serve as the checksum (up to 8 bits for biggest
         // entropy source).
@@ -55,18 +75,19 @@ impl Phrase {
         //
         // Given the entropy is of correct size, this ought to give us the correct word
         // count.
-        let phrase = entropy
+        let phrase: String = entropy.clone()
             .iter()
             .chain(Some(&checksum_byte))
             .bits()
             .map(|bits| wordlist.get_word(bits))
             .join(" ");
 
-        Phrase {
+       Ok(Phrase {
             language,
-            entropy,
-            phrase,
-        }
+            entropy: entropy.to_vec(),
+            phrase: phrase,
+            nwords,
+        })
     }
 
     /// Create a new BIP39 mnemonic phrase from the given string.
@@ -77,46 +98,63 @@ impl Phrase {
     /// To use the default language, English, (the only one supported by this
     /// library and also the only one standardized for BIP39) you can supply
     /// `Default::default()` as the language.
+    /// 
     pub fn new<S>(phrase: S, language: Language) -> Result<Self, Error>
     where
         S: AsRef<str>,
     {
+        
         let phrase = phrase.as_ref();
+        let nwords = match phrase.split(' ').count() {
+            d if d == 12 => Words::Use12,
+            d if d == 24 => Words::Use24,
+            _   => return Err(Error::Bip39InvalidPhraseSize),
+        };
+        
         let wordmap = language.wordmap();
 
         // Preallocate enough space for the longest possible word list
-        let mut bits = BitWriter::with_capacity(264);
+        let mut bits = BitWriter::with_capacity(match nwords {
+            Words::Use12 => 132,
+            Words::Use24 => 264,
+        });
 
         for word in phrase.split(' ') {
-            bits.push(wordmap.get_bits(word).ok_or(Error::Bip39)?);
+            bits.push(wordmap.get_bits(word).ok_or(Error::Bip39InvalidWord)?);
         }
-
+        
         let mut entropy = Zeroizing::new(bits.into_bytes());
-
-        if entropy.len() != KEY_SIZE + 1 {
-            return Err(Error::Bip39);
+        println!("Entropy len {}",entropy.len());
+        if entropy.len() != usize(&nwords) + 1 {
+            return Err(Error::Bip39InvalidEntropySize);
         }
 
-        let actual_checksum = entropy[KEY_SIZE];
+        
+        let actual_checksum = entropy[usize(&nwords)];
+
 
         // Truncate to get rid of the byte containing the checksum
-        entropy.truncate(KEY_SIZE);
+        entropy.truncate(usize(&nwords));
 
-        let expected_checksum = Sha256::digest(&entropy).as_slice()[0];
-
+        let expected_checksum = Sha256::digest(&entropy).as_slice()[0] 
+                                        & match nwords {
+                                                Words::Use12 => 0b11110000, //for 12 words the checksum is represented by 4 bits
+                                                Words::Use24 => 0b11111111, //for 24 words the checksum is represented by 8 bits
+                                            };
+                                            
         if actual_checksum != expected_checksum {
-            return Err(Error::Bip39);
+            return Err(Error::Bip39InvalidChecksum);
         }
 
-        Ok(Self::from_entropy(
+        Self::from_entropy(
             entropy.as_slice().try_into().map_err(|_| Error::Bip39)?,
-            language,
-        ))
+            language
+        )
     }
 
     /// Get source entropy for this phrase.
-    pub fn entropy(&self) -> &Entropy {
-        &self.entropy
+    pub fn entropy(&self) -> &Vec<u8> {
+       & self.entropy
     }
 
     /// Get the mnemonic phrase as a string reference.
