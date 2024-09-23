@@ -88,7 +88,7 @@ impl<S: Zeroize + ?Sized> SecretBox<S> {
     }
 }
 
-impl<S: Zeroize + Default + ?Sized> SecretBox<S> {
+impl<S: Zeroize + Default> SecretBox<S> {
     /// Create a secret value using a function that can initialize the value in-place.
     pub fn init_with_mut(ctr: impl FnOnce(&mut S)) -> Self {
         let mut secret = Self::default();
@@ -97,7 +97,7 @@ impl<S: Zeroize + Default + ?Sized> SecretBox<S> {
     }
 }
 
-impl<S: Zeroize + Clone + ?Sized> SecretBox<S> {
+impl<S: Zeroize + Clone> SecretBox<S> {
     /// Create a secret value using the provided function as a constructor.
     ///
     /// The implementation makes an effort to zeroize the locally constructed value
@@ -130,7 +130,7 @@ impl<S: Zeroize + Clone + ?Sized> SecretBox<S> {
     }
 }
 
-impl<S: Zeroize + ?Sized + Default> Default for SecretBox<S> {
+impl<S: Zeroize + Default> Default for SecretBox<S> {
     fn default() -> Self {
         Self {
             inner_secret: Box::<S>::default(),
