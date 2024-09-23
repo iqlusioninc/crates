@@ -1,7 +1,7 @@
 [workspace]
 resolver = "2"
 members = [
-    "bip32",
+    #"bip32",
     "canonical-path",
     "hkd32",
     "iqhttp",
@@ -9,3 +9,4 @@ members = [
     "signatory",
     "subtle-encoding",
 ]
+exclude = ["bip32"]

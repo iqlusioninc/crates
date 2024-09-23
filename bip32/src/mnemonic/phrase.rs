@@ -44,7 +44,7 @@ impl Phrase {
     /// Create a new BIP39 mnemonic phrase from the given entropy
     pub fn from_entropy(entropy: Entropy, language: Language) -> Self {
         let wordlist = language.wordlist();
-        let checksum_byte = Sha256::digest(entropy.as_ref()).as_slice()[0];
+        let checksum_byte = Sha256::digest(entropy.as_slice()).as_slice()[0];
 
         // First, create a byte iterator for the given entropy and the first byte of the
         // hash of the entropy that will serve as the checksum (up to 8 bits for biggest
