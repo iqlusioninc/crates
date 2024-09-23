@@ -24,7 +24,7 @@ from a set of 24-words from a preset list, a.k.a. a "mnemonic".
 
 ## Minimum Supported Rust Version
 
-Rust **1.65** or newer.
+Rust **1.81** or newer.
 
 In the future, we reserve the right to change MSRV (i.e. MSRV is out-of-scope
 for this crate's SemVer guarantees), however when we do it will be accompanied by
@@ -32,7 +32,7 @@ a minor version bump.
 
 ## License
 
-Copyright © 2020-2023 iqlusion
+Copyright © 2020-2024 iqlusion
 
 **bip32.rs** is distributed under the terms of either the MIT license
 or the Apache License (Version 2.0), at your option.
@@ -48,13 +48,13 @@ without any additional terms or conditions.
 
 [//]: # (badges)
 
-[crate-image]: https://img.shields.io/crates/v/bip32.svg
+[crate-image]: https://img.shields.io/crates/v/bip32.svg?logo=rust
 [crate-link]: https://crates.io/crates/bip32
 [docs-image]: https://docs.rs/bip32/badge.svg
 [docs-link]: https://docs.rs/bip32/
 [license-image]: https://img.shields.io/badge/license-Apache2.0-blue.svg
 [license-link]: https://github.com/iqlusioninc/crates/blob/main/LICENSE
-[rustc-image]: https://img.shields.io/badge/rustc-1.65+-blue.svg
+[rustc-image]: https://img.shields.io/badge/rustc-1.81+-blue.svg
 [safety-image]: https://img.shields.io/badge/unsafe-forbidden-success.svg
 [safety-link]: https://github.com/rust-secure-code/safety-dance/
 [build-image]: https://github.com/iqlusioninc/crates/actions/workflows/bip32.yml/badge.svg

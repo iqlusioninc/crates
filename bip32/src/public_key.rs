@@ -3,7 +3,7 @@
 use crate::{
     ChainCode, ChildNumber, Error, HmacSha512, KeyFingerprint, PrivateKeyBytes, Result, KEY_SIZE,
 };
-use hmac::Mac;
+use hmac::{KeyInit, Mac};
 use ripemd::Ripemd160;
 use sha2::{Digest, Sha256};
 

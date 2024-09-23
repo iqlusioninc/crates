@@ -1,6 +1,6 @@
 [package]
 name = "bip32"
-version = "0.5.2"
+version = "0.6.0-pre"
 description = """
 BIP32 hierarchical key derivation implemented in a generic, no_std-friendly
 manner. Supports deriving keys using the pure Rust k256 crate or the
@@ -14,21 +14,21 @@ categories = ["cryptography", "no-std"]
 keywords = ["crypto", "bip32", "bip39", "derivation", "mnemonic"]
 readme = "README.md"
 edition  = "2021"
-rust-version = "1.65"
+rust-version = "1.81"
 
 [dependencies]
 bs58 = { version = "0.5", default-features = false, features = ["check"] }
-hmac = { version = "0.12", default-features = false }
+hmac = { version = "=0.13.0-pre.4", default-features = false }
 rand_core = { version = "0.6", default-features = false }
-ripemd = { version = "0.1", default-features = false }
-sha2 = { version = "0.10", default-features = false }
+ripemd = { version = "=0.2.0-pre.4", default-features = false }
+sha2 = { version = "=0.11.0-pre.4", default-features = false }
 subtle = { version = "2", default-features = false }
 zeroize = { version = "1", default-features = false }
 
 # optional dependencies
-k256 = { version = "0.13", optional = true, default-features = false, features = ["ecdsa", "sha256"] }
+k256 = { version = "=0.14.0-pre.2", optional = true, default-features = false, features = ["ecdsa", "sha256"] }
 once_cell = { version = "1", optional = true }
-pbkdf2 = { version = "0.12", optional = true, default-features = false, features = ["hmac"] }
+pbkdf2 = { version = "=0.13.0-pre.1", optional = true, default-features = false, features = ["hmac"] }
 secp256k1-ffi = { package = "secp256k1", version = "0.27", optional = true }
 
 [dev-dependencies]
