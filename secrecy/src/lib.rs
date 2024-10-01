@@ -205,6 +205,12 @@ impl Clone for SecretString {
     }
 }
 
+impl Default for SecretString {
+    fn default() -> SecretString {
+        String::default().into()
+    }
+}
+
 /// Marker trait for secrets which are allowed to be cloned
 pub trait CloneableSecret: Clone + Zeroize {}
 
