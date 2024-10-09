@@ -184,6 +184,28 @@ where
     }
 }
 
+impl<S> Clone for SecretSlice<S>
+where
+    S: CloneableSecret + Zeroize,
+    [S]: Zeroize,
+{
+    fn clone(&self) -> Self {
+        SecretBox {
+            inner_secret: Vec::from(&*self.inner_secret).into_boxed_slice(),
+        }
+    }
+}
+
+impl<S> Default for SecretSlice<S>
+where
+    S: Zeroize,
+    [S]: Zeroize,
+{
+    fn default() -> Self {
+        Vec::new().into()
+    }
+}
+
 /// Secret string type.
 ///
 /// This is a type alias for [`SecretBox<str>`] which supports some helpful trait impls.
@@ -206,13 +228,29 @@ impl Clone for SecretString {
 }
 
 impl Default for SecretString {
-    fn default() -> SecretString {
+    fn default() -> Self {
         String::default().into()
     }
 }
 
 /// Marker trait for secrets which are allowed to be cloned
 pub trait CloneableSecret: Clone + Zeroize {}
+
+// Mark integer primitives as cloneable secrets
+
+impl CloneableSecret for i8 {}
+impl CloneableSecret for i16 {}
+impl CloneableSecret for i32 {}
+impl CloneableSecret for i64 {}
+impl CloneableSecret for i128 {}
+impl CloneableSecret for isize {}
+
+impl CloneableSecret for u8 {}
+impl CloneableSecret for u16 {}
+impl CloneableSecret for u32 {}
+impl CloneableSecret for u64 {}
+impl CloneableSecret for u128 {}
+impl CloneableSecret for usize {}
 
 /// Expose a reference to an inner secret
 pub trait ExposeSecret<S: ?Sized> {
