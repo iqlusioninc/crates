@@ -61,7 +61,7 @@ without any additional terms or conditions.
 
 [//]: # (badges)
 
-[crate-image]: https://img.shields.io/crates/v/secrecy.svg
+[crate-image]: https://img.shields.io/crates/v/secrecy.svg?logo=rust
 [crate-link]: https://crates.io/crates/secrecy
 [docs-image]: https://docs.rs/secrecy/badge.svg
 [docs-link]: https://docs.rs/secrecy/

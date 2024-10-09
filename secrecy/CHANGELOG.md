@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.10.3 (2024-10-09)
+### Added
+- Make integer primitive `SecretSlice`s cloneable ([#1236])
+- Impl `From<&str>` for `SecretString` ([#1237])
+
+[#1236]: https://github.com/iqlusioninc/crates/pull/1236
+[#1237]: https://github.com/iqlusioninc/crates/pull/1237
+
 ## 0.10.2 (2024-09-20)
 ### Added
 - Impl `Deserialize` for `SecretString` ([#1220])
