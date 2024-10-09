@@ -219,6 +219,12 @@ impl From<String> for SecretString {
     }
 }
 
+impl From<&str> for SecretString {
+    fn from(s: &str) -> Self {
+        Self::from(String::from(s))
+    }
+}
+
 impl Clone for SecretString {
     fn clone(&self) -> Self {
         SecretBox {
