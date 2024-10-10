@@ -206,6 +206,23 @@ where
     }
 }
 
+/// A secret array type
+///
+/// This is a type alias for [`SecretBox<[S; N]>``]
+///
+/// Notably it has a [`From<[S; N]>`] impl which is the preferred method for construction.
+pub type SecretArray<S, const N: usize> = SecretBox<[S; N]>;
+
+impl<S, const N: usize> From<[S; N]> for SecretArray<S, N>
+where
+    S: Zeroize,
+    [S; N]: Zeroize,
+{
+    fn from(array: [S; N]) -> Self {
+        Self::from(Box::new(array))
+    }
+}
+
 /// Secret string type.
 ///
 /// This is a type alias for [`SecretBox<str>`] which supports some helpful trait impls.
@@ -257,6 +274,8 @@ impl CloneableSecret for u32 {}
 impl CloneableSecret for u64 {}
 impl CloneableSecret for u128 {}
 impl CloneableSecret for usize {}
+
+impl<const N: usize, T> CloneableSecret for [T; N] where T: CloneableSecret {}
 
 /// Expose a reference to an inner secret
 pub trait ExposeSecret<S: ?Sized> {
