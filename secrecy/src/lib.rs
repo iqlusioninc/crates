@@ -37,12 +37,12 @@
 extern crate alloc;
 
 use alloc::{boxed::Box, string::String, vec::Vec};
+use core::convert::Infallible;
+use core::str::FromStr;
 use core::{
     any,
     fmt::{self, Debug},
 };
-use core::convert::Infallible;
-use core::str::FromStr;
 use zeroize::{Zeroize, ZeroizeOnDrop};
 
 #[cfg(feature = "serde")]
@@ -335,8 +335,8 @@ where
 
 #[cfg(test)]
 mod tests {
-    use core::str::FromStr;
     use crate::{ExposeSecret, SecretString};
+    use core::str::FromStr;
 
     #[test]
     fn test_secret_string_from_str() {
