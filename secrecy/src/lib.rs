@@ -41,7 +41,8 @@ use core::{
     any,
     fmt::{self, Debug},
 };
-
+use core::convert::Infallible;
+use core::str::FromStr;
 use zeroize::{Zeroize, ZeroizeOnDrop};
 
 #[cfg(feature = "serde")]
@@ -225,6 +226,14 @@ impl From<&str> for SecretString {
     }
 }
 
+impl FromStr for SecretString {
+    type Err = Infallible;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        Ok(Self::from(s))
+    }
+}
+
 impl Clone for SecretString {
     fn clone(&self) -> Self {
         SecretBox {
@@ -321,5 +330,17 @@ where
         S: ser::Serializer,
     {
         self.expose_secret().serialize(serializer)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use core::str::FromStr;
+    use crate::{ExposeSecret, SecretString};
+
+    #[test]
+    fn test_secret_string_from_str() {
+        let secret = SecretString::from_str("test").unwrap();
+        assert_eq!(secret.expose_secret(), "test");
     }
 }
