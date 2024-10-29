@@ -267,6 +267,8 @@ impl CloneableSecret for u64 {}
 impl CloneableSecret for u128 {}
 impl CloneableSecret for usize {}
 
+impl<Z: CloneableSecret, const N: usize> CloneableSecret for [Z; N] {}
+
 /// Expose a reference to an inner secret
 pub trait ExposeSecret<S: ?Sized> {
     /// Expose secret: this is the only method providing access to a secret.
