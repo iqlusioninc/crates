@@ -15,7 +15,7 @@ A simple secret-keeping library for Rust.
 
 **secrecy** is a *simple*, safe (i.e. `forbid(unsafe_code)` library which
 provides wrapper types and traits for secret management in Rust, namely the
-`Secret<T>` type for wrapping another value in a "secret cell" which attempts
+`SecretBox<T>` type for wrapping another value in a "secret cell" which attempts
 to limit exposure (only available through a special `ExposeSecret` trait).
 
 This helps to ensure secrets aren't accidentally copied, logged, or otherwise
