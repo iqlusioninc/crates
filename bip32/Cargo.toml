@@ -29,7 +29,7 @@ zeroize = { version = "1", default-features = false }
 k256 = { version = "=0.14.0-pre.2", optional = true, default-features = false, features = ["ecdsa", "sha256"] }
 once_cell = { version = "1", optional = true }
 pbkdf2 = { version = "=0.13.0-pre.1", optional = true, default-features = false, features = ["hmac"] }
-secp256k1-ffi = { package = "secp256k1", version = "0.29", optional = true }
+secp256k1-ffi = { package = "secp256k1", version = "0.29", optional = true, default-features = false }
 
 [dev-dependencies]
 hex-literal = "0.4"
@@ -37,7 +37,7 @@ rand_core = { version = "0.6", features = ["std"] }
 
 [features]
 default = ["bip39", "secp256k1", "std"]
-alloc = ["zeroize/alloc"]
+alloc = ["secp256k1-ffi?/alloc", "zeroize/alloc"]
 bip39 = ["mnemonic", "pbkdf2", "std"]
 mnemonic = ["alloc", "once_cell"]
 secp256k1 = ["k256"]
