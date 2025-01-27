@@ -226,7 +226,7 @@ impl<'a> AsRef<Component<'a>> for Component<'a> {
 }
 
 #[cfg(feature = "alloc")]
-impl<'a> Debug for Component<'a> {
+impl Debug for Component<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "hkd32::Component")?;
 
