@@ -1,6 +1,6 @@
 [package]
 name = "bip32"
-version = "0.6.0-pre.0"
+version = "0.6.0-pre.1"
 description = """
 BIP32 hierarchical key derivation implemented in a generic, no_std-friendly
 manner. Supports deriving keys using the pure Rust k256 crate or the
