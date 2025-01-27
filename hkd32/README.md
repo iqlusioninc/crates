@@ -22,11 +22,11 @@ an initial 32-bytes of input key material.
 
 ## Minimum Supported Rust Version
 
-- Rust **1.60**
+- Rust **1.63**
 
 ## License
 
-Copyright © 2019-2023 iqlusion
+Copyright © 2019-2025 iqlusion
 
 Includes code from the `bip39` crate. Copyright © 2017-2018 Stephen Oliver,
 with contributions by Maciej Hirsz.
@@ -45,13 +45,13 @@ without any additional terms or conditions.
 
 [//]: # (badges)
 
-[crate-image]: https://img.shields.io/crates/v/hkd32.svg
+[crate-image]: https://img.shields.io/crates/v/hkd32.svg?logo=rust
 [crate-link]: https://crates.io/crates/hkd32
 [docs-image]: https://docs.rs/hkd32/badge.svg
 [docs-link]: https://docs.rs/hkd32/
 [license-image]: https://img.shields.io/badge/license-Apache2.0/MIT-blue.svg
 [license-link]: https://github.com/iqlusioninc/crates/blob/main/LICENSE
-[rustc-image]: https://img.shields.io/badge/rustc-1.56+-blue.svg
+[rustc-image]: https://img.shields.io/badge/rustc-1.63+-blue.svg
 [build-image]: https://github.com/iqlusioninc/crates/actions/workflows/hkd32.yml/badge.svg
 [build-link]: https://github.com/iqlusioninc/crates/actions/workflows/hkd32.yml
 
