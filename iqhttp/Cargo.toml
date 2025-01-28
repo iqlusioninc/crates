@@ -16,7 +16,7 @@ edition      = "2021"
 rust-version = "1.63"
 
 [dependencies]
-hyper = "0.14.10"
+hyper = "1.6.0"
 hyper-rustls = { version = "0.22", features = ["rustls-native-certs"] }
 
 # optional dependencies
