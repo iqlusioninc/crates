@@ -32,7 +32,7 @@ a minor version bump.
 
 ## License
 
-Copyright © 2020-2024 iqlusion
+Copyright © 2020-2025 iqlusion
 
 **bip32.rs** is distributed under the terms of either the MIT license
 or the Apache License (Version 2.0), at your option.

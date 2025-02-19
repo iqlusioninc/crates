@@ -45,7 +45,7 @@ possible.
 
 ## License
 
-Copyright © 2019-2024 iqlusion
+Copyright © 2019-2025 iqlusion
 
 **secrecy** is distributed under the terms of either the MIT license
 or the Apache License (Version 2.0), at your option.

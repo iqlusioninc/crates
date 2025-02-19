@@ -40,7 +40,7 @@ Use at your own risk.
 
 ## License
 
-Copyright © 2018-2021 iqlusion
+Copyright © 2018-2025 iqlusion
 
 **subtle-encoding** is distributed under the terms of either the MIT license
 or the Apache License (Version 2.0), at your option.

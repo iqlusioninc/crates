@@ -17,7 +17,7 @@ Rust **1.63**
 
 ## License
 
-Copyright © 2021-2022 iqlusion
+Copyright © 2021-2025 iqlusion
 
 **iqhttp** is distributed under the terms of either the MIT license
 or the Apache License (Version 2.0), at your option.
