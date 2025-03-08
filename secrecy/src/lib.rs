@@ -28,6 +28,14 @@
 //! does *not* receive a corresponding [`Serialize`] impl. If you would like
 //! types of `SecretBox<T>` to be serializable with `serde`, you will need to impl
 //! the [`SerializableSecret`] marker trait on `T`.
+//!
+//! # [JSON Schema](https://json-schema.org) support
+//!
+//! When the `jsonschema` feature of this crate is enabled, the [`SecretBox`] type
+//! will receive a [`JsonSchema`]
+//! ([schemars](https://docs.rs/schemars/latest/schemars/)) impl for all `SecretBox<T>`
+//! types where `T: JsonSchema`. This allows generating JSON Schema documents from
+//! types that are composed of `SecretBox<T>`, such as a configuration struct.
 
 #![no_std]
 #![cfg_attr(docsrs, feature(doc_auto_cfg))]
