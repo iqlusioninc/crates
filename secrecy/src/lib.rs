@@ -48,6 +48,16 @@ use zeroize::{Zeroize, ZeroizeOnDrop};
 #[cfg(feature = "serde")]
 use serde::{de, ser, Deserialize, Serialize};
 
+#[cfg(feature = "jsonschema")]
+use alloc::{
+    borrow::{Cow, ToOwned},
+    format,
+};
+#[cfg(feature = "jsonschema")]
+use core::{concat, module_path};
+#[cfg(feature = "jsonschema")]
+use schemars::{gen::SchemaGenerator, schema::Schema, JsonSchema};
+
 pub use zeroize;
 
 /// Wrapper type for values that contains secrets, which attempts to limit
@@ -332,6 +342,38 @@ where
         S: ser::Serializer,
     {
         self.expose_secret().serialize(serializer)
+    }
+}
+
+#[cfg(feature = "jsonschema")]
+impl JsonSchema for SecretString {
+    fn schema_name() -> String {
+        "SecretString".to_owned()
+    }
+    fn schema_id() -> Cow<'static, str> {
+        Cow::Borrowed(concat!(module_path!(), "::", "SecretString"))
+    }
+    fn json_schema(generator: &mut SchemaGenerator) -> Schema {
+        generator.subschema_for::<String>()
+    }
+}
+
+#[cfg(feature = "jsonschema")]
+impl<T> JsonSchema for SecretBox<T>
+where
+    T: Zeroize + JsonSchema,
+{
+    fn schema_name() -> String {
+        format!("SecretBox_for_{}", T::schema_name())
+    }
+    fn schema_id() -> Cow<'static, str> {
+        Cow::Owned(alloc::format!(
+            concat!(module_path!(), "::", "SecretBox_for_{}"),
+            T::schema_id()
+        ))
+    }
+    fn json_schema(generator: &mut SchemaGenerator) -> Schema {
+        generator.subschema_for::<T>()
     }
 }
 
