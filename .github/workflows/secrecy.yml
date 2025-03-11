@@ -5,6 +5,7 @@ on:
     paths:
       - "secrecy/**"
       - "Cargo.*"
+      - ".github/workflows/secrecy.yml"
   push:
     branches: main
 

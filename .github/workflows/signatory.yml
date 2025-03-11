@@ -5,6 +5,7 @@ on:
     paths:
       - "signatory/**"
       - "Cargo.*"
+      - ".github/workflows/signatory.yml"
   push:
     branches: main
 

@@ -5,6 +5,7 @@ on:
     paths:
       - "hkd32/**"
       - "Cargo.*"
+      - ".github/workflows/hkd32.yml"
   push:
     branches: main
 

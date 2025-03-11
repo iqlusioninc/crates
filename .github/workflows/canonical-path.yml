@@ -5,6 +5,7 @@ on:
     paths:
       - "canonical-path/**"
       - "Cargo.*"
+      - ".github/workflows/canonical-path.yml"
   push:
     branches: main
 

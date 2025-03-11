@@ -5,6 +5,7 @@ on:
     paths:
       - "subtle-encoding/**"
       - "Cargo.*"
+      - ".github/workflows/subtle-encoding.yml"
   push:
     branches: main
 

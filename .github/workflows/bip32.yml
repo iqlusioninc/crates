@@ -6,6 +6,7 @@ on:
       - "bip32/**"
       - "hkd32/**"
       - "Cargo.*"
+      - ".github/workflows/bip32.yml"
   push:
     branches: main
 
