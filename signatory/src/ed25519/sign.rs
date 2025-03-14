@@ -5,7 +5,7 @@ use crate::{key::store::GeneratePkcs8, Error, Result};
 use alloc::boxed::Box;
 use core::fmt;
 use ed25519_dalek::SECRET_KEY_LENGTH;
-use rand_core::{OsRng, RngCore};
+use rand_core::{OsRng, TryRngCore};
 use signature::Signer;
 use zeroize::Zeroizing;
 
@@ -55,7 +55,7 @@ impl GeneratePkcs8 for SigningKey {
     /// Randomly generate a new PKCS#8 private key.
     fn generate_pkcs8() -> pkcs8::SecretDocument {
         let mut private_key = Zeroizing::new([0u8; SECRET_KEY_LENGTH]);
-        OsRng.fill_bytes(&mut *private_key);
+        OsRng.try_fill_bytes(&mut *private_key).unwrap();
         pkcs8::SecretDocument::encode_msg(&pkcs8::PrivateKeyInfo::new(ALGORITHM_ID, &*private_key))
             .expect("DER encoding error")
     }
