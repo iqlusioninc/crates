@@ -19,3 +19,4 @@ contributions under the terms of the [Apache License, Version 2.0]
 * Yin Guanhao ([@sopium](https://github.com/sopium))
 * Will Speak ([@iwillspeak](https://github.com/iwillspeak))
 * Zach Reizner ([@zachreizner](https://github.com/zachreizner))
+* Rich Clubb ([@richClubb](https://github.com/richClubb))
