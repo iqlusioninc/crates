@@ -38,6 +38,7 @@ extern crate alloc;
 
 use alloc::{boxed::Box, string::String, vec::Vec};
 use core::convert::Infallible;
+use core::mem;
 use core::str::FromStr;
 use core::{
     any,
@@ -207,6 +208,28 @@ where
     }
 }
 
+impl<S, const N: usize> TryFrom<SecretSlice<S>> for SecretBox<[S; N]>
+where
+    S: Zeroize,
+    [S]: Zeroize,
+{
+    type Error = SecretSlice<S>;
+
+    fn try_from(mut value: SecretSlice<S>) -> Result<Self, Self::Error> {
+        let mut temp: Box<[S]> = Box::new([]);
+        mem::swap(&mut temp, &mut value.inner_secret);
+
+        match TryInto::<Box<[S; N]>>::try_into(temp) {
+            Ok(inner_secret) => Ok(SecretBox { inner_secret }),
+            Err(mut old) => {
+                // Put the secret back
+                mem::swap(&mut old, &mut value.inner_secret);
+                Err(value)
+            }
+        }
+    }
+}
+
 /// Secret string type.
 ///
 /// This is a type alias for [`SecretBox<str>`] which supports some helpful trait impls.
@@ -337,12 +360,30 @@ where
 
 #[cfg(test)]
 mod tests {
-    use crate::{ExposeSecret, SecretString};
+    use crate::{ExposeSecret, SecretBox, SecretSlice, SecretString};
+    use alloc::boxed::Box;
     use core::str::FromStr;
 
     #[test]
     fn test_secret_string_from_str() {
         let secret = SecretString::from_str("test").unwrap();
         assert_eq!(secret.expose_secret(), "test");
+    }
+
+    #[test]
+    fn secret_slice_to_array() {
+        let secret = SecretSlice::new(Box::new([5, 6, 7, 8, 9u8]));
+        assert_eq!(secret.expose_secret(), &[5, 6, 7, 8, 9]);
+
+        // Failure when the slice is a different size from the array.
+        let res = TryInto::<SecretBox<[u8; 3]>>::try_into(secret);
+        assert!(res.is_err());
+        // We get the original secret back
+        let secret = res.unwrap_err();
+        assert_eq!(secret.expose_secret(), &[5, 6, 7, 8, 9]);
+
+        // Success when the array is the same size as the slice
+        let secret_array: SecretBox<[u8; 5]> = secret.try_into().unwrap();
+        assert_eq!(secret_array.expose_secret(), &[5, 6, 7, 8, 9]);
     }
 }
