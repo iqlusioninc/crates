@@ -11,7 +11,7 @@ use core::{
 /// Key names.
 ///
 /// These are constrained to the following characters:
-/// - Letters: `a-z`, A-Z`
+/// - Letters: `a-z`, `A-Z`
 /// - Numbers: `0-9`
 /// - Delimiters: `-`, `_`
 #[derive(Clone, Debug, Eq, Hash, PartialEq, PartialOrd, Ord)]
