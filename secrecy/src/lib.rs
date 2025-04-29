@@ -29,9 +29,9 @@
 //! types of `SecretBox<T>` to be serializable with `serde`, you will need to impl
 //! the [`SerializableSecret`] marker trait on `T`.
 
-#![no_std]
+#![cfg_attr(not(feature = "test-allocator"), no_std)]
 #![cfg_attr(docsrs, feature(doc_auto_cfg))]
-#![forbid(unsafe_code)]
+#![deny(unsafe_code)]
 #![warn(missing_docs, rust_2018_idioms, unused_qualifications)]
 
 extern crate alloc;
@@ -344,5 +344,60 @@ mod tests {
     fn test_secret_string_from_str() {
         let secret = SecretString::from_str("test").unwrap();
         assert_eq!(secret.expose_secret(), "test");
+    }
+
+    #[cfg(feature = "test-allocator")]
+    mod secret_with_custom_allocator {
+
+        use super::super::*;
+        use core::ptr;
+
+        use std::alloc::{GlobalAlloc, Layout, System};
+        // Allocator that leaks all memory it allocates, thus leaving the memory open for inspection.
+        struct UnfreeAllocator;
+        #[allow(unsafe_code)]
+        unsafe impl GlobalAlloc for UnfreeAllocator {
+            unsafe fn alloc(&self, layout: Layout) -> *mut u8 {
+                System.alloc(layout)
+            }
+            unsafe fn dealloc(&self, ptr: *mut u8, layout: Layout) {
+                let _ = (ptr, layout);
+            }
+        }
+
+        #[global_allocator]
+        static UNFREE_ALLOCATOR: UnfreeAllocator = UnfreeAllocator;
+
+        #[test]
+        #[allow(unsafe_code, unused_assignments)]
+        fn clears_memory_when_scope_ends() {
+            let mut ptr: *const u128 = ptr::null();
+            unsafe {
+                {
+                    let secret = SecretBox::init_with(|| 0xdeadbeef_u128);
+                    let secretboxptr = &secret as *const SecretBox<u128>;
+                    // Points to the inner_secret of the `SecretBox`
+                    let boxptr = secretboxptr as *const *const u128;
+                    // Pointer to actual heap data
+                    ptr = *boxptr;
+
+                    assert!(!ptr.is_null(), "ptr is null before drop, not ok");
+                    let bytes: &[u8] =
+                        core::slice::from_raw_parts(ptr as *const u8, size_of::<u128>());
+                    assert!(
+                        !bytes.iter().all(|&b| b == 0),
+                        "Expected non-zero data, instead found 0s: {:X?}",
+                        bytes
+                    );
+                }
+                // Check that the memory is cleared after the scope ends
+                let bytes: &[u8] = core::slice::from_raw_parts(ptr as *const u8, size_of::<u128>());
+                assert!(
+                    bytes.iter().all(|&b| b == 0),
+                    "Expected zeroized memory, instead found: {:X?}",
+                    bytes
+                );
+            }
+        }
     }
 }
