@@ -350,6 +350,7 @@ mod tests {
     mod secret_with_custom_allocator {
 
         use super::super::*;
+        use core::mem::size_of;
         use core::ptr;
 
         use std::alloc::{GlobalAlloc, Layout, System};
