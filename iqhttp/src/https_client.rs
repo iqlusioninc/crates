@@ -2,10 +2,10 @@
 
 use crate::{Path, Query, Result, USER_AGENT};
 use hyper::{
+    Body, Request, Response,
     body::Buf,
     client::{Client, HttpConnector},
     header::{self, HeaderMap, HeaderName, HeaderValue},
-    Body, Request, Response,
 };
 use hyper_rustls::HttpsConnector;
 

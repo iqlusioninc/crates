@@ -6,7 +6,7 @@
 //! The `KeyMaterial` type is used to represent both input and output key
 //! material, and is the primary type useful for deriving other keys.
 
-use crate::{path::Path, Error, KEY_SIZE};
+use crate::{Error, KEY_SIZE, path::Path};
 use hmac::{Hmac, Mac};
 use rand_core::{CryptoRng, RngCore};
 use sha2::Sha512;

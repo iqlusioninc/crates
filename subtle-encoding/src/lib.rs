@@ -41,4 +41,4 @@ pub use crate::encoding::Encoding;
 pub use crate::error::Error;
 #[cfg(feature = "hex")]
 pub use crate::hex::Hex;
-pub use crate::identity::{Identity, IDENTITY};
+pub use crate::identity::{IDENTITY, Identity};

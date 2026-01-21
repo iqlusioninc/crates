@@ -21,7 +21,7 @@
 
 use super::Error;
 #[cfg(feature = "alloc")]
-use crate::{pathbuf::PathBuf, DELIMITER};
+use crate::{DELIMITER, pathbuf::PathBuf};
 #[cfg(feature = "alloc")]
 use alloc::{str, string::String, vec::Vec};
 #[cfg(feature = "alloc")]
@@ -202,11 +202,7 @@ impl<'a> Component<'a> {
             .map(String::from)
             .map_err(|_| Error)?;
 
-        if s.is_ascii() {
-            Ok(s)
-        } else {
-            Err(Error)
-        }
+        if s.is_ascii() { Ok(s) } else { Err(Error) }
     }
 
     /// Serialize this component as a length-prefixed bytestring.

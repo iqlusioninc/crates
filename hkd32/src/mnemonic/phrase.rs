@@ -4,7 +4,7 @@ use super::{
     bits::{BitWriter, IterExt},
     language::Language,
 };
-use crate::{Error, KeyMaterial, Path, KEY_SIZE};
+use crate::{Error, KEY_SIZE, KeyMaterial, Path};
 use alloc::string::String;
 use rand_core::{CryptoRng, RngCore};
 use sha2::{Digest, Sha256};
