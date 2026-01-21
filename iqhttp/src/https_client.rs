@@ -104,7 +104,7 @@ impl HttpsClient {
     }
 
     /// Perform HTTP GET request and return the response body.
-    pub async fn get_body(&self, path: &Path, query: &Query) -> Result<impl Buf> {
+    pub async fn get_body(&self, path: &Path, query: &Query) -> Result<impl Buf + use<>> {
         // TODO(tarcieri): timeouts
         let response = self.get(path, query).await?;
         Ok(hyper::body::aggregate(response.into_body()).await?)

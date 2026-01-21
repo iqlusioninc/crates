@@ -49,7 +49,7 @@ impl std::error::Error for Error {}
 
 /// Assert that the provided condition is true, or else return the given error
 macro_rules! ensure {
-    ($condition:expr, $err:path) => {
+    ($condition:expr_2021, $err:path) => {
         if !($condition) {
             return Err($err);
         }
