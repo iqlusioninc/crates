@@ -91,7 +91,7 @@ mod polymod {
 
         pub fn input_byte(&mut self, byte: u8) {
             let b = (self.0 >> 25) as u8;
-            self.0 = (self.0 & 0x1ff_ffff) << 5 ^ u32::from(byte);
+            self.0 = ((self.0 & 0x1ff_ffff) << 5) ^ u32::from(byte);
 
             for (i, c) in COEFFICIENTS.iter().enumerate() {
                 if (b >> i) & 1 == 1 {
