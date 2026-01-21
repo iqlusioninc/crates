@@ -3,9 +3,9 @@
 #![cfg(feature = "secp256k1")]
 
 use signatory::{
+    FsKeyStore, GeneratePkcs8, KeyName, KeyRing,
     ecdsa::secp256k1::{Signature, SigningKey},
     signature::{Signer, Verifier},
-    FsKeyStore, GeneratePkcs8, KeyName, KeyRing,
 };
 
 /// Integration test for loading a key from a keystore
@@ -27,7 +27,9 @@ fn integration() {
 
     let example_message = "Hello, world!";
     let signature: Signature = signing_key.sign(example_message.as_bytes());
-    assert!(verifying_key
-        .verify(example_message.as_bytes(), &signature)
-        .is_ok());
+    assert!(
+        verifying_key
+            .verify(example_message.as_bytes(), &signature)
+            .is_ok()
+    );
 }

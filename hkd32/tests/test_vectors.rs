@@ -18,8 +18,7 @@ fn test_key() -> KeyMaterial {
 #[cfg(feature = "mnemonic")]
 fn test_mnemonic() -> mnemonic::Phrase {
     // This phrase is the BIP39 equipvalent of `test_key()` above
-    let bip39_phrase: &str =
-        "abandon amount liar amount expire adjust cage candy arch gather drum bullet \
+    let bip39_phrase: &str = "abandon amount liar amount expire adjust cage candy arch gather drum bullet \
          absurd math era live bid rhythm alien crouch range attend journey unaware";
 
     mnemonic::Phrase::new(bip39_phrase, Default::default()).unwrap()

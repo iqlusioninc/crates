@@ -5,7 +5,7 @@
 /// Annotate fields with `#[serde(with = "iqhttp::serializers::uri)]` to use these.
 pub mod uri {
     use crate::Uri;
-    use serde::{de, ser, Deserialize, Serialize};
+    use serde::{Deserialize, Serialize, de, ser};
 
     /// Deserialize [`Uri`].
     pub fn deserialize<'de, D>(deserializer: D) -> Result<Uri, D::Error>
@@ -31,7 +31,7 @@ pub mod uri {
 /// Annotate fields with `#[serde(with = "iqhttp::serializers::uri_optional)]` to use these.
 pub mod uri_optional {
     use crate::Uri;
-    use serde::{de, ser, Deserialize};
+    use serde::{Deserialize, de, ser};
 
     /// Deserialize an optional [`Uri`].
     pub fn deserialize<'de, D>(deserializer: D) -> Result<Option<Uri>, D::Error>

@@ -12,7 +12,7 @@ pub mod secp256k1;
 mod keyring;
 
 pub use self::keyring::KeyRing;
-pub use ecdsa::{elliptic_curve, Signature};
+pub use ecdsa::{Signature, elliptic_curve};
 
 #[cfg(feature = "nistp256")]
 pub use {self::nistp256::NistP256Signer, p256::NistP256};

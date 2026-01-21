@@ -4,8 +4,8 @@
 //! This type is only available when the `alloc` feature is enabled.
 
 use crate::{
+    DELIMITER, Error,
     path::{Component, Path},
-    Error, DELIMITER,
 };
 use alloc::{borrow::ToOwned, str::FromStr, vec::Vec};
 use core::fmt::{self, Debug};

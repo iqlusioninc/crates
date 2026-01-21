@@ -9,8 +9,8 @@ repository  = "https://github.com/iqlusioninc/crates/tree/main/canonical-path"
 readme      = "README.md"
 categories  = ["filesystem"]
 keywords    = ["filesystem", "path", "canonicalization"]
-edition     = "2021"
-rust-version = "1.63"
+edition     = "2024"
+rust-version = "1.85"
 
 [badges]
 maintenance = { status = "passively-maintained" }

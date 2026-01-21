@@ -300,7 +300,7 @@ impl CanonicalPath {
     where
         P: AsRef<Path> + ?Sized,
     {
-        &*(path.as_ref() as *const Path as *const CanonicalPath)
+        unsafe { &*(path.as_ref() as *const Path as *const CanonicalPath) }
     }
 
     /// Convert a canonical path reference into an owned `CanonicalPathBuf`

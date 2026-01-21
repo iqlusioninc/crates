@@ -3,8 +3,8 @@
 pub use k256::ecdsa::{Signature, VerifyingKey};
 
 use crate::{
-    key::{ring::LoadPkcs8, store::GeneratePkcs8},
     Error, KeyHandle, Map, Result,
+    key::{ring::LoadPkcs8, store::GeneratePkcs8},
 };
 use alloc::boxed::Box;
 use core::fmt;

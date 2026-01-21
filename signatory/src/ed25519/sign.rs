@@ -1,7 +1,7 @@
 //! Ed25519 keys.
 
-use super::{Signature, VerifyingKey, ALGORITHM_ID, ALGORITHM_OID};
-use crate::{key::store::GeneratePkcs8, Error, Result};
+use super::{ALGORITHM_ID, ALGORITHM_OID, Signature, VerifyingKey};
+use crate::{Error, Result, key::store::GeneratePkcs8};
 use alloc::boxed::Box;
 use core::fmt;
 use ed25519_dalek::SECRET_KEY_LENGTH;

@@ -2,10 +2,10 @@
 
 use crate::{Path, Query, Result, USER_AGENT};
 use hyper::{
+    Body, Request, Response,
     body::Buf,
     client::{Client, HttpConnector},
     header::{self, HeaderMap, HeaderName, HeaderValue},
-    Body, Request, Response,
 };
 use hyper_rustls::HttpsConnector;
 
@@ -104,7 +104,7 @@ impl HttpsClient {
     }
 
     /// Perform HTTP GET request and return the response body.
-    pub async fn get_body(&self, path: &Path, query: &Query) -> Result<impl Buf> {
+    pub async fn get_body(&self, path: &Path, query: &Query) -> Result<impl Buf + use<>> {
         // TODO(tarcieri): timeouts
         let response = self.get(path, query).await?;
         Ok(hyper::body::aggregate(response.into_body()).await?)

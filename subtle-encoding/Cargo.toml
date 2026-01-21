@@ -14,8 +14,8 @@ repository  = "https://github.com/iqlusioninc/crates/tree/main/subtle-encoding"
 readme      = "README.md"
 categories  = ["cryptography", "encoding", "no-std"]
 keywords    = ["base64", "bech32", "constant-time", "hex", "security"]
-edition     = "2021"
-rust-version = "1.60"
+edition     = "2024"
+rust-version = "1.85"
 
 [dependencies.zeroize]
 version = "1"

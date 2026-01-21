@@ -11,7 +11,7 @@ use zeroize::Zeroize;
 mod base32;
 mod checksum;
 
-use self::checksum::{Checksum, CHECKSUM_SIZE};
+use self::checksum::{CHECKSUM_SIZE, Checksum};
 use crate::error::Error;
 use alloc::{string::String, vec::Vec};
 
@@ -256,43 +256,52 @@ mod tests {
             encoded: "A12UEL5L",
             hrp: "a",
             bytes: &[],
-            upper_case: true
+            upper_case: true,
         },
         TestVector {
             encoded: "a12uel5l",
             hrp: "a",
             bytes: &[],
-            upper_case: false
+            upper_case: false,
         },
         TestVector {
             encoded: "an83characterlonghumanreadablepartthatcontainsthenumber1andtheexcludedcharactersbio1tt5tgs",
             hrp: "an83characterlonghumanreadablepartthatcontainsthenumber1andtheexcludedcharactersbio",
             bytes: &[],
-            upper_case: false
+            upper_case: false,
         },
         TestVector {
             hrp: "abcdef",
-            bytes: &[0, 68, 50, 20, 199, 66, 84, 182, 53, 207, 132, 101, 58, 86, 215, 198, 117, 190, 119, 223],
+            bytes: &[
+                0, 68, 50, 20, 199, 66, 84, 182, 53, 207, 132, 101, 58, 86, 215, 198, 117, 190,
+                119, 223,
+            ],
             encoded: "abcdef1qpzry9x8gf2tvdw0s3jn54khce6mua7lmqqqxw",
-            upper_case: false
+            upper_case: false,
         },
         TestVector {
             encoded: "11qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqc8247j",
             hrp: "1",
-            bytes: &[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            upper_case: false
+            bytes: &[
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            ],
+            upper_case: false,
         },
         TestVector {
             encoded: "split1checkupstagehandshakeupstreamerranterredcaperred2y9e3w",
             hrp: "split",
-            bytes: &[197, 243, 139, 112, 48, 95, 81, 155, 246, 109, 133, 251, 108, 240, 48, 88, 243, 221, 228, 99, 236, 215, 145, 143, 45, 199, 67, 145, 143, 45],
-            upper_case: false
+            bytes: &[
+                197, 243, 139, 112, 48, 95, 81, 155, 246, 109, 133, 251, 108, 240, 48, 88, 243,
+                221, 228, 99, 236, 215, 145, 143, 45, 199, 67, 145, 143, 45,
+            ],
+            upper_case: false,
         },
         TestVector {
             encoded: "?1ezyfcl",
             hrp: "?",
             bytes: &[],
-            upper_case: false
+            upper_case: false,
         },
     ];
 

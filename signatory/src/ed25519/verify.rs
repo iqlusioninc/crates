@@ -1,9 +1,9 @@
 //! Ed25519 keys.
 
-use super::{Signature, ALGORITHM_ID, ALGORITHM_OID};
+use super::{ALGORITHM_ID, ALGORITHM_OID, Signature};
 use crate::{Error, Result};
 use core::cmp::Ordering;
-use pkcs8::{der::asn1, EncodePublicKey};
+use pkcs8::{EncodePublicKey, der::asn1};
 use signature::Verifier;
 
 /// Ed25519 verifying key.
