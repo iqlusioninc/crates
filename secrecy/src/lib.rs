@@ -28,6 +28,14 @@
 //! does *not* receive a corresponding [`Serialize`] impl. If you would like
 //! types of `SecretBox<T>` to be serializable with `serde`, you will need to impl
 //! the [`SerializableSecret`] marker trait on `T`.
+//!
+//! # [JSON Schema](https://json-schema.org) support
+//!
+//! When the `jsonschema` feature of this crate is enabled, the [`SecretBox`] type
+//! will receive a [`JsonSchema`]
+//! ([schemars](https://docs.rs/schemars/latest/schemars/)) impl for all `SecretBox<T>`
+//! types where `T: JsonSchema`. This allows generating JSON Schema documents from
+//! types that are composed of `SecretBox<T>`, such as a configuration struct.
 
 #![no_std]
 #![cfg_attr(docsrs, feature(doc_auto_cfg))]
@@ -47,6 +55,16 @@ use zeroize::{Zeroize, ZeroizeOnDrop};
 
 #[cfg(feature = "serde")]
 use serde::{de, ser, Deserialize, Serialize};
+
+#[cfg(feature = "jsonschema")]
+use alloc::{
+    borrow::{Cow, ToOwned},
+    format,
+};
+#[cfg(feature = "jsonschema")]
+use core::{concat, module_path};
+#[cfg(feature = "jsonschema")]
+use schemars::{gen::SchemaGenerator, schema::Schema, JsonSchema};
 
 pub use zeroize;
 
@@ -332,6 +350,38 @@ where
         S: ser::Serializer,
     {
         self.expose_secret().serialize(serializer)
+    }
+}
+
+#[cfg(feature = "jsonschema")]
+impl JsonSchema for SecretString {
+    fn schema_name() -> String {
+        "SecretString".to_owned()
+    }
+    fn schema_id() -> Cow<'static, str> {
+        Cow::Borrowed(concat!(module_path!(), "::", "SecretString"))
+    }
+    fn json_schema(generator: &mut SchemaGenerator) -> Schema {
+        generator.subschema_for::<String>()
+    }
+}
+
+#[cfg(feature = "jsonschema")]
+impl<T> JsonSchema for SecretBox<T>
+where
+    T: Zeroize + JsonSchema,
+{
+    fn schema_name() -> String {
+        format!("SecretBox_for_{}", T::schema_name())
+    }
+    fn schema_id() -> Cow<'static, str> {
+        Cow::Owned(alloc::format!(
+            concat!(module_path!(), "::", "SecretBox_for_{}"),
+            T::schema_id()
+        ))
+    }
+    fn json_schema(generator: &mut SchemaGenerator) -> Schema {
+        generator.subschema_for::<T>()
     }
 }
 
