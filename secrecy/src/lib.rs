@@ -36,9 +36,11 @@
 
 extern crate alloc;
 
+use alloc::string::FromUtf8Error as _FromUtf8Error;
 use alloc::{boxed::Box, string::String, vec::Vec};
 use core::convert::Infallible;
-use core::str::FromStr;
+use core::mem::take;
+use core::str::{FromStr, Utf8Error};
 use core::{
     any,
     fmt::{self, Debug},
@@ -128,6 +130,70 @@ impl<S: Zeroize + Clone> SecretBox<S> {
         };
         data.zeroize();
         Ok(secret)
+    }
+}
+
+/// Error return from [`SecretString::from_utf8`] or [`SecretString::from_utf8_len`].
+///
+/// This is like [`FromUtf8Error`] except it zeroizes its buffer on [`Drop`].
+///
+/// [`FromUtf8Error`]: _FromUtf8Error
+pub struct FromUtf8Error {
+    inner: Option<_FromUtf8Error>,
+}
+
+impl FromUtf8Error {
+    fn new(inner: _FromUtf8Error) -> Self {
+        FromUtf8Error { inner: Some(inner) }
+    }
+
+    /// See [`utf8_error`][_FromUtf8Error::utf8_error].
+    pub fn utf8_error(&self) -> Utf8Error {
+        let Some(err) = &self.inner else {
+            unreachable!()
+        };
+        err.utf8_error()
+    }
+
+    /// See [`into_bytes`][_FromUtf8Error::into_bytes].
+    pub fn into_bytes(mut self) -> Vec<u8> {
+        // Panic safety: `take` is only called here and on `Drop`.
+        let Some(err) = self.inner.take() else {
+            unreachable!()
+        };
+        err.into_bytes()
+    }
+}
+
+impl Drop for FromUtf8Error {
+    fn drop(&mut self) {
+        if let Some(inner) = self.inner.take() {
+            inner.into_bytes().zeroize();
+        }
+    }
+}
+
+impl SecretBox<str> {
+    /// See [`String::from_utf8`].
+    pub fn from_utf8(mut other: SecretBox<[u8]>) -> Result<Self, FromUtf8Error> {
+        Self::try_from(take(&mut other.inner_secret).into_vec())
+    }
+
+    /// Like [`String::from_utf8`], except the buffer is truncated to `len` first.
+    pub fn from_utf8_len(mut other: SecretBox<[u8]>, len: usize) -> Result<Self, FromUtf8Error> {
+        let mut buf = take(&mut other.inner_secret).into_vec();
+        buf.truncate(len);
+        Self::try_from(buf)
+    }
+}
+
+impl TryFrom<Vec<u8>> for SecretBox<str> {
+    type Error = FromUtf8Error;
+
+    fn try_from(value: Vec<u8>) -> Result<Self, Self::Error> {
+        String::from_utf8(value)
+            .map(SecretBox::from)
+            .map_err(FromUtf8Error::new)
     }
 }
 
