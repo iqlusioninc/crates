@@ -149,6 +149,7 @@ impl FromUtf8Error {
 
     /// See [`utf8_error`][_FromUtf8Error::utf8_error].
     pub fn utf8_error(&self) -> Utf8Error {
+        // Panic safety: `take` is only called on moves.
         let Some(err) = &self.inner else {
             unreachable!()
         };
