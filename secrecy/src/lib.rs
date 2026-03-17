@@ -36,14 +36,17 @@
 
 extern crate alloc;
 
-use alloc::string;
-use alloc::{boxed::Box, string::String, vec::Vec};
-use core::convert::Infallible;
-use core::mem::take;
-use core::str::{FromStr, Utf8Error};
+use alloc::{
+    boxed::Box,
+    string::{self, String},
+    vec::Vec,
+};
 use core::{
     any,
+    convert::Infallible,
     fmt::{self, Debug},
+    mem,
+    str::{FromStr, Utf8Error},
 };
 use zeroize::{Zeroize, ZeroizeOnDrop};
 
@@ -188,7 +191,7 @@ impl SecretBox<str> {
     /// ownership of the backing buffer. Note that the result will have the whole buffer’s
     /// contents; to perform truncation, see [`SecretString::from_utf8_box_len`].
     pub fn from_utf8_box(mut other: SecretBox<[u8]>) -> Result<Self, FromUtf8Error> {
-        Self::from_utf8(take(&mut other.inner_secret).into_vec())
+        Self::from_utf8(mem::take(&mut other.inner_secret).into_vec())
     }
 
     /// Create a [`SecretString`] from a portion of a <code>[SecretBox]&lt;\[u8]&gt;</code>.
@@ -202,7 +205,7 @@ impl SecretBox<str> {
         mut other: SecretBox<[u8]>,
         len: usize,
     ) -> Result<Self, FromUtf8Error> {
-        let mut buf = take(&mut other.inner_secret).into_vec();
+        let mut buf = mem::take(&mut other.inner_secret).into_vec();
         buf.truncate(len);
         Self::from_utf8(buf)
     }
