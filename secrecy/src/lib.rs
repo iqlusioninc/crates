@@ -181,7 +181,7 @@ impl SecretBox<str> {
     /// See [`String::from_utf8`].
     pub fn from_utf8(buf: Vec<u8>) -> Result<Self, FromUtf8Error> {
         String::from_utf8(buf)
-            .map(SecretBox::from)
+            .map(Self::from)
             .map_err(FromUtf8Error::new)
     }
 
