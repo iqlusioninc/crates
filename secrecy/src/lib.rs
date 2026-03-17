@@ -36,7 +36,7 @@
 
 extern crate alloc;
 
-use alloc::string::FromUtf8Error as _FromUtf8Error;
+use alloc::string;
 use alloc::{boxed::Box, string::String, vec::Vec};
 use core::convert::Infallible;
 use core::mem::take;
@@ -133,21 +133,19 @@ impl<S: Zeroize + Clone> SecretBox<S> {
     }
 }
 
-/// Error return from [`SecretString::from_utf8`] or [`SecretString::from_utf8_len`].
+/// A possible error value when creating a [`SecretString`] from a UTF-8 byte vector.
 ///
-/// This is like [`FromUtf8Error`] except it zeroizes its buffer on [`Drop`].
-///
-/// [`FromUtf8Error`]: _FromUtf8Error
+/// This is like [`string::FromUtf8Error`] except it zeroizes its buffer on [`Drop`].
 pub struct FromUtf8Error {
-    inner: Option<_FromUtf8Error>,
+    inner: Option<string::FromUtf8Error>,
 }
 
 impl FromUtf8Error {
-    fn new(inner: _FromUtf8Error) -> Self {
+    fn new(inner: string::FromUtf8Error) -> Self {
         FromUtf8Error { inner: Some(inner) }
     }
 
-    /// See [`utf8_error`][_FromUtf8Error::utf8_error].
+    /// See [`string::FromUtf8Error::utf8_error`].
     pub fn utf8_error(&self) -> Utf8Error {
         // Panic safety: `take` is only called on moves.
         let Some(err) = &self.inner else {
@@ -156,7 +154,7 @@ impl FromUtf8Error {
         err.utf8_error()
     }
 
-    /// See [`into_bytes`][_FromUtf8Error::into_bytes].
+    /// See [`string::FromUtf8Error::into_bytes`].
     pub fn into_bytes(mut self) -> Vec<u8> {
         // Panic safety: `take` is only called here and on `Drop`.
         let Some(err) = self.inner.take() else {
@@ -175,26 +173,37 @@ impl Drop for FromUtf8Error {
 }
 
 impl SecretBox<str> {
+    /// Create a [`SecretString`] from a UTF-8 byte buffer.
+    ///
     /// See [`String::from_utf8`].
-    pub fn from_utf8(mut other: SecretBox<[u8]>) -> Result<Self, FromUtf8Error> {
-        Self::try_from(take(&mut other.inner_secret).into_vec())
-    }
-
-    /// Like [`String::from_utf8`], except the buffer is truncated to `len` first.
-    pub fn from_utf8_len(mut other: SecretBox<[u8]>, len: usize) -> Result<Self, FromUtf8Error> {
-        let mut buf = take(&mut other.inner_secret).into_vec();
-        buf.truncate(len);
-        Self::try_from(buf)
-    }
-}
-
-impl TryFrom<Vec<u8>> for SecretBox<str> {
-    type Error = FromUtf8Error;
-
-    fn try_from(value: Vec<u8>) -> Result<Self, Self::Error> {
-        String::from_utf8(value)
+    pub fn from_utf8(buf: Vec<u8>) -> Result<Self, FromUtf8Error> {
+        String::from_utf8(buf)
             .map(SecretBox::from)
             .map_err(FromUtf8Error::new)
+    }
+
+    /// Create a [`SecretString`] from a <code>[SecretBox]&lt;\[u8]&gt;</code>.
+    ///
+    /// This works like [`String::from_utf8`], i.e., it does not allocate but rather takes
+    /// ownership of the backing buffer. Note that the result will have the whole buffer’s
+    /// contents; to perform truncation, see [`SecretString::from_utf8_box_len`].
+    pub fn from_utf8_box(mut other: SecretBox<[u8]>) -> Result<Self, FromUtf8Error> {
+        Self::from_utf8(take(&mut other.inner_secret).into_vec())
+    }
+
+    /// Create a [`SecretString`] from a portion of a <code>[SecretBox]&lt;\[u8]&gt;</code>.
+    ///
+    /// This works like [`String::from_utf8`], except that the buffer is truncated to the specified
+    /// length before the string is created. Note that the allocation is not resized; if the buffer
+    /// is much larger than the resulting string, this is wasteful, and it is probably better to
+    /// call [`SecretString::from`] on the slice to make a new allocation with only the needed size.
+    pub fn from_utf8_box_len(
+        mut other: SecretBox<[u8]>,
+        len: usize,
+    ) -> Result<Self, FromUtf8Error> {
+        let mut buf = take(&mut other.inner_secret).into_vec();
+        buf.truncate(len);
+        Self::from_utf8(buf)
     }
 }
 
