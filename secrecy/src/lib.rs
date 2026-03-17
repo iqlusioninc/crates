@@ -196,7 +196,8 @@ impl SecretBox<str> {
     /// This works like [`String::from_utf8`], except that the buffer is truncated to the specified
     /// length before the string is created. Note that the allocation is not resized; if the buffer
     /// is much larger than the resulting string, this is wasteful, and it is probably better to
-    /// call [`SecretString::from`] on the slice to make a new allocation with only the needed size.
+    /// call [`str::from_utf8`] on the slice to make a new allocation with only the needed size, and
+    /// then pass that to [`SecretString::from`].
     pub fn from_utf8_box_len(
         mut other: SecretBox<[u8]>,
         len: usize,
