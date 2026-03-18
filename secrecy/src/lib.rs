@@ -291,22 +291,19 @@ impl FromUtf8Error {
         FromUtf8Error { inner: Some(inner) }
     }
 
+    /// See [`string::FromUtf8Error::as_bytes`].
+    pub fn as_bytes(&self) -> &[u8] {
+        self.inner.as_ref().expect("unreachable").as_bytes()
+    }
+
     /// See [`string::FromUtf8Error::utf8_error`].
     pub fn utf8_error(&self) -> Utf8Error {
-        // Panic safety: `take` is only called on moves.
-        let Some(err) = &self.inner else {
-            unreachable!()
-        };
-        err.utf8_error()
+        self.inner.as_ref().expect("unreachable").utf8_error()
     }
 
     /// See [`string::FromUtf8Error::into_bytes`].
     pub fn into_bytes(mut self) -> Vec<u8> {
-        // Panic safety: `take` is only called here and on `Drop`.
-        let Some(err) = self.inner.take() else {
-            unreachable!()
-        };
-        err.into_bytes()
+        self.inner.take().expect("unreachable").into_bytes()
     }
 }
 
@@ -431,7 +428,7 @@ where
 mod tests {
     use alloc::vec;
 
-    use crate::{ExposeSecret, SecretString};
+    use crate::{ExposeSecret, SecretBox, SecretString};
     use core::str::FromStr;
 
     #[test]
@@ -442,8 +439,11 @@ mod tests {
 
     #[test]
     fn test_secret_string_from_utf8() {
-        let buf = vec![0u8];
+        let buf = vec![0];
         let secret = SecretString::from_utf8(buf).unwrap();
         assert_eq!(secret.expose_secret(), "\0");
+        let buf = SecretBox::from(vec![0x80]);
+        let err = SecretString::from_utf8_box(buf).unwrap_err();
+        assert_eq!(err.as_bytes(), &[0x80]);
     }
 }
