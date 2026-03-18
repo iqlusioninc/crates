@@ -231,7 +231,9 @@ pub struct FromUtf8Error {
 impl SecretString {
     /// Create a [`SecretString`] from a UTF-8 byte buffer.
     ///
-    /// See [`String::from_utf8`].
+    /// See [`String::from_utf8`]. If the passed buffer contains secret data, this should be
+    /// preferred to `String::from_utf8` as that function does not ensure that the buffer is
+    /// zeroized on error.
     pub fn from_utf8(buf: Vec<u8>) -> Result<Self, FromUtf8Error> {
         String::from_utf8(buf)
             .map(Self::from)
