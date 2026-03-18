@@ -223,7 +223,7 @@ pub type SecretString = SecretBox<str>;
 /// A possible error value when creating a [`SecretString`] from a UTF-8 byte vector.
 ///
 /// This is like [`string::FromUtf8Error`] except it zeroizes its buffer on [`Drop`].
-#[derive(Clone, Debug)]
+#[derive(Debug, PartialEq, Eq)]
 pub struct FromUtf8Error {
     inner: Option<string::FromUtf8Error>,
 }
