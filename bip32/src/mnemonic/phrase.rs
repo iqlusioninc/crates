@@ -6,7 +6,7 @@ use super::{
 };
 use crate::{Error, KEY_SIZE};
 use alloc::{format, string::String};
-use rand_core::{CryptoRng, RngCore};
+use rand_core::CryptoRng;
 use sha2::{Digest, Sha256};
 use zeroize::{Zeroize, Zeroizing};
 
@@ -35,7 +35,7 @@ pub struct Phrase {
 
 impl Phrase {
     /// Create a random BIP39 mnemonic phrase.
-    pub fn random(mut rng: impl RngCore + CryptoRng, language: Language) -> Self {
+    pub fn random(mut rng: impl CryptoRng, language: Language) -> Self {
         let mut entropy = Entropy::default();
         rng.fill_bytes(&mut entropy);
         Self::from_entropy(entropy, language)

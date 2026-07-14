@@ -8,10 +8,7 @@ use ripemd::Ripemd160;
 use sha2::{Digest, Sha256};
 
 #[cfg(feature = "secp256k1")]
-use {
-    crate::XPub,
-    k256::elliptic_curve::{group::prime::PrimeCurveAffine, sec1::ToEncodedPoint},
-};
+use {crate::XPub, k256::elliptic_curve::sec1::ToSec1Point};
 
 /// Bytes which represent a public key.
 ///
@@ -83,7 +80,7 @@ impl PublicKey for k256::PublicKey {
     }
 
     fn to_bytes(&self) -> PublicKeyBytes {
-        self.to_encoded_point(true)
+        self.to_sec1_point(true)
             .as_bytes()
             .try_into()
             .expect("malformed public key")
@@ -94,7 +91,7 @@ impl PublicKey for k256::PublicKey {
             Option::<k256::NonZeroScalar>::from(k256::NonZeroScalar::from_repr(other.into()))
                 .ok_or(Error::Crypto)?;
 
-        let child_point = self.to_projective() + (k256::AffinePoint::generator() * *child_scalar);
+        let child_point = self.to_projective() + (k256::AffinePoint::GENERATOR * *child_scalar);
         Self::from_affine(child_point.into()).map_err(|_| Error::Crypto)
     }
 }
