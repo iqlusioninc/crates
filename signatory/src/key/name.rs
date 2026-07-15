@@ -22,6 +22,10 @@ impl KeyName {
     pub fn new(name: impl Into<String>) -> Result<Self> {
         let name = name.into();
 
+        if name.is_empty() {
+            return Err(Error::KeyNameInvalid);
+        }
+
         if !name
             .as_bytes()
             .iter()
