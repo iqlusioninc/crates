@@ -29,13 +29,13 @@
 //! mnemonic and use it to derive child keys according to a provided BIP32
 //! derivation path.
 //!
-//! ## Accessing `OsRng`
-//! The following example uses `OsRng` for cryptographically secure random
-//! number generation. To use it, you need to include `rand_core` with the
-//! `std` feature by adding the following to `Cargo.toml`:
+//! ## Accessing `SysRng`
+//! The following example uses `SysRng` for cryptographically secure random
+//! number generation. To use it, you need to include `getrandom` with the
+//! `sys_rng` feature by adding the following to `Cargo.toml`:
 //!
 //! ```toml
-//! rand_core = { version = "0.6", features = ["std"] }
+//! getrandom = { version = "0.4", features = ["sys_rng"] }
 //! ```
 //!
 //! (on embedded platforms, you will need to supply our own RNG)
@@ -46,10 +46,11 @@
 //! # #[cfg(all(feature = "bip39", feature = "secp256k1"))]
 //! # {
 //! use bip32::{Mnemonic, Prefix, XPrv};
-//! use rand_core::OsRng;
+//! use getrandom::SysRng;
+//! use rand_core::UnwrapErr;
 //!
 //! // Generate random Mnemonic using the default language (English)
-//! let mnemonic = Mnemonic::random(&mut OsRng, Default::default());
+//! let mnemonic = Mnemonic::random(UnwrapErr(&mut SysRng), Default::default());
 //!
 //! // Derive a BIP39 seed value using the given password
 //! let seed = mnemonic.to_seed("password");
