@@ -26,7 +26,7 @@ zeroize = { version = "1", default-features = false }
 
 # optional dependencies
 once_cell = { version = "1", optional = true }
-pbkdf2 = { version = "0.12", optional = true, default-features = false, features = ["hmac"] }
+pbkdf2 = { version = "0.13", optional = true, default-features = false, features = ["hmac"] }
 subtle-encoding = { version = "=0.6.0-pre", optional = true, default-features = false, path = "../subtle-encoding" }
 
 [dev-dependencies]
