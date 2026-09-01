@@ -137,11 +137,11 @@ impl PrivateKey for secp256k1_ffi::SecretKey {
     type PublicKey = secp256k1_ffi::PublicKey;
 
     fn from_bytes(bytes: &PrivateKeyBytes) -> Result<Self> {
-        Ok(secp256k1_ffi::SecretKey::from_slice(bytes)?)
+        Ok(secp256k1_ffi::SecretKey::from_secret_bytes(*bytes)?)
     }
 
     fn to_bytes(&self) -> PrivateKeyBytes {
-        *self.as_ref()
+        self.to_secret_bytes()
     }
 
     fn derive_child(&self, bytes: PrivateKeyBytes) -> Result<Self> {
@@ -150,9 +150,7 @@ impl PrivateKey for secp256k1_ffi::SecretKey {
     }
 
     fn public_key(&self) -> Self::PublicKey {
-        use secp256k1_ffi::{Secp256k1, SignOnly};
-        let engine = Secp256k1::<SignOnly>::signing_only();
-        secp256k1_ffi::PublicKey::from_secret_key(&engine, self)
+        secp256k1_ffi::PublicKey::from_secret_key(self)
     }
 }
 
