@@ -32,8 +32,8 @@ pbkdf2 = { version = "0.13", optional = true, default-features = false, features
 secp256k1-ffi = { package = "secp256k1", version = "0.33", optional = true, default-features = false }
 
 [dev-dependencies]
-hex-literal = "0.4"
 getrandom = { version = "0.4", features = ["sys_rng"] }
+hex-literal = "1"
 
 [features]
 default = ["bip39", "secp256k1", "std"]

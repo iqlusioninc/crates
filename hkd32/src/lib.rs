@@ -23,10 +23,10 @@
 //! # Example
 //!
 //! ```rust
-//! use rand_core::OsRng;
+//! use getrandom::{SysRng, rand_core::UnwrapErr};
 //!
 //! // Parent key
-//! let input_key_material = hkd32::KeyMaterial::random(&mut OsRng);
+//! let input_key_material = hkd32::KeyMaterial::random(&mut UnwrapErr(SysRng));
 //!
 //! // Path to the child key
 //! let derivation_path = "/foo/bar/baz".parse::<hkd32::PathBuf>().unwrap();

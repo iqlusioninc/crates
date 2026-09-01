@@ -45,11 +45,11 @@ version = "0.6.0-pre.1"
 dependencies = [
  "bs58",
  "getrandom 0.4.3",
- "hex-literal 0.4.1",
+ "hex-literal",
  "hmac 0.13.0",
  "k256 0.14.0",
  "once_cell",
- "pbkdf2 0.13.0",
+ "pbkdf2",
  "rand_core 0.10.1",
  "ripemd",
  "secp256k1",
@@ -662,12 +662,6 @@ dependencies = [
 
 [[package]]
 name = "hex-literal"
-version = "0.4.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6fe2267d4ed49bc07b63801559be28c718ea06c4738b7a03c94df7386d2cde46"
-
-[[package]]
-name = "hex-literal"
 version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e712f64ec3850b98572bffac52e2c6f282b29fe6c5fa6d42334b30be438d95c1"
@@ -676,12 +670,13 @@ checksum = "e712f64ec3850b98572bffac52e2c6f282b29fe6c5fa6d42334b30be438d95c1"
 name = "hkd32"
 version = "0.8.0-pre"
 dependencies = [
- "hex-literal 1.1.0",
- "hmac 0.12.1",
+ "getrandom 0.4.3",
+ "hex-literal",
+ "hmac 0.13.0",
  "once_cell",
- "pbkdf2 0.12.2",
- "rand_core 0.6.4",
- "sha2 0.10.9",
+ "pbkdf2",
+ "rand_core 0.10.1",
+ "sha2 0.11.0",
  "subtle-encoding",
  "zeroize",
 ]
@@ -1023,16 +1018,6 @@ dependencies = [
  "elliptic-curve 0.13.8",
  "primeorder 0.13.6",
  "sha2 0.10.9",
-]
-
-[[package]]
-name = "pbkdf2"
-version = "0.12.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f8ed6a7761f76e3b9f92dfb0a60a6a6477c61024b775147ff0973a02653abaf2"
-dependencies = [
- "digest 0.10.7",
- "hmac 0.12.1",
 ]
 
 [[package]]

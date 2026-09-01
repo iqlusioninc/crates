@@ -7,8 +7,8 @@
 //! material, and is the primary type useful for deriving other keys.
 
 use crate::{Error, KEY_SIZE, path::Path};
-use hmac::{Hmac, Mac};
-use rand_core::{CryptoRng, RngCore};
+use hmac::{Hmac, KeyInit, Mac};
+use rand_core::CryptoRng;
 use sha2::Sha512;
 use zeroize::Zeroize;
 
@@ -28,7 +28,7 @@ pub struct KeyMaterial([u8; KEY_SIZE]);
 
 impl KeyMaterial {
     /// Create random key material using the operating system CSRNG
-    pub fn random(mut rng: impl RngCore + CryptoRng) -> Self {
+    pub fn random(mut rng: impl CryptoRng) -> Self {
         let mut bytes = [0u8; KEY_SIZE];
         rng.fill_bytes(&mut bytes);
         Self::new(bytes)
