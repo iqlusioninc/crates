@@ -86,7 +86,9 @@ impl Prefix {
         bytes[..4].copy_from_slice(&version.to_be_bytes());
 
         let mut buffer = [0u8; ExtendedKey::MAX_BASE58_SIZE];
-        bs58::encode(&bytes).with_check().onto(buffer.as_mut_slice())?;
+        bs58::encode(&bytes)
+            .with_check()
+            .onto(buffer.as_mut_slice())?;
 
         let s = str::from_utf8(&buffer[..4]).map_err(|_| Error::Base58)?;
         Self::validate_str(s)?;
@@ -121,7 +123,7 @@ impl Prefix {
     /// Validate that the given prefix string is well-formed.
     // TODO(tarcieri): validate the string ends with `prv` or `pub`?
     pub(crate) const fn validate_str(s: &str) -> Result<&str> {
-        if s.as_bytes().len() != Self::LENGTH {
+        if s.len() != Self::LENGTH {
             return Err(Error::Decode);
         }
 
