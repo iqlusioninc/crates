@@ -141,11 +141,8 @@ impl PublicKey for secp256k1_ffi::PublicKey {
     }
 
     fn derive_child(&self, bytes: PrivateKeyBytes) -> Result<Self> {
-        use secp256k1_ffi::{Secp256k1, VerifyOnly};
-
-        let engine = Secp256k1::<VerifyOnly>::verification_only();
         let scalar = secp256k1_ffi::Scalar::from_be_bytes(bytes)?;
-        Ok(self.add_exp_tweak(&engine, &scalar)?)
+        Ok(self.add_exp_tweak(&scalar)?)
     }
 }
 
