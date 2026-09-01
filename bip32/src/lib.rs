@@ -119,8 +119,8 @@ pub use crate::{
     child_number::ChildNumber,
     error::{Error, Result},
     extended_key::{
-        attrs::ExtendedKeyAttrs, private_key::ExtendedPrivateKey, public_key::ExtendedPublicKey,
-        ExtendedKey,
+        ExtendedKey, attrs::ExtendedKeyAttrs, private_key::ExtendedPrivateKey,
+        public_key::ExtendedPublicKey,
     },
     prefix::Prefix,
     private_key::{PrivateKey, PrivateKeyBytes},

@@ -4,7 +4,7 @@ pub(crate) mod attrs;
 pub(crate) mod private_key;
 pub(crate) mod public_key;
 
-use crate::{ChildNumber, Error, ExtendedKeyAttrs, Prefix, Result, Version, KEY_SIZE};
+use crate::{ChildNumber, Error, ExtendedKeyAttrs, KEY_SIZE, Prefix, Result, Version};
 use core::{
     fmt::{self, Display},
     str::{self, FromStr},
@@ -49,7 +49,9 @@ impl ExtendedKey {
         bytes[13..45].copy_from_slice(&self.attrs.chain_code);
         bytes[45..78].copy_from_slice(&self.key_bytes);
 
-        let base58_len = bs58::encode(&bytes).with_check().onto(buffer.as_mut_slice())?;
+        let base58_len = bs58::encode(&bytes)
+            .with_check()
+            .onto(buffer.as_mut_slice())?;
         bytes.zeroize();
 
         str::from_utf8(&buffer[..base58_len]).map_err(|_| Error::Base58)

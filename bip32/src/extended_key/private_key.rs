@@ -2,7 +2,7 @@
 
 use crate::{
     ChildNumber, Depth, Error, ExtendedKey, ExtendedKeyAttrs, ExtendedPublicKey, HmacSha512,
-    KeyFingerprint, Prefix, PrivateKey, PrivateKeyBytes, PublicKey, Result, KEY_SIZE,
+    KEY_SIZE, KeyFingerprint, Prefix, PrivateKey, PrivateKeyBytes, PublicKey, Result,
 };
 use core::{
     fmt::{self, Debug},

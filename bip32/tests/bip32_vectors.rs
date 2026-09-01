@@ -87,7 +87,9 @@ fn test_vector_1() {
         "xprvA41z7zogVVwxVSgdKUHDy1SKmdb533PjDz7J6N6mV6uS3ze1ai8FHa8kmHScGpWmj4WggLyQjgPie1rFSruoUihUZREPSL39UNdE3BBDu76"
     );
     assert_eq!(
-        key_m_0h_1_2h_2_1000000000.public_key().to_string(Prefix::XPUB),
+        key_m_0h_1_2h_2_1000000000
+            .public_key()
+            .to_string(Prefix::XPUB),
         "xpub6H1LXWLaKsWFhvm6RVpEL9P4KfRZSW7abD2ttkWP3SSQvnyA8FSVqNTEcYFgJS2UaFcxupHiYkro49S8yGasTvXEYBVPamhGW6cFJodrTHy"
     );
 
@@ -158,7 +160,9 @@ fn test_vector_2() {
         "xprvA1RpRA33e1JQ7ifknakTFpgNXPmW2YvmhqLQYMmrj4xJXXWYpDPS3xz7iAxn8L39njGVyuoseXzU6rcxFLJ8HFsTjSyQbLYnMpCqE2VbFWc"
     );
     assert_eq!(
-        key_m_0_2147483647h_1_2147483646h.public_key().to_string(Prefix::XPUB),
+        key_m_0_2147483647h_1_2147483646h
+            .public_key()
+            .to_string(Prefix::XPUB),
         "xpub6ERApfZwUNrhLCkDtcHTcxd75RbzS1ed54G1LkBUHQVHQKqhMkhgbmJbZRkrgZw4koxb5JaHWkY4ALHY2grBGRjaDMzQLcgJvLJuZZvRcEL"
     );
 
@@ -169,7 +173,9 @@ fn test_vector_2() {
         "xprvA2nrNbFZABcdryreWet9Ea4LvTJcGsqrMzxHx98MMrotbir7yrKCEXw7nadnHM8Dq38EGfSh6dqA9QWTyefMLEcBYJUuekgW4BYPJcr9E7j"
     );
     assert_eq!(
-        key_m_0_2147483647h_1_2147483646h_2.public_key().to_string(Prefix::XPUB),
+        key_m_0_2147483647h_1_2147483646h_2
+            .public_key()
+            .to_string(Prefix::XPUB),
         "xpub6FnCn6nSzZAw5Tw7cgR9bi15UV96gLZhjDstkXXxvCLsUXBGXPdSnLFbdpq8p9HmGsApME5hQTZ3emM2rnY5agb9rXpVGyy3bdW6EEgAtqt"
     );
 

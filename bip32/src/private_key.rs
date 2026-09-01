@@ -1,6 +1,6 @@
 //! Trait for deriving child keys on a given type.
 
-use crate::{ChainCode, ChildNumber, Error, HmacSha512, PublicKey, Result, KEY_SIZE};
+use crate::{ChainCode, ChildNumber, Error, HmacSha512, KEY_SIZE, PublicKey, Result};
 use hmac::{KeyInit, Mac};
 
 #[cfg(feature = "secp256k1")]

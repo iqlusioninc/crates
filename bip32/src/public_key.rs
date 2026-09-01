@@ -1,7 +1,7 @@
 //! Trait for deriving child keys on a given type.
 
 use crate::{
-    ChainCode, ChildNumber, Error, HmacSha512, KeyFingerprint, PrivateKeyBytes, Result, KEY_SIZE,
+    ChainCode, ChildNumber, Error, HmacSha512, KEY_SIZE, KeyFingerprint, PrivateKeyBytes, Result,
 };
 use hmac::{KeyInit, Mac};
 use ripemd::Ripemd160;
