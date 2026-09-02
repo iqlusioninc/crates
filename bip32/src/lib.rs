@@ -20,9 +20,7 @@
 //! - `secp256k1-ffi`: support for Bitcoin Core's [libsecp256k1 C library],
 //!   as wrapped by the [`secp256k1` Rust crate].
 //!
-//! ## Limitations and further work
-//! - Only 24-word BIP39 mnemonics are supported
-//! - BIP43, BIP44, BIP49, BIP84 not yet properly supported
+//! NOTE: BIP43, BIP44, BIP49, BIP84 not yet properly supported
 //!
 //! # Usage
 //! The following is an end-to-end example of how to generate a random BIP39
@@ -42,7 +40,7 @@
 //!
 //! ## Rust code example
 //! ```
-//! # fn main() -> Result<(), Box<dyn std::error::Error>> {
+//! # fn main() -> Result<(), Box<dyn core::error::Error>> {
 //! # #[cfg(all(feature = "bip39", feature = "secp256k1"))]
 //! # {
 //! use bip32::{Mnemonic, Prefix, XPrv};
@@ -50,7 +48,7 @@
 //! use rand_core::UnwrapErr;
 //!
 //! // Generate random Mnemonic using the default language (English)
-//! let mnemonic = Mnemonic::random(UnwrapErr(&mut SysRng), Default::default());
+//! let mnemonic = Mnemonic::generate(24)?;
 //!
 //! // Derive a BIP39 seed value using the given password
 //! let seed = mnemonic.to_seed("password");
@@ -109,9 +107,6 @@ mod public_key;
 #[cfg(feature = "alloc")]
 mod derivation_path;
 
-#[cfg(feature = "mnemonic")]
-mod mnemonic;
-
 pub use crate::{
     child_number::ChildNumber,
     error::{Error, Result},
@@ -126,10 +121,8 @@ pub use crate::{
 
 #[cfg(feature = "alloc")]
 pub use crate::derivation_path::DerivationPath;
-
 #[cfg(feature = "bip39")]
-pub use crate::mnemonic::{Language, Phrase as Mnemonic, Seed};
-
+pub use bip39::{self, Language, Mnemonic};
 #[cfg(feature = "secp256k1")]
 pub use {
     crate::extended_key::{private_key::XPrv, public_key::XPub},

@@ -51,7 +51,7 @@ where
 
     /// Derive a child key from the given [`DerivationPath`].
     #[cfg(feature = "alloc")]
-    pub fn derive_from_path<S>(seed: S, path: &DerivationPath) -> Result<Self>
+    pub fn derive_from_path<S>(seed: &S, path: &DerivationPath) -> Result<Self>
     where
         S: AsRef<[u8]>,
     {
@@ -61,7 +61,7 @@ where
     }
 
     /// Create the root extended key for the given seed value.
-    pub fn new<S>(seed: S) -> Result<Self>
+    pub fn new<S>(seed: &S) -> Result<Self>
     where
         S: AsRef<[u8]>,
     {

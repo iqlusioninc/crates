@@ -26,20 +26,19 @@ subtle = { version = "2", default-features = false }
 zeroize = { version = "1", default-features = false }
 
 # optional dependencies
+bip39 = { version = "2", optional = true, default-features = false }
 k256 = { version = "0.14", optional = true, default-features = false, features = ["ecdsa", "sha256"] }
-once_cell = { version = "1", optional = true }
-pbkdf2 = { version = "0.13", optional = true, default-features = false, features = ["hmac"] }
 secp256k1-ffi = { package = "secp256k1", version = "0.33", optional = true, default-features = false }
 
 [dev-dependencies]
+bip39 = { version = "2", features = ["rand"] }
 getrandom = { version = "0.4", features = ["sys_rng"] }
 hex-literal = "1"
 
 [features]
 default = ["bip39", "secp256k1"]
 alloc = ["secp256k1-ffi?/alloc", "zeroize/alloc"]
-bip39 = ["mnemonic", "pbkdf2"]
-mnemonic = ["alloc", "once_cell"]
+bip39 = ["dep:bip39"]
 secp256k1 = ["k256"]
 
 [package.metadata.docs.rs]

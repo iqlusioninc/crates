@@ -2,19 +2,17 @@
 
 #![cfg(all(feature = "bip39", feature = "secp256k1"))]
 
-use bip32::{Mnemonic, Seed, XPrv};
+use bip32::XPrv;
 use hex_literal::hex;
 
 /// BIP39 test vector
+#[allow(dead_code, reason = "retain phrases")]
 struct TestVector {
     entropy: [u8; 32],
     phrase: &'static str,
     seed: [u8; 64],
     xprv: &'static str,
 }
-
-/// Password used on all test vectors
-const TEST_VECTOR_PASSWORD: &str = "TREZOR";
 
 /// From: https://github.com/trezor/python-mnemonic/blob/master/vectors.json
 const TEST_VECTORS: &[TestVector] = &[
@@ -85,30 +83,10 @@ const TEST_VECTORS: &[TestVector] = &[
 ];
 
 #[test]
-fn test_mnemonic() {
-    for vector in TEST_VECTORS {
-        let mnemonic = Mnemonic::from_entropy(vector.entropy, Default::default());
-        assert_eq!(mnemonic.phrase(), vector.phrase);
-    }
-}
-
-#[test]
-fn test_seed() {
-    for vector in TEST_VECTORS {
-        let mnemonic = Mnemonic::new(vector.phrase, Default::default()).unwrap();
-        assert_eq!(
-            &vector.seed,
-            mnemonic.to_seed(TEST_VECTOR_PASSWORD).as_bytes()
-        );
-    }
-}
-
-#[test]
 fn test_xprv() {
     for vector in TEST_VECTORS {
-        let seed = Seed::new(vector.seed);
         let expected_xprv = vector.xprv.parse::<XPrv>().unwrap();
-        let derived_xprv = XPrv::new(&seed).unwrap();
+        let derived_xprv = XPrv::new(&vector.seed).unwrap();
         assert_eq!(expected_xprv, derived_xprv);
     }
 }
