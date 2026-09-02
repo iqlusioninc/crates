@@ -1,5 +1,5 @@
 #![doc = include_str!("../README.md")]
-#![cfg_attr(docsrs, feature(doc_auto_cfg))]
+#![cfg_attr(docsrs, feature(doc_cfg))]
 #![forbid(unsafe_code)]
 #![warn(
     clippy::unwrap_used,
