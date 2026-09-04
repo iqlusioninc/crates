@@ -147,7 +147,7 @@ impl PublicKey for secp256k1_ffi::PublicKey {
 }
 
 /// `secp256k1-ffi` smoke tests
-#[cfg(all(test, feature = "bip39", feature = "secp256k1-ffi"))]
+#[cfg(all(test, feature = "alloc", feature = "secp256k1-ffi"))]
 mod tests {
     use hex_literal::hex;
 
