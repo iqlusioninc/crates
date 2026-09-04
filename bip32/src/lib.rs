@@ -99,9 +99,6 @@
 #[cfg(feature = "alloc")]
 extern crate alloc;
 
-#[cfg(feature = "std")]
-extern crate std;
-
 mod child_number;
 mod error;
 mod extended_key;
