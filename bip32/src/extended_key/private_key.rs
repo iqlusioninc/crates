@@ -183,11 +183,9 @@ where
     K: PrivateKey,
 {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        // TODO(tarcieri): use `finish_non_exhaustive` when stable
         f.debug_struct("ExtendedPrivateKey")
-            .field("private_key", &"...")
             .field("attrs", &self.attrs)
-            .finish()
+            .finish_non_exhaustive()
     }
 }
 
