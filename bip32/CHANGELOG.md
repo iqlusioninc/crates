@@ -4,6 +4,32 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.6.0 (2026-09-23)
+### Added
+- `core::error::Error` support ([#1391])
+
+### Changed
+- Rust edition changed to 2024; MSRV 1.85 ([#1347])
+- Upgrade RustCrypto dependencies ([#1380])
+  - Bump `hmac` to v0.13
+  - Bump `k256` to v0.14
+  - Bump `rand_core` to v0.10
+  - Bump `ripemd` to v0.2
+  - Bump `sha2` to v0.11
+- Bump `secp256k1` (FFI) dependency to v0.33 ([#1384])
+- Have `ExtendedPrivateKey::{new, derive_from_path}` borrow `seed` ([#1393])
+
+### Removed
+- `std` feature ([#1391])
+- `bip39` and `mnemonic` features ([#1394])
+
+[#1347]: https://github.com/iqlusioninc/crates/pull/1347
+[#1380]: https://github.com/iqlusioninc/crates/pull/1380
+[#1384]: https://github.com/iqlusioninc/crates/pull/1384
+[#1391]: https://github.com/iqlusioninc/crates/pull/1391
+[#1393]: https://github.com/iqlusioninc/crates/pull/1393
+[#1394]: https://github.com/iqlusioninc/crates/pull/1394
+
 ## 0.5.3 (2025-01-28)
 ### Fixed
 - `no_std` support with `secp256k1` crate ([#1254])
