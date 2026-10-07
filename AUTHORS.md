@@ -16,6 +16,7 @@ contributions under the terms of the [Apache License, Version 2.0]
 * Kai Ren ([@tyranron](https://github.com/tyranron))
 * Murarth ([@murarth](https://github.com/murarth))
 * Niclas Schwarzlose ([@aticu](https://github.com/aticu))
+* Steven Dee ([@mrdomino](https://github.com/mrdomino))
 * Yin Guanhao ([@sopium](https://github.com/sopium))
 * Will Speak ([@iwillspeak](https://github.com/iwillspeak))
 * Zach Reizner ([@zachreizner](https://github.com/zachreizner))
