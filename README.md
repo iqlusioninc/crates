@@ -20,6 +20,7 @@ This repository contains the following crates:
 | [canonical‑path]  | ![][canonical-path-crate]  | ![][canonical-path-build]  | Canonical filesystem path support      |
 | [hkd32]           | ![][hkd32-crate]           | ![][hkd32-build]           | HMAC-based Hierarchical Key Derivation |
 | [iqhttp]          | ![][iqhttp-crate]          | ![][iqhttp-build]          | HTTP client built on hyper             |
+| [pqseed]          | ![][pqseed-crate]          | ![][pqseed-build]          | Post-quantum keys from BIP39 seeds      |
 | [secrecy]         | ![][secrecy-crate]         | ![][secrecy-build]         | Simple secret-keeping library          |
 | [signatory]       | ![][signatory-crate]       | ![][signatory-build]       | Signature library with ECDSA+Ed25519   |
 | [subtle‑encoding] | ![][subtle-encoding-crate] | ![][subtle-encoding-build] | Constant-time hex/bech32/base64        |
@@ -68,6 +69,8 @@ without any additional terms or conditions.
 [hkd32-crate]: https://img.shields.io/crates/v/hkd32.svg
 [iqhttp]: https://github.com/iqlusioninc/crates/tree/main/iqhttp
 [iqhttp-crate]: https://img.shields.io/crates/v/iqhttp.svg
+[pqseed]: https://github.com/iqlusioninc/crates/tree/main/pqseed
+[pqseed-crate]: https://img.shields.io/crates/v/pqseed.svg
 [secrecy]: https://github.com/iqlusioninc/crates/tree/main/secrecy
 [secrecy-crate]: https://img.shields.io/crates/v/secrecy.svg
 [signatory]: https://github.com/iqlusioninc/crates/tree/main/signatory
@@ -81,6 +84,7 @@ without any additional terms or conditions.
 [canonical-path-build]: https://github.com/iqlusioninc/crates/actions/workflows/canonical-path.yml/badge.svg
 [hkd32-build]: https://github.com/iqlusioninc/crates/actions/workflows/hkd32.yml/badge.svg
 [iqhttp-build]: https://github.com/iqlusioninc/crates/actions/workflows/iqhttp.yml/badge.svg
+[pqseed-build]: https://github.com/iqlusioninc/crates/actions/workflows/pqseed.yml/badge.svg
 [secrecy-build]: https://github.com/iqlusioninc/crates/actions/workflows/secrecy.yml/badge.svg
 [signatory-build]: https://github.com/iqlusioninc/crates/actions/workflows/signatory.yml/badge.svg
 [subtle-encoding-build]: https://github.com/iqlusioninc/crates/actions/workflows/subtle-encoding.yml/badge.svg
