@@ -24,7 +24,7 @@ use hmac::{Hmac, KeyInit, Mac};
 use sha2::Sha512;
 use zeroize::{Zeroize, Zeroizing};
 
-/// Derives Project Eleven post-quantum keys from a BIP39 seed.
+/// Derives post-quantum keys using Project Eleven's scheme and `pqseed` extensions.
 ///
 /// Holds a secret 64-byte seed, zeroized on drop. No extended public keys or
 /// non-hardened derivation are exposed. Each algorithm has exactly one fixed
@@ -70,6 +70,24 @@ impl KeyDeriver {
         self.derive_seed(0)
     }
 
+    /// Derive the 32-byte ML-DSA-65 seed at `m/83696968'/503131'/3'`.
+    ///
+    /// Algorithm ID 3 is a `pqseed` extension, not assigned by Project Eleven.
+    /// Returns the first 32 bytes of the BIP85 HMAC output in a secret buffer
+    /// that zeroizes on drop; do not log it or its `Debug` value.
+    pub fn ml_dsa65_seed(&self) -> Result<Zeroizing<[u8; 32]>> {
+        self.derive_seed(3)
+    }
+
+    /// Derive the 32-byte ML-DSA-87 seed at `m/83696968'/503131'/4'`.
+    ///
+    /// Algorithm ID 4 is a `pqseed` extension, not assigned by Project Eleven.
+    /// Returns the first 32 bytes of the BIP85 HMAC output in a secret buffer
+    /// that zeroizes on drop; do not log it or its `Debug` value.
+    pub fn ml_dsa87_seed(&self) -> Result<Zeroizing<[u8; 32]>> {
+        self.derive_seed(4)
+    }
+
     /// Derive the 48-byte SLH-DSA-SHA2-128s seed at `m/83696968'/503131'/2'`.
     ///
     /// The bytes are `SK.seed || SK.prf || PK.seed`, each 16 bytes long.
@@ -83,6 +101,24 @@ impl KeyDeriver {
     #[cfg(feature = "ml-dsa")]
     pub fn ml_dsa44(&self) -> Result<ml_dsa::SigningKey<ml_dsa::MlDsa44>> {
         let seed = self.ml_dsa44_seed()?;
+        Ok(ml_dsa::SigningKey::from_seed((&*seed).into()))
+    }
+
+    /// Derive an ML-DSA-65 signing key using the `pqseed` algorithm ID 3.
+    ///
+    /// The public key is available through [`ml_dsa::Keypair::verifying_key`].
+    #[cfg(feature = "ml-dsa")]
+    pub fn ml_dsa65(&self) -> Result<ml_dsa::SigningKey<ml_dsa::MlDsa65>> {
+        let seed = self.ml_dsa65_seed()?;
+        Ok(ml_dsa::SigningKey::from_seed((&*seed).into()))
+    }
+
+    /// Derive an ML-DSA-87 signing key using the `pqseed` algorithm ID 4.
+    ///
+    /// The public key is available through [`ml_dsa::Keypair::verifying_key`].
+    #[cfg(feature = "ml-dsa")]
+    pub fn ml_dsa87(&self) -> Result<ml_dsa::SigningKey<ml_dsa::MlDsa87>> {
+        let seed = self.ml_dsa87_seed()?;
         Ok(ml_dsa::SigningKey::from_seed((&*seed).into()))
     }
 

@@ -14,12 +14,17 @@ entropy, and that entropy generates post-quantum signature keys.
 |-----------|---------------------|-------------------|
 | ML-DSA-44 | `m/83696968'/503131'/0'` | First 32 bytes |
 | SLH-DSA-SHA2-128s | `m/83696968'/503131'/2'` | First 48 bytes |
+| ML-DSA-65 (extension) | `m/83696968'/503131'/3'` | First 32 bytes |
+| ML-DSA-87 (extension) | `m/83696968'/503131'/4'` | First 32 bytes |
 
 For each path, BIP85 computes HMAC-SHA-512 with key `bip-entropy-from-k`
 and the raw 32-byte child private key as the message. SLH-DSA receives
 `SK.seed || SK.prf || PK.seed` in three consecutive 16-byte chunks. Algorithm
-ID 1 is reserved by the article. No extra index, alternate application number,
-or custom algorithm ID is added by this crate.
+ID 1 is reserved by the article. IDs 3 and 4 are **`pqseed` extensions**, not
+assignments from Project Eleven or a BIP standard. Interoperability for these
+variants requires using these exact IDs; future external assignments may differ.
+Each ML-DSA variant uses a separate path rather than reusing another variant's
+seed. No extra index or alternate application number is added.
 
 ## Usage
 
@@ -43,10 +48,12 @@ verifying_key.verify(b"hello post-quantum world", &signature)?;
 # fn main() {}
 ```
 
-Use `keys.slh_dsa_sha2_128s()` for the other signing key; its public key is
-available through `pqseed::slh_dsa::signature::Keypair`. The RustCrypto crates
-are re-exported so callers can use their native signing and verification APIs.
-Both signing-key types erase secret key material on drop.
+Use `keys.ml_dsa65()` or `keys.ml_dsa87()` for the other ML-DSA parameter sets,
+with the same signing and verification traits. Use `keys.slh_dsa_sha2_128s()`
+for SLH-DSA; its public key is available through
+`pqseed::slh_dsa::signature::Keypair`. The RustCrypto crates are re-exported so
+callers can use their native signing and verification APIs. All signing-key
+types erase secret key material on drop.
 
 `from_mnemonic` checks the English word list, checksum, and exactly 24 words.
 It supports BIP39 passphrase normalization; an empty passphrase matches the
@@ -60,14 +67,15 @@ This crate is `no_std`. Default features enable `bip39`, `ml-dsa`, and `slh-dsa`
 Each can be enabled independently:
 
 - `bip39`: mnemonic parsing and Unicode NFKD normalization (requires `alloc`).
-- `ml-dsa`: RustCrypto ML-DSA-44 key generation.
+- `ml-dsa`: RustCrypto ML-DSA-44, ML-DSA-65, and ML-DSA-87 key generation.
 - `slh-dsa`: RustCrypto SLH-DSA-SHA2-128s key generation. Currently uses a
   pinned prerelease and its low-level deterministic key-generation API.
 
 Without default features, `KeyDeriver::from_seed` accepts an already expanded
-64-byte BIP39 seed. `ml_dsa44_seed` and `slh_dsa_sha2_128s_seed` remain available
-without either signature backend or a heap allocator. They return secret,
-zeroizing byte arrays suitable for other compatible implementations.
+64-byte BIP39 seed. `ml_dsa44_seed`, `ml_dsa65_seed`, `ml_dsa87_seed`, and
+`slh_dsa_sha2_128s_seed` remain available without either signature backend or a
+heap allocator. They return secret, zeroizing byte arrays suitable for other
+compatible implementations.
 
 ## Security
 
