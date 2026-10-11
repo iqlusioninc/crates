@@ -31,15 +31,17 @@ const BIP85: u32 = 83_696_968;
 /// Project Eleven's BIP85 application number: `503131'` ("P11").
 const P11_APP: u32 = 503_131;
 
-/// The [pqhd] BIP85 application number for scoped keys: `505153'`.
+/// The [pqhd draft]'s proposed BIP85 application number for scoped keys: `505153'`.
 ///
 /// The decimal digits are the hex bytes of ASCII "PQS", following the
-/// convention behind Project Eleven's `503131'` ("P11").
+/// convention behind Project Eleven's `503131'` ("P11"). This application
+/// number is not yet registered with BIP85. Do not use draft keys for real assets.
 ///
-/// [pqhd]: https://github.com/pqdh/pqhd
+/// [pqhd draft]: https://github.com/pqdh/pqhd/blob/b9674b302c0f320ee7f0b39317eb48ddbe67f00f/spec/README.md
 pub const PQSEED_APP: u32 = 505_153;
 
-/// Algorithm IDs, shared by the Project Eleven and pqhd namespaces.
+/// Supported active pqhd scheme IDs. In the unscoped Project Eleven
+/// namespace, IDs 3 and 4 remain pqseed-specific extensions.
 const ML_DSA_44: u32 = 0;
 const SLH_DSA_SHA2_128S: u32 = 2;
 const ML_DSA_65: u32 = 3;
@@ -51,9 +53,9 @@ const ML_DSA_87: u32 = 4;
 /// `m/83696968'/505153'/coin_type'/scheme'/account'/index'`, and the BIP85
 /// entropy there seeds BIP85-DRNG-SHAKE256. `coin_type` is a [SLIP-44]
 /// registered coin type. Every level is hardened, so each value must be below
-/// 2<sup>31</sup>.
+/// 2<sup>31</sup>. Bounds are checked when deriving a key, not on construction.
 ///
-/// [pqhd]: https://github.com/pqdh/pqhd
+/// [pqhd]: https://github.com/pqdh/pqhd/blob/b9674b302c0f320ee7f0b39317eb48ddbe67f00f/spec/README.md
 /// [SLIP-44]: https://github.com/satoshilabs/slips/blob/master/slip-0044.md
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct Scope {
@@ -87,14 +89,18 @@ impl Scope {
     }
 }
 
-/// Derives post-quantum keys using Project Eleven's scheme and `pqseed` extensions.
+/// Derives post-quantum keys using the pqhd draft and Project Eleven's scheme.
 ///
 /// Holds a secret 64-byte seed, zeroized on drop. No extended public keys or
 /// non-hardened derivation are exposed. Unscoped methods use the article's
 /// single fixed path per algorithm; `*_for` methods derive [pqhd] keys scoped
 /// to a coin type, account, and index.
 ///
-/// [pqhd]: https://github.com/pqdh/pqhd
+/// Scoped methods implement active draft registry entries 0, 2, 3, and 4 only.
+/// An invalid BIP32 master or child key returns an error without skipping to
+/// another index. Scoped and unscoped derivations must not be interchanged.
+///
+/// [pqhd]: https://github.com/pqdh/pqhd/blob/b9674b302c0f320ee7f0b39317eb48ddbe67f00f/spec/README.md
 pub struct KeyDeriver {
     seed: Zeroizing<[u8; 64]>,
 }

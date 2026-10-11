@@ -1,7 +1,7 @@
 [package]
 name = "pqseed"
 version = "0.1.0"
-description = "Deterministic post-quantum keys from BIP39 mnemonics using Project Eleven's BIP85 scheme"
+description = "Post-quantum keys from BIP39 mnemonics using the pqhd draft and Project Eleven's BIP85 scheme"
 license = "Apache-2.0 OR MIT"
 homepage = "https://github.com/iqlusioninc/crates/"
 repository = "https://github.com/iqlusioninc/crates/tree/main/pqseed"

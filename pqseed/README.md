@@ -6,9 +6,19 @@
 ![MSRV][rustc-image]
 [![Build Status][build-image]][build-link]
 
-`pqseed` implements [Project Eleven's seed derivation scheme][scheme]: a
-24-word BIP39 mnemonic expands to a BIP32 tree, BIP85 extracts deterministic
-entropy, and that entropy generates post-quantum signature keys.
+`pqseed` derives post-quantum signature keys from 24-word BIP39 mnemonics.
+Scoped `*_for` methods implement the [pqhd draft specification][pqhd spec]
+and its [scheme registry][pqhd registry]. Unscoped methods retain
+[Project Eleven's seed derivation scheme][scheme] and the ML-DSA extensions
+described below. These are distinct derivations and produce different keys.
+
+**pqhd is draft v0.1.0, not a finalized standard. Do not protect real assets
+with keys derived under this draft.** This implementation targets the
+specification in [pqhd PR #1] and registry in [pqhd PR #2], pinned to the
+revisions linked below. The application number `505153'` is not yet registered
+with BIP85, and the draft may change before v1.0.
+
+## Unscoped Project Eleven derivation
 
 | Algorithm | Hardened BIP32 path | BIP85 output used |
 |-----------|---------------------|-------------------|
@@ -31,19 +41,21 @@ every chain using them shares one key per algorithm per mnemonic.
 
 A chain adopting post-quantum keys needs every wallet implementation to
 derive the same key from the same mnemonic, coin type, and scheme, without
-sharing keys with other chains. The `*_for` methods implement [pqhd], a
-standard and scheme registry for this. pqhd uses its own BIP85 application
-number, `505153'` (the hex bytes of ASCII "PQS", following the convention
-behind Project Eleven's `503131'` for "P11"), so it cannot collide with future
-Project Eleven assignments.
+sharing keys with other chains. The `*_for` methods implement the [pqhd draft
+specification][pqhd spec]. Its proposed BIP85 application number is `505153'`
+(the hex bytes of ASCII "PQS", following the convention behind Project Eleven's
+`503131'` for "P11"). This separates pqhd paths from the Project Eleven subtree.
 
 ```text
 m / 83696968' / 505153' / coin_type' / scheme' / account' / index'
 ```
 
-1. Expand the BIP39 mnemonic and passphrase to the 64-byte seed.
+1. Validate the English BIP39 wordlist, checksum, and exactly 24 words.
+   NFKD-normalize the mnemonic and passphrase, join words with ASCII spaces,
+   and expand with BIP39 PBKDF2-HMAC-SHA512 (2048 iterations) to the 64-byte seed.
 2. Derive the BIP32 (secp256k1) master key and follow the path above. Every
-   level is hardened; each value must be below 2<sup>31</sup>.
+   level is hardened; each value must be below 2<sup>31</sup>. Invalid master
+   or child keys fail derivation; indices are never silently incremented.
 3. Compute HMAC-SHA-512 with key `bip-entropy-from-k` over the raw 32-byte
    leaf private key, as in BIP85.
 4. Read `L` bytes from BIP85-DRNG-SHAKE256 (SHAKE256 over the 64-byte HMAC
@@ -59,6 +71,11 @@ entries:
 | 2 | SLH-DSA-SHA2-128s | 48 | FIPS 205 `slh_keygen_internal(SK.seed, SK.prf, PK.seed)`, 16 bytes each, in that order |
 | 3 | ML-DSA-65 | 32 | FIPS 204 `ML-DSA.KeyGen_internal(ξ)` |
 | 4 | ML-DSA-87 | 32 | FIPS 204 `ML-DSA.KeyGen_internal(ξ)` |
+
+These four entries are `active` in the draft registry. The remaining SLH-DSA
+parameter sets (IDs 5–15) and ML-KEM (IDs 16–18) are not implemented by this
+crate. Reserved entries 1, 19, and 20 are not derivable. The API exposes only
+the four supported schemes, not arbitrary numeric scheme IDs.
 
 `coin_type` is the chain's [SLIP-44] registered coin type, for example `133'`
 for Zcash or `1'` for testnets. Coin type comes first, as in BIP44, so each
@@ -85,7 +102,10 @@ let verifying_key = signing_key.verifying_key();
 
 Scoped keys at `(coin_type, account, index)` are unrelated to the unscoped
 article keys, including at `(0, 0, 0)`. [`tests/scoped.rs`] checks seeds and
-public keys against the pqhd test vectors.
+public keys against all 36 [pqhd test vectors] for the supported schemes.
+Use `ml_dsa65_for`, `ml_dsa87_for`, or `slh_dsa_sha2_128s_for` for the other
+scoped keys. The corresponding `*_seed_for` methods return the registry's
+key-generation inputs without requiring a signature backend.
 
 ## Usage
 
@@ -145,15 +165,21 @@ new BIP standard. The article's audit does not cover this crate. The underlying
 RustCrypto signature implementations also warn that they have not been audited.
 
 The output signatures are post-quantum, but BIP32 still uses secp256k1. Do not
-publish intermediate extended public keys: a sufficiently capable quantum
-attacker can recover their corresponding private scalars. This crate exposes
-no intermediate keys, but reusing the mnemonic in a classical wallet can expose
-related material and requires its own security analysis. Do not infer a formal
-post-quantum security guarantee for the whole construction from its signatures.
+export intermediate extended public or private keys. A sufficiently capable
+quantum attacker can recover private scalars from extended public keys. This
+crate exposes no intermediate keys, but reusing the mnemonic in a classical
+wallet can expose related material and requires its own security analysis.
+In particular, exposing an xpub at or above `m/83696968'` exposes pqhd keys to
+a quantum attacker. Watch-only wallets must use the derived PQ public keys.
+Do not infer a formal post-quantum security guarantee for the whole
+construction from its signatures.
 
 Use a securely generated 24-word mnemonic (256 bits of entropy). The raw seed
 constructor cannot establish its provenance. Losing the mnemonic or BIP39
 passphrase loses all keys; exposing both compromises all derived keys.
+All derived keys are bounded by that entropy and by the 256-bit BIP32 scalars:
+roughly 128 bits against Grover's algorithm, even for NIST category 3 or 5
+schemes. A key derived for one scheme must not be reused for another scheme.
 
 Stored BIP39 seeds, copied leaf scalars, BIP85 digests, and returned seeds are
 erased after use or on drop. This is best-effort memory hygiene, not a guarantee
@@ -193,6 +219,9 @@ without any additional terms or conditions.
 [LICENSE-APACHE]: https://github.com/iqlusioninc/crates/blob/main/pqseed/LICENSE-APACHE
 [LICENSE-MIT]: https://github.com/iqlusioninc/crates/blob/main/pqseed/LICENSE-MIT
 [SLIP-44]: https://github.com/satoshilabs/slips/blob/master/slip-0044.md
-[pqhd]: https://github.com/pqdh/pqhd
-[pqhd registry]: https://github.com/pqdh/pqhd/blob/main/registry/README.md
+[pqhd PR #1]: https://github.com/pqdh/pqhd/pull/1
+[pqhd PR #2]: https://github.com/pqdh/pqhd/pull/2
+[pqhd spec]: https://github.com/pqdh/pqhd/blob/b9674b302c0f320ee7f0b39317eb48ddbe67f00f/spec/README.md
+[pqhd registry]: https://github.com/pqdh/pqhd/blob/af2efc57be437da09a768934b4611fd8d53ca3fc/registry/README.md
+[pqhd test vectors]: https://github.com/pqdh/pqhd/tree/af2efc57be437da09a768934b4611fd8d53ca3fc/test-vectors
 [`tests/scoped.rs`]: https://github.com/iqlusioninc/crates/blob/main/pqseed/tests/scoped.rs

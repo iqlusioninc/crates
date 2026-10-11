@@ -1,8 +1,11 @@
 //! pqhd conformance vectors for scoped derivation.
 //!
-//! Copied from the pqhd test vectors (https://github.com/pqdh/pqhd, files
-//! `test-vectors/{0,2,3,4}.json`), produced by its standard-library Python
-//! reference implementation. Path:
+//! All nine cases from each of pqhd's `test-vectors/{0,2,3,4}.json`, pinned to
+//! <https://github.com/pqdh/pqhd/tree/af2efc57be437da09a768934b4611fd8d53ca3fc/test-vectors>
+//! (PR #2, stacked on PR #1). Produced by its standard-library Python
+//! reference implementation. The maximum-scope values below were additionally
+//! computed with `drng(bip85_entropy(seed, path(MAX, scheme, MAX, MAX)), L)`
+//! from the same revision's `reference/python/pqhd.py`. Path:
 //! `m/83696968'/505153'/<coin_type>'/<scheme>'/<account>'/<index>'`, then
 //! BIP-85 HMAC-SHA512 (key "bip-entropy-from-k") over the leaf private key,
 //! then BIP-85-DRNG-SHAKE256: the first 32 (ML-DSA) or 48
@@ -195,12 +198,36 @@ fn scoped_seed_vectors() {
 }
 
 #[test]
+#[cfg(feature = "bip39")]
+fn scoped_mnemonic_normalization() {
+    // The final upstream vector uses this mnemonic, composed "café", and
+    // the asymmetric scope (60, 1, 7). Whitespace and NFKD must not change it.
+    let phrase = "  abandon amount liar amount expire adjust\t cage candy arch gather drum bullet\n\
+                  absurd math era live bid rhythm alien crouch range attend journey unaware  ";
+    let keys = KeyDeriver::from_mnemonic(phrase, "cafe\u{301}").unwrap();
+    let vector = &VECTORS[8];
+    let scope = &vector.scope;
+    assert_eq!(*keys.ml_dsa44_seed_for(scope).unwrap(), vector.ml44);
+    assert_eq!(*keys.ml_dsa65_seed_for(scope).unwrap(), vector.ml65);
+    assert_eq!(*keys.ml_dsa87_seed_for(scope).unwrap(), vector.ml87);
+    assert_eq!(*keys.slh_dsa_sha2_128s_seed_for(scope).unwrap(), vector.slh);
+}
+
+#[test]
 fn scoped_seeds_differ_from_project_eleven_paths() {
     let keys = KeyDeriver::from_seed(&SEEDS[0]);
     let scope = Scope::new(0, 0, 0);
     assert_ne!(
         *keys.ml_dsa44_seed_for(&scope).unwrap(),
         *keys.ml_dsa44_seed().unwrap()
+    );
+    assert_ne!(
+        *keys.ml_dsa65_seed_for(&scope).unwrap(),
+        *keys.ml_dsa65_seed().unwrap()
+    );
+    assert_ne!(
+        *keys.ml_dsa87_seed_for(&scope).unwrap(),
+        *keys.ml_dsa87_seed().unwrap()
     );
     assert_ne!(
         *keys.slh_dsa_sha2_128s_seed_for(&scope).unwrap(),
@@ -211,7 +238,26 @@ fn scoped_seeds_differ_from_project_eleven_paths() {
 #[test]
 fn accept_maximum_scope_values() {
     let keys = KeyDeriver::from_seed(&SEEDS[0]);
-    assert!(keys.ml_dsa44_seed_for(&Scope::new(MAX, MAX, MAX)).is_ok());
+    let scope = Scope::new(MAX, MAX, MAX);
+    assert_eq!(
+        *keys.ml_dsa44_seed_for(&scope).unwrap(),
+        hex!("9e876f991ab1738ef28e57969d0d818a9ac502dbc2da48f63e4799aa3ea7f10d")
+    );
+    assert_eq!(
+        *keys.ml_dsa65_seed_for(&scope).unwrap(),
+        hex!("4b72fc0868fcf78028f5889d2bed378e4ce42467f9bb14740ba1d5789ea39cab")
+    );
+    assert_eq!(
+        *keys.ml_dsa87_seed_for(&scope).unwrap(),
+        hex!("98ad7a57faead239f8c5330f6cdee0012245313d1b08869f8fba01d67dd85d56")
+    );
+    assert_eq!(
+        *keys.slh_dsa_sha2_128s_seed_for(&scope).unwrap(),
+        hex!(
+            "273d95cc619b615c9db27c14a37df648a0a6a01025b0e69c2ad6009258b443516
+              0797fa40d8646959e5cbb64e89c806e"
+        )
+    );
 }
 
 #[test]
@@ -223,6 +269,8 @@ fn reject_unhardenable_scope_values() {
         Scope::new(0, 0, MAX + 1),
     ] {
         assert!(keys.ml_dsa44_seed_for(&scope).is_err());
+        assert!(keys.ml_dsa65_seed_for(&scope).is_err());
+        assert!(keys.ml_dsa87_seed_for(&scope).is_err());
         assert!(keys.slh_dsa_sha2_128s_seed_for(&scope).is_err());
     }
 }

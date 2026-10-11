@@ -9,5 +9,7 @@
 - Add [pqhd] scoped derivation at
   `m/83696968'/505153'/coin_type'/scheme'/account'/index'`, keyed by SLIP-44
   coin type and expanded with BIP85-DRNG-SHAKE256.
+- Pin pqhd conformance to the draft specification in PR #1 and the registry
+  in PR #2 for schemes 0, 2, 3, and 4; preserve unscoped outputs separately.
 
-[pqhd]: https://github.com/pqdh/pqhd
+[pqhd]: https://github.com/pqdh/pqhd/blob/b9674b302c0f320ee7f0b39317eb48ddbe67f00f/spec/README.md
