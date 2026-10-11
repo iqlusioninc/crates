@@ -24,7 +24,65 @@ ID 1 is reserved by the article. IDs 3 and 4 are **`pqseed` extensions**, not
 assignments from Project Eleven or a BIP standard. Interoperability for these
 variants requires using these exact IDs; future external assignments may differ.
 Each ML-DSA variant uses a separate path rather than reusing another variant's
-seed. No extra index or alternate application number is added.
+seed. These article-compatible paths have no coin type, account, or index:
+every chain using them shares one key per algorithm per mnemonic.
+
+## Scoped derivation for chains
+
+A chain adopting post-quantum keys needs every wallet implementation to
+derive the same key from the same mnemonic, coin type, and algorithm, without
+sharing keys with other chains. `pqseed` defines a scoped namespace under its
+own BIP85 application number, `505153'` (the hex bytes of ASCII "PQS",
+following the convention behind Project Eleven's `503131'` for "P11"). It is
+separate from Project Eleven's subtree, so it cannot collide with future
+Project Eleven assignments.
+
+```text
+m / 83696968' / 505153' / coin_type' / algorithm' / account' / index'
+```
+
+1. Expand the BIP39 mnemonic and passphrase to the 64-byte seed.
+2. Derive the BIP32 (secp256k1) master key and follow the path above. Every
+   level is hardened; each value must be below 2<sup>31</sup>.
+3. Compute HMAC-SHA-512 with key `bip-entropy-from-k` over the raw 32-byte
+   leaf private key, as in BIP85.
+4. Keep the first `L` bytes and pass them to the algorithm's key generation:
+
+| ID | Algorithm | `L` | Key generation |
+|----|-----------|-----|----------------|
+| 0 | ML-DSA-44 | 32 | FIPS 204 `ML-DSA.KeyGen_internal(ξ)` |
+| 1 | Reserved | | Unassigned, mirroring the article |
+| 2 | SLH-DSA-SHA2-128s | 48 | FIPS 205 `slh_keygen_internal(SK.seed, SK.prf, PK.seed)`, 16 bytes each, in that order |
+| 3 | ML-DSA-65 | 32 | FIPS 204 `ML-DSA.KeyGen_internal(ξ)` |
+| 4 | ML-DSA-87 | 32 | FIPS 204 `ML-DSA.KeyGen_internal(ξ)` |
+
+`coin_type` is the chain's [SLIP-44] registered coin type, for example `133'`
+for Zcash or `1'` for testnets. Coin type comes first, as in BIP44, so each
+chain owns a subtree and picks its algorithm and account layout within it.
+Non-hardened BIP44 levels such as `change` are not used: post-quantum keys
+have no public derivation, and exposing a secp256k1 extended public key is
+not quantum-safe. Watch-only wallets need exported public keys instead.
+
+```rust
+# #[cfg(feature = "ml-dsa")]
+# fn main() -> Result<(), Box<dyn std::error::Error>> {
+# let seed = [0u8; 64];
+use pqseed::{KeyDeriver, Scope, ml_dsa::Keypair};
+
+let keys = KeyDeriver::from_seed(&seed);
+// Zcash (SLIP-44 coin type 133), account 0, key 0.
+let signing_key = keys.ml_dsa44_for(&Scope::new(133, 0, 0))?;
+let verifying_key = signing_key.verifying_key();
+# Ok(())
+# }
+# #[cfg(not(feature = "ml-dsa"))]
+# fn main() {}
+```
+
+Scoped keys at `(coin_type, account, index)` are unrelated to the unscoped
+article keys, including at `(0, 0, 0)`. Test vectors for independent
+implementations are in [`tests/scoped.rs`]; new algorithms need an ID, an
+output length `L`, and a seed-to-key mapping added to this table.
 
 ## Usage
 
@@ -131,3 +189,5 @@ without any additional terms or conditions.
 [build-link]: https://github.com/iqlusioninc/crates/actions/workflows/pqseed.yml
 [LICENSE-APACHE]: https://github.com/iqlusioninc/crates/blob/main/pqseed/LICENSE-APACHE
 [LICENSE-MIT]: https://github.com/iqlusioninc/crates/blob/main/pqseed/LICENSE-MIT
+[SLIP-44]: https://github.com/satoshilabs/slips/blob/master/slip-0044.md
+[`tests/scoped.rs`]: https://github.com/iqlusioninc/crates/blob/main/pqseed/tests/scoped.rs
