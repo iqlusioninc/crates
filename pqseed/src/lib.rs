@@ -22,6 +22,7 @@ use bip32::{ChildNumber, XPrv};
 use core::fmt;
 use hmac::{Hmac, KeyInit, Mac};
 use sha2::Sha512;
+use sha3::{Shake256, digest::ExtendableOutput};
 use zeroize::{Zeroize, Zeroizing};
 
 /// BIP85 purpose: `83696968'`.
@@ -30,13 +31,15 @@ const BIP85: u32 = 83_696_968;
 /// Project Eleven's BIP85 application number: `503131'` ("P11").
 const P11_APP: u32 = 503_131;
 
-/// The `pqseed` BIP85 application number for scoped keys: `505153'`.
+/// The [pqhd] BIP85 application number for scoped keys: `505153'`.
 ///
 /// The decimal digits are the hex bytes of ASCII "PQS", following the
 /// convention behind Project Eleven's `503131'` ("P11").
+///
+/// [pqhd]: https://github.com/pqdh/pqhd
 pub const PQSEED_APP: u32 = 505_153;
 
-/// Algorithm IDs, shared by the Project Eleven and `pqseed` namespaces.
+/// Algorithm IDs, shared by the Project Eleven and pqhd namespaces.
 const ML_DSA_44: u32 = 0;
 const SLH_DSA_SHA2_128S: u32 = 2;
 const ML_DSA_65: u32 = 3;
@@ -44,11 +47,13 @@ const ML_DSA_87: u32 = 4;
 
 /// A coin type, account, and key index for scoped derivation.
 ///
-/// Scoped keys live at
-/// `m/83696968'/505153'/coin_type'/algorithm'/account'/index'`. `coin_type`
-/// is a [SLIP-44] registered coin type. Every level is hardened, so each value
-/// must be below 2<sup>31</sup>.
+/// Scoped keys follow [pqhd]: they live at
+/// `m/83696968'/505153'/coin_type'/scheme'/account'/index'`, and the BIP85
+/// entropy there seeds BIP85-DRNG-SHAKE256. `coin_type` is a [SLIP-44]
+/// registered coin type. Every level is hardened, so each value must be below
+/// 2<sup>31</sup>.
 ///
+/// [pqhd]: https://github.com/pqdh/pqhd
 /// [SLIP-44]: https://github.com/satoshilabs/slips/blob/master/slip-0044.md
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct Scope {
@@ -86,8 +91,10 @@ impl Scope {
 ///
 /// Holds a secret 64-byte seed, zeroized on drop. No extended public keys or
 /// non-hardened derivation are exposed. Unscoped methods use the article's
-/// single fixed path per algorithm; `*_for` methods derive keys scoped to a
-/// coin type, account, and index in the separate `pqseed` namespace.
+/// single fixed path per algorithm; `*_for` methods derive [pqhd] keys scoped
+/// to a coin type, account, and index.
+///
+/// [pqhd]: https://github.com/pqdh/pqhd
 pub struct KeyDeriver {
     seed: Zeroizing<[u8; 64]>,
 }
@@ -160,7 +167,7 @@ impl KeyDeriver {
     /// Path: `m/83696968'/505153'/coin_type'/0'/account'/index'`. The returned
     /// buffer is secret and zeroizes on drop; do not log it.
     pub fn ml_dsa44_seed_for(&self, scope: &Scope) -> Result<Zeroizing<[u8; 32]>> {
-        self.derive_seed(&scope.path(ML_DSA_44))
+        self.derive_scoped(&scope.path(ML_DSA_44))
     }
 
     /// Derive the 32-byte ML-DSA-65 seed for a [`Scope`].
@@ -168,7 +175,7 @@ impl KeyDeriver {
     /// Path: `m/83696968'/505153'/coin_type'/3'/account'/index'`. The returned
     /// buffer is secret and zeroizes on drop; do not log it.
     pub fn ml_dsa65_seed_for(&self, scope: &Scope) -> Result<Zeroizing<[u8; 32]>> {
-        self.derive_seed(&scope.path(ML_DSA_65))
+        self.derive_scoped(&scope.path(ML_DSA_65))
     }
 
     /// Derive the 32-byte ML-DSA-87 seed for a [`Scope`].
@@ -176,7 +183,7 @@ impl KeyDeriver {
     /// Path: `m/83696968'/505153'/coin_type'/4'/account'/index'`. The returned
     /// buffer is secret and zeroizes on drop; do not log it.
     pub fn ml_dsa87_seed_for(&self, scope: &Scope) -> Result<Zeroizing<[u8; 32]>> {
-        self.derive_seed(&scope.path(ML_DSA_87))
+        self.derive_scoped(&scope.path(ML_DSA_87))
     }
 
     /// Derive the 48-byte SLH-DSA-SHA2-128s seed for a [`Scope`].
@@ -185,7 +192,7 @@ impl KeyDeriver {
     /// `SK.seed || SK.prf || PK.seed`. The returned buffer is secret and
     /// zeroizes on drop; do not log it.
     pub fn slh_dsa_sha2_128s_seed_for(&self, scope: &Scope) -> Result<Zeroizing<[u8; 48]>> {
-        self.derive_seed(&scope.path(SLH_DSA_SHA2_128S))
+        self.derive_scoped(&scope.path(SLH_DSA_SHA2_128S))
     }
 
     /// Derive an ML-DSA-44 signing key, from which the public key is available
@@ -253,7 +260,26 @@ impl KeyDeriver {
         Ok(slh_dsa_key(&seed))
     }
 
+    /// Project Eleven: the first `N` bytes of the BIP85 entropy.
     fn derive_seed<const N: usize>(&self, path: &[u32]) -> Result<Zeroizing<[u8; N]>> {
+        let entropy = self.bip85_entropy(path)?;
+        let mut seed = Zeroizing::new([0u8; N]);
+        seed.copy_from_slice(&entropy[..N]);
+        Ok(seed)
+    }
+
+    /// pqhd: the first `N` bytes of BIP85-DRNG-SHAKE256 seeded with the
+    /// 64-byte BIP85 entropy.
+    fn derive_scoped<const N: usize>(&self, path: &[u32]) -> Result<Zeroizing<[u8; N]>> {
+        let entropy = self.bip85_entropy(path)?;
+        let mut seed = Zeroizing::new([0u8; N]);
+        Shake256::digest_xof(entropy.as_slice(), &mut *seed);
+        Ok(seed)
+    }
+
+    /// BIP85: HMAC-SHA512 keyed with `bip-entropy-from-k` over the private key
+    /// at a fully hardened path.
+    fn bip85_entropy(&self, path: &[u32]) -> Result<Zeroizing<[u8; 64]>> {
         let mut node = XPrv::new(&*self.seed)?;
         for &index in path {
             node = node.derive_child(ChildNumber::new(index, true)?)?;
@@ -264,10 +290,10 @@ impl KeyDeriver {
             .expect("HMAC accepts this fixed key length");
         mac.update(&*private_key);
         let mut digest = mac.finalize().into_bytes();
-        let mut seed = Zeroizing::new([0u8; N]);
-        seed.copy_from_slice(&digest[..N]);
+        let mut entropy = Zeroizing::new([0u8; 64]);
+        entropy.copy_from_slice(&digest);
         digest.as_mut_slice().zeroize();
-        Ok(seed)
+        Ok(entropy)
     }
 }
 

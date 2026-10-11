@@ -15,6 +15,7 @@ rust-version = "1.85"
 bip32 = { version = "0.6", path = "../bip32", default-features = false, features = ["secp256k1"] }
 hmac = { version = "0.13", default-features = false }
 sha2 = { version = "0.11", default-features = false }
+sha3 = { version = "0.11", default-features = false, features = ["zeroize"] }
 zeroize = { version = "1", default-features = false }
 
 # optional dependencies

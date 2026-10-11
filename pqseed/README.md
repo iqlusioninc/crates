@@ -27,18 +27,18 @@ Each ML-DSA variant uses a separate path rather than reusing another variant's
 seed. These article-compatible paths have no coin type, account, or index:
 every chain using them shares one key per algorithm per mnemonic.
 
-## Scoped derivation for chains
+## Scoped derivation for chains (pqhd)
 
 A chain adopting post-quantum keys needs every wallet implementation to
-derive the same key from the same mnemonic, coin type, and algorithm, without
-sharing keys with other chains. `pqseed` defines a scoped namespace under its
-own BIP85 application number, `505153'` (the hex bytes of ASCII "PQS",
-following the convention behind Project Eleven's `503131'` for "P11"). It is
-separate from Project Eleven's subtree, so it cannot collide with future
+derive the same key from the same mnemonic, coin type, and scheme, without
+sharing keys with other chains. The `*_for` methods implement [pqhd], a
+standard and scheme registry for this. pqhd uses its own BIP85 application
+number, `505153'` (the hex bytes of ASCII "PQS", following the convention
+behind Project Eleven's `503131'` for "P11"), so it cannot collide with future
 Project Eleven assignments.
 
 ```text
-m / 83696968' / 505153' / coin_type' / algorithm' / account' / index'
+m / 83696968' / 505153' / coin_type' / scheme' / account' / index'
 ```
 
 1. Expand the BIP39 mnemonic and passphrase to the 64-byte seed.
@@ -46,12 +46,16 @@ m / 83696968' / 505153' / coin_type' / algorithm' / account' / index'
    level is hardened; each value must be below 2<sup>31</sup>.
 3. Compute HMAC-SHA-512 with key `bip-entropy-from-k` over the raw 32-byte
    leaf private key, as in BIP85.
-4. Keep the first `L` bytes and pass them to the algorithm's key generation:
+4. Read `L` bytes from BIP85-DRNG-SHAKE256 (SHAKE256 over the 64-byte HMAC
+   output) and pass them to the scheme's key generation.
 
-| ID | Algorithm | `L` | Key generation |
-|----|-----------|-----|----------------|
+Unlike Project Eleven's paths, which keep the first `L` bytes of the HMAC
+output, pqhd always uses the DRNG. This crate supports these [pqhd registry]
+entries:
+
+| ID | Scheme | `L` | Key generation |
+|----|--------|-----|----------------|
 | 0 | ML-DSA-44 | 32 | FIPS 204 `ML-DSA.KeyGen_internal(ξ)` |
-| 1 | Reserved | | Unassigned, mirroring the article |
 | 2 | SLH-DSA-SHA2-128s | 48 | FIPS 205 `slh_keygen_internal(SK.seed, SK.prf, PK.seed)`, 16 bytes each, in that order |
 | 3 | ML-DSA-65 | 32 | FIPS 204 `ML-DSA.KeyGen_internal(ξ)` |
 | 4 | ML-DSA-87 | 32 | FIPS 204 `ML-DSA.KeyGen_internal(ξ)` |
@@ -80,9 +84,8 @@ let verifying_key = signing_key.verifying_key();
 ```
 
 Scoped keys at `(coin_type, account, index)` are unrelated to the unscoped
-article keys, including at `(0, 0, 0)`. Test vectors for independent
-implementations are in [`tests/scoped.rs`]; new algorithms need an ID, an
-output length `L`, and a seed-to-key mapping added to this table.
+article keys, including at `(0, 0, 0)`. [`tests/scoped.rs`] checks seeds and
+public keys against the pqhd test vectors.
 
 ## Usage
 
@@ -190,4 +193,6 @@ without any additional terms or conditions.
 [LICENSE-APACHE]: https://github.com/iqlusioninc/crates/blob/main/pqseed/LICENSE-APACHE
 [LICENSE-MIT]: https://github.com/iqlusioninc/crates/blob/main/pqseed/LICENSE-MIT
 [SLIP-44]: https://github.com/satoshilabs/slips/blob/master/slip-0044.md
+[pqhd]: https://github.com/pqdh/pqhd
+[pqhd registry]: https://github.com/pqdh/pqhd/blob/main/registry/README.md
 [`tests/scoped.rs`]: https://github.com/iqlusioninc/crates/blob/main/pqseed/tests/scoped.rs
