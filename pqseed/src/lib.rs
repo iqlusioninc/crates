@@ -89,6 +89,142 @@ impl Scope {
     }
 }
 
+/// SLH-DSA parameter sets in the [pqhd registry], for scoped derivation.
+///
+/// [pqhd registry]: https://github.com/pqdh/pqhd/blob/af2efc57be437da09a768934b4611fd8d53ca3fc/registry/README.md
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[non_exhaustive]
+pub enum SlhDsa {
+    /// SLH-DSA-SHA2-128s, pqhd scheme 2.
+    Sha2_128s,
+    /// SLH-DSA-SHAKE-128s, pqhd scheme 5.
+    Shake128s,
+    /// SLH-DSA-SHA2-128f, pqhd scheme 6.
+    Sha2_128f,
+    /// SLH-DSA-SHAKE-128f, pqhd scheme 7.
+    Shake128f,
+    /// SLH-DSA-SHA2-192s, pqhd scheme 8.
+    Sha2_192s,
+    /// SLH-DSA-SHAKE-192s, pqhd scheme 9.
+    Shake192s,
+    /// SLH-DSA-SHA2-192f, pqhd scheme 10.
+    Sha2_192f,
+    /// SLH-DSA-SHAKE-192f, pqhd scheme 11.
+    Shake192f,
+    /// SLH-DSA-SHA2-256s, pqhd scheme 12.
+    Sha2_256s,
+    /// SLH-DSA-SHAKE-256s, pqhd scheme 13.
+    Shake256s,
+    /// SLH-DSA-SHA2-256f, pqhd scheme 14.
+    Sha2_256f,
+    /// SLH-DSA-SHAKE-256f, pqhd scheme 15.
+    Shake256f,
+}
+
+impl SlhDsa {
+    /// The pqhd scheme index: the `scheme'` level of the derivation path.
+    pub const fn scheme(self) -> u32 {
+        match self {
+            Self::Sha2_128s => SLH_DSA_SHA2_128S,
+            Self::Shake128s => 5,
+            Self::Sha2_128f => 6,
+            Self::Shake128f => 7,
+            Self::Sha2_192s => 8,
+            Self::Shake192s => 9,
+            Self::Sha2_192f => 10,
+            Self::Shake192f => 11,
+            Self::Sha2_256s => 12,
+            Self::Shake256s => 13,
+            Self::Sha2_256f => 14,
+            Self::Shake256f => 15,
+        }
+    }
+
+    /// The FIPS 205 security parameter `n` in bytes: 16, 24, or 32.
+    pub const fn n(self) -> usize {
+        match self {
+            Self::Sha2_128s | Self::Shake128s | Self::Sha2_128f | Self::Shake128f => 16,
+            Self::Sha2_192s | Self::Shake192s | Self::Sha2_192f | Self::Shake192f => 24,
+            Self::Sha2_256s | Self::Shake256s | Self::Sha2_256f | Self::Shake256f => 32,
+        }
+    }
+}
+
+/// Secret SLH-DSA key-generation input: `SK.seed || SK.prf || PK.seed`.
+///
+/// Zeroized on drop. Its `Debug` output is redacted; do not log its bytes.
+pub struct SlhDsaSeed {
+    set: SlhDsa,
+    bytes: Zeroizing<[u8; 96]>,
+}
+
+impl SlhDsaSeed {
+    /// The parameter set this seed was derived for.
+    pub fn set(&self) -> SlhDsa {
+        self.set
+    }
+
+    /// All `3n` bytes: `SK.seed || SK.prf || PK.seed`.
+    pub fn as_bytes(&self) -> &[u8] {
+        &self.bytes[..3 * self.set.n()]
+    }
+
+    /// `SK.seed`, the first `n` bytes.
+    pub fn sk_seed(&self) -> &[u8] {
+        &self.bytes[..self.set.n()]
+    }
+
+    /// `SK.prf`, the second `n` bytes.
+    pub fn sk_prf(&self) -> &[u8] {
+        let n = self.set.n();
+        &self.bytes[n..2 * n]
+    }
+
+    /// `PK.seed`, the third `n` bytes.
+    pub fn pk_seed(&self) -> &[u8] {
+        let n = self.set.n();
+        &self.bytes[2 * n..3 * n]
+    }
+}
+
+impl fmt::Debug for SlhDsaSeed {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("SlhDsaSeed")
+            .field("set", &self.set)
+            .finish_non_exhaustive()
+    }
+}
+
+/// RustCrypto SLH-DSA parameter sets that have a pqhd scheme index.
+///
+/// Implemented for every `slh_dsa` parameter set; this trait is sealed.
+#[cfg(feature = "slh-dsa")]
+pub trait SlhDsaParams: slh_dsa::ParameterSet + sealed::Sealed {
+    /// The corresponding registry entry.
+    const SET: SlhDsa;
+}
+
+#[cfg(feature = "slh-dsa")]
+mod sealed {
+    pub trait Sealed {}
+}
+
+#[cfg(feature = "slh-dsa")]
+macro_rules! slh_dsa_params {
+    ($($set:ident),* $(,)?) => {$(
+        impl sealed::Sealed for slh_dsa::$set {}
+        impl SlhDsaParams for slh_dsa::$set {
+            const SET: SlhDsa = SlhDsa::$set;
+        }
+    )*};
+}
+
+#[cfg(feature = "slh-dsa")]
+slh_dsa_params!(
+    Sha2_128s, Shake128s, Sha2_128f, Shake128f, Sha2_192s, Shake192s, Sha2_192f, Shake192f,
+    Sha2_256s, Shake256s, Sha2_256f, Shake256f,
+);
+
 /// Derives post-quantum keys using the pqhd draft and Project Eleven's scheme.
 ///
 /// Holds a secret 64-byte seed, zeroized on drop. No extended public keys or
@@ -96,7 +232,8 @@ impl Scope {
 /// single fixed path per algorithm; `*_for` methods derive [pqhd] keys scoped
 /// to a coin type, account, and index.
 ///
-/// Scoped methods implement active draft registry entries 0, 2, 3, and 4 only.
+/// Scoped methods implement active draft registry entries 0 and 2-15: ML-DSA
+/// and every SLH-DSA parameter set.
 /// An invalid BIP32 master or child key returns an error without skipping to
 /// another index. Scoped and unscoped derivations must not be interchanged.
 ///
@@ -201,6 +338,18 @@ impl KeyDeriver {
         self.derive_scoped(&scope.path(SLH_DSA_SHA2_128S))
     }
 
+    /// Derive the SLH-DSA key-generation seed for any registry parameter set
+    /// and [`Scope`], at `m/83696968'/505153'/coin_type'/scheme'/account'/index'`
+    /// with `scheme` from [`SlhDsa::scheme`].
+    ///
+    /// Available without the `slh-dsa` backend.
+    pub fn slh_dsa_seed_for(&self, set: SlhDsa, scope: &Scope) -> Result<SlhDsaSeed> {
+        // SHAKE256 output is prefix-consistent: the first 3n of these 96
+        // bytes are exactly the first 3n bytes pqhd specifies for this set.
+        let bytes = self.derive_scoped(&scope.path(set.scheme()))?;
+        Ok(SlhDsaSeed { set, bytes })
+    }
+
     /// Derive an ML-DSA-44 signing key, from which the public key is available
     /// through [`ml_dsa::Keypair::verifying_key`].
     #[cfg(feature = "ml-dsa")]
@@ -264,6 +413,18 @@ impl KeyDeriver {
     ) -> Result<slh_dsa::SigningKey<slh_dsa::Sha2_128s>> {
         let seed = self.slh_dsa_sha2_128s_seed_for(scope)?;
         Ok(slh_dsa_key(&seed))
+    }
+
+    /// Derive an SLH-DSA signing key for any registry parameter set and
+    /// [`Scope`], for example `keys.slh_dsa_for::<slh_dsa::Shake256f>(&scope)`.
+    #[cfg(feature = "slh-dsa")]
+    pub fn slh_dsa_for<P: SlhDsaParams>(&self, scope: &Scope) -> Result<slh_dsa::SigningKey<P>> {
+        let seed = self.slh_dsa_seed_for(P::SET, scope)?;
+        Ok(slh_dsa::SigningKey::slh_keygen_internal(
+            seed.sk_seed(),
+            seed.sk_prf(),
+            seed.pk_seed(),
+        ))
     }
 
     /// Project Eleven: the first `N` bytes of the BIP85 entropy.

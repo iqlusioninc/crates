@@ -71,11 +71,14 @@ entries:
 | 2 | SLH-DSA-SHA2-128s | 48 | FIPS 205 `slh_keygen_internal(SK.seed, SK.prf, PK.seed)`, 16 bytes each, in that order |
 | 3 | ML-DSA-65 | 32 | FIPS 204 `ML-DSA.KeyGen_internal(ξ)` |
 | 4 | ML-DSA-87 | 32 | FIPS 204 `ML-DSA.KeyGen_internal(ξ)` |
+| 5–15 | SLH-DSA-SHAKE-128s, -SHA2-128f, -SHAKE-128f, then the 192 and 256 sets in the same order | 48, 72, or 96 | FIPS 205 `slh_keygen_internal(SK.seed, SK.prf, PK.seed)`, `n` bytes each, in that order |
 
-These four entries are `active` in the draft registry. The remaining SLH-DSA
-parameter sets (IDs 5–15) and ML-KEM (IDs 16–18) are not implemented by this
-crate. Reserved entries 1, 19, and 20 are not derivable. The API exposes only
-the four supported schemes, not arbitrary numeric scheme IDs.
+These entries are `active` in the draft registry. Indices 5–15 follow
+[pqhd PR #2], which has not yet been agreed, and will change here if its
+numbering changes. ML-KEM (IDs 16–18) is not implemented by this crate.
+Reserved entries 1, 19, and 20 are not derivable. The API exposes only the
+supported schemes, not arbitrary numeric scheme IDs: [`SlhDsa`] lists the
+SLH-DSA parameter sets with their scheme indices.
 
 `coin_type` is the chain's [SLIP-44] registered coin type, for example `133'`
 for Zcash or `1'` for testnets. Coin type comes first, as in BIP44, so each
@@ -102,10 +105,13 @@ let verifying_key = signing_key.verifying_key();
 
 Scoped keys at `(coin_type, account, index)` are unrelated to the unscoped
 article keys, including at `(0, 0, 0)`. [`tests/scoped.rs`] checks seeds and
-public keys against all 36 [pqhd test vectors] for the supported schemes.
-Use `ml_dsa65_for`, `ml_dsa87_for`, or `slh_dsa_sha2_128s_for` for the other
-scoped keys. The corresponding `*_seed_for` methods return the registry's
-key-generation inputs without requiring a signature backend.
+public keys against all 36 [pqhd test vectors] for schemes 0, 2, 3, and 4;
+[`tests/scoped_slh_dsa.rs`] checks three vectors per SLH-DSA set 5–15, one for
+each seed. Use `ml_dsa65_for`, `ml_dsa87_for`, `slh_dsa_sha2_128s_for`, or
+`slh_dsa_for::<P>` (for example `P = pqseed::slh_dsa::Shake256f`) for the other
+scoped keys. The corresponding `*_seed_for` methods, including
+`slh_dsa_seed_for`, return the registry's key-generation inputs without
+requiring a signature backend.
 
 ## Usage
 
@@ -225,3 +231,5 @@ without any additional terms or conditions.
 [pqhd registry]: https://github.com/pqdh/pqhd/blob/af2efc57be437da09a768934b4611fd8d53ca3fc/registry/README.md
 [pqhd test vectors]: https://github.com/pqdh/pqhd/tree/af2efc57be437da09a768934b4611fd8d53ca3fc/test-vectors
 [`tests/scoped.rs`]: https://github.com/iqlusioninc/crates/blob/main/pqseed/tests/scoped.rs
+[`tests/scoped_slh_dsa.rs`]: https://github.com/iqlusioninc/crates/blob/main/pqseed/tests/scoped_slh_dsa.rs
+[`SlhDsa`]: https://docs.rs/pqseed/latest/pqseed/enum.SlhDsa.html
