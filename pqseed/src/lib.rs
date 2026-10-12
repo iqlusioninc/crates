@@ -31,11 +31,8 @@ const BIP85: u32 = 83_696_968;
 /// Project Eleven's BIP85 application number: `503131'` ("P11").
 const P11_APP: u32 = 503_131;
 
-// Unscoped Project Eleven IDs; 3 and 4 are pqseed-specific extensions.
+// The only supported unscoped Project Eleven ID.
 const P11_ML_DSA_44: u32 = 0;
-const P11_SLH_DSA_SHA2_128S: u32 = 2;
-const P11_ML_DSA_65: u32 = 3;
-const P11_ML_DSA_87: u32 = 4;
 
 /// The [pqhd draft]'s proposed BIP85 application number for scoped keys: `505153'`.
 ///
@@ -233,8 +230,8 @@ slh_dsa_params!(
 /// Derives post-quantum keys using the pqhd draft and Project Eleven's scheme.
 ///
 /// Holds a secret 64-byte seed, zeroized on drop. No extended public keys or
-/// non-hardened derivation are exposed. Unscoped methods use the article's
-/// single fixed path per algorithm; `*_for` methods derive [pqhd] keys scoped
+/// non-hardened derivation are exposed. Unscoped ML-DSA-44 methods use the
+/// article's fixed path; `*_for` methods derive [pqhd] keys scoped
 /// to a coin type, account, and index.
 ///
 /// Scoped methods implement active draft registry entries 200-202 and 300-311: ML-DSA
@@ -282,32 +279,6 @@ impl KeyDeriver {
     /// buffer is secret and zeroizes on drop; do not log it or its `Debug` value.
     pub fn ml_dsa44_seed(&self) -> Result<Zeroizing<[u8; 32]>> {
         self.derive_seed(&[BIP85, P11_APP, P11_ML_DSA_44])
-    }
-
-    /// Derive the 32-byte ML-DSA-65 seed at `m/83696968'/503131'/3'`.
-    ///
-    /// Algorithm ID 3 is a `pqseed` extension, not assigned by Project Eleven.
-    /// Returns the first 32 bytes of the BIP85 HMAC output in a secret buffer
-    /// that zeroizes on drop; do not log it or its `Debug` value.
-    pub fn ml_dsa65_seed(&self) -> Result<Zeroizing<[u8; 32]>> {
-        self.derive_seed(&[BIP85, P11_APP, P11_ML_DSA_65])
-    }
-
-    /// Derive the 32-byte ML-DSA-87 seed at `m/83696968'/503131'/4'`.
-    ///
-    /// Algorithm ID 4 is a `pqseed` extension, not assigned by Project Eleven.
-    /// Returns the first 32 bytes of the BIP85 HMAC output in a secret buffer
-    /// that zeroizes on drop; do not log it or its `Debug` value.
-    pub fn ml_dsa87_seed(&self) -> Result<Zeroizing<[u8; 32]>> {
-        self.derive_seed(&[BIP85, P11_APP, P11_ML_DSA_87])
-    }
-
-    /// Derive the 48-byte SLH-DSA-SHA2-128s seed at `m/83696968'/503131'/2'`.
-    ///
-    /// The bytes are `SK.seed || SK.prf || PK.seed`, each 16 bytes long.
-    /// The returned buffer is secret and zeroizes on drop; do not log it.
-    pub fn slh_dsa_sha2_128s_seed(&self) -> Result<Zeroizing<[u8; 48]>> {
-        self.derive_seed(&[BIP85, P11_APP, P11_SLH_DSA_SHA2_128S])
     }
 
     /// Derive the 32-byte ML-DSA-44 seed for a [`Scope`].
@@ -361,32 +332,6 @@ impl KeyDeriver {
     pub fn ml_dsa44(&self) -> Result<ml_dsa::SigningKey<ml_dsa::MlDsa44>> {
         let seed = self.ml_dsa44_seed()?;
         Ok(ml_dsa_key(&seed))
-    }
-
-    /// Derive an ML-DSA-65 signing key using the `pqseed` algorithm ID 3.
-    ///
-    /// The public key is available through [`ml_dsa::Keypair::verifying_key`].
-    #[cfg(feature = "ml-dsa")]
-    pub fn ml_dsa65(&self) -> Result<ml_dsa::SigningKey<ml_dsa::MlDsa65>> {
-        let seed = self.ml_dsa65_seed()?;
-        Ok(ml_dsa_key(&seed))
-    }
-
-    /// Derive an ML-DSA-87 signing key using the `pqseed` algorithm ID 4.
-    ///
-    /// The public key is available through [`ml_dsa::Keypair::verifying_key`].
-    #[cfg(feature = "ml-dsa")]
-    pub fn ml_dsa87(&self) -> Result<ml_dsa::SigningKey<ml_dsa::MlDsa87>> {
-        let seed = self.ml_dsa87_seed()?;
-        Ok(ml_dsa_key(&seed))
-    }
-
-    /// Derive an SLH-DSA-SHA2-128s signing key, from which the public key is
-    /// available through [`slh_dsa::signature::Keypair::verifying_key`].
-    #[cfg(feature = "slh-dsa")]
-    pub fn slh_dsa_sha2_128s(&self) -> Result<slh_dsa::SigningKey<slh_dsa::Sha2_128s>> {
-        let seed = self.slh_dsa_sha2_128s_seed()?;
-        Ok(slh_dsa_key(&seed))
     }
 
     /// Derive an ML-DSA-44 signing key for a [`Scope`].

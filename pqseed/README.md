@@ -8,9 +8,9 @@
 
 `pqseed` derives post-quantum signature keys from 24-word BIP39 mnemonics.
 Scoped `*_for` methods implement the [pqhd draft specification][pqhd spec]
-and its [scheme registry][pqhd registry]. Unscoped methods retain
-[Project Eleven's seed derivation scheme][scheme] and the ML-DSA extensions
-described below. These are distinct derivations and produce different keys.
+and its [scheme registry][pqhd registry]. Unscoped ML-DSA-44 methods retain
+ID 0 from [Project Eleven's seed derivation scheme][scheme]. These are
+distinct derivations and produce different keys.
 
 **pqhd is draft v0.1.0, not a finalized standard. Do not protect real assets
 with keys derived under this draft.** This implementation targets the
@@ -22,26 +22,20 @@ draft may change before v1.0.
 ML-DSA IDs 200–202 and SLH-DSA IDs 300–311. All scoped keys differ from the
 earlier draft using IDs 0 and 2–15; those IDs are not aliases or deprecated
 recovery entries in the current registry. Recovering earlier draft keys
-requires the earlier implementation. Unscoped Project Eleven keys are unchanged.
+requires the earlier implementation. Unscoped ML-DSA-44 keys are unchanged;
+legacy unscoped IDs 2–4 have been removed, and ID 1 was never supported.
 
 ## Unscoped Project Eleven derivation
 
 | Algorithm | Hardened BIP32 path | BIP85 output used |
 |-----------|---------------------|-------------------|
 | ML-DSA-44 | `m/83696968'/503131'/0'` | First 32 bytes |
-| SLH-DSA-SHA2-128s | `m/83696968'/503131'/2'` | First 48 bytes |
-| ML-DSA-65 (extension) | `m/83696968'/503131'/3'` | First 32 bytes |
-| ML-DSA-87 (extension) | `m/83696968'/503131'/4'` | First 32 bytes |
 
-For each path, BIP85 computes HMAC-SHA-512 with key `bip-entropy-from-k`
-and the raw 32-byte child private key as the message. SLH-DSA receives
-`SK.seed || SK.prf || PK.seed` in three consecutive 16-byte chunks. Algorithm
-ID 1 is reserved by the article. IDs 3 and 4 are **`pqseed` extensions**, not
-assignments from Project Eleven or a BIP standard. Interoperability for these
-variants requires using these exact IDs; future external assignments may differ.
-Each ML-DSA variant uses a separate path rather than reusing another variant's
-seed. These article-compatible paths have no coin type, account, or index:
-every chain using them shares one key per algorithm per mnemonic.
+BIP85 computes HMAC-SHA-512 with key `bip-entropy-from-k` and the raw 32-byte
+child private key as the message. This article-compatible path has no coin
+type, account, or index: every chain using it shares one ML-DSA-44 key per
+mnemonic. All other parameter sets are available only through scoped pqhd
+derivation; do not reuse an ML-DSA-44 seed for another scheme.
 
 ## Scoped derivation for chains (pqhd)
 
@@ -69,7 +63,7 @@ m / 83696968' / 505153' / coin_type' / scheme' / account' / index'
 4. Read `L` bytes from BIP85-DRNG-SHAKE256 (SHAKE256 over the 64-byte HMAC
    output) and pass them to the scheme's key generation.
 
-Unlike Project Eleven's paths, which keep the first `L` bytes of the HMAC
+Unlike the Project Eleven path, which keeps the first 32 bytes of the HMAC
 output, pqhd always uses the DRNG. This crate supports these [pqhd registry]
 entries:
 
@@ -144,9 +138,9 @@ verifying_key.verify(b"hello post-quantum world", &signature)?;
 # fn main() {}
 ```
 
-Use `keys.ml_dsa65()` or `keys.ml_dsa87()` for the other ML-DSA parameter sets,
-with the same signing and verification traits. Use `keys.slh_dsa_sha2_128s()`
-for SLH-DSA; its public key is available through
+Use `keys.ml_dsa65_for(&scope)` or `keys.ml_dsa87_for(&scope)` for the other
+ML-DSA parameter sets, with the same signing and verification traits. Use
+`keys.slh_dsa_sha2_128s_for(&scope)` for SLH-DSA; its public key is available through
 `pqseed::slh_dsa::signature::Keypair`. The RustCrypto crates are re-exported so
 callers can use their native signing and verification APIs. All signing-key
 types erase secret key material on drop.
@@ -168,10 +162,9 @@ Each can be enabled independently:
   pinned prerelease and its low-level deterministic key-generation API.
 
 Without default features, `KeyDeriver::from_seed` accepts an already expanded
-64-byte BIP39 seed. `ml_dsa44_seed`, `ml_dsa65_seed`, `ml_dsa87_seed`, and
-`slh_dsa_sha2_128s_seed` remain available without either signature backend or a
-heap allocator. They return secret, zeroizing byte arrays suitable for other
-compatible implementations.
+64-byte BIP39 seed. `ml_dsa44_seed` and all scoped `*_seed_for` methods remain
+available without either signature backend or a heap allocator. They return
+secret, zeroizing seed buffers suitable for other compatible implementations.
 
 ## Security
 

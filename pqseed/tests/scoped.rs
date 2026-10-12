@@ -229,18 +229,6 @@ fn scoped_seeds_differ_from_project_eleven_paths() {
         *keys.ml_dsa44_seed_for(&scope).unwrap(),
         *keys.ml_dsa44_seed().unwrap()
     );
-    assert_ne!(
-        *keys.ml_dsa65_seed_for(&scope).unwrap(),
-        *keys.ml_dsa65_seed().unwrap()
-    );
-    assert_ne!(
-        *keys.ml_dsa87_seed_for(&scope).unwrap(),
-        *keys.ml_dsa87_seed().unwrap()
-    );
-    assert_ne!(
-        *keys.slh_dsa_sha2_128s_seed_for(&scope).unwrap(),
-        *keys.slh_dsa_sha2_128s_seed().unwrap()
-    );
 }
 
 #[test]
