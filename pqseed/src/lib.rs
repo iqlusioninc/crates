@@ -31,21 +31,26 @@ const BIP85: u32 = 83_696_968;
 /// Project Eleven's BIP85 application number: `503131'` ("P11").
 const P11_APP: u32 = 503_131;
 
+// Unscoped Project Eleven IDs; 3 and 4 are pqseed-specific extensions.
+const P11_ML_DSA_44: u32 = 0;
+const P11_SLH_DSA_SHA2_128S: u32 = 2;
+const P11_ML_DSA_65: u32 = 3;
+const P11_ML_DSA_87: u32 = 4;
+
 /// The [pqhd draft]'s proposed BIP85 application number for scoped keys: `505153'`.
 ///
 /// The decimal digits are the hex bytes of ASCII "PQS", following the
 /// convention behind Project Eleven's `503131'` ("P11"). This application
 /// number is not yet registered with BIP85. Do not use draft keys for real assets.
 ///
-/// [pqhd draft]: https://github.com/pqdh/pqhd/blob/b9674b302c0f320ee7f0b39317eb48ddbe67f00f/spec/README.md
+/// [pqhd draft]: https://github.com/pqdh/pqhd/blob/befdce14cecbb5d485d3239982bfa5b207cdb922/spec/README.md
 pub const PQSEED_APP: u32 = 505_153;
 
-/// Supported active pqhd scheme IDs. In the unscoped Project Eleven
-/// namespace, IDs 3 and 4 remain pqseed-specific extensions.
-const ML_DSA_44: u32 = 0;
-const SLH_DSA_SHA2_128S: u32 = 2;
-const ML_DSA_65: u32 = 3;
-const ML_DSA_87: u32 = 4;
+// Active pqhd scheme IDs, separate from the unscoped Project Eleven IDs.
+const ML_DSA_44: u32 = 200;
+const ML_DSA_65: u32 = 201;
+const ML_DSA_87: u32 = 202;
+const SLH_DSA_SHA2_128S: u32 = 300;
 
 /// A coin type, account, and key index for scoped derivation.
 ///
@@ -55,7 +60,7 @@ const ML_DSA_87: u32 = 4;
 /// registered coin type. Every level is hardened, so each value must be below
 /// 2<sup>31</sup>. Bounds are checked when deriving a key, not on construction.
 ///
-/// [pqhd]: https://github.com/pqdh/pqhd/blob/b9674b302c0f320ee7f0b39317eb48ddbe67f00f/spec/README.md
+/// [pqhd]: https://github.com/pqdh/pqhd/blob/befdce14cecbb5d485d3239982bfa5b207cdb922/spec/README.md
 /// [SLIP-44]: https://github.com/satoshilabs/slips/blob/master/slip-0044.md
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct Scope {
@@ -91,33 +96,33 @@ impl Scope {
 
 /// SLH-DSA parameter sets in the [pqhd registry], for scoped derivation.
 ///
-/// [pqhd registry]: https://github.com/pqdh/pqhd/blob/af2efc57be437da09a768934b4611fd8d53ca3fc/registry/README.md
+/// [pqhd registry]: https://github.com/pqdh/pqhd/blob/befdce14cecbb5d485d3239982bfa5b207cdb922/registry/README.md
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 #[non_exhaustive]
 pub enum SlhDsa {
-    /// SLH-DSA-SHA2-128s, pqhd scheme 2.
+    /// SLH-DSA-SHA2-128s, pqhd scheme 300.
     Sha2_128s,
-    /// SLH-DSA-SHAKE-128s, pqhd scheme 5.
+    /// SLH-DSA-SHAKE-128s, pqhd scheme 306.
     Shake128s,
-    /// SLH-DSA-SHA2-128f, pqhd scheme 6.
+    /// SLH-DSA-SHA2-128f, pqhd scheme 301.
     Sha2_128f,
-    /// SLH-DSA-SHAKE-128f, pqhd scheme 7.
+    /// SLH-DSA-SHAKE-128f, pqhd scheme 307.
     Shake128f,
-    /// SLH-DSA-SHA2-192s, pqhd scheme 8.
+    /// SLH-DSA-SHA2-192s, pqhd scheme 302.
     Sha2_192s,
-    /// SLH-DSA-SHAKE-192s, pqhd scheme 9.
+    /// SLH-DSA-SHAKE-192s, pqhd scheme 308.
     Shake192s,
-    /// SLH-DSA-SHA2-192f, pqhd scheme 10.
+    /// SLH-DSA-SHA2-192f, pqhd scheme 303.
     Sha2_192f,
-    /// SLH-DSA-SHAKE-192f, pqhd scheme 11.
+    /// SLH-DSA-SHAKE-192f, pqhd scheme 309.
     Shake192f,
-    /// SLH-DSA-SHA2-256s, pqhd scheme 12.
+    /// SLH-DSA-SHA2-256s, pqhd scheme 304.
     Sha2_256s,
-    /// SLH-DSA-SHAKE-256s, pqhd scheme 13.
+    /// SLH-DSA-SHAKE-256s, pqhd scheme 310.
     Shake256s,
-    /// SLH-DSA-SHA2-256f, pqhd scheme 14.
+    /// SLH-DSA-SHA2-256f, pqhd scheme 305.
     Sha2_256f,
-    /// SLH-DSA-SHAKE-256f, pqhd scheme 15.
+    /// SLH-DSA-SHAKE-256f, pqhd scheme 311.
     Shake256f,
 }
 
@@ -126,17 +131,17 @@ impl SlhDsa {
     pub const fn scheme(self) -> u32 {
         match self {
             Self::Sha2_128s => SLH_DSA_SHA2_128S,
-            Self::Shake128s => 5,
-            Self::Sha2_128f => 6,
-            Self::Shake128f => 7,
-            Self::Sha2_192s => 8,
-            Self::Shake192s => 9,
-            Self::Sha2_192f => 10,
-            Self::Shake192f => 11,
-            Self::Sha2_256s => 12,
-            Self::Shake256s => 13,
-            Self::Sha2_256f => 14,
-            Self::Shake256f => 15,
+            Self::Shake128s => 306,
+            Self::Sha2_128f => 301,
+            Self::Shake128f => 307,
+            Self::Sha2_192s => 302,
+            Self::Shake192s => 308,
+            Self::Sha2_192f => 303,
+            Self::Shake192f => 309,
+            Self::Sha2_256s => 304,
+            Self::Shake256s => 310,
+            Self::Sha2_256f => 305,
+            Self::Shake256f => 311,
         }
     }
 
@@ -232,12 +237,12 @@ slh_dsa_params!(
 /// single fixed path per algorithm; `*_for` methods derive [pqhd] keys scoped
 /// to a coin type, account, and index.
 ///
-/// Scoped methods implement active draft registry entries 0 and 2-15: ML-DSA
+/// Scoped methods implement active draft registry entries 200-202 and 300-311: ML-DSA
 /// and every SLH-DSA parameter set.
 /// An invalid BIP32 master or child key returns an error without skipping to
 /// another index. Scoped and unscoped derivations must not be interchanged.
 ///
-/// [pqhd]: https://github.com/pqdh/pqhd/blob/b9674b302c0f320ee7f0b39317eb48ddbe67f00f/spec/README.md
+/// [pqhd]: https://github.com/pqdh/pqhd/blob/befdce14cecbb5d485d3239982bfa5b207cdb922/spec/README.md
 pub struct KeyDeriver {
     seed: Zeroizing<[u8; 64]>,
 }
@@ -276,7 +281,7 @@ impl KeyDeriver {
     /// Returns the first 32 bytes of the BIP85 HMAC output. The returned
     /// buffer is secret and zeroizes on drop; do not log it or its `Debug` value.
     pub fn ml_dsa44_seed(&self) -> Result<Zeroizing<[u8; 32]>> {
-        self.derive_seed(&[BIP85, P11_APP, ML_DSA_44])
+        self.derive_seed(&[BIP85, P11_APP, P11_ML_DSA_44])
     }
 
     /// Derive the 32-byte ML-DSA-65 seed at `m/83696968'/503131'/3'`.
@@ -285,7 +290,7 @@ impl KeyDeriver {
     /// Returns the first 32 bytes of the BIP85 HMAC output in a secret buffer
     /// that zeroizes on drop; do not log it or its `Debug` value.
     pub fn ml_dsa65_seed(&self) -> Result<Zeroizing<[u8; 32]>> {
-        self.derive_seed(&[BIP85, P11_APP, ML_DSA_65])
+        self.derive_seed(&[BIP85, P11_APP, P11_ML_DSA_65])
     }
 
     /// Derive the 32-byte ML-DSA-87 seed at `m/83696968'/503131'/4'`.
@@ -294,7 +299,7 @@ impl KeyDeriver {
     /// Returns the first 32 bytes of the BIP85 HMAC output in a secret buffer
     /// that zeroizes on drop; do not log it or its `Debug` value.
     pub fn ml_dsa87_seed(&self) -> Result<Zeroizing<[u8; 32]>> {
-        self.derive_seed(&[BIP85, P11_APP, ML_DSA_87])
+        self.derive_seed(&[BIP85, P11_APP, P11_ML_DSA_87])
     }
 
     /// Derive the 48-byte SLH-DSA-SHA2-128s seed at `m/83696968'/503131'/2'`.
@@ -302,12 +307,12 @@ impl KeyDeriver {
     /// The bytes are `SK.seed || SK.prf || PK.seed`, each 16 bytes long.
     /// The returned buffer is secret and zeroizes on drop; do not log it.
     pub fn slh_dsa_sha2_128s_seed(&self) -> Result<Zeroizing<[u8; 48]>> {
-        self.derive_seed(&[BIP85, P11_APP, SLH_DSA_SHA2_128S])
+        self.derive_seed(&[BIP85, P11_APP, P11_SLH_DSA_SHA2_128S])
     }
 
     /// Derive the 32-byte ML-DSA-44 seed for a [`Scope`].
     ///
-    /// Path: `m/83696968'/505153'/coin_type'/0'/account'/index'`. The returned
+    /// Path: `m/83696968'/505153'/coin_type'/200'/account'/index'`. The returned
     /// buffer is secret and zeroizes on drop; do not log it.
     pub fn ml_dsa44_seed_for(&self, scope: &Scope) -> Result<Zeroizing<[u8; 32]>> {
         self.derive_scoped(&scope.path(ML_DSA_44))
@@ -315,7 +320,7 @@ impl KeyDeriver {
 
     /// Derive the 32-byte ML-DSA-65 seed for a [`Scope`].
     ///
-    /// Path: `m/83696968'/505153'/coin_type'/3'/account'/index'`. The returned
+    /// Path: `m/83696968'/505153'/coin_type'/201'/account'/index'`. The returned
     /// buffer is secret and zeroizes on drop; do not log it.
     pub fn ml_dsa65_seed_for(&self, scope: &Scope) -> Result<Zeroizing<[u8; 32]>> {
         self.derive_scoped(&scope.path(ML_DSA_65))
@@ -323,7 +328,7 @@ impl KeyDeriver {
 
     /// Derive the 32-byte ML-DSA-87 seed for a [`Scope`].
     ///
-    /// Path: `m/83696968'/505153'/coin_type'/4'/account'/index'`. The returned
+    /// Path: `m/83696968'/505153'/coin_type'/202'/account'/index'`. The returned
     /// buffer is secret and zeroizes on drop; do not log it.
     pub fn ml_dsa87_seed_for(&self, scope: &Scope) -> Result<Zeroizing<[u8; 32]>> {
         self.derive_scoped(&scope.path(ML_DSA_87))
@@ -331,7 +336,7 @@ impl KeyDeriver {
 
     /// Derive the 48-byte SLH-DSA-SHA2-128s seed for a [`Scope`].
     ///
-    /// Path: `m/83696968'/505153'/coin_type'/2'/account'/index'`, split as
+    /// Path: `m/83696968'/505153'/coin_type'/300'/account'/index'`, split as
     /// `SK.seed || SK.prf || PK.seed`. The returned buffer is secret and
     /// zeroizes on drop; do not log it.
     pub fn slh_dsa_sha2_128s_seed_for(&self, scope: &Scope) -> Result<Zeroizing<[u8; 48]>> {

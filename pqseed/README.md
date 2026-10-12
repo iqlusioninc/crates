@@ -14,9 +14,15 @@ described below. These are distinct derivations and produce different keys.
 
 **pqhd is draft v0.1.0, not a finalized standard. Do not protect real assets
 with keys derived under this draft.** This implementation targets the
-specification in [pqhd PR #1] and registry in [pqhd PR #2], pinned to the
-revisions linked below. The application number `505153'` is not yet registered
-with BIP85, and the draft may change before v1.0.
+specification and registry merged into pqhd `main` at the [pinned revision].
+The application number `505153'` is not yet registered with BIP85, and the
+draft may change before v1.0.
+
+**Breaking draft update:** scoped methods now use the family-block registry:
+ML-DSA IDs 200–202 and SLH-DSA IDs 300–311. All scoped keys differ from the
+earlier draft using IDs 0 and 2–15; those IDs are not aliases or deprecated
+recovery entries in the current registry. Recovering earlier draft keys
+requires the earlier implementation. Unscoped Project Eleven keys are unchanged.
 
 ## Unscoped Project Eleven derivation
 
@@ -50,9 +56,11 @@ specification][pqhd spec]. Its proposed BIP85 application number is `505153'`
 m / 83696968' / 505153' / coin_type' / scheme' / account' / index'
 ```
 
-1. Validate the English BIP39 wordlist, checksum, and exactly 24 words.
-   NFKD-normalize the mnemonic and passphrase, join words with ASCII spaces,
-   and expand with BIP39 PBKDF2-HMAC-SHA512 (2048 iterations) to the 64-byte seed.
+1. NFKD-normalize the mnemonic, split on whitespace, validate the English
+   BIP39 wordlist, checksum, and exactly 24 words, then join words with single
+   ASCII spaces. NFKD-normalize the passphrase without trimming or collapsing
+   its whitespace. Expand with BIP39 PBKDF2-HMAC-SHA512 (2048 iterations) to
+   the 64-byte seed.
 2. Derive the BIP32 (secp256k1) master key and follow the path above. Every
    level is hardened; each value must be below 2<sup>31</sup>. Invalid master
    or child keys fail derivation; indices are never silently incremented.
@@ -67,18 +75,19 @@ entries:
 
 | ID | Scheme | `L` | Key generation |
 |----|--------|-----|----------------|
-| 0 | ML-DSA-44 | 32 | FIPS 204 `ML-DSA.KeyGen_internal(ξ)` |
-| 2 | SLH-DSA-SHA2-128s | 48 | FIPS 205 `slh_keygen_internal(SK.seed, SK.prf, PK.seed)`, 16 bytes each, in that order |
-| 3 | ML-DSA-65 | 32 | FIPS 204 `ML-DSA.KeyGen_internal(ξ)` |
-| 4 | ML-DSA-87 | 32 | FIPS 204 `ML-DSA.KeyGen_internal(ξ)` |
-| 5–15 | SLH-DSA-SHAKE-128s, -SHA2-128f, -SHAKE-128f, then the 192 and 256 sets in the same order | 48, 72, or 96 | FIPS 205 `slh_keygen_internal(SK.seed, SK.prf, PK.seed)`, `n` bytes each, in that order |
+| 200 | ML-DSA-44 | 32 | FIPS 204 `ML-DSA.KeyGen_internal(ξ)` |
+| 201 | ML-DSA-65 | 32 | FIPS 204 `ML-DSA.KeyGen_internal(ξ)` |
+| 202 | ML-DSA-87 | 32 | FIPS 204 `ML-DSA.KeyGen_internal(ξ)` |
+| 300–305 | SLH-DSA-SHA2: 128s, 128f, 192s, 192f, 256s, 256f, respectively | 48, 72, or 96 | FIPS 205 `slh_keygen_internal(SK.seed, SK.prf, PK.seed)`, `n` bytes each, in that order |
+| 306–311 | SLH-DSA-SHAKE: 128s, 128f, 192s, 192f, 256s, 256f, respectively | 48, 72, or 96 | FIPS 205 `slh_keygen_internal(SK.seed, SK.prf, PK.seed)`, `n` bytes each, in that order |
 
-These entries are `active` in the draft registry. Indices 5–15 follow
-[pqhd PR #2], which has not yet been agreed, and will change here if its
-numbering changes. ML-KEM (IDs 16–18) is not implemented by this crate.
-Reserved entries 1, 19, and 20 are not derivable. The API exposes only the
-supported schemes, not arbitrary numeric scheme IDs: [`SlhDsa`] lists the
-SLH-DSA parameter sets with their scheme indices.
+These entries are `active` in the draft registry. Each family owns a block
+of 100 indices; block 0 is never assigned. ML-KEM (IDs 100–102) is not
+implemented by this crate. Reserved FN-DSA entries 400 and 401 are not
+derivable. The registry requires deprecated entries to remain derivable for
+recovery, but currently none are deprecated. The API exposes only the
+supported schemes, not arbitrary numeric scheme IDs: [`SlhDsa`] lists every
+SLH-DSA parameter set with its scheme index.
 
 `coin_type` is the chain's [SLIP-44] registered coin type, for example `133'`
 for Zcash or `1'` for testnets. Coin type comes first, as in BIP44, so each
@@ -105,8 +114,8 @@ let verifying_key = signing_key.verifying_key();
 
 Scoped keys at `(coin_type, account, index)` are unrelated to the unscoped
 article keys, including at `(0, 0, 0)`. [`tests/scoped.rs`] checks seeds and
-public keys against all 36 [pqhd test vectors] for schemes 0, 2, 3, and 4;
-[`tests/scoped_slh_dsa.rs`] checks three vectors per SLH-DSA set 5–15, one for
+public keys against all 36 [pqhd test vectors] for schemes 200–202 and 300;
+[`tests/scoped_slh_dsa.rs`] checks three vectors per SLH-DSA set 301–311, one for
 each seed. Use `ml_dsa65_for`, `ml_dsa87_for`, `slh_dsa_sha2_128s_for`, or
 `slh_dsa_for::<P>` (for example `P = pqseed::slh_dsa::Shake256f`) for the other
 scoped keys. The corresponding `*_seed_for` methods, including
@@ -155,7 +164,7 @@ Each can be enabled independently:
 
 - `bip39`: mnemonic parsing and Unicode NFKD normalization (requires `alloc`).
 - `ml-dsa`: RustCrypto ML-DSA-44, ML-DSA-65, and ML-DSA-87 key generation.
-- `slh-dsa`: RustCrypto SLH-DSA-SHA2-128s key generation. Currently uses a
+- `slh-dsa`: RustCrypto key generation for all SLH-DSA parameter sets. Uses a
   pinned prerelease and its low-level deterministic key-generation API.
 
 Without default features, `KeyDeriver::from_seed` accepts an already expanded
@@ -225,11 +234,10 @@ without any additional terms or conditions.
 [LICENSE-APACHE]: https://github.com/iqlusioninc/crates/blob/main/pqseed/LICENSE-APACHE
 [LICENSE-MIT]: https://github.com/iqlusioninc/crates/blob/main/pqseed/LICENSE-MIT
 [SLIP-44]: https://github.com/satoshilabs/slips/blob/master/slip-0044.md
-[pqhd PR #1]: https://github.com/pqdh/pqhd/pull/1
-[pqhd PR #2]: https://github.com/pqdh/pqhd/pull/2
-[pqhd spec]: https://github.com/pqdh/pqhd/blob/b9674b302c0f320ee7f0b39317eb48ddbe67f00f/spec/README.md
-[pqhd registry]: https://github.com/pqdh/pqhd/blob/af2efc57be437da09a768934b4611fd8d53ca3fc/registry/README.md
-[pqhd test vectors]: https://github.com/pqdh/pqhd/tree/af2efc57be437da09a768934b4611fd8d53ca3fc/test-vectors
+[pinned revision]: https://github.com/pqdh/pqhd/commit/befdce14cecbb5d485d3239982bfa5b207cdb922
+[pqhd spec]: https://github.com/pqdh/pqhd/blob/befdce14cecbb5d485d3239982bfa5b207cdb922/spec/README.md
+[pqhd registry]: https://github.com/pqdh/pqhd/blob/befdce14cecbb5d485d3239982bfa5b207cdb922/registry/README.md
+[pqhd test vectors]: https://github.com/pqdh/pqhd/tree/befdce14cecbb5d485d3239982bfa5b207cdb922/test-vectors
 [`tests/scoped.rs`]: https://github.com/iqlusioninc/crates/blob/main/pqseed/tests/scoped.rs
 [`tests/scoped_slh_dsa.rs`]: https://github.com/iqlusioninc/crates/blob/main/pqseed/tests/scoped_slh_dsa.rs
 [`SlhDsa`]: https://docs.rs/pqseed/latest/pqseed/enum.SlhDsa.html

@@ -1,8 +1,9 @@
 //! pqhd conformance vectors for the SLH-DSA parameter sets at scheme indices
-//! 5-15 (SLH-DSA-SHA2-128s, index 2, is covered in `scoped.rs`).
+//! 301-311 (SLH-DSA-SHA2-128s, index 300, is covered in `scoped.rs`).
 //!
-//! Copied from the pqhd test vectors (https://github.com/pqdh/pqhd, files
-//! `test-vectors/{5..15}.json`, cases 0, 4, and 8: one per seed). `output` is
+//! Copied from the pqhd test vectors pinned to
+//! <https://github.com/pqdh/pqhd/tree/befdce14cecbb5d485d3239982bfa5b207cdb922/test-vectors>,
+//! files `test-vectors/{301..311}.json`, cases 0, 4, and 8: one per seed. `output` is
 //! the first 3n bytes of BIP-85-DRNG-SHAKE256, split as
 //! `SK.seed || SK.prf || PK.seed`. Public-key hashes are SHA-256 of the raw
 //! FIPS 205 public key. Seeds are the expanded BIP39 seeds from `vectors.rs`.
@@ -40,372 +41,372 @@ const VECTORS: &[Vector] = &[
         seed: 0,
         scope: Scope::new(0, 0, 0),
         output: &hex!(
-            "737f61170801b0ae98920a1c29351fec1ff6066e8d259b015085f4c8aeedeb2a
-             3fe4c92fe2fb4a8f9596b311f3b16acf"
+            "c21fbe627f7d39a682eaff9bec2954a8bd3f4883bf036742a907cfb7d2cd0e81
+             8f7845154a423d26e01176d88685f498"
         ),
-        pk: hex!("5a7eb609afe2741ab2ec09bf3cbfcce781204f72c250a5bcbef932062c567038"),
+        pk: hex!("da17829262c5bef301b78268b82ddf89f13cd514a4ccccd19dd7a6c5dca47f94"),
     },
     Vector {
         set: SlhDsa::Shake128s,
         seed: 1,
         scope: Scope::new(133, 0, 0),
         output: &hex!(
-            "bafb84486337ba53bedd99c27d1b010e690b9a47d1d0e35ccd1e1f5cb714c243
-             59b89a07584f931367a2cfdcd56ee39f"
+            "a844e41e58944d02a24b8d832694bc4eab06021e306ff05b3aff053ceb510147
+             902ac0c62e636f699a2d248148246693"
         ),
-        pk: hex!("19dde6cbc2f9439958c905f88d8ccedaecc5dc3e182070b17679400505927056"),
+        pk: hex!("9d7f051d8410d97e0669e3d89f58721c9c3370dbf1eb299bf2709e07c29a1f29"),
     },
     Vector {
         set: SlhDsa::Shake128s,
         seed: 2,
         scope: Scope::new(60, 1, 7),
         output: &hex!(
-            "147073616b6991692d71ce1a01ec2cd119a3d013af889ccc7743d75cd3fe694d
-             e6d89e077d760b64a571016a43d1f8b0"
+            "bed36e7e9bf9f6e4ced6de3adf44e986ab900d7c7a47838b8397ffffda61d5dc
+             233b4b6e0cfb414b0aa5c05bf22adf2c"
         ),
-        pk: hex!("5f19db0246ab5dac922753c791d0d996e1aaf2366a27badd8291ddcdbc6dbbba"),
+        pk: hex!("a45a740a9569fa4329244c6ec3cb66362774268f99ccc6c2aa552853cc723681"),
     },
     Vector {
         set: SlhDsa::Sha2_128f,
         seed: 0,
         scope: Scope::new(0, 0, 0),
         output: &hex!(
-            "ffb645aa8279b69dd9ffa330bf3ddad1a6173aa25310a6c4bfa01f66c3254754
-             890004faa2c6de7b91a059608c52e2a2"
+            "fb0dbc4160712b352ee08f039cb5d81051fe2077b49db8f93f3c7919104a33a2
+             503ea16166aa81cfc5dcbd0483879afa"
         ),
-        pk: hex!("6b48db22bcb6a9756f88cdd07eef1f37a269d65c259a9d0be190685b35c07e1e"),
+        pk: hex!("4c866df7313f7eb20a4560162db41dd94448c843b99551be5f96d6a3bbe1f5bf"),
     },
     Vector {
         set: SlhDsa::Sha2_128f,
         seed: 1,
         scope: Scope::new(133, 0, 0),
         output: &hex!(
-            "3d5d68e1e7f00db0f99dd46dcbbc5db2e78560878fedba744ffe26d89c7bab1f
-             c4704a22ae817a5bf2715e7d8b6ece01"
+            "a1f527e63bfc491232b1eabc0dd26e3ab2fc385e5119d14339e3ec4b712013e8
+             e54501481aa903b6e66c7fb8c893f099"
         ),
-        pk: hex!("ba79e46bea204f9f27ee933ef26def905c71782ebcc918f7e92bf6f4f5984add"),
+        pk: hex!("9463a38171090325a130dd46510cdcd96066881d6058a75c195002d0123b3b34"),
     },
     Vector {
         set: SlhDsa::Sha2_128f,
         seed: 2,
         scope: Scope::new(60, 1, 7),
         output: &hex!(
-            "e1c42884e47227b735f54d3bda2540bf8f163b74df9b5bed0a189db5c9f62071
-             9aaee544157f4f5ba08487d0f1645814"
+            "3f1cd88fbc293fff4dcf82ab8d827ed8d3f74931ac7c2cfca0e02fcc3f14130b
+             37ff84adc1818d13608cc71f3d36f117"
         ),
-        pk: hex!("6458fa112f72221936324cc931215c2eb017ccba06f23fac8d892d1e38ae0ea0"),
+        pk: hex!("68057de5b99de80dc40333bdb80ced89626df44e43b9a532b6a8e4450a231f1c"),
     },
     Vector {
         set: SlhDsa::Shake128f,
         seed: 0,
         scope: Scope::new(0, 0, 0),
         output: &hex!(
-            "6895b69ff6848081d5e8623c616a687500fb7f846079eb70490fcc153a4195ec
-             7278803f15d1912c884bf3b20769a75a"
+            "05b3870e2cee4c859f5f6aadc1006f233c6b72d398f18fdf27ffb104eb406bce
+             1796eb6a6e9683017052e81bdcd0199a"
         ),
-        pk: hex!("cdbf6da16e247aa251dafb51d132d356394779dfb3a72d63939f65b487d52e05"),
+        pk: hex!("9bceba27c9656cb55c14673d8be03fa29b5e97960e09bcb4cd916e7baa4c1efc"),
     },
     Vector {
         set: SlhDsa::Shake128f,
         seed: 1,
         scope: Scope::new(133, 0, 0),
         output: &hex!(
-            "6c88c800fe7615df3c75962dffa5e6b3f75b521118388856511fca7170ad166f
-             222fbf70aa76a60d6d64c2099c6ee58b"
+            "ae8b165eef8d2c6e9e2273794180c8e58b30578b53b194ac67ee046b6447ec97
+             5c88bed7d93616bc6f6b1097898ac8aa"
         ),
-        pk: hex!("449c2fff0a98eb0c2b9b8894cfd9c8c47dd9f72c04e81da5ad96159d542f7d5e"),
+        pk: hex!("1c11d6ff6d7a04a7a2af8b2d30d1a1df1d7543bf2b0a29f119a2f2b19706fc40"),
     },
     Vector {
         set: SlhDsa::Shake128f,
         seed: 2,
         scope: Scope::new(60, 1, 7),
         output: &hex!(
-            "36b3a0c3fdfbccf21d843c3099a025075e7ed5acb24625ff73cca22462ebc63f
-             410c256a713fc6f7c4ea71e225db4f0d"
+            "df749ff33726fcd83cfd25a431a8ed53130c45d401700ac0c86ace65e0825334
+             21b512a7485de8c51c19a2b9f91527ca"
         ),
-        pk: hex!("10ff031d1594a2fd95cb0c4af802322f779d5c4b883ed56d8b356af4a0407dc6"),
+        pk: hex!("85758352f24780aaab472d668611b1d3b873c995390d695639c649baa768a6be"),
     },
     Vector {
         set: SlhDsa::Sha2_192s,
         seed: 0,
         scope: Scope::new(0, 0, 0),
         output: &hex!(
-            "6d8635d59bbbd888d9b27e2f98331c3a423e1f0d989017d77e6172594c45cf7c
-             b1d2212534c85bf792a776800d7a79b9ef041f4ef2e12414d8c251b0760e7ac5
-             b3ed370b6ca32660"
+            "b28eeb262e3171ea845ddadb0789bcf10dcc4b036e5202d7fb3500791a0ab63a
+             cc078343070707bcc6b39245ef5f4193f75fd74dd930ede6006d1667519dcd96
+             f19e148e61f0b4b6"
         ),
-        pk: hex!("58d81f27c3009044608997a33fc46d274b6bc8f8c899334ffd7afbbe2333cff5"),
+        pk: hex!("d80aadd5a1f2c9d3c7b23bac8e30fa3cb6ba661b83c3926ad5b007712ec260b5"),
     },
     Vector {
         set: SlhDsa::Sha2_192s,
         seed: 1,
         scope: Scope::new(133, 0, 0),
         output: &hex!(
-            "3723b221bed2fdab3c4c1175cb4ca1e3875a2dcdfd0052b8c588ea6bd1d4e246
-             dbcb0da97e22fb0d54533ed2358a21bc7978e5813c0c163978f0be9d2fa2dddb
-             355a4cda45f721ca"
+            "cf5d8aeb28b3ee4333be82022d6afe1abb32456149869509005ceeb213d8c55e
+             5b124bee1ff9598059c535b51feba91762ebede2fd8b2ae02404e095c2a1f504
+             f090ab68409cf804"
         ),
-        pk: hex!("4de8e6e0d386307b716eefef52fdb9123571c046f5e13985fb05b3b9449805ac"),
+        pk: hex!("02cd62c24bebf2b58799fc96bb16df483a1654d0e82a50df610db83e389b7d12"),
     },
     Vector {
         set: SlhDsa::Sha2_192s,
         seed: 2,
         scope: Scope::new(60, 1, 7),
         output: &hex!(
-            "d2aae9eda0424803b67f438d5621c6b67deca9e1e08c5cf06fc891f30271aa49
-             a017f8f5d7169f58c94a558d1a7453b281584f004e227332854251d527544fb5
-             dff70635ac61e2d5"
+            "b24625acabb3e06a5c8d66c2320646a8a595cd525034063775043701f6ca5fc5
+             c3fc2a09c990c177ec0a1ddb9e46164e5d792563a25e2ec4b12f459fa742a896
+             85d722900b9a9d36"
         ),
-        pk: hex!("cfa9cc343afcb0d64f86362fdf00d7bd25ab427eb9bd2111d4445357e0ed40ec"),
+        pk: hex!("579cb21b06b954305804fc4cf34bb82a29a94d6bac6175c274abf5a977a997cd"),
     },
     Vector {
         set: SlhDsa::Shake192s,
         seed: 0,
         scope: Scope::new(0, 0, 0),
         output: &hex!(
-            "0acc5be0e5f670a3e4fc4ddbd6a675ce525d8129df856110e23752de2f55c64f
-             6810946990aab36e971ae0b5ca5b68d989ff5a00e44ed262a1e8b8e38c4f3fcd
-             b16369e6355c6aad"
+            "511b9d8819c824d7ebd458a798aba6ee9007a814b0c9cba4c46f07cc29dfc451
+             1f97cd66af9d0acf5222781f66e7721d2f209e1e825be7833870d13667b2ec1a
+             eea8e663e04b31c1"
         ),
-        pk: hex!("e9e184e4538521d369093ed8c2519d404891a125fb38c65508e9642c8040a66a"),
+        pk: hex!("205eb25e4386463b3dbcbf55bbdbc333e78817a4b5beebda8c467632c66de484"),
     },
     Vector {
         set: SlhDsa::Shake192s,
         seed: 1,
         scope: Scope::new(133, 0, 0),
         output: &hex!(
-            "aa7f52b6824c9a737dfe722f99ed2e96cc95dba86815cea04c347c3e74879909
-             d9b00c254049bb7e959ab7468b43005513eb2df9b18cefb4bd23ac773d4e16cb
-             f226b493165b1c44"
+            "c3ecffaac7aaa1a3d768372a8edb0f9e8680984710f0614a5a508e6eaad6c7f4
+             fcb4547591c196cf79787a316f7f080a01d330cdb2325aef94656048aeb5f0c1
+             6d3b1472dcbe05af"
         ),
-        pk: hex!("853ee84dc5840b6e16e8a56e716950602b598499b9f4cae746065b45588aa04d"),
+        pk: hex!("3d0b9ced23c50ba6a3bec3a49825fbdc1867ef101f5de336e930df2f8c3d44d2"),
     },
     Vector {
         set: SlhDsa::Shake192s,
         seed: 2,
         scope: Scope::new(60, 1, 7),
         output: &hex!(
-            "ef005baea71a36c615c49a8d7b98965177d0fe8ef4bc6f3c03849309819d6026
-             44403f4666c8d3c8c7aed4156f9caca8d9a3a0373b6b038bb87a22a8961d393c
-             af7f3f37e859681c"
+            "1e13a04f3afc634b10c9d6575e2cebe86d6a861d8d17a3aab3dc72d4c32c4826
+             2521da31d0df26f4611d14fb14f3fed038e12acd3dc2b8dc2aaa80ef26595022
+             56b9faab5173f5d2"
         ),
-        pk: hex!("0bfefdb3a45871aca68c30d628d5ac1bf589d05a870cb45509d1a3fed5351911"),
+        pk: hex!("19faed5f1f467e7a6edebed36dde6c6dfa34ae8462166e0a6aabd91bb17c4cdc"),
     },
     Vector {
         set: SlhDsa::Sha2_192f,
         seed: 0,
         scope: Scope::new(0, 0, 0),
         output: &hex!(
-            "8ff821eb2c6f23c651bb000f95ccb59a063edf03a5699ce3e8dddc90c571dddd
-             bc4ffaa67c09a126f54293c0f42fb0f05d3c58f6c565f1a552a62ccb8c2db31b
-             7b2229e64e5760c7"
+            "255bab80236d65c6b475aa9f454ceee7f2ad7322e594e4e4ee66a91ead89c83b
+             f0e753c9867cc542c7a63868a9cdda7cceff7c1dad306e17414e1feffe93e431
+             9bd13f3d29677eb1"
         ),
-        pk: hex!("7b23386dd0d5ddbf21def7ae342cedfe18bead7b915c58478ecf9754e4cd28e4"),
+        pk: hex!("6ecabd0bf35ffb4c2c940edd2ca9876ed4e4ad3968d3322aa071a3dbccc88743"),
     },
     Vector {
         set: SlhDsa::Sha2_192f,
         seed: 1,
         scope: Scope::new(133, 0, 0),
         output: &hex!(
-            "0b79534c6d611811bfa00b7b93a99efc2b539f090292d61ee51da2047d6aada6
-             474b25e33789a9f67d1737da73c70db6e2f28002902795dcac94214b03702955
-             2536bf0e8f248f4d"
+            "59987c531d9b84c9fd2dd8e13613be7ca2051ab8f91d1516d8de6a271e3c10a4
+             3ccd513a683b4974c0f7a0c7737f8390c29868fd29e3ef77c38f2a4b2152c04f
+             099895ba0960bb8d"
         ),
-        pk: hex!("ee148ae6f7c2c5e6a5fceef1910fa4900581e6de084f911851361d80c4891068"),
+        pk: hex!("9c02ca6e3202aedf2ea23137e1f1ae382af43ad91a88d1da282fb644358072ff"),
     },
     Vector {
         set: SlhDsa::Sha2_192f,
         seed: 2,
         scope: Scope::new(60, 1, 7),
         output: &hex!(
-            "904f474793c8dd1c8253329e932b85787b736dcb5d8168fa7c2a52ac01b19500
-             e6163b8a6314b7a894fad1f0e18353dad959478837243922df3daa1979acdf01
-             cd7d853415000754"
+            "cc39c05adc35db5b692c64b74a7898b5189a2f87da44a7c1d04d214ec267ac80
+             4c7157f5ea14a149befd847edf36df4d9c9db916bd598186fb6afc2c57aa5090
+             423cf5cc49f5d9f2"
         ),
-        pk: hex!("a7b4403e086688e606c8ed47cd9e175cd892527a37f5c18e339025f0efc42b4a"),
+        pk: hex!("feb90da6d37b3167bfb542de317d9fbba9becc2eb0ff7884260e4b5aadd7e446"),
     },
     Vector {
         set: SlhDsa::Shake192f,
         seed: 0,
         scope: Scope::new(0, 0, 0),
         output: &hex!(
-            "0c8bdc8832970d95bc58e0b2eb20a8876b55f2fd718d5883af21a0eb28385152
-             322ca74454d477001c9fefacb42be959f15e6496b932d9e60acf91364505e562
-             95c98d389def5614"
+            "86f0f65ff96005d8f37e30495bca2577c73688ee1b0c12e9a3acfb47f69bbe25
+             181230d2e12d77b06dd3e34d189ea48124532c0d558920e68e7b91bb54e06963
+             03396ffc6b7d8cd7"
         ),
-        pk: hex!("820440b21b86ab9564009eeb575e44b22952beef66352016c5bc79d96210b3a8"),
+        pk: hex!("d2c799a33f653b1904486985097ce4a3f8029d889c9be00441730af43db8b552"),
     },
     Vector {
         set: SlhDsa::Shake192f,
         seed: 1,
         scope: Scope::new(133, 0, 0),
         output: &hex!(
-            "0a90690dd6a7989bf0106bc369e87bd7175b5b69e00d1cf025b8705b74519aed
-             76736f0a91f6e99d420ef3be85d0f135af5c9cb221bbf79979c48a3aeaee0dd6
-             cd7a3f48b223d7dd"
+            "41f8680bb6c7ad20d8ebc99bf0ebca7824bef20cb6b318651f471733fa6d958d
+             c12eb21ac1ead56033408673f92ca9d18e692cc316760a871b1a1d44aa267931
+             fb68c14a980c8747"
         ),
-        pk: hex!("40869d1a41b2d066bcb40c04041a4ecbf3470a68afd3caa37fe60b4783631842"),
+        pk: hex!("72b1f066695e3aa66cb30333941751d3fa434c7ee10d6df1378d840e25b97adb"),
     },
     Vector {
         set: SlhDsa::Shake192f,
         seed: 2,
         scope: Scope::new(60, 1, 7),
         output: &hex!(
-            "e36757779f913e45185a659dd8c8da43434d177f7dd78afe63c7967fec72bd6f
-             06d1a98874d368b33240087242cd6e56c76821983defa2a1a3a0d32d7cc26aec
-             a06993cda94c8fdb"
+            "39073c80512da859ad2ca0bdc2677c1b32e21b5c3fce124593176c16cd8988cf
+             ba0b9c439e7c7307b47908d7d3000006774ac141f225e43eb167c098b3996546
+             6885bb0f2ebf73f5"
         ),
-        pk: hex!("a190aa004180d51dafa1a965fca438b176edd0cdff12adcc513eac25334880af"),
+        pk: hex!("f94be8bd400cccee96893976d4ff6007986bf5b28d9e7e673ebef794f052cf21"),
     },
     Vector {
         set: SlhDsa::Sha2_256s,
         seed: 0,
         scope: Scope::new(0, 0, 0),
         output: &hex!(
-            "13e88da8f53e5ce97856a94b28f998e7a287381dd7bf5823a2197fbda162a1ca
-             e73e544f33fc4ed9f662ed5273234113398a43e3b5be39ccbe11343826056bac
-             9f42c2ac303918296647ffc112ac52cc207f71cfd4fc67ab6a804a086017ab98"
+            "8f9d4d26fc00e94baa62da77c1d55d894734176ce817e133bbba9b526148e9b6
+             fad53ad11fdc14af14610a9b87815df24f80ec8f81108f4d155fadfbcc3fd863
+             d007fc4e1d008a6db143261420bf58b9a92a5328e732106d411f918949db3a4f"
         ),
-        pk: hex!("4cacd8142c9b37aa33a996333ad4041dd3bec009d0b86a5e473e09efc2b39963"),
+        pk: hex!("2749baef479b3027ec390fe35860142798e26af611f47563b8d5ae7eb0fc112a"),
     },
     Vector {
         set: SlhDsa::Sha2_256s,
         seed: 1,
         scope: Scope::new(133, 0, 0),
         output: &hex!(
-            "a509e63fbaf38a94a271c92aee36855903c7ee8d1068ef35dd8b53b24a5b2f76
-             e03be98fdb55a81e958174857c8f4756c87685212edd4a11a4aad8b0dc50fcba
-             4b8b266812c4293974e3ecc7bb275feded842ca67b48fd63c4b71f044ee64573"
+            "53064ed708fdd5e803ed0e90c366562a80937d75c339f7598a652f914c1f1419
+             8b101b47ccad2f3af65d2a48d42b05933f50c06aa31999dcc80a021f338dccd6
+             4af8e3c626a15fd70e79536935ae5a99d6d46cfe95707dd13068b4e8d12bc177"
         ),
-        pk: hex!("e1be50f620a1652d15bb0f549495378df912bd515ac80e708851651c72a2af09"),
+        pk: hex!("e3622e9ff32406e2925db196ffce5018aa2eb6238f58e97a0d676ea521baa429"),
     },
     Vector {
         set: SlhDsa::Sha2_256s,
         seed: 2,
         scope: Scope::new(60, 1, 7),
         output: &hex!(
-            "66908b1d759a7b809ce22ed77a9694fcc57c065bad4a5286deadf1d7d09513d4
-             4ebad74bf04e58cd18cd8012296c491ebe4d2486985628a282e08426174d87f8
-             e9541c690ebef150306bf4afd6465b6a5ddcb95f2b368cf817cf54d2bf26d286"
+            "6862ec9d2f7bb882079341ba7ecb7cb3b39401ba674ad1ee6f19ecc0f89e2d20
+             eaee2f7be21287a57154ae5945d3e439efadaea13fee7d428d02fcbc9e1363d8
+             e2d9c6d505c354cdee7903029486fd9ba49d3d64ab371318c16ba1ec34019419"
         ),
-        pk: hex!("656f4135ba738be2b97fd25e369b0b1594af0017cb0a64d03957acaffc4c225d"),
+        pk: hex!("f8ffaf0c7b89028800daf169e189248c176173b024ccaef6f606c88122757fd1"),
     },
     Vector {
         set: SlhDsa::Shake256s,
         seed: 0,
         scope: Scope::new(0, 0, 0),
         output: &hex!(
-            "4338b3b7b07847635aa6b4345c545ba6041becf30f98c379990dd06463ea4f85
-             e0d27a1752781ed89d93efd56a7d441521abe87eaa14963f22dc1874c83447d4
-             edc01284ae541b8144fb09ff95650f67752290415006061a8c4ff5dd737abc4f"
+            "33ff74930e811b59c0e254cbc967be35ffcf9122bb112b0aed163a8d8e11ab45
+             894027e51550e840412a15a0959182482ab3f6c501a86b9b39f1ec644eb3f50c
+             669386f535c530669c81b5426fc822ed532aa64da31c000c482673d1c7ea318a"
         ),
-        pk: hex!("2b5a13ae88d9f94c6001486d708b13cad2c36f1d2db23e07cfd27e29869db5a0"),
+        pk: hex!("180b498ec87460a9a2a42fb8a0a7ecca5a4c38c01542e34110d62a1fa335fbc9"),
     },
     Vector {
         set: SlhDsa::Shake256s,
         seed: 1,
         scope: Scope::new(133, 0, 0),
         output: &hex!(
-            "4e8c7d1dd506e7fd47befc20b5ffef62b798b7bba0072d8f639e8593e36db051
-             fdf63333c8f7d2faf28979231ef0824a8c9b1896a589066faec7d0e1c59feb7c
-             6f888f398e73fd221e8ab47ef6d380282ae6e70527737b985687c9ea71eb8710"
+            "38d2265aaf905bca4fcfceff08c30052f12edafd57024c222c6ecadd88545b1e
+             ce806a39113c8b84191c6ffa4fa0898a5673501d6da457b856e41a738446e3d6
+             878570ec9f5e5a04c32d6452b1dd8757ac8f31df88ef6c57e3c9b18924268e9c"
         ),
-        pk: hex!("17bb3e21e57b655ca51e549f1def496e5ad8d621fee5326e30535cf82b7cc96f"),
+        pk: hex!("5d5c32213afa68b9d6b24562f245e13944b89a8ac7d0cf29c198bdd777ca8022"),
     },
     Vector {
         set: SlhDsa::Shake256s,
         seed: 2,
         scope: Scope::new(60, 1, 7),
         output: &hex!(
-            "0cbe241b7b59b71960488b3fb672048332cf316542a65a8328038c8bfcfd96d3
-             5a3dfd39e654db196194e28c55d674db96a4bede1128e98a444180c7a8b9a106
-             56a7afffe43957f0d9f2cd7b33cad834c0538567f77d84186092c9bd17d2a74c"
+            "3df99f02481945f2c8488d19505b2a9883ba4d78243ae805c0c85f613fee3ca4
+             40837263df1f8efe866af307a705a2c7cf561bab04829ee2baa612e7d1b6091e
+             836ca1627f9997f19202e577939725f20af1b7b96a7c53b795bafa2d05b861b9"
         ),
-        pk: hex!("a06e4dad665eac944576a4b046c8891adf1fb09c057e912b998ff27176d29a5a"),
+        pk: hex!("56b086270542b84405d600eb942702a346e613922b2fed2b4dcc576fe2bb0387"),
     },
     Vector {
         set: SlhDsa::Sha2_256f,
         seed: 0,
         scope: Scope::new(0, 0, 0),
         output: &hex!(
-            "36eab48ecffdbbb2062d82c2f31bfc8b22aceb1fb7836c31c94bde4f686ff344
-             980fc9d6c7de718842d3b13d29465b6121c971f95eebdc0c05fea46b545019c7
-             af7df4b74388246fd255742d517550c5f74058a28800955876d6313aa03255d8"
+            "274c0667cc4f8241e6e087b6687d19418ee431ca2c65074b69efeb0d24dfb43e
+             f7cfeb4ae0fd295dd0fdfd90aba20337a6bfb26477871facd86a2694f32f4b08
+             c8f81c565b9aa04376f7b8ae4a997d316cc82ab984e0598aed09eb581d520c75"
         ),
-        pk: hex!("c05e89f3fb0d6ab5f077b79a00c2936c33896c7b5750944379ed694fc3813437"),
+        pk: hex!("67d50fcbb276fbd938d5595edbb2f1bbf465870f4fa3f76a39ffe3e038372d4a"),
     },
     Vector {
         set: SlhDsa::Sha2_256f,
         seed: 1,
         scope: Scope::new(133, 0, 0),
         output: &hex!(
-            "cf47a237b0ee8a7bd49c5c8e85b77b427a5509403a97bec75c57d3af6f601e73
-             69bb28131323323c3ac03b214aa252d4e23ee686eec82bc221f21537c485a63a
-             b758a54c8e3e1a95dd287c70f2a81bc586f1e0f689fb59b9e1669354a2af91be"
+            "359149ee20e546200f4e09ea441629527cc5056d00002724dc914d5fc2ce61bb
+             e18bbb2dc01ac44c0a5e5a8538e15110ae228e8e293b1670eaa5efb72d5e7e1e
+             1b63d3e97c3d3d26b5c33a25d484054000543899cd5f4fb0d480bd3aaef969dd"
         ),
-        pk: hex!("e5ea12f7b73e2972c6c30706aa0dc82d640a983d2a51eeb22fa86e445c4f377e"),
+        pk: hex!("43a65db177dee0ce5e40815efa0804fef5029bb6301d002bf7307c8e3717794e"),
     },
     Vector {
         set: SlhDsa::Sha2_256f,
         seed: 2,
         scope: Scope::new(60, 1, 7),
         output: &hex!(
-            "688b21f5f3be4b130bd61645d258f3aa0430a57a7f2266ee6ca6d025215dd449
-             bc4d91f7c0cbc423a7e4f6df0ede8ff1936599f0c045d8181229dc48d81d6648
-             1413cf883bb695129304ac9b170a1af90d1375f6715bffe02c84b798e06dca4c"
+            "dd5f714d704351ba5d32781387806e1f922cd00740c4cdd076a3dd42456ac3fc
+             7a7d5aab7e1fe455d8dbad5b56beb35bee2bf1596f625b771b330ed0daa62dd7
+             9c352b27be15252aedc0cae56832358fd17b954e6c297af03d6109df9db17c1a"
         ),
-        pk: hex!("4857d764130f49eafc126381af23320a826e10b2cc3cd5b0c4166007946a698b"),
+        pk: hex!("b2310601e87f4fa4f912f8c9bb599f9dcc34a440a7ea8f6254f6323c693ba68e"),
     },
     Vector {
         set: SlhDsa::Shake256f,
         seed: 0,
         scope: Scope::new(0, 0, 0),
         output: &hex!(
-            "21dec677c54c65516b8d14948ce26759b4d4275ecebebd6cbd7a4a6d871d3d27
-             17ee54406e4db68d9572cb629b092d3fd6ac53fe7503bd2b73c41d1444ce31cc
-             2f2cc2d55a62a51d8699566e77aa85dd7fa3869a7369e94cb72b23f76726e0d4"
+            "7ff6f593b6c2727cfa7be415d1c062d286c1cb5efbda44ea92ab0ba287daae50
+             b29aad51d9859e1ca79a1cc7c40ac15a7a780df92d7023ebe8c0cdc0eadffb6d
+             e89f1126404c18fdc6a4e8895a7a3f9de58e69fca596d36aaf3069753973fad8"
         ),
-        pk: hex!("7658d197c2659038443f0fa1530c78f53415cedb7e05e44312e071709251246f"),
+        pk: hex!("d902485407f278007bfc040efb4e1fd5f1bfbdfed43fcd37a96ede621d8eae94"),
     },
     Vector {
         set: SlhDsa::Shake256f,
         seed: 1,
         scope: Scope::new(133, 0, 0),
         output: &hex!(
-            "ec7ab7aaff97e749fab3ce991df64e56dc0614010868a01ced3ac2fdd1403065
-             9f8757a2e41fef672e02a8e5f358f2a4d4a5c3692bff7fad94078ba932519e9c
-             ab36dad8b6db12518f5c523156f987d2ce13610f1148e160a16d2c859ad54885"
+            "191cab1698c5ca4ed2520f9cf16c99d2de213fa19e374a7f5cdc4c0bfb51a1d7
+             98b42eb8c9c7603b9c13626d640180a5209d1f6766e18b6618eed9957be0fe7c
+             ded39d2436a5dd48c25ee7cb3e9f7abd3508e20efae6a4613178999d066a80a2"
         ),
-        pk: hex!("38f4665dfaecd31f4b45e538bda9e8c0e1c9f3341ae84129eefd03371994dd78"),
+        pk: hex!("a34485a6cba51ae34b0b046ccdfd458efb60229eadbe313e6eb0fb4e8917d051"),
     },
     Vector {
         set: SlhDsa::Shake256f,
         seed: 2,
         scope: Scope::new(60, 1, 7),
         output: &hex!(
-            "4dc04ef3b341413648ef5e1b2a450d50117c5be01151092dd0661ff5eea7559c
-             061e426f1a4f6f9ff2ff7fd4ee67d5074f7016ea827c19ac0cbf202cd488ef8d
-             d7b6756ed8f27676875344c07e0e26e1a7d35019560d887f582076abfaefd069"
+            "136d3bf3933f60f93785939b3e214ff2cbfa87713ddaee383ee1a8563c3c4ec0
+             c4febbdd3ab14c856d93d8be09358791b0c64d07b9086300c681df63cf5bf99c
+             6e457dfb3020cee2d71b48ce6bea43a230157fac172b1485472d617b95797dbf"
         ),
-        pk: hex!("6312c751757e55b9b38ad4a74bf932858a3e9bdf57fdce2d8bb6d128f8f0946c"),
+        pk: hex!("2dd10da16b94cf18f7ed04307bca0e3af744ccbac38e44a7b70dd538e57afa98"),
     },
 ];
 
 #[test]
 fn registry_indices_and_lengths() {
     let expected = [
-        (SlhDsa::Sha2_128s, 2, 16),
-        (SlhDsa::Shake128s, 5, 16),
-        (SlhDsa::Sha2_128f, 6, 16),
-        (SlhDsa::Shake128f, 7, 16),
-        (SlhDsa::Sha2_192s, 8, 24),
-        (SlhDsa::Shake192s, 9, 24),
-        (SlhDsa::Sha2_192f, 10, 24),
-        (SlhDsa::Shake192f, 11, 24),
-        (SlhDsa::Sha2_256s, 12, 32),
-        (SlhDsa::Shake256s, 13, 32),
-        (SlhDsa::Sha2_256f, 14, 32),
-        (SlhDsa::Shake256f, 15, 32),
+        (SlhDsa::Sha2_128s, 300, 16),
+        (SlhDsa::Shake128s, 306, 16),
+        (SlhDsa::Sha2_128f, 301, 16),
+        (SlhDsa::Shake128f, 307, 16),
+        (SlhDsa::Sha2_192s, 302, 24),
+        (SlhDsa::Shake192s, 308, 24),
+        (SlhDsa::Sha2_192f, 303, 24),
+        (SlhDsa::Shake192f, 309, 24),
+        (SlhDsa::Sha2_256s, 304, 32),
+        (SlhDsa::Shake256s, 310, 32),
+        (SlhDsa::Sha2_256f, 305, 32),
+        (SlhDsa::Shake256f, 311, 32),
     ];
     for (set, scheme, n) in expected {
         assert_eq!(set.scheme(), scheme, "{set:?}");
