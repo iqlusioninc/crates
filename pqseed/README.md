@@ -116,6 +116,24 @@ scoped keys. The corresponding `*_seed_for` methods, including
 `slh_dsa_seed_for`, return the registry's key-generation inputs without
 requiring a signature backend.
 
+## Restoring keys from a mnemonic
+
+Neither a public key nor an address records which derivation produced it, so
+a wallet restoring from a mnemonic must try each derivation it supports and
+match the results against keys known on chain:
+
+1. For each pqhd scheme the chain uses, scan scoped keys at the chain's
+   `coin_type`, incrementing `index` (and then `account`) up to a gap limit, as
+   BIP44 wallets do. Each scheme has its own path, so a match identifies the
+   scheme.
+2. Check the unscoped ML-DSA-44 key at `m/83696968'/503131'/0'` once. It has
+   no coin type, account, or index, so there is exactly one per mnemonic.
+
+The BIP39 passphrase is part of the input: a wrong passphrase derives valid
+but different keys rather than failing. Keys derived with earlier draft
+versions of this crate (scoped IDs 0 and 2–15, or unscoped IDs 2–4) cannot be
+derived by this version.
+
 ## Usage
 
 ```rust
