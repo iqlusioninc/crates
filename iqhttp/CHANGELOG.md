@@ -13,7 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `HttpsClient::request` takes `Request<Full<Bytes>>` and responses are
   `Response<Incoming>`; these are re-exported from the new `body` module
 - `proxy` feature uses `hyper-util`'s HTTP CONNECT tunnel instead of
-  `hyper-proxy`
+  `hyper-proxy`; the proxy URI must be `http://` (TLS to the proxy itself
+  is not supported)
 
 ### Added
 - `Error::{Client, Io}` variants
