@@ -19,13 +19,14 @@ pub enum Error {
     /// HTTP errors
     Http(hyper::http::Error),
 
-    /// Hyper errors
-    // TODO(tarcieri): rename this variant, possibly extracting the error?
+    /// Hyper errors (e.g. while reading a response body)
     Hyper(hyper::Error),
 
-    /// Proxy errors
-    #[cfg(feature = "proxy")]
-    Proxy(std::io::Error),
+    /// HTTP client errors (e.g. connecting, TLS handshake, sending a request)
+    Client(hyper_util::client::legacy::Error),
+
+    /// I/O errors (e.g. loading the operating system's root certificates)
+    Io(std::io::Error),
 }
 
 impl Display for Error {
@@ -36,13 +37,25 @@ impl Display for Error {
             Error::HeaderValue => f.write_str("invalid header value"),
             Error::Http(err) => err.fmt(f),
             Error::Hyper(err) => err.fmt(f),
-            #[cfg(feature = "proxy")]
-            Error::Proxy(err) => err.fmt(f),
+            Error::Client(err) => err.fmt(f),
+            Error::Io(err) => err.fmt(f),
         }
     }
 }
 
-impl std::error::Error for Error {}
+impl std::error::Error for Error {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        match self {
+            #[cfg(feature = "json")]
+            Error::Json(err) => Some(err),
+            Error::HeaderValue => None,
+            Error::Http(err) => Some(err),
+            Error::Hyper(err) => Some(err),
+            Error::Client(err) => Some(err),
+            Error::Io(err) => Some(err),
+        }
+    }
+}
 
 impl From<hyper::header::InvalidHeaderValue> for Error {
     fn from(_: hyper::header::InvalidHeaderValue) -> Error {
@@ -59,6 +72,18 @@ impl From<hyper::http::Error> for Error {
 impl From<hyper::Error> for Error {
     fn from(err: hyper::Error) -> Error {
         Error::Hyper(err)
+    }
+}
+
+impl From<hyper_util::client::legacy::Error> for Error {
+    fn from(err: hyper_util::client::legacy::Error) -> Error {
+        Error::Client(err)
+    }
+}
+
+impl From<std::io::Error> for Error {
+    fn from(err: std::io::Error) -> Error {
+        Error::Io(err)
     }
 }
 

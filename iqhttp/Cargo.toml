@@ -16,17 +16,22 @@ edition      = "2024"
 rust-version = "1.85"
 
 [dependencies]
-hyper = "0.14.10"
-hyper-rustls = { version = "0.22", features = ["rustls-native-certs"] }
+http-body-util = "0.1.5"
+hyper = { version = "1.12", features = ["client", "http1"] }
+hyper-rustls = { version = "0.27.10", default-features = false, features = ["http1", "native-tokio", "ring", "tls12"] }
+hyper-util = { version = "0.1.21", features = ["client-legacy", "http1", "tokio"] }
+rustls = { version = "0.23.46", default-features = false, features = ["ring", "std", "tls12"] } # >= 0.23.46 for RUSTSEC-2026-0349
 
 # optional dependencies
-hyper-proxy = { version = "=0.9.1", optional = true } # carefully vet changes before bumping version
 serde = { version = "1", optional = true }
 serde_json = { version = "1", optional = true }
 
+[dev-dependencies]
+tokio = { version = "1", features = ["io-util", "macros", "net", "rt-multi-thread"] }
+
 [features]
 json = ["serde", "serde_json"]
-proxy = ["hyper-proxy"]
+proxy = ["hyper-util/client-proxy"]
 
 [package.metadata.docs.rs]
 all-features = true
