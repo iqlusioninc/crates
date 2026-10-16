@@ -20,7 +20,13 @@ pub use self::{
     https_client::HttpsClient,
     query::Query,
 };
-pub use hyper::{self, HeaderMap, Uri, header};
+pub use hyper::{self, HeaderMap, Request, Response, Uri, header};
+
+/// HTTP body types used in requests and responses.
+pub mod body {
+    pub use http_body_util::{BodyExt, Full};
+    pub use hyper::body::{Buf, Bytes, Incoming};
+}
 
 /// User-Agent to send in HTTP request
 pub const USER_AGENT: &str = concat!("iqhttp/", env!("CARGO_PKG_VERSION"));
