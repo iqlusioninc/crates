@@ -5,7 +5,7 @@ on:
     paths:
       - "iqhttp/**"
       - "Cargo.*"
-      - ".github/workflows/iphttp.yml"
+      - ".github/workflows/iqhttp.yml"
   push:
     branches: main
 

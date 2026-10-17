@@ -13,7 +13,7 @@ built-in SSL/TLS support based on [`rustls`].
 
 ## Minimum Supported Rust Version
 
-Rust **1.63**
+Rust **1.85**
 
 ## License
 
@@ -41,11 +41,11 @@ without any additional terms or conditions.
 [build-link]: https://github.com/iqlusioninc/crates/actions/workflows/iqhttp.yml
 [license-image]: https://img.shields.io/badge/license-Apache2.0/MIT-blue.svg
 [license-link]: https://github.com/iqlusioninc/crates/blob/main/LICENSE
-[rustc-image]: https://img.shields.io/badge/rustc-1.63+-blue.svg
+[rustc-image]: https://img.shields.io/badge/rustc-1.85+-blue.svg
 
 [//]: # (general links)
 
 [`hyper`]: https://github.com/hyperium/hyper
-[`rustls`]: https://github.com/ctz/rustls
+[`rustls`]: https://github.com/rustls/rustls
 [LICENSE]: https://github.com/iqlusioninc/crates/blob/main/LICENSE
 [LICENSE-MIT]: https://github.com/iqlusioninc/crates/blob/main/iqhttp/LICENSE-MIT
