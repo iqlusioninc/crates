@@ -2,4 +2,5 @@
 extend-exclude = [
     ".git/",
     "bip32/tests/bip32_vectors.rs",
+    "pqseed/tests/scoped_slh_dsa.rs",
 ]

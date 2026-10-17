@@ -5,6 +5,7 @@ members = [
     "canonical-path",
     "hkd32",
     "iqhttp",
+    "pqseed",
     "secrecy",
     "signatory",
     "subtle-encoding",
