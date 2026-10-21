@@ -36,12 +36,18 @@
 
 extern crate alloc;
 
-use alloc::{boxed::Box, string::String, vec::Vec};
-use core::convert::Infallible;
-use core::str::FromStr;
+use alloc::{
+    boxed::Box,
+    string::{self, String},
+    vec::Vec,
+};
 use core::{
     any,
+    convert::Infallible,
+    error::Error,
     fmt::{self, Debug},
+    mem,
+    str::{FromStr, Utf8Error},
 };
 use zeroize::{Zeroize, ZeroizeOnDrop};
 
@@ -214,6 +220,52 @@ where
 /// Notably it has a [`From<String>`] impl which is the preferred method for construction.
 pub type SecretString = SecretBox<str>;
 
+/// A possible error value when creating a [`SecretString`] from a UTF-8 byte vector.
+///
+/// This is like [`string::FromUtf8Error`] except it zeroizes its buffer on [`Drop`].
+#[derive(Debug, PartialEq, Eq)]
+pub struct FromUtf8Error {
+    inner: Option<string::FromUtf8Error>,
+}
+
+impl SecretString {
+    /// Create a [`SecretString`] from a UTF-8 byte buffer.
+    ///
+    /// See [`String::from_utf8`]. If the passed buffer contains secret data, this should be
+    /// preferred to `String::from_utf8` as that function does not ensure that the buffer is
+    /// zeroized on error.
+    pub fn from_utf8(buf: Vec<u8>) -> Result<Self, FromUtf8Error> {
+        String::from_utf8(buf)
+            .map(Self::from)
+            .map_err(FromUtf8Error::new)
+    }
+
+    /// Create a [`SecretString`] from a <code>[SecretBox]&lt;\[u8]&gt;</code>.
+    ///
+    /// This works like [`String::from_utf8`], i.e., it does not allocate but rather takes
+    /// ownership of the backing buffer. Note that the result will have the whole buffer’s
+    /// contents; to perform truncation, see [`SecretString::from_utf8_box_len`].
+    pub fn from_utf8_box(mut other: SecretBox<[u8]>) -> Result<Self, FromUtf8Error> {
+        Self::from_utf8(mem::take(&mut other.inner_secret).into_vec())
+    }
+
+    /// Create a [`SecretString`] from a portion of a <code>[SecretBox]&lt;\[u8]&gt;</code>.
+    ///
+    /// This works like [`String::from_utf8`], except that the buffer is truncated to the specified
+    /// length before the string is created. Note that the allocation is not resized; if the buffer
+    /// is much larger than the resulting string, this is wasteful, and it is probably better to
+    /// call [`str::from_utf8`] on the slice to make a new allocation with only the needed size, and
+    /// then pass that to [`SecretString::from`].
+    pub fn from_utf8_box_len(
+        mut other: SecretBox<[u8]>,
+        len: usize,
+    ) -> Result<Self, FromUtf8Error> {
+        let mut buf = mem::take(&mut other.inner_secret).into_vec();
+        buf.truncate(len);
+        Self::from_utf8(buf)
+    }
+}
+
 impl From<String> for SecretString {
     fn from(s: String) -> Self {
         Self::from(s.into_boxed_str())
@@ -233,6 +285,43 @@ impl FromStr for SecretString {
         Ok(Self::from(s))
     }
 }
+
+impl FromUtf8Error {
+    fn new(inner: string::FromUtf8Error) -> Self {
+        FromUtf8Error { inner: Some(inner) }
+    }
+
+    /// See [`string::FromUtf8Error::as_bytes`].
+    pub fn as_bytes(&self) -> &[u8] {
+        self.inner.as_ref().expect("unreachable").as_bytes()
+    }
+
+    /// See [`string::FromUtf8Error::utf8_error`].
+    pub fn utf8_error(&self) -> Utf8Error {
+        self.inner.as_ref().expect("unreachable").utf8_error()
+    }
+
+    /// See [`string::FromUtf8Error::into_bytes`].
+    pub fn into_bytes(mut self) -> Vec<u8> {
+        self.inner.take().expect("unreachable").into_bytes()
+    }
+}
+
+impl Drop for FromUtf8Error {
+    fn drop(&mut self) {
+        if let Some(inner) = self.inner.take() {
+            inner.into_bytes().zeroize();
+        }
+    }
+}
+
+impl fmt::Display for FromUtf8Error {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        fmt::Display::fmt(self.inner.as_ref().unwrap(), f)
+    }
+}
+
+impl Error for FromUtf8Error {}
 
 impl Clone for SecretString {
     fn clone(&self) -> Self {
@@ -337,12 +426,24 @@ where
 
 #[cfg(test)]
 mod tests {
-    use crate::{ExposeSecret, SecretString};
+    use alloc::vec;
+
+    use crate::{ExposeSecret, SecretBox, SecretString};
     use core::str::FromStr;
 
     #[test]
     fn test_secret_string_from_str() {
         let secret = SecretString::from_str("test").unwrap();
         assert_eq!(secret.expose_secret(), "test");
+    }
+
+    #[test]
+    fn test_secret_string_from_utf8() {
+        let buf = vec![0];
+        let secret = SecretString::from_utf8(buf).unwrap();
+        assert_eq!(secret.expose_secret(), "\0");
+        let buf = SecretBox::from(vec![0x80]);
+        let err = SecretString::from_utf8_box(buf).unwrap_err();
+        assert_eq!(err.as_bytes(), &[0x80]);
     }
 }
