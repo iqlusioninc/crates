@@ -157,7 +157,7 @@ macro_rules! impl_path {
         /// Is this path a directory?
         #[inline]
         pub fn is_dir(&self) -> bool {
-            self.0.is_file()
+            self.0.is_dir()
         }
     };
 }
@@ -417,5 +417,24 @@ mod tests {
         let test_fixtures = TestFixtureDir::new();
         let result = CanonicalPathBuf::new(test_fixtures.symlink_path);
         assert!(result.is_err(), "symlinks aren't canonical paths!");
+    }
+
+    #[test]
+    fn test_is_dir_and_is_file() {
+        let test_fixtures = TestFixtureDir::new();
+
+        let dir_buf = CanonicalPathBuf::new(&test_fixtures.base_path).unwrap();
+        let dir = CanonicalPath::new(&test_fixtures.base_path).unwrap();
+        assert!(dir_buf.is_dir());
+        assert!(!dir_buf.is_file());
+        assert!(dir.is_dir());
+        assert!(!dir.is_file());
+
+        let file_buf = CanonicalPathBuf::new(&test_fixtures.canonical_path).unwrap();
+        let file = CanonicalPath::new(&test_fixtures.canonical_path).unwrap();
+        assert!(file_buf.is_file());
+        assert!(!file_buf.is_dir());
+        assert!(file.is_file());
+        assert!(!file.is_dir());
     }
 }
